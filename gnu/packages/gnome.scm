@@ -3718,7 +3718,10 @@ diagrams.")
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (for-each delete-file (find-files "vendor" "\\.a$"))))))
+                  (for-each delete-file
+                            (append
+                              (find-files "vendor" "\\.a$")
+                              (find-files "vendor" "windows\\.lib$")))))))
     (arguments
      (substitute-keyword-arguments (package-arguments librsvg)
        ((#:vendor-dir _ "vendor") "vendor")
