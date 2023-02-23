@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020-2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
@@ -766,7 +766,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
     (name "gdk-pixbuf")
-    (version "2.42.4")
+    (version "2.42.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -774,12 +774,13 @@ highlighting and other features typical of a source code editor.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0k9f9177qxaryaxprwrhqnv5p2gdq4a8i6y05gm98qa8izc5v77y"))))
+                "0jz4kziz5lirnjjvbspbqzsigk8vnqknng1fga89d81vs5snr6zf"))))
     (build-system meson-build-system)
     (outputs '("out" "debug"))
     (arguments
      `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
-       #:configure-flags '("-Dinstalled_tests=false")
+       #:configure-flags '("-Dinstalled_tests=false"
+                           "-Dbuiltin_loaders=all")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-docbook
@@ -812,18 +813,15 @@ highlighting and other features typical of a source code editor.")
     (propagated-inputs
      (list ;; Required by gdk-pixbuf-2.0.pc
            glib
-           ;; Required by gdk-pixbuf-xlib-2.0.pc
-           ;; TODO: Remove on core-updates.
-           libx11
+           libjpeg-turbo
+           libpng
+           libtiff
            ;; Used for testing and required at runtime.
            shared-mime-info))
     (inputs
      `(,@(if (%current-target-system)
              `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
-             '())
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng"  ,libpng)
-       ("libtiff" ,libtiff)))
+             '())))
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.3)
        ("docbook-xsl" ,docbook-xsl)
@@ -832,6 +830,7 @@ highlighting and other features typical of a source code editor.")
        ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("python-docutils" ,python-docutils)
        ("xsltproc" ,libxslt)))
     (native-search-paths
      ;; This file is produced by the gdk-pixbuf-loaders-cache-file
