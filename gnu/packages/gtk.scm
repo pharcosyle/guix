@@ -1066,8 +1066,7 @@ is part of the GNOME accessibility project.")
              (substitute* "gtk/tests/recentmanager.c"
                (("g_test_add_func \\(\"/recent-manager.*;") ""))
              (substitute* "gtk/tests/defaultvalue.c"
-               (("return g_test_run\\(\\);") ""))
-             #t))
+               (("return g_test_run\\(\\);") ""))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -1078,14 +1077,12 @@ is part of the GNOME accessibility project.")
              ;; Tests look for $XDG_RUNTIME_DIR.
              (setenv "XDG_RUNTIME_DIR" (getcwd))
              ;; For missing '/etc/machine-id'.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
-             #t))
+             (setenv "DBUS_FATAL_WARNINGS" "0")))
          (add-after 'install 'remove-cache
            (lambda* (#:key outputs #:allow-other-keys)
-	     (for-each
-	      delete-file
-	      (find-files (assoc-ref outputs "out") "immodules.cache"))
-             #t)))))
+             (for-each
+               delete-file
+               (find-files (assoc-ref outputs "out") "immodules.cache")))))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUIX_GTK2_PATH")
