@@ -783,21 +783,6 @@ highlighting and other features typical of a source code editor.")
                            "-Dbuiltin_loaders=all")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-docbook
-           (lambda* (#:key native-inputs inputs #:allow-other-keys)
-             (with-directory-excursion "docs"
-               (substitute* "meson.build"
-                 (("http://docbook.sourceforge.net/release/xsl/current/")
-                  (string-append (assoc-ref ,(if (%current-target-system)
-                                                 '(or native-inputs inputs)
-                                                 'inputs) "docbook-xsl")
-                                 "/xml/xsl/docbook-xsl-1.79.2/")))
-               (substitute* (find-files "." "\\.xml$")
-                 (("http://www.oasis-open.org/docbook/xml/4\\.3/")
-                  (string-append (assoc-ref ,(if (%current-target-system)
-                                                 '(or native-inputs inputs)
-                                                 'inputs) "docbook-xml")
-                                 "/xml/dtd/docbook/"))))))
          (add-before 'configure 'disable-failing-tests
            (lambda _
              (substitute* "tests/meson.build"
@@ -824,15 +809,12 @@ highlighting and other features typical of a source code editor.")
              `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
              '())))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.3)
-       ("docbook-xsl" ,docbook-xsl)
-       ("gettext" ,gettext-minimal)
+     `(("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")                             ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python-docutils" ,python-docutils)
-       ("xsltproc" ,libxslt)))
+       ("python-docutils" ,python-docutils)))
     (native-search-paths
      ;; This file is produced by the gdk-pixbuf-loaders-cache-file
      ;; profile hook.
