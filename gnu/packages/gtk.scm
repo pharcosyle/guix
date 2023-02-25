@@ -806,16 +806,16 @@ highlighting and other features typical of a source code editor.")
            ;; Used for testing and required at runtime.
            shared-mime-info))
     (inputs
-     `(,@(if (%current-target-system)
-             `(("bash-minimal" ,bash-minimal)) ; for glib-or-gtk-wrap
-             '())))
+     (if (%current-target-system)
+       (list bash-minimal)                      ; for glib-or-gtk-wrap
+       '()))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib" ,glib "bin")                             ; glib-mkenums, etc.
-       ("gobject-introspection" ,gobject-introspection) ; g-ir-compiler, etc.
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python-docutils" ,python-docutils)))
+     (list gettext-minimal
+           (list glib "bin")                    ; glib-mkenums, etc.
+           gobject-introspection                ; g-ir-compiler, etc.
+           perl
+           pkg-config
+           python-docutils))
     (native-search-paths
      ;; This file is produced by the gdk-pixbuf-loaders-cache-file
      ;; profile hook.
