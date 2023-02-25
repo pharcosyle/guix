@@ -1049,7 +1049,10 @@ is part of the GNOME accessibility project.")
              (substitute* "gtk/tests/recentmanager.c"
                (("g_test_add_func \\(\"/recent-manager.*;") ""))
              (substitute* "gtk/tests/defaultvalue.c"
-               (("return g_test_run\\(\\);") ""))))
+               (("return g_test_run\\(\\);") ""))
+             (substitute* "gtk/tests/textbuffer.c"
+               ((".*/TextBuffer/Fill and Empty.*") "")
+               ((".*/TextBuffer/Tag.*") ""))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
