@@ -784,8 +784,10 @@ highlighting and other features typical of a source code editor.")
        (modify-phases %standard-phases
          (add-before 'configure 'disable-failing-tests
            (lambda _
-             (substitute* "tests/meson.build"
-               (("\\[ 'pixbuf-fail', \\['conform', 'slow'\\], \\],")
+             ;; The test for the fix for issue 205 causes failures.
+             ;; https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/215
+             (substitute* "tests/pixbuf-jpeg.c"
+               ((".*/pixbuf/jpeg/issue205.*")
                 ""))))
          ;; The slow tests take longer than the specified timeout.
          ,@(if (any (cute string=? <> (%current-system))
