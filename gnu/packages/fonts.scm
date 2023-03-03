@@ -1235,7 +1235,7 @@ Powerline support.")
 (define-public font-adobe-source-code-pro
   (package
     (name "font-adobe-source-code-pro")
-    (version "2.032R-ro-1.052R-it-1.012R-VAR")
+    (version "2.038R-ro-1.058R-it-1.018R-VAR")
     (source
      (origin
        (method git-fetch)
@@ -1249,7 +1249,7 @@ Powerline support.")
                       ))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lqchm8z0ah5y675ycmciqvr8y1v1gcj22ysfs443gm291vy0z4v"))))
+        (base32 "00h4v3rmxyyaxni6nywacxvjnji2g2pi0b4js1yx0g67fvrv2gag"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-code-pro")
     (synopsis
