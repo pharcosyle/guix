@@ -27038,10 +27038,11 @@ files are easily readable and they work nicely with version control systems.")
                (mkdir-p fonts)
                (with-directory-excursion "fonts"
                  (install-file "all-the-icons.ttf" fonts)
-                 ;; TODO: Unbundle.
                  (install-file "file-icons.ttf" fonts)
                  (install-file "octicons.ttf" fonts)
-                 (install-file "weathericons.ttf" fonts)))))
+                 (install-file "weathericons.ttf" fonts)
+                 (install-file "fontawesome.ttf" fonts)
+                 (install-file "material-design-icons.ttf" fonts)))))
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (apply invoke "ert-runner" "-l"
@@ -27050,7 +27051,7 @@ files are easily readable and they work nicely with version control systems.")
     (native-inputs
      (list emacs-f emacs-ert-runner))
     (propagated-inputs
-     (list emacs-f emacs-memoize font-awesome font-google-material-design-icons))
+     (list emacs-f emacs-memoize))
     (home-page "https://github.com/domtronn/all-the-icons.el")
     (synopsis "Collect icon fonts and propertize them within Emacs")
     (description
