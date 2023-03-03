@@ -26972,10 +26972,11 @@ files are easily readable and they work nicely with version control systems.")
                (mkdir-p fonts)
                (with-directory-excursion "fonts"
                  (install-file "all-the-icons.ttf" fonts)
-                 ;; TODO: Unbundle.
                  (install-file "file-icons.ttf" fonts)
                  (install-file "octicons.ttf" fonts)
-                 (install-file "weathericons.ttf" fonts)))))
+                 (install-file "weathericons.ttf" fonts)
+                 (install-file "fontawesome.ttf" fonts)
+                 (install-file "material-design-icons.ttf" fonts)))))
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (apply invoke "ert-runner" "-l"
