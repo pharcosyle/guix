@@ -3168,7 +3168,9 @@ to handle."
   (source-profile? greetd-source-profile? (default #t))
   (default-session-user greetd-default-session-user (default "greeter"))
   (default-session-command greetd-default-session-command
-    (default (greetd-agreety-session))))
+    (default (greetd-agreety-session)))
+  (initial-session-user greetd-initial-session-user (default #f))
+  (initial-session-command greetd-initial-session-command (default #f)))
 
 (define (default-config-file-name config)
   (string-join (list "config-" (greetd-terminal-vt config) ".toml") ""))
@@ -3183,17 +3185,30 @@ to handle."
        (terminal-vt (greetd-terminal-vt config))
        (terminal-switch (greetd-terminal-switch config))
        (default-session-user (greetd-default-session-user config))
-       (default-session-command (greetd-default-session-command config)))
-    (mixed-text-file
-     config-file-name
-     "[general]\n"
-     "source_profile = " (if source-profile? "true" "false") "\n"
-     "[terminal]\n"
-     "vt = " terminal-vt "\n"
-     "switch = " (if terminal-switch "true" "false") "\n"
-     "[default_session]\n"
-     "user = " default-session-user "\n"
-     "command = " default-session-command "\n")))
+       (default-session-command (greetd-default-session-command config))
+       (initial-session-user (greetd-initial-session-user config))
+       (initial-session-command (greetd-initial-session-command config)))
+    (apply mixed-text-file
+           config-file-name
+           "[general]\n"
+           "source_profile = " (if source-profile? "true" "false") "\n"
+           "[terminal]\n"
+           "vt = " terminal-vt "\n"
+           "switch = " (if terminal-switch "true" "false") "\n"
+           "[default_session]\n"
+           "user = " default-session-user "\n"
+           "command = " default-session-command "\n"
+           (if (or initial-session-user
+                   initial-session-command)
+               (append
+                (list "[initial_session]\n")
+                (if initial-session-user
+                    (list "user = " initial-session-user "\n")
+                    '())
+                (if initial-session-command
+                    (list "command = " initial-session-command "\n")
+                    '()))
+               '()))))
 
 (define %greetd-file-systems
   (list (file-system
