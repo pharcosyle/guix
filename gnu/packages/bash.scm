@@ -60,7 +60,7 @@
 
 (define (patch-url seqno)
   "Return the URL of Bash patch number SEQNO."
-  (format #f "mirror://gnu/bash/bash-5.1-patches/bash51-~3,'0d" seqno))
+  (format #f "mirror://gnu/bash/bash-5.2-patches/bash52-~3,'0d" seqno))
 
 (define (bash-patch seqno sha256-bv)
   "Return the origin of Bash patch SEQNO, with expected hash SHA256-BV."
@@ -73,26 +73,25 @@
   (list (bash-patch seqno (base32 hash))
         ...))
 
-(define %patch-series-5.1
-  ;; This is the current patches series for 5.1, generated using
+(define %patch-series-5.2
+  ;; This is the current patches series for 5.2, generated using
   ;; 'download-patches' below.
   (patch-series
-   (1 "1ymm8ppss6gyh9ifznjwiabrb4k91npd09c10y7mk66xp8yppc7b")
-   (2 "1gjx9zqcm407am3n2sh44b8dxm48kgm15rzfiijqxr01m0hn3shm")
-   (3 "1cdnpbfc64yhvkjj4d12s9ywp11g195vzfl1cab24sq55wkcrwi2")
-   (4 "11iwhy6v562bv0kk7lwj7f5jj65ma9bblivy0v02h3ggcibbdbls")
-   (5 "19bdyigdr81824nxvqr6a7k0cax60wq7376j6b91afbnwvlvbjyc")
-   (6 "051x8wlwrqk0yr0zg378vh824iklfl5g9pkmcdf62qp8gn9pvqbm")
-   (7 "0fir80pp1gmlpadmqcgkrv4y119pc7xllchjzg05fd7px73viz5c")
-   (8 "1lfjgshk8i9vch92p5wgc9r90j3phw79aa7gbai89w183b2z6b7j")
-   (9 "1vn36dzd9g4y1h3jiss6418crla0rbcd0d6wwsyv9d5l7aaxlp74")
-   (10 "0amfmvbzsand7bdypylkjdpcp88fa3cplfshn7vyzv2ff2rdgj52")
-   (11 "0yq24abb4fzfxqnwl20b330sxl9lr9ds0nc4yi30f81l94b1y6aq")
-   (12 "165bff97ffih49vfs4mkr5w3z5gn1w6zfyrf773iajkw6v48kw8h")
-   (13 "1bfmgv3lagbk3aq9a831d29xv7jz4sjq7jhn9hq89limyinvdb67")
-   (14 "1l43dw4kpddn7l41i8wmj406z9abxky1wb3rk8krcys33g4f0kka")
-   (15 "1w40vzadzx019v0zhs4q6yqycrk04x1k8xs6qb73vk7ny4p6jdqv")
-   (16 "0krqqljz4bkp9wrdnwfx51bxkb8rkwf8ivc93as1znx5fr7i96c8")))
+   (1 "02iibpd3jq8p1bhdzgik8ps6gi1145vr463a82gj1hivjbp2ybzl")
+   (2 "1f6p1z85qh1lavdp3xikgp0bfv0vqhvgpgwmdzlywl35hwdmxk25")
+   (3 "1zxsi869jd90hksx3nyypgyqwrxhw2ws3r6hmk76yc1lsgdhq2ba")
+   (4 "04i5liw5cg6dqkdxfgazqc2jrw40bmclx3dx45bwy259pcj7g0iq")
+   (5 "0mykflv9qnbx3jz71l4f7isadiw9knm4qimqkwsv9cv88dafpq7c")
+   (6 "13265akl8w6zyrg0l7f0x6arjgqjhllcwl6lk46rl53x4mm5dq6i")
+   (7 "146lrwkn5wgxzs6vx34wl47g69zsxdy032k40qzi626b47ya6015")
+   (8 "1s5i8hcayrv25lc8fxcr431v634yx5sii53b8fmip789s0pxjjvb")
+   (9 "1kfk25151ka9wkmk1myf12irgcmvhsd8b0nfifvhrszah9w82npr")
+   (10 "1kf1jrwm30js0v3d1r2rk4x09s1pyjp70wnd1qqhf9bmkw15ww67")
+   (11 "1x5nkvbj6hci7gx42q7qa72hg2a9wwxh85dk79gn521ypwjmy6w3")
+   (12 "0b6lcwzm7v5bzjiwaz2c8n5aj77w8ckhp2vwk4v3zsdq3z70gc9g")
+   (13 "1rkwpibd6j2ghppfhqsva2jm4kdni6b7jpdsxdps52643gc4yjq9")
+   (14 "09766vqqw4ffnmysm725v35qkhp1g9j4qgqag941xvq655pj9y9y")
+   (15 "12im449abnq5gaqjmdxr5i38kmp02fa8l8wffad3jryvd58r0wzg")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -129,7 +128,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                " -Wl,-rpath -Wl,"
                (assoc-ref %build-inputs "ncurses")
                "/lib")))
-         (version "5.1"))
+         (version "5.2"))
     (package
      (name "bash")
      (source (origin
@@ -138,11 +137,11 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                     "mirror://gnu/bash/bash-" version ".tar.gz"))
               (sha256
                (base32
-                "1alv68wplnfdm6mh39hm57060xgssb9vqca4yr1cyva0c342n0fc"))
+                "1yrjmf0mqg2q8pqphjlark0mcmgf88b0acq7bqf4gx3zvxkc2fd1"))
               (patch-flags '("-p0"))
               (patches (cons (search-patch "bash-linux-pgrp-pipe.patch")
-                             %patch-series-5.1))))
-     (version (string-append version "." (number->string (length %patch-series-5.1))))
+                             %patch-series-5.2))))
+     (version (string-append version "." (number->string (length %patch-series-5.2))))
      (build-system gnu-build-system)
 
      (outputs '("out"

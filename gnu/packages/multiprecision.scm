@@ -119,6 +119,17 @@ It is aimed at use in, for example, cryptography and computational algebra.")
                              (string-append all "{\n  exit (77);//"))))))
                   #~%standard-phases)))
    (build-system gnu-build-system)
+   (arguments
+    (list
+     #:phases
+     #~(modify-phases %standard-phases
+         ;; Work around bug in glibc 2.37 for incorrect `printf' output, see:
+         ;; - https://gitlab.inria.fr/mpfr/mpfr/-/commit/5172494c09
+         ;; - https://sourceware.org/bugzilla/show_bug.cgi?id=30068.
+         (add-after 'unpack 'remove-failing-test
+           (lambda _
+             (substitute* "tests/tsprintf.c"
+               ((".*13.10Pd.*") "")))))))
    (outputs '("out" "debug"))
    (propagated-inputs (list gmp))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary-precision floating-point arithmetic")

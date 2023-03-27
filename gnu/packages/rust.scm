@@ -1065,9 +1065,12 @@ exec -a \"$0\" \"~a\" \"$@\""
                                (string-append bin "/.rust-analyzer-real"))))
                    (chmod (string-append bin "/rust-analyzer") #o755))))))))
       ;; Add test inputs.
-      (native-inputs (cons* `("gdb" ,gdb/pinned)
-                            `("procps" ,procps)
-                            (package-native-inputs base-rust))))))
+      (native-inputs
+       (modify-inputs (package-native-inputs base-rust)
+         (prepend gdb/pinned
+                  procps
+                  gnu-make-4.3)))))) ; 1 test failure on newer versions of
+                                     ; GNU Make: `jobserver::jobserver_and_j'
 
 (define*-public (make-rust-sysroot target)
   (let ((base-rust rust))
