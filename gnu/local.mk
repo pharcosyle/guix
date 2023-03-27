@@ -1406,6 +1406,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-2.31-hurd-clock_gettime_monotonic.patch	\
   %D%/packages/patches/glibc-2.37-hurd-clock_t_centiseconds.patch	\
   %D%/packages/patches/glibc-2.37-hurd-local-clock_gettime_MONOTONIC.patch	\
+  %D%/packages/patches/glibc-2.37-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-2.37-versioned-locpath.patch	\
   %D%/packages/patches/glibc-2.38-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-hurd-clock_t_centiseconds.patch	\
@@ -1415,11 +1416,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-hurd-signal-sa-siginfo.patch	\
   %D%/packages/patches/glibc-ldd-powerpc.patch			\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
+  %D%/packages/patches/glibc-2.37-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-locales.patch			\
   %D%/packages/patches/glibc-locales-2.28.patch			\
   %D%/packages/patches/glibc-reinstate-prlimit64-fallback.patch	\
   %D%/packages/patches/glibc-skip-c++.patch			\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
+  %D%/packages/patches/glibc-2.37-versioned-locpath.patch	\
   %D%/packages/patches/glibc-2.29-git-updates.patch     	\
   %D%/packages/patches/glibc-2.29-supported-locales.patch     	\
   %D%/packages/patches/glibc-supported-locales.patch     	\
