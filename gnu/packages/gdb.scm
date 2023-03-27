@@ -51,14 +51,14 @@
   ;; enough to avoid massive rebuilds.
   (package
     (name "gdb")
-    (version "12.1")
+    (version "13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1vczsqcbh5y0gx7qrclpna0qzx26sk7lra6y8qzxam1biyzr65qf"))))
+                "02izi7msnnwiv0imbl7r3ll9hi1mi94jyg02dvdsncqqpsvynnzx"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -197,7 +197,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
 (define-public gdb-minimal
   (package/inherit gdb-14
     (name "gdb-minimal")
-    (inputs (fold alist-delete (package-inputs gdb)
+    (inputs (fold alist-delete (package-inputs gdb-13)
                   '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
 
 (define-public gdb-minimal-15
