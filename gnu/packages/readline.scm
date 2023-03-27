@@ -49,11 +49,10 @@
   (list (readline-patch version seqno (base32 hash))
         ...))
 
-(define %patch-series-8.1
+(define %patch-series-8.2
   (patch-series
-   "8.1"
-   (1 "0i4ikdqgcjnb40y2ss3lm09rq56zih5rzma3bib50dk3d1d4cak8")
-   (2 "1p15sfx5xg5k4lam12lyd0givk7dfjddqpnb1jdp3c4clray0nz5")))
+   "8.2"
+   (1 "1xxgfgr6hn3ads8m8xsrdi1kbx1f3s69k0danpd9x4haqhg7zydv")))
 
 (define %patch-series-7.0
   (patch-series
@@ -67,16 +66,16 @@
 (define-public readline
   (package
     (name "readline")
-    (version (string-append "8.1."
-                            (number->string (length %patch-series-8.1))))
+    (version (string-append "8.2."
+                            (number->string (length %patch-series-8.2))))
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/readline/readline-"
                                   (version-major+minor version) ".tar.gz"))
               (sha256
                (base32
-                "00ibp0n9crbwx15k9vvckq5wsipw98b1px8pd8i34chy2gpb9kpq"))
-              (patches (append %patch-series-8.1
+                "0dbw02ai0z8x6d9s14pl0hnaa2g1kdxnv8qqra1fx13ay5qp3srz"))
+              (patches (append %patch-series-8.2
                                (search-patches "readline-link-ncurses.patch")))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
