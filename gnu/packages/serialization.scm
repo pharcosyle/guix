@@ -687,7 +687,18 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1zbf6bdpps8369r1ql00irxrp58jnalycc8jcapb8iqg654vlfz8"))))
+          "1zbf6bdpps8369r1ql00irxrp58jnalycc8jcapb8iqg654vlfz8"))
+        (patches
+         (list
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/google/flatbuffers/commit/"
+                  "17d9f0c4cf47a9575b4f43a2ac33eb35ba7f9e3e.patch"))
+            (file-name (string-append name "-gcc-12-fix.patch"))
+            (sha256
+             (base32
+              "0z1y6dmd3p0znkijr1ixczj2dk1ksp5nhwl9fizp6lphscm6fybf")))))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"

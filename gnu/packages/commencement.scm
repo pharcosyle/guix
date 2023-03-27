@@ -1875,7 +1875,8 @@ exec " gcc "/bin/" program
 ;; In the future, Gash et al. could handle it directly, but it's not
 ;; ready yet.
 (define bash-mesboot (mesboot-package "bash-mesboot" static-bash))
-(define sed-mesboot (mesboot-package "sed-mesboot" sed))
+;; Won't build with Sed 4.9 because of missing 'w' command.
+(define sed-mesboot (mesboot-package "sed-mesboot" sed-4.8))
 
 ;; "sed" from Gash-Utils lacks the 'w' command as of 0.2.0.
 (define coreutils-mesboot
@@ -3513,15 +3514,15 @@ is the GNU Compiler Collection.")
   (make-gcc-toolchain gcc-10))
 
 (define-public gcc-toolchain-11
-  gcc-toolchain)
+  (make-gcc-toolchain gcc-11))
 
 (define-public gcc-toolchain-12
-  (make-gcc-toolchain gcc-12))
+  gcc-toolchain)
 
 (define-public gcc-toolchain-aka-gcc
   ;; It's natural for users to try "guix install gcc".  This package
   ;; automatically "redirects" them to 'gcc-toolchain'.
-  (deprecated-package "gcc" gcc-toolchain-11))
+  (deprecated-package "gcc" gcc-toolchain-12))
 
 
 (define-public gdc-toolchain-10

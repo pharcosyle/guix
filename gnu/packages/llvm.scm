@@ -705,9 +705,6 @@ of programming tools as well as libraries with equivalent functionality.")
                 (lambda _
                   (for-each delete-file
                             (find-files #$output "\\.a(\\.syms)?$"))))))))
-      (native-inputs
-       (modify-inputs (package-native-inputs template)
-         (prepend gcc-12)))             ;libfuzzer fails to build with GCC 11
       (inputs
        (modify-inputs (package-inputs template)
          (append libffi))))))

@@ -50,14 +50,14 @@
   ;; enough to avoid massive rebuilds.
   (package
     (name "gdb")
-    (version "12.1")
+    (version "13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1vczsqcbh5y0gx7qrclpna0qzx26sk7lra6y8qzxam1biyzr65qf"))))
+                "184m5rp5gfkf5i8b707l2hf238m2vmjx70jqn4mbx9k9ip0xanhi"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -145,31 +145,31 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
     (properties `((hidden? . #t)))
     (license gpl3+)))
 
-(define-public gdb-12
+(define-public gdb-13
   (package
     (inherit gdb/pinned)
-    (version "12.1")
+    (version "13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1vczsqcbh5y0gx7qrclpna0qzx26sk7lra6y8qzxam1biyzr65qf"))))
+                "184m5rp5gfkf5i8b707l2hf238m2vmjx70jqn4mbx9k9ip0xanhi"))))
     (properties '())))
 
 (define-public gdb
   ;; The "default" version.
-  gdb-12)
+  gdb-13)
 
 (define-public gdb-minimal
-  (package/inherit gdb-12
+  (package/inherit gdb-13
     (name "gdb-minimal")
     (inputs (fold alist-delete (package-inputs gdb)
                   '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
 
 (define-public avr-gdb
-  (package/inherit gdb-12
+  (package/inherit gdb-13
     (name "avr-gdb")
     (arguments
      `(#:configure-flags
@@ -178,7 +178,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
              "--enable-languages=c,c++"
              "--with-system-readline"
              "--enable-source-highlight")
-       ,@(package-arguments gdb-12)))
+       ,@(package-arguments gdb-13)))
     (synopsis "The GNU Debugger for AVR")
     (description
      "GDB is the GNU debugger.  With it, you can monitor what a program is

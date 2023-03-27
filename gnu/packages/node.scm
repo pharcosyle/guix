@@ -180,7 +180,9 @@
              ;; TODO: Regenerate certs instead.
              (for-each delete-file
                        '("test/parallel/test-tls-passphrase.js"
-                         "test/parallel/test-tls-server-verify.js"))))
+                         "test/parallel/test-tls-server-verify.js"))
+
+             (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")))
          (add-before 'configure 'set-bootstrap-host-rpath
            (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (let* ((inputs      (or native-inputs inputs))
@@ -287,9 +289,16 @@
                    (format #t "nodedir=~a\n" out)))))))))
     (native-inputs
      ;; Runtime dependencies for binaries used as a bootstrap.
-     (list c-ares
+     (list gcc-11 ; Build fails with newer versions of GCC.
+           c-ares
            http-parser
-           icu4c
+           ;; XXX: Hideous workaround to avoid a build error when GCC 11 is
+           ;; specified as a native input to Node.
+           (package
+             (inherit icu4c)
+             (native-inputs
+              (modify-inputs (package-native-inputs icu4c)
+                (prepend gcc-11))))
            libuv-for-node
            `(,nghttp2-for-node "lib")
            openssl-1.1
@@ -849,7 +858,9 @@ source files.")
                ;; TODO: Regenerate certs instead.
                (for-each delete-file
                          '("test/parallel/test-tls-passphrase.js"
-                           "test/parallel/test-tls-server-verify.js"))))
+                           "test/parallel/test-tls-server-verify.js"))
+
+               (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")))
            (add-after 'delete-problematic-tests 'replace-llhttp-sources
              (lambda* (#:key inputs #:allow-other-keys)
                ;; Replace pre-generated llhttp sources

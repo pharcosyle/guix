@@ -74,6 +74,10 @@
      ;; There numerous issues with the testsuite.
      ;; Enable all of them once they are fixed in upstream.
      `(#:tests? #f
+       ;; main/Makefile creates and removes `flite_voice_list.c' from multiple
+       ;; targets. The build fails with this error:
+       ;; "make[1]: *** No rule to make target 'flite_voice_list.c', needed by 'all'.  Stop"
+       #:parallel-build? #f
        #:configure-flags
        (list
         "--enable-shared"

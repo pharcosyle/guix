@@ -437,7 +437,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-arm-bug-71399.patch"
                                        "gcc-asan-missing-include.patch"
                                        "gcc-libvtv-runpath.patch"
-                                       "gcc-fix-texi2pod.patch"))
+                                       "gcc-fix-texi2pod.patch"
+                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
               (modules '((guix build utils)))
               ;; This is required for building with glibc-2.26.
               ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
@@ -517,7 +518,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-fix-texi2pod.patch"
                                        "gcc-5-hurd.patch"
                                        ;; See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86162
-                                       "gcc-5-fix-powerpc64le-build.patch"))
+                                       "gcc-5-fix-powerpc64le-build.patch"
+                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
     (inputs
@@ -540,7 +542,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))
+                                       "gcc-5.0-libvtv-runpath.patch"
+                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))))
 
     ;; GCC 4.9 and 5 has a workaround that is not needed for GCC 6 and later.
     (arguments (package-arguments gcc-4.8))
@@ -628,7 +631,8 @@ Go.  It also includes runtime support libraries for these languages.")
                 "0qg6kqc5l72hpnj4vr6l0p69qav0rh4anlkk3y55540zy3klc6dq"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
                                        "gcc-7-libsanitizer-mode-size.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))))
+                                       "gcc-5.0-libvtv-runpath.patch"
+                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))))
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
 for several languages, including C, C++, Objective-C, Fortran, Ada, and Go.
@@ -653,7 +657,8 @@ It also includes runtime support libraries for these languages.")
                 "0l7d4m9jx124xsk6xardchgy2k5j5l2b15q322k31f0va4d8826k"))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
-                                       "gcc-8-sort-libtool-find-output.patch"))
+                                       "gcc-8-sort-libtool-find-output.patch"
+                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))))
 
@@ -670,7 +675,8 @@ It also includes runtime support libraries for these languages.")
               "13ygjmd938m0wmy946pxdhz9i1wq7z4w10l6pvidak0xxxj9yxi7"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))
+                                     "gcc-5.0-libvtv-runpath.patch"
+                                     "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))))
 
@@ -687,7 +693,8 @@ It also includes runtime support libraries for these languages.")
               "1wg4xdizkksmwi66mvv2v4pk3ja8x64m7v9gzhykzd3wrmdpsaf9"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"
-                                     "gcc-10-tree-sra-union-handling.patch"))
+                                     "gcc-10-tree-sra-union-handling.patch"
+                                     "gcc-glib-2.36-mount-h-incompat.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))
    (properties
@@ -710,7 +717,8 @@ It also includes runtime support libraries for these languages.")
               "0fdclcwf728wbq52vphfcjywzhpsjp3kifzj3pib3xcihs0z4z5l"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"
-                                     "gcc-10-tree-sra-union-handling.patch"))
+                                     "gcc-10-tree-sra-union-handling.patch"
+                                     "gcc-glib-2.36-mount-h-incompat.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))
    (arguments
@@ -752,7 +760,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-11)
+(define-public gcc gcc-12)
 
 
 ;;;
@@ -1110,7 +1118,7 @@ misnomer.")))
 (define-public libgccjit-11 (make-libgccjit gcc-11))
 (define-public libgccjit-12 (make-libgccjit gcc-12))
 
-(define-public libgccjit libgccjit-10)
+(define-public libgccjit libgccjit-12)
 
 (define (make-gccgo gcc)
   "Return a gccgo package based on GCC."
@@ -1224,7 +1232,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-12 "gcc-objc" '("objc")
               %objc-search-paths))
 
-(define-public gcc-objc gcc-objc-11)
+(define-public gcc-objc gcc-objc-12)
 
 (define %objc++-search-paths
   (list (search-path-specification
@@ -1274,7 +1282,7 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-12 "gcc-objc++" '("obj-c++")
               %objc++-search-paths))
 
-(define-public gcc-objc++ gcc-objc++-11)
+(define-public gcc-objc++ gcc-objc++-12)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."

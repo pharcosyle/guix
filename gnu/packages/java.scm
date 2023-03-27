@@ -819,6 +819,9 @@ new Date();"))
                    (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
       (native-inputs
        `(("jdk" ,icedtea-7 "jdk")
+         ;; Build fails with newer versions of GNU Make:
+         ;; "make -j is not supported, use make JOBS=n."
+         ("make@4.3" ,gnu-make-4.3)
          ("openjdk-src"
           ,(drop "openjdk"
                  "1l3bzmd3s38scxpwamfhnwbv7vndgjq6hz3bl58437fgl9kgbl69"))
