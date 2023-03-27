@@ -258,7 +258,18 @@ desktop and the mate-about program.")
        (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            "libmateweather-" version ".tar.xz"))
        (sha256
-        (base32 "02d7c59pami1fzxg73mp6risa9hvsdpgs68f62wkg09nrppzsk4v"))))
+        (base32 "02d7c59pami1fzxg73mp6risa9hvsdpgs68f62wkg09nrppzsk4v"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/mate-desktop/libmateweather/commit/"
+                 "7b60a3282eb7b260f2072c5c4a33e3c66e66d8fc.patch"))
+           (file-name (string-append name "-kyiv-timezone-name-fix.patch"))
+           (sha256
+            (base32
+             "012gls6nf5fxd2cl0dgnmwqv127ds7q3bcskrw56v4qf49qvv03s")))))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

@@ -402,7 +402,18 @@ inappropriate content.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dkjxvfxg56hfy70j6ibfklfyv57jiha4vgc3ggl60r5kjx65s5b"))))
+                "1dkjxvfxg56hfy70j6ibfklfyv57jiha4vgc3ggl60r5kjx65s5b"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/maliit/framework/commit/"
+                        "86e55980e3025678882cb9c4c78614f86cdc1f04.patch"))
+                  (file-name (string-append name "-gcc-12-fix.patch"))
+                  (sha256
+                   (base32
+                    "1p73hihs63sv390xqpz4160ss2q10l6wp2m108yxdrn7z2kzj9g7")))))))
     (build-system cmake-build-system)
     (native-inputs (list extra-cmake-modules
                          wayland-protocols

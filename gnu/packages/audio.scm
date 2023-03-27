@@ -418,7 +418,18 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "0h86p8mnpm98vc4v6jbvrmm02fch7dnn332i26fg3a2s1738m04d"))))
+        (base32 "0h86p8mnpm98vc4v6jbvrmm02fch7dnn332i26fg3a2s1738m04d"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/OpenMPT/openmpt/commit/"
+                 "6e7a43190ef2f9ba0b3efc19b9527261b69ec8f7.patch"))
+           (file-name (string-append name "-gcc-12-fix.patch"))
+           (sha256
+            (base32
+             "0wgi8hk8xpiw1gdk9f5zyja76f9drczcpbfkrkm3hqjikh0f7hyw")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
