@@ -26,13 +26,13 @@ index 03daaa4a0530..e177fe600a25 100644
 --- a/src/diff.h
 +++ b/src/diff.h
 @@ -390,6 +390,7 @@ extern enum changes analyze_hunk (struct change *, lin *, lin *, lin *, lin *);
- extern void cleanup_signal_handlers (void);
+ extern void begin_output (void);
  extern void debug_script (struct change *);
- extern _Noreturn void fatal (char const *);
+ extern void fatal (char const *) __attribute__((noreturn));
 +extern void final_process_signals (void);
  extern void finish_output (void);
- extern void message (char const *, ...) ATTRIBUTE_FORMAT ((printf, 1, 2));
- extern void output_1_line char const *, char const *, char const *,
+ extern void message (char const *, char const *, char const *);
+ extern void message5 (char const *, char const *, char const *,
 diff --git a/src/util.c b/src/util.c
 index 4f4d9bb285eb..56d292de2927 100644
 --- a/src/util.c
