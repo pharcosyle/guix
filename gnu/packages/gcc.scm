@@ -857,7 +857,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-11)
+(define-public gcc gcc-13)
 
 
 ;;;
@@ -1240,6 +1240,7 @@ misnomer.")))
 (define-public libgccjit-10 (make-libgccjit gcc-10))
 (define-public libgccjit-11 (make-libgccjit gcc-11))
 (define-public libgccjit-12 (make-libgccjit gcc-12))
+(define-public libgccjit-13 (make-libgccjit gcc-13))
 (define-public libgccjit-14 (make-libgccjit gcc-14))
 
 ;; This must match the 'gcc' variable, but it must also be 'eq?' to one of the
