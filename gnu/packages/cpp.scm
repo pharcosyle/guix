@@ -1416,7 +1416,7 @@ queues header library based on circular buffer with @code{std::atomic}.")
 (define-public magic-enum
   (package
     (name "magic-enum")
-    (version "0.7.3")
+    (version "0.8.2")
     (home-page "https://github.com/Neargye/magic_enum")
     (source (origin
               (method git-fetch)
@@ -1426,8 +1426,13 @@ queues header library based on circular buffer with @code{std::atomic}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x47radgsifgz3vn2561mlvf4cq46ii33cpyqf01znm56iirwq89"))))
+                "138j5axc6cpygcl85rpz0crh3vgnd47cgn0hsvldzl2f1h8w534k"))))
     (build-system cmake-build-system)
+    ;; Disable tests until upstream fixes build issues with GCC 12.
+    ;; See https://github.com/Neargye/magic_enum/issues/235.
+    (arguments
+     '(#:tests? #f
+       #:configure-flags '("-DMAGIC_ENUM_OPT_BUILD_TESTS=OFF")))
     (synopsis "C++17 header only library for compile time reflection of enums")
     (description "Magic Enum offers static reflection of enums, with
 conversions to and from strings, iteration and related functionality.")

@@ -395,8 +395,19 @@ written by Paul Haahr and Byron Rakitzis.")
               (sha256
                (base32
                 "0zhxp4m1fxyd3a2qyvs97gzlrb0h0ah1gjrqcbilgydiffws2nan"))
-              (patches (search-patches "tcsh-fix-autotest.patch"))
-              (patch-flags '("-p0"))))
+              (patches
+               (append
+                (search-patches "tcsh-fix-autotest.patch")
+                (list
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "https://github.com/tcsh-org/tcsh/commit/"
+                         "391b04ec25b0d046d532d46a7468fa7a759d0115.patch"))
+                   (file-name (string-append name "-bash-5.2-fix.patch"))
+                   (sha256
+                    (base32
+                     "1d116fz9np75zkkg39hv93m9qz5mq4h6406z1xhph7nh79n1bl9s"))))))))
     (build-system gnu-build-system)
     (native-inputs
      (append (if (target-riscv64?)
