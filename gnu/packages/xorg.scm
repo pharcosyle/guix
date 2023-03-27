@@ -5145,7 +5145,7 @@ draggable titlebars and borders.")
   (hidden-package
    (package
      (inherit xorg-server)
-     (version "21.1.1")
+     (version "21.1.4")
      (source
       (origin
         (method url-fetch)
@@ -5153,7 +5153,7 @@ draggable titlebars and borders.")
                             "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "0md7dqsc5qb30gym06c4zc2cjsdc5ps8nywk1bkcpix05kppybkq"))
+          "11y5w6z3rz3i4jyv0wc3scd2jh3bsmcklq0fm7a5invywj7bxi2w"))
         (patches
          (list
           ;; See:
@@ -5283,7 +5283,18 @@ EGLStream families of extensions.")
                            "/xserver/xwayland-" version ".tar.xz"))
        (sha256
         (base32
-         "0sxlh43cnpf56p2p5jnhp7427knfpy42mcka7f5hjcqddndib7m9"))))
+         "0sxlh43cnpf56p2p5jnhp7427knfpy42mcka7f5hjcqddndib7m9"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://gitlab.freedesktop.org/xorg/xserver/-/commit/"
+                 "1d98f8b7d96a81d5912cef533d18bad396c62840.patch"))
+           (file-name (string-append name "-gcc-12-fix.patch"))
+           (sha256
+            (base32
+             "09bdab0gqiqhnzmcq3a5sm99yb3wrdr6ak6rqbjxkaak2jf7lgw0")))))))
     (inputs (list font-dejavu
                   dbus
                   egl-wayland

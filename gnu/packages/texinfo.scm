@@ -46,7 +46,7 @@
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages readline))
 
-(define-public texinfo
+(define-public texinfo-6
   (package
     (name "texinfo")
     (version "6.8")
@@ -104,9 +104,9 @@ their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
 
-(define-public texinfo-7
+(define-public texinfo
   (package
-    (inherit texinfo)
+    (inherit texinfo-6)
     (version "7.1")
     (source (origin
               (method url-fetch)
@@ -115,10 +115,10 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "0lq9nf1as11mfqf2ydyc6b1xl1hqk0qj5llavxph97hmkzqwkvny"))))
-    (inputs (modify-inputs (package-inputs texinfo)
+    (inputs (modify-inputs (package-inputs texinfo-6)
               (append perl-archive-zip)))        ;needed for 'tex2any --epub3'
     (arguments
-     (substitute-keyword-arguments (package-arguments texinfo)
+     (substitute-keyword-arguments (package-arguments texinfo-6)
        ((#:phases phases #~%standard-phases)
         #~(modify-phases #$phases
             (add-after 'install 'wrap-program
@@ -137,7 +137,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
                     `("PERL5LIB" prefix (,(dirname zip)))))))))))))
 
 (define-public texinfo-5
-  (package (inherit texinfo)
+  (package (inherit texinfo-6)
     (version "5.2")
     (source (origin
               (method url-fetch)
@@ -149,7 +149,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
                 "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))))
 
 (define-public texinfo-4
-  (package (inherit texinfo)
+  (package (inherit texinfo-6)
     (version "4.13a")
     (source (origin
               (method url-fetch)
@@ -162,10 +162,10 @@ is on expressing the content semantically, avoiding physical markup commands.")
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
     (inputs (list ncurses xz))
     (native-inputs
-      (modify-inputs (package-native-inputs texinfo)
+      (modify-inputs (package-native-inputs texinfo-6)
         (prepend automake)))
     (arguments
-     (substitute-keyword-arguments (package-arguments texinfo)
+     (substitute-keyword-arguments (package-arguments texinfo-6)
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'fix-configure
@@ -197,7 +197,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
   (package/inherit texinfo
     (name "info-reader")
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments texinfo)
+     `(,@(substitute-keyword-arguments (package-arguments texinfo-6)
            ((#:phases phases)
             `(modify-phases ,phases
                ;; Make sure 'info-reader' can read compressed info files
@@ -230,12 +230,12 @@ is on expressing the content semantically, avoiding physical markup commands.")
                                  (fold delete (files)
                                        '("info" "locale"))))
                      #t))))))
-       #:disallowed-references ,(assoc-ref (package-inputs texinfo)
+       #:disallowed-references ,(assoc-ref (package-inputs texinfo-6)
                                            "perl")
        #:modules ((ice-9 ftw) (srfi srfi-1)
                   ,@%default-gnu-modules)))
     (synopsis "Standalone Info documentation reader")
-    (inputs (modify-inputs (package-inputs texinfo)
+    (inputs (modify-inputs (package-inputs texinfo-6)
               (prepend gzip)))))
 
 (define-public texi2html

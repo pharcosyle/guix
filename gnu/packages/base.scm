@@ -166,28 +166,14 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.8")
+   (version "4.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
-            (patches (search-patches "coreutils-gnulib-tests.patch"))
-
-            ;; Remove this snippet once upstream releases a fixed version.
-            ;; This snippet changes Makefile.in, even though the upstream
-            ;; patch changes testsuite/local.mk, since we build sed from a
-            ;; release tarball.  See: https://bugs.gnu.org/36150
-            (snippet
-             '(begin
-                (substitute* "Makefile.in"
-                  (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
-                   (string-append
-                    previous-line
-                    "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
-            (modules '((guix build utils)))))
+              "0bi808vfkg3szmpy9g5wc7jnn2yk6djiz412d30km9rky0c8liyi"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (native-inputs (list perl))                    ;for tests
@@ -199,6 +185,27 @@ is often used for substituting text patterns in a stream.  The GNU
 implementation offers several extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/sed/")))
+
+(define-public sed-4.8
+  (package
+    (inherit sed)
+    (version "4.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/sed/sed-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
+              (patches (search-patches "coreutils-gnulib-tests.patch"))
+              (snippet
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
+                     (string-append
+                      previous-line
+                      "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
+              (modules '((guix build utils)))))))
 
 (define-public tar
   (package
@@ -327,6 +334,19 @@ differ, while \"cmp\" shows the offsets and line numbers where they differ.
 interactive means to merge two files.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/diffutils/")))
+
+(define-public diffutils-3.8
+  (package
+    (inherit diffutils)
+    (version "3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/diffutils/diffutils-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1v4g8gi0lgakqa7iix8s4fq7lq6l92vw3rjd9wfd2rhjng8xggd6"))
+              (patches (search-patches "diffutils-3.8-fix-signal-processing.patch"))))))
 
 (define-public findutils
   (package
@@ -558,6 +578,19 @@ change.  GNU make offers many powerful extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/make/")))
 
+(define-public gnu-make-4.3
+  (package
+    (inherit gnu-make)
+    (version "4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/make/make-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
+              (patches (search-patches "make-impure-dirs.patch"))))))
+
 (define-public gnu-make-4.2
   (package
     (inherit gnu-make)
@@ -788,10 +821,10 @@ the store.")
              (base32
               "1lizxxqbfma5zgmcj0gk5iyk171f2nfvdhbv8rjrkcmjk24rk0pv"))
             (patches (search-patches "glibc-ldd-powerpc.patch"
-                                     "glibc-2.38-ldd-x86_64.patch"
+                                     "glibc-2.37-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
                                      "glibc-2.37-versioned-locpath.patch"
-                                     ;; "glibc-allow-kernel-2.6.32.patch"
+                                     ;; "glibc-2.37-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
                                      "glibc-supported-locales.patch"
                                      "glibc-2.37-hurd-clock_t_centiseconds.patch"
@@ -1686,14 +1719,14 @@ and daylight-saving rules.")
 (define-public libiconv
   (package
     (name "libiconv")
-    (version "1.15")
+    (version "1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libiconv/libiconv-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0y1ij745r4p48mxq84rax40p10ln7fc7m243p8k8sia519i3dxfc"))
+                "04qkjxfzc0jckxvkk9yr1pkp31qr0rzgfaak1ajqb313aqxj2x4g"))
               (modules '((guix build utils)))
               (snippet
                ;; Work around "declared gets" error on glibc systems (fixed by
