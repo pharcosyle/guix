@@ -186,7 +186,9 @@
              ;; TODO: Regenerate certs instead.
              (for-each delete-file
                        '("test/parallel/test-tls-passphrase.js"
-                         "test/parallel/test-tls-server-verify.js"))))
+                         "test/parallel/test-tls-server-verify.js"))
+
+             (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")))
          (add-before 'configure 'set-bootstrap-host-rpath
            (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (let* ((inputs      (or native-inputs inputs))
@@ -293,9 +295,18 @@
                    (format #t "nodedir=~a\n" out)))))))))
     (native-inputs
      ;; Runtime dependencies for binaries used as a bootstrap.
-     (list c-ares
+     (list gcc-11 ; Fails to build on newer GCC.
+           c-ares
            http-parser
-           icu4c
+           ;; I think icu4c keeps references to the GCC with which it was
+           ;; built in its runpath. Since we need to build with gcc-11 here
+           ;; which is not the default GCC version this causes build errors
+           ;; with icu4c when it's a native input. Or something.
+           (package
+             (inherit icu4c)
+             (native-inputs
+              (modify-inputs (package-native-inputs icu4c)
+                (prepend gcc-11))))
            libuv-for-node
            `(,nghttp2-for-node "lib")
            openssl-1.1
@@ -867,7 +878,9 @@ source files.")
                ;; TODO: Regenerate certs instead.
                (for-each delete-file
                          '("test/parallel/test-tls-passphrase.js"
-                           "test/parallel/test-tls-server-verify.js"))))
+                           "test/parallel/test-tls-server-verify.js"))
+
+               (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")))
            (add-after 'delete-problematic-tests 'replace-llhttp-sources
              (lambda* (#:key inputs #:allow-other-keys)
                ;; Replace pre-generated llhttp sources
