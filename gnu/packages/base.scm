@@ -165,28 +165,14 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.8")
+   (version "4.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
-            (patches (search-patches "coreutils-gnulib-tests.patch"))
-
-            ;; Remove this snippet once upstream releases a fixed version.
-            ;; This snippet changes Makefile.in, even though the upstream
-            ;; patch changes testsuite/local.mk, since we build sed from a
-            ;; release tarball.  See: https://bugs.gnu.org/36150
-            (snippet
-             '(begin
-                (substitute* "Makefile.in"
-                  (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
-                   (string-append
-                    previous-line
-                    "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
-            (modules '((guix build utils)))))
+              "0bi808vfkg3szmpy9g5wc7jnn2yk6djiz412d30km9rky0c8liyi"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (native-inputs (list perl))                    ;for tests
@@ -198,6 +184,27 @@ is often used for substituting text patterns in a stream.  The GNU
 implementation offers several extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/sed/")))
+
+(define-public sed-4.8
+  (package
+    (inherit sed)
+    (version "4.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/sed/sed-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
+              (patches (search-patches "coreutils-gnulib-tests.patch"))
+              (snippet
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
+                     (string-append
+                      previous-line
+                      "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
+              (modules '((guix build utils)))))))
 
 (define-public tar
   (package
@@ -326,6 +333,19 @@ differ, while \"cmp\" shows the offsets and line numbers where they differ.
 interactive means to merge two files.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/diffutils/")))
+
+(define-public diffutils-3.8
+  (package
+    (inherit diffutils)
+    (version "3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/diffutils/diffutils-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1v4g8gi0lgakqa7iix8s4fq7lq6l92vw3rjd9wfd2rhjng8xggd6"))
+              (patches (search-patches "diffutils-3.8-fix-signal-processing.patch"))))))
 
 (define-public findutils
   (package
@@ -561,6 +581,19 @@ change.  GNU make offers many powerful extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/make/")))
 
+(define-public gnu-make-4.3
+  (package
+    (inherit gnu-make)
+    (version "4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/make/make-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
+              (patches (search-patches "make-impure-dirs.patch"))))))
+
 (define-public gnu-make-4.2
   (package
     (inherit gnu-make)
@@ -588,14 +621,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.38")
+   (version "2.40")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/binutils/binutils-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "1y0fb4qgxaxfyf81x9fqq9w5609mkah0b7wm1f7ab9kpy0fcf3h7"))
+       (base32 "12p40pz3mj0mlysnbsm34v7hn12h535sanll5q8pvcx4afqqwagq"))
       (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
    (arguments
@@ -625,8 +658,11 @@ change.  GNU make offers many powerful extensions over the standard utility.")
                           "--enable-compressed-debug-sections=all"
                           "--enable-lto"
                           "--enable-separate-code"
-                          "--enable-threads")
-      ;; XXX: binutils 2.38 was released without generated manuals:
+                          "--enable-threads"
+
+                          ;; Requires `bison' as an input.
+                          "--disable-gprofng")
+      ;; XXX: binutils 2.40 was released without generated manuals:
       ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=28909>.  To avoid
       ;; a circular dependency on texinfo, prevent the build system from
       ;; creating the manuals by calling "true" instead of "makeinfo" ...
@@ -804,10 +840,10 @@ the store.")
              (base32
               "1lizxxqbfma5zgmcj0gk5iyk171f2nfvdhbv8rjrkcmjk24rk0pv"))
             (patches (search-patches "glibc-ldd-powerpc.patch"
-                                     "glibc-2.38-ldd-x86_64.patch"
+                                     "glibc-2.37-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
                                      "glibc-2.37-versioned-locpath.patch"
-                                     ;; "glibc-allow-kernel-2.6.32.patch"
+                                     ;; "glibc-2.37-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
                                      "glibc-supported-locales.patch"
                                      "glibc-2.37-hurd-clock_t_centiseconds.patch"
@@ -1615,7 +1651,7 @@ command.")
     (name "tzdata")
     ;; This package should be kept in sync with python-pytz in (gnu packages
     ;; time).
-    (version "2022a")
+    (version "2023b")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1623,7 +1659,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0r0nhwpk9nyxj5kkvjy58nr5d85568m04dcb69c4y3zmykczyzzg"))))
+               "0v0frv3pp6d2ki5bw5b9bvswkanmdi2j2mx9hzliyqcm9wkgsy4v"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f
@@ -1691,7 +1727,7 @@ command.")
                           version ".tar.gz"))
                     (sha256
                      (base32
-                      "1iysv8fdkm79k8wh8jizmjmq075q4qjhk090vxjy57my6dz5wmzq")))))
+                      "1lhkpv9jqi50srw331v3kg7nl0viqmwxlb4gr18vdp36pbiq4m0i")))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1714,14 +1750,14 @@ and daylight-saving rules.")
 (define-public libiconv
   (package
     (name "libiconv")
-    (version "1.15")
+    (version "1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libiconv/libiconv-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0y1ij745r4p48mxq84rax40p10ln7fc7m243p8k8sia519i3dxfc"))
+                "04qkjxfzc0jckxvkk9yr1pkp31qr0rzgfaak1ajqb313aqxj2x4g"))
               (modules '((guix build utils)))
               (snippet
                ;; Work around "declared gets" error on glibc systems (fixed by
