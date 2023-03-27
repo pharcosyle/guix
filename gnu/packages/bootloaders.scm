@@ -223,7 +223,8 @@
        ;; ("libusb" ,libusb)
        ("ncurses" ,ncurses)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gcc@11" ,gcc-11) ; Currently fails to build on newer versions of GCC.
+       ("pkg-config" ,pkg-config)
        ("unifont" ,unifont)
        ("bison" ,bison)
        ("flex" ,flex)

@@ -788,9 +788,12 @@ safety and thread safety guarantees.")
                     (format #f "prefix = ~s" (assoc-ref outputs "rustfmt"))))
                  (invoke "./x.py" "install" "rustfmt")))))))
       ;; Add test inputs.
-      (native-inputs (cons* `("gdb" ,gdb)
-                            `("procps" ,procps)
-                            (package-native-inputs base-rust))))))
+      (native-inputs
+       (modify-inputs (package-native-inputs base-rust)
+         (prepend gdb
+                  procps
+                  gnu-make-4.3)))))) ; 1 test failure on newer versions of
+                                     ; GNU Make: `jobserver::jobserver_and_j'
 
 (define-public rust-src
   (hidden-package

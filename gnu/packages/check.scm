@@ -3118,7 +3118,18 @@ allowing you to declaratively define \"match\" rules.")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0sxb3835nly1jxn071f59fwbdzmqi74j040r81fanxyw3s1azw0i"))))
+               (base32 "0sxb3835nly1jxn071f59fwbdzmqi74j040r81fanxyw3s1azw0i"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/unittest-cpp/unittest-cpp/commit/"
+                        "f361c2a1034c02ba8059648f9a04662d6e2b5553.patch"))
+                  (file-name (string-append name "-gcc-12-fix.patch"))
+                  (sha256
+                   (base32
+                    "05173n4wzyrn4warjbhf52796h80hqjzw2q26lrw7av57i5qbw9v")))))))
     (arguments
      `(#:tests? #f))                     ; It's run after build automatically.
     (build-system cmake-build-system)

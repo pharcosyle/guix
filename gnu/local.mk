@@ -1040,6 +1040,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-fix-signal-processing.patch	\
+  %D%/packages/patches/diffutils-3.8-fix-signal-processing.patch	\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/docbook-xsl-support-old-url.patch	\
@@ -1150,6 +1151,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-cross-gxx-include-dir.patch          \
   %D%/packages/patches/gcc-fix-texi2pod.patch			\
+  %D%/packages/patches/gcc-glib-2.36-mount-h-incompat.patch	\
+  %D%/packages/patches/gcc-4.9-glib-2.36-mount-h-incompat.patch	\
   %D%/packages/patches/gcc-4.8-libsanitizer-fix.patch		\
   %D%/packages/patches/gcc-4.9-libsanitizer-fix.patch		\
   %D%/packages/patches/gcc-4.9-libsanitizer-ustat.patch		\
@@ -1220,6 +1223,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-CVE-2019-9169.patch		\
   %D%/packages/patches/glibc-CVE-2019-19126.patch		\
   %D%/packages/patches/glibc-allow-kernel-2.6.32.patch		\
+  %D%/packages/patches/glibc-2.37-allow-kernel-2.6.32.patch	\
   %D%/packages/patches/glibc-boot-2.16.0.patch			\
   %D%/packages/patches/glibc-boot-2.2.5.patch			\
   %D%/packages/patches/glibc-bootstrap-system-2.2.5.patch 	\
@@ -1237,11 +1241,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-hurd-signal-sa-siginfo.patch	\
   %D%/packages/patches/glibc-ldd-powerpc.patch			\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
+  %D%/packages/patches/glibc-2.37-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-locales.patch			\
   %D%/packages/patches/glibc-locales-2.28.patch			\
   %D%/packages/patches/glibc-reinstate-prlimit64-fallback.patch	\
   %D%/packages/patches/glibc-skip-c++.patch			\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
+  %D%/packages/patches/glibc-2.37-versioned-locpath.patch	\
   %D%/packages/patches/glibc-2.29-git-updates.patch     	\
   %D%/packages/patches/glibc-2.29-supported-locales.patch     	\
   %D%/packages/patches/glibc-supported-locales.patch     	\

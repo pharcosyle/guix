@@ -47,14 +47,14 @@
 (define-public gdb-11
   (package
     (name "gdb")
-    (version "11.1")
+    (version "11.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "151z6d0265hv9cgx9zqqa4bd6vbp20hrljhd6bxl7lr0gd0crkyc"))))
+                "0cif2n3wfg1w8vc1kfnp6358idxa1zj0wjm8m5qqc6w8f5mc75ql"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -161,10 +161,22 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
                (base32
                 "1vczsqcbh5y0gx7qrclpna0qzx26sk7lra6y8qzxam1biyzr65qf"))))))
 
+(define-public gdb-13
+  (package
+    (inherit gdb-12)
+    (version "13.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdb/gdb-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "184m5rp5gfkf5i8b707l2hf238m2vmjx70jqn4mbx9k9ip0xanhi"))))))
+
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely
   ;; enough to avoid massive rebuilds.
-  gdb-11)
+  gdb-13)
 
 (define-public gdb-minimal
   (package/inherit gdb
@@ -173,7 +185,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
                   '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
 
 (define-public avr-gdb
-  (package/inherit gdb-12
+  (package/inherit gdb
     (name "avr-gdb")
     (arguments
      `(#:configure-flags
