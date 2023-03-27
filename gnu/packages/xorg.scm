@@ -5269,7 +5269,7 @@ draggable titlebars and borders.")
   (hidden-package
    (package
      (inherit xorg-server)
-     (version "21.1.1")
+     (version "21.1.4")
      (source
       (origin
         (method url-fetch)
@@ -5277,7 +5277,7 @@ draggable titlebars and borders.")
                             "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "0md7dqsc5qb30gym06c4zc2cjsdc5ps8nywk1bkcpix05kppybkq"))
+          "11y5w6z3rz3i4jyv0wc3scd2jh3bsmcklq0fm7a5invywj7bxi2w"))
         (patches
          (list
           ;; See:

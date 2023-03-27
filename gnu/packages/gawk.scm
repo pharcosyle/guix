@@ -84,10 +84,8 @@
    ;; ja_JP.UTF-8.
    (native-inputs (list (libc-utf8-locales-for-target)))
 
-   (inputs (list libsigsegv
-                 ;; Use the full-fledged Bash package, otherwise the test suite
-                 ;; sometimes fail non-deterministically.
-                 bash))
+   (inputs (list bash)) ; Use the full-fledged Bash package, otherwise the
+                        ; test suite sometimes fail non-deterministically.
 
    (search-paths
     (list (search-path-specification

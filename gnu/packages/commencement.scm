@@ -1852,7 +1852,8 @@ exec " gcc "/bin/" program
 ;; In the future, Gash et al. could handle it directly, but it's not
 ;; ready yet.
 (define bash-mesboot (mesboot-package "bash-mesboot" static-bash))
-(define sed-mesboot (mesboot-package "sed-mesboot" sed))
+;; Won't build with Sed 4.9 because of missing 'w' command.
+(define sed-mesboot (mesboot-package "sed-mesboot" sed-4.8))
 
 ;; "sed" from Gash-Utils lacks the 'w' command as of 0.2.0.
 (define coreutils-mesboot

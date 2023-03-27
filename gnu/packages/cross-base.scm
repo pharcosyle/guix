@@ -146,8 +146,11 @@
                     ;; TODO: This seems like a deeper problem that warrants
                     ;; deeper investigation.
                     binutils "--enable-compressed-debug-sections" "no")
-                   (search-patches "binutils-mingw-w64-timestamp.patch"
-                                   "binutils-mingw-w64-deterministic.patch")))
+                   (append
+                    (if (version>=? (package-version binutils) "2.41")
+                        '()
+                        (search-patches "binutils-mingw-w64-timestamp.patch"))
+                    (search-patches "binutils-mingw-w64-deterministic.patch"))))
                  (else binutils))
            target)))
 
