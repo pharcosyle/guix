@@ -135,8 +135,11 @@
                     ;; TODO: This seems like a deeper problem that warrants
                     ;; deeper investigation.
                     binutils "--enable-compressed-debug-sections" "no")
-                   (search-patches "binutils-mingw-w64-timestamp.patch"
-                                   "binutils-mingw-w64-deterministic.patch")))
+                   (append
+                    (if (version>=? (package-version binutils) "2.41")
+                        '()
+                        (search-patches "binutils-mingw-w64-timestamp.patch"))
+                    (search-patches "binutils-mingw-w64-deterministic.patch"))))
                  (else binutils))
            target)))
 
@@ -249,7 +252,9 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
          ;; Patch by Qualcomm needed to build the ath9k-htc firmware.
          (search-patches "ath9k-htc-firmware-gcc.patch"))
         ((target-mingw? target)
-         (append (search-patches "gcc-4.9.3-mingw-gthr-default.patch")
+         (append (if (version>=? (package-version xgcc) "13.1.0")
+                     '()
+                     (search-patches "gcc-4.9.3-mingw-gthr-default.patch"))
                  (if (version>=? (package-version xgcc) "7.0")
                      (search-patches "gcc-7-cross-mingw.patch")
                      '())))

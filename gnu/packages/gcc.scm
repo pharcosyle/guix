@@ -731,7 +731,8 @@ It also includes runtime support libraries for these languages.")
              (base32
               "1ncd7akww0hl5kkmw1dj3qgqp3phdrr5dfnm7jia9s07n0ib4b9z"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"))
+                                     "gcc-5.0-libvtv-runpath.patch"
+                                     "gcc-glib-2.36-mount-h-incompat.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))
    (arguments
@@ -800,7 +801,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-11)
+(define-public gcc gcc-13)
 
 
 ;;;
@@ -1167,6 +1168,7 @@ misnomer.")))
 (define-public libgccjit-10 (make-libgccjit gcc-10))
 (define-public libgccjit-11 (make-libgccjit gcc-11))
 (define-public libgccjit-12 (make-libgccjit gcc-12))
+(define-public libgccjit-13 (make-libgccjit gcc-13))
 
 ;; Use the 'gcc' variable from above to track the same version.
 (define-public libgccjit (make-libgccjit gcc))

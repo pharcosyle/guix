@@ -1,5 +1,5 @@
---- tests/commands.at
-+++ tests/commands.at
+--- a/tests/commands.at
++++ b/tests/commands.at
 @@ -921,26 +921,27 @@ AT_CLEANUP
  TCSH_UNTESTED([notify])
  
@@ -48,8 +48,8 @@
  
  
  AT_SETUP([popd])
---- tests/lexical.at
-+++ tests/lexical.at
+--- a/tests/lexical.at
++++ b/tests/lexical.at
 @@ -35,9 +35,9 @@ AT_CHECK([if [ ! -t 0 ]; then exit 77; fi],, [Skipping comment tests])
  AT_CHECK([echo 'echo OK@%:@comment' | tcsh -f], , [OK
  ])
@@ -63,8 +63,8 @@
  
  AT_DATA([comment2.csh],
  [[echo testing...@%:@\
---- tests/variables.at
-+++ tests/variables.at
+--- a/tests/variables.at
++++ b/tests/variables.at
 @@ -666,7 +666,8 @@ set listflags=(-xA $cwd/args.sh)
  ls-F -something .
  ]])
