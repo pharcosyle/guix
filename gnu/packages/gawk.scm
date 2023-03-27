@@ -83,10 +83,8 @@
    ;; ja_JP.UTF-8.
    (native-inputs (list (libc-utf8-locales-for-target)))
 
-   (inputs (list libsigsegv
-                 ;; Use the full-fledged Bash package, otherwise the test suite
-                 ;; sometimes fail non-deterministically.
-                 bash))
+   (inputs (list bash)) ; Use the full-fledged Bash package, otherwise the
+                        ; test suite sometimes fail non-deterministically.
 
    (home-page "https://www.gnu.org/software/gawk/")
    (synopsis "Text scanning and processing language")
