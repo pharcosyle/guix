@@ -263,7 +263,17 @@ desktop and the mate-about program.")
        (sha256
         (base32 "0fpgc2l46024j2sqqsvclg9c6x33hyjk2zbg5h74v7cf9c7rj062"))
        (patches
-        (list (search-patch "libmateweather-use-TZDIR.patch")))))
+        (list
+         (search-patch "libmateweather-use-TZDIR.patch")
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/mate-desktop/libmateweather/commit/"
+                 "7b60a3282eb7b260f2072c5c4a33e3c66e66d8fc.patch"))
+           (file-name (string-append name "-kyiv-timezone-name-fix.patch"))
+           (sha256
+            (base32
+             "012gls6nf5fxd2cl0dgnmwqv127ds7q3bcskrw56v4qf49qvv03s")))))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
