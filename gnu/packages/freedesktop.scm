@@ -32,6 +32,7 @@
 ;;; Copyright © 2022 Wamm K. D. <jaft.r@outlook.com>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2022 muradm <mail@muradm.net>
+;;; Copyright © 2023 Krzysztof Baranowski <pharcosyle@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1164,7 +1165,7 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.21.0")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.freedesktop.org/" name
@@ -1172,7 +1173,7 @@ Python.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1b0ixya9bfw5c9jx8mzlr7yqnlyvd3jv5z8wln9scdv8q5zlvikd"))))
+                "0hjq8b1cprxpxcv2klgir1hd63vy5hrqilp9v317394qlqgayh0m"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
