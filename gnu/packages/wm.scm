@@ -62,6 +62,7 @@
 ;;; Copyright © 2022 zamfofex <zamfofex@twdb.moe>
 ;;; Copyright © 2023 Gabriel Wicki <gabriel@erlikon.ch>
 ;;; Copyright © 2023 Jonathan Brielamier <jonathan.brielmaier@web.de>
+;;; Copyright © 2023 Krzysztof Baranowski <pharcosyle@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1619,7 +1620,7 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
-    (version "1.8")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
@@ -1628,7 +1629,18 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17dqr2lkmcv2ssp7vky27zw599i77whpb1aqh1s6kl8a8vkrz6mg"))))
+        (base32 "1y7brfrsjnm9gksijgnr6zxqiqvn06mdiwsk5j87ggmxazxd66av"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/swaywm/sway/commit/"
+                 "dee032d0a0ecd958c902b88302dc59703d703c7f.patch"))
+           (file-name (string-append name "-libinput-1.23-fix.patch"))
+           (sha256
+            (base32
+             "0a9hpy3wwqwm6vf3h4nb9yq5kzn71hrgq6n7d01skgvpmzpp6rkz")))))))
     (build-system meson-build-system)
     (arguments
      `(;; elogind is propagated by wlroots -> libseat
