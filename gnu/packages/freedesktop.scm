@@ -32,6 +32,7 @@
 ;;; Copyright © 2022 Wamm K. D. <jaft.r@outlook.com>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2022 muradm <mail@muradm.net>
+;;; Copyright © 2023 Krzysztof Baranowski <pharcosyle@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
