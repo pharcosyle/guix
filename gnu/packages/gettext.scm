@@ -210,14 +210,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
 (define-public libtextstyle
   (package
     (name "libtextstyle")
-    (version "0.21")
+    (version "0.22.5")
     (source (origin
               (inherit (package-source gnu-gettext))
               (uri (string-append "mirror://gnu/gettext/gettext-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04kbg1sx0ncfrsbr85ggjslqkzzb243fcw9nyh3rrv1a22ihszf7"))))
+                "184ni6j8yv6bjidgwh2ygw98insic60fqi1i0ygkmf39x6qha5zc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")

@@ -1352,7 +1352,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
         (uri (string-append
                "mirror://xorg/individual/lib/libXft-"
                version
-               ".tar.gz"))
+               ".tar.xz"))
         (sha256
           (base32
             "1a3qybcvhdshgj1wynhsahdnrlmfv2wrjklyh1j2whj4v3i8zr1j"))))
@@ -2183,9 +2183,8 @@ emulate a TI-30 or an HP-10C.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://xcb.freedesktop.org/dist/xcb-proto-"
-               version ".tar.xz"))
+        (uri (string-append "mirror://xorg/individual/proto/xcb-proto-"
+                            version ".tar.xz"))
         (sha256
          (base32
           "130lc8jx43s83496nc8jn47zixjcp4abgsz69pvrjiqg279aq6rc"))))
@@ -4499,7 +4498,7 @@ cannot be adequately worked around on the client side of the wire.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXext-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXext-"
                version
                ".tar.xz"))
         (sha256
@@ -4585,7 +4584,7 @@ cannot be adequately worked around on the client side of the wire.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXrender-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXrender-"
                version
                ".tar.xz"))
         (sha256
@@ -4823,7 +4822,7 @@ common definitions and porting layer.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXau-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXau-"
                version ".tar.xz"))
         (sha256
           (base32

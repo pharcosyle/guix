@@ -1743,14 +1743,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.5.2")
+    (version "1.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "1l1zm1imcc2ixayykyh4y421shdj3pzp7g2xm2k2js8jmipxahkw"))))
+        (base32 "1h83si7s70jy7mcy0mv1c9mbkz66qqpawxs0zkmc3b1ayinf0acc"))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;1.5MiB executables and documentation
                "lib"                    ;1.2MiB shared library and headers
@@ -1845,22 +1845,8 @@ speed.")
                    license:public-domain ; zlibWrapper/examples/fitblk*
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
 
-(define-public zstd-1.5.6
-  (package
-    (inherit zstd)
-    ;; Don't hide this package from the UI.
-    (properties '())
-    (version "1.5.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/facebook/zstd/releases/download/"
-                           "v" version "/zstd-" version ".tar.gz"))
-       (sha256
-        (base32 "1h83si7s70jy7mcy0mv1c9mbkz66qqpawxs0zkmc3b1ayinf0acc"))))))
-
 (define-public pzstd
-  (package/inherit zstd-1.5.6
+  (package/inherit zstd
     (name "pzstd")
     (outputs '("out"))
     (inputs
