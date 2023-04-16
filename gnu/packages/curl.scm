@@ -78,7 +78,7 @@
     (outputs '("out"
                "doc"))                  ;1.2 MiB of man3 pages
     (inputs
-     (list gnutls libidn mit-krb5 `(,nghttp2 "lib") zlib))
+     (list gnutls libidn2 mit-krb5 `(,nghttp2 "lib") zlib))
     (native-inputs
      (list nghttp2 perl pkg-config python-minimal-wrapper))
     (native-search-paths
@@ -117,6 +117,9 @@
               (mkdir-p (string-append #$output:doc "/share/man"))
               (rename-file (string-append #$output "/share/man/man3")
                            (string-append #$output:doc "/share/man/man3"))))
+          (add-before 'check 'test-setup
+            (lambda _
+              (setenv "USER" "guix"))) ; Tests rely on $USER being set.
           (replace 'check
             (lambda* (#:key tests? parallel-tests? make-flags #:allow-other-keys)
               (substitute* "tests/runtests.pl"

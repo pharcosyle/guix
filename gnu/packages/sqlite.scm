@@ -60,7 +60,7 @@
     (string-append "https://sqlite.org/" (number->string year)
                    "/sqlite-autoconf-" numeric-version ".tar.gz")))
 
-(define-public sqlite
+(define-public sqlite-prev
   (package
    (name "sqlite")
    (version "3.39.3")
@@ -112,13 +112,15 @@ is in the public domain.")
    (license license:public-domain)))
 
 ;; Newer version required for e.g. fossil.
-(define-public sqlite-next
+(define-public sqlite
   (package
-    (inherit sqlite)
+    (inherit sqlite-prev)
     (version "3.42.0")
     (source (origin
               (method url-fetch)
-              (uri (sqlite-uri version 2022))
+              (uri (sqlite-uri version 2023))
               (sha256
                (base32
                 "19lc11fwl7jfv94hnjih0gr41jakz38ra23cbk5449vf3hbgvg3s"))))))
+
+(define-public sqlite-next sqlite)
