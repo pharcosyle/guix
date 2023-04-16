@@ -124,16 +124,16 @@ the WPE-flavored port of WebKit.")
 engine that uses Wayland for graphics output.")
     (license license:bsd-2)))
 
-(define-public webkitgtk
+(define-public webkitgtk-prev
   (package
     (name "webkitgtk")                  ; webkit2gtk4
-    (version "2.40.0")
+    (version "2.41.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "14xkgamqlshxqw6fcslvw0yzj4y5mvx66b6bn64rwrl9pyhpwq54"))
+               (base32 "07j0ry8mpwhaf1cfyikyj87b6a258asq0bbv7n5f0pr9r1v3y2wk"))
               (patches (search-patches
                         "webkitgtk-adjust-bubblewrap-paths.patch"
                         "webkitgtk-libelogind.patch"))))
@@ -277,22 +277,23 @@ propagated by default) such as @code{gst-plugins-good} and
                    license:bsd-2
                    license:bsd-3))))
 
-(define-public webkitgtk-next
+(define-public webkitgtk
   (package
-    (inherit webkitgtk)
-    (name "webkitgtk-next")             ; webkit2gtk5
+    (inherit webkitgtk-prev)
     (arguments
-     (substitute-keyword-arguments (package-arguments webkitgtk)
+     (substitute-keyword-arguments (package-arguments webkitgtk-prev)
        ((#:configure-flags flags)
         #~(cons* "-DENABLE_INTROSPECTION=ON"
                  "-DUSE_GTK4=ON"
                  (delete "-DENABLE_GTKDOC=ON" #$flags)))))
     (propagated-inputs
-     (modify-inputs (package-propagated-inputs webkitgtk)
+     (modify-inputs (package-propagated-inputs webkitgtk-prev)
        (replace "gtk+" gtk)))
     (inputs
-     (modify-inputs (package-inputs webkitgtk)
+     (modify-inputs (package-inputs webkitgtk-prev)
        (delete "libnotify")))))
+
+(define-public webkitgtk-next webkitgtk)
 
 ;;; Required by e.g. emacs-next-pgtk, emacs-xwidgets, and some other GNOME
 ;;; packages for webkit2gtk-4.0.  See also the upstream tracker for libsoup 3:

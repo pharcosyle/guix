@@ -430,7 +430,7 @@ other lower-level build files.")))
 (define-public scons
   (package
     (name "scons")
-    (version "4.4.0")
+    (version "4.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -440,7 +440,7 @@ other lower-level build files.")))
               (patches (search-patches "scons-test-environment.patch"))
               (sha256
                (base32
-                "1czswx1fj2j48rspkrvarkr43k0vii9rsmz054c9yby1dq362fgr"))))
+                "1fk4w19gq919hfflq6mqnlvkzmyfgspmw3ywnvfc63i3dv7nq4mz"))))
     (build-system python-build-system)
     (arguments
      (list

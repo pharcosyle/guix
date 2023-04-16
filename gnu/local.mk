@@ -1204,7 +1204,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gemmi-fix-sajson-types.patch		\
   %D%/packages/patches/genimage-mke2fs-test.patch		\
   %D%/packages/patches/geoclue-config.patch			\
-  %D%/packages/patches/gettext-libunicode-update.patch		\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
   %D%/packages/patches/ghc-9.2-glibc-2.33-link-order.patch \
   %D%/packages/patches/ghc-9.2-grep-warnings.patch \
@@ -1474,7 +1473,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtgvoip-disable-sse2.patch 		\
   %D%/packages/patches/libtgvoip-disable-webrtc.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtiff-CVE-2022-34526.patch		\
   %D%/packages/patches/libtirpc-CVE-2021-46828.patch		\
   %D%/packages/patches/libtirpc-hurd.patch			\
   %D%/packages/patches/libtommath-fix-linkage.patch		\
@@ -1745,7 +1743,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-2.7-source-date-epoch.patch	\
   %D%/packages/patches/python-2.7-CVE-2021-3177.patch		\
   %D%/packages/patches/python-2.7-no-static-lib.patch		\
-  %D%/packages/patches/python-3-arm-alignment.patch		\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\

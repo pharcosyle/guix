@@ -76,7 +76,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
 (define-public libpaper
   (package
     (name "libpaper")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rrthomas/libpaper/releases"
@@ -84,7 +84,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0aipyaqp30cn919j7w5wvlgkw0v4aqsax82i2zw4wmgck8g6ax77"))))
+                "1ks0sqwwr8lqyrr3fdi323mbdflk07g75w316s70sni3w5srakj7"))))
     (build-system gnu-build-system)
     (native-inputs
      (list help2man))
@@ -144,7 +144,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.56.1")
+    (version "10.01.1")
     (source
      (origin
        (method url-fetch)
@@ -154,7 +154,7 @@ printing, and psresize, for adjusting page sizes.")
                            "/ghostscript-" version ".tar.xz"))
        (sha256
         (base32
-         "1r5qash65m6ignki6z72q4rlai9ka99xrxnmqd19n02has00cd6l"))
+         "0s2xy5aipwhml3cmzv9zpmgp1qy10rhq9fmq12aqymx2b9ir64f9"))
        (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                 "ghostscript-no-header-id.patch"
                                 "ghostscript-no-header-uuid.patch"))
@@ -179,7 +179,6 @@ printing, and psresize, for adjusting page sizes.")
               (string-append "ZLIBDIR="
                              (dirname (search-input-file %build-inputs
                                                          "include/zlib.h")))
-              "--enable-dynamic"
               "--disable-compile-inits"
               (string-append "--with-fontpath="
                              (search-input-directory

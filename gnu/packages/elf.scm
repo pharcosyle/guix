@@ -247,7 +247,7 @@ static analysis of the ELF binaries at hand.")
 (define-public patchelf
   (package
     (name "patchelf")
-    (version "0.11")
+    (version "0.17.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -256,7 +256,7 @@ static analysis of the ELF binaries at hand.")
                    "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "16ms3ijcihb88j3x6cl8cbvhia72afmfcphczb9cfwr0gbc22chx"))))
+               "1qnql97ghbb7nhv9zpm4ip0cqj05xyyxk391jv0j5r3jc0vymqms"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -271,6 +271,14 @@ static analysis of the ELF binaries at hand.")
                ;; Find libgcc_s.so, which is necessary for the test:
                (("/xxxxxxxxxxxxxxx") (string-append (assoc-ref inputs "gcc:lib")
                                                     "/lib")))
+             (substitute* "tests/set-empty-rpath.sh"
+               (("\"\"") (string-append (assoc-ref inputs "gcc:lib")
+                                        "/lib")))
+             (substitute* "tests/replace-needed.sh"
+               (("oldNeeded=.*big-dynstr" all)
+                (string-append all " | grep -v 'libgcc_s\\.so'"))
+               (("oldLibc=.*big-dynstr" all)
+                (string-append all " | grep -v 'libgcc_s\\.so'")))
              #t)))))
     (native-inputs
      `(("gcc:lib" ,gcc "lib")))
