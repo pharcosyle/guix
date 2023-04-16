@@ -225,14 +225,14 @@ Python 3.3 and later, rather than on Python 2.")
 (define-public git
   (package
    (name "git")
-   (version "2.39.2")
+   (version "2.40.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1mpjvhyw8mv2q941xny4d0gw3mb6b4bqaqbh73jd8b1v6zqpaps7"))))
+              "0vgl7digyi2hidq8nl812bgq9m5jjgmnax2p7gqrwwjqpy7mjymi"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -252,7 +252,7 @@ Python 3.3 and later, rather than on Python 2.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "09cva868qb4705s884dzvbwkm78jlw4q8m6xj7nd7cwxy2i2ff8b"))))
+            "0vimqd168d29c1a44jp15smc4gf7hddkabnp7xg02w3k2g7swrjp"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook2x" ,docbook2x)
@@ -636,8 +636,8 @@ everything from small to very large projects with speed and efficiency.")
                                                          "/git-core/" file)))
                            '("git-svn" "git-cvsimport" "git-archimport"
                              "git-cvsserver" "git-request-pull"
-                             "git-add--interactive" "git-cvsexportcommit"
-                             "git-instaweb" "git-send-email"))
+                             "git-cvsexportcommit" "git-instaweb"
+                             "git-send-email"))
                  (delete-file (string-append bin "/git-cvsserver"))
 
                  ;; These templates typically depend on Perl.  Remove them.
@@ -676,14 +676,14 @@ everything from small to very large projects with speed and efficiency.")
 (define-public git-minimal/pinned
   ;; Version that rarely changes, depended on by Graphene/GTK+.
   (package/inherit git-minimal
-    (version "2.33.1")
+    (version "2.40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0bqz401dyp8wnjj3k5ahrniwk4dalndysqazzwdvv25hqbkacm70"))))))
+                "0vgl7digyi2hidq8nl812bgq9m5jjgmnax2p7gqrwwjqpy7mjymi"))))))
 
 (define-public git2cl
   (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
@@ -1862,7 +1862,7 @@ execution of any hook written in any language before every commit.")
     (native-search-paths
      (list (search-path-specification
             (variable "HGEXTENSIONPATH")
-            (files '("lib/python3.10/site-packages/hgext3rd")))))
+            (files '("lib/python3.11/site-packages/hgext3rd")))))
     (home-page "https://www.mercurial-scm.org/")
     (synopsis "Decentralized version control system")
     (description

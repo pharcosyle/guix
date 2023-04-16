@@ -1338,7 +1338,7 @@ provides the GNU compiler for the Go programming language."))
 (define-public isl
   (package
     (name "isl")
-    (version "0.24")
+    (version "0.26")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "mirror://sourceforge/libisl/isl-"
@@ -1347,7 +1347,7 @@ provides the GNU compiler for the Go programming language."))
                                        "isl-" version ".tar.xz")))
              (sha256
               (base32
-               "1bgbk6n93qqn7w8v21kxf4x6dc3z0ypqrzvgfd46nhagak60ac84"))))
+               "0135jy7b6nwiz5ajap1lj1hk6jn9lglvpyjmggksk7sgs83cpdd0"))))
     (build-system gnu-build-system)
     (outputs '("out" "static"))
     (arguments
@@ -1417,7 +1417,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
 (define-public cloog
   (package
     (name "cloog")
-    (version "0.18.0")
+    (version "0.18.4")
     (source
      (origin
       (method url-fetch)
@@ -1429,7 +1429,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
                                 name "-" version ".tar.gz")))
       (sha256
        (base32
-        "0a12rwfwp22zd0nlld0xyql11cj390rrq1prw35yjsw8wzfshjhw"))
+        "03km1aqaiy3sbqc2f046ms9x0mlmacxlvs5rxsvjj8nf20vxynij"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs (list gmp isl-0.11))

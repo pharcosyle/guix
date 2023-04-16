@@ -420,24 +420,23 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
-(define-public python-3.10
+(define-public python-3.11
   (package
     (inherit python-2)
     (name "python")
-    (version "3.10.7")
+    (version "3.11.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
-                        "python-3-arm-alignment.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-fix-tests.patch"
                         "python-3-hurd-configure.patch"
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "0j6wvh2ad5jjq5n7sjmj1k66mh6lipabavchc3rb4vsinwaq9vbf"))
+                "0pjv10fgznq0p7ifmnqi3xsnij82jsf1hmjrqwkwyzhsjsfbjpca"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -577,7 +576,7 @@ data types.")
             (files (list "share/zoneinfo")))))))
 
 ;; Current 3.x version.
-(define-public python-3 python-3.10)
+(define-public python-3 python-3.11)
 
 ;; Current major version.
 (define-public python python-3)

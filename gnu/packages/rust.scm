@@ -743,6 +743,28 @@ safety and thread safety guarantees.")
                                 ((file) file))
                    (("fn ctrl_c_kills_everyone")
                     "#[ignore]\nfn ctrl_c_kills_everyone"))))
+             ;; Since some recent dependency updates (possibly `curl' or
+             ;; various other network utility packages) these tests have
+             ;; become flaky, different ones failing on different build
+             ;; attempts typically with a "Broken pipe" message. Try
+             ;; removing this workaround when the default Rust version is
+             ;; updated.
+             (add-after 'unpack 'disable-flaky-network-tests
+               (lambda _
+                 (substitute* "src/tools/cargo/tests/testsuite/publish.rs"
+                   (("fn api_curl_error")
+                    "#[ignore]\nfn api_curl_error")
+                   (("fn api_error_200")
+                    "#[ignore]\nfn api_error_200")
+                   (("fn api_error_json")
+                    "#[ignore]\nfn api_error_json")
+                   (("fn api_error_code")
+                    "#[ignore]\nfn api_error_code")
+                   (("fn api_other_error")
+                    "#[ignore]\nfn api_other_error"))
+                 (substitute* "src/tools/cargo/tests/testsuite/credential_process.rs"
+                   (("fn publish")
+                    "#[ignore]\nfn publish"))))
              (add-after 'configure 'add-gdb-to-config
                (lambda* (#:key inputs #:allow-other-keys)
                  (let ((gdb (assoc-ref inputs "gdb")))

@@ -151,7 +151,7 @@ code is Valgrind-clean and unit tested.")
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.37")  ; Remember to also update libpng-apng if possible!
+   (version "1.6.39")  ; Remember to also update libpng-apng if possible!
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -164,7 +164,7 @@ code is Valgrind-clean and unit tested.")
                         "/libpng16/libpng-" version ".tar.xz")))
             (sha256
              (base32
-              "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))
+              "0dv90dxvmqpk7mbywyjbz8lh08cv4b0ksqp1y62mzvmlf379cihz"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags '("--disable-static")))
@@ -567,16 +567,15 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.4.0")
+   (version "4.5.0")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.osgeo.org/libtiff/tiff-"
                            version ".tar.xz"))
-       (patches (search-patches "libtiff-CVE-2022-34526.patch"))
        (sha256
         (base32
-         "1h8xrcpbyf9id2hw2ms0cmpgx0li8gladjzj82ycgk28018pnc29"))))
+         "0z16pqkj9wfifri7xhbvy6jmp690wyjcasam098cddp7qmwwkyns"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.8 MiB of HTML documentation
@@ -1673,14 +1672,14 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.1.4")
+    (version "2.1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "0arl61ici38ann5xjidwdzkhmjdp1r95x4x4zinnh4qs2fhjdvfk"))))
+                "1gq74ai4r146hjzsgpp5ykw1kahr2hra7bwvxjnigswxdvmkzp1g"))))
     (build-system cmake-build-system)
     (native-inputs
      (list nasm))
