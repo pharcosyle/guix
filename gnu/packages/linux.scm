@@ -2182,7 +2182,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.37.4")
+    (version "2.39.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -2190,7 +2190,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                                   "util-linux-" version ".tar.xz"))
               (sha256
                (base32
-                "10svcnsqmrsd660bzcm7k6dm8sa7hkknhr3bag1nccwimlb6jkk3"))
+                "03zdvxky2wnm1f0rc2x45x0da39x66gwbkxlqhyg8j8sipj0arkv"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -2481,15 +2481,14 @@ parameters.")
 (define-public procps
   (package
     (name "procps")
-    (version "4.0.3")
+    (version "4.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/procps-ng/Production/"
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "14ms9mkqr1mgl3h5yl6w8m57cf39k382nv7qms78vqbaz728wg1h"))
-              (patches (search-patches "procps-strtod-test.patch"))))
+                "0bp4qmiak2fq2xxsma65c39g5nmdhykhjkyf2yvasy14xdphv1r2"))))
     (build-system gnu-build-system)
     (arguments
      (list #:modules '((guix build utils)
@@ -3135,14 +3134,14 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.8.8")
+    (version "1.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (list (string-append "mirror://netfilter.org/iptables/iptables-"
-                                 version ".tar.bz2")))
+                                 version ".tar.xz")))
        (sha256
-        (base32 "17w5a4znq8rdj5djcldmy6mbnxq1v88ibssk2mipc1kivj4miivi"))))
+        (base32 "174wqly4y9ihikxrhi63hfvs2qzbf69wwm870xyk2vimi70mbhjw"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config flex bison))
@@ -3326,7 +3325,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "6.4.0")
+    (version "6.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3334,7 +3333,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0wm2g70vfhnf8wb6py3zmzwxp4zv1icny1pvkwaxmr67rggbhlac"))))
+                "1khksrf01xbc718bzjyqk0m865riw8yhqzwkavvhp7yhmw2chf47"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -3392,83 +3391,79 @@ inadequately in modern network environments, and both should be deprecated.")
   ;; XXX: This package is basically unmaintained, but it provides a few
   ;; commands not yet provided by Inetutils, such as 'route', so we have to
   ;; live with it.
-  (let ((commit "479bb4a7e11a4084e2935c0a576388f92469225b")
-        (revision "0"))
-    (package
-      (name "net-tools")
-      (version (string-append "1.60-" revision "." (string-take commit 7)))
-      (source (origin
-               (method url-fetch)
-               (uri (string-append "https://sourceforge.net/code-snapshots/git/"
-                                   "n/ne/net-tools/code.git/net-tools-code-"
-                                   commit ".zip"))
-               (file-name (string-append name "-" version ".zip"))
-               (sha256
-                (base32
-                 "0hz9fda9d78spp774b6rr5xaxav7cm4h0qcpxf70rvdbrf6qx7vy"))))
-      (home-page "https://net-tools.sourceforge.net/")
-      (build-system gnu-build-system)
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-1)
-                    (srfi srfi-26))
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (mkdir-p (string-append out "/bin"))
-                 (mkdir-p (string-append out "/sbin"))
+  (package
+    (name "net-tools")
+    (version "2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ecki/net-tools"
+                                  "/archive/refs/tags/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lh815rv5k6npmkhd9kxfyp3czd0qdkh12ywnf4ljc7zy1jny64f"))))
+    (home-page "https://net-tools.sourceforge.net/")
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/sbin"))
 
-                 ;; Pretend we have everything...
-                 (system "yes | make config")
+               ;; Pretend we have everything...
+               (system "yes | make config")
 
-                 ;; ... except for the things we don't have.
-                 ;; HAVE_AFDECnet requires libdnet, which we don't have.
-                 ;; HAVE_HWSTRIP and HAVE_HWTR require kernel headers
-                 ;; that have been removed.
-                 ;; XXX SELINUX and AFBLUETOOTH are removed for now, but we should
-                 ;; think about adding them later.
-                 (substitute* '("config.make" "config.h")
-                   (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR|SELINUX|AFBLUETOOTH)[ =]1.*$")
-                    ""))
-                 #t)))
-           (add-after 'install 'remove-redundant-commands
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; Remove commands and man pages redundant with Inetutils.
-               (let* ((out (assoc-ref outputs "out"))
-                      (dup (append-map (cut find-files out <>)
-                                       '("^hostname"
-                                         "^(yp|nis|dns)?domainname"))))
-                 (for-each delete-file dup)
-                 #t))))
-         ;; Binaries that depend on libnet-tools.a don't declare that
-         ;; dependency, making it parallel-unsafe.
-         #:parallel-build? #f
+               ;; ... except for the things we don't have.
+               ;; HAVE_AFDECnet requires libdnet, which we don't have.
+               ;; HAVE_HWSTRIP and HAVE_HWTR require kernel headers
+               ;; that have been removed.
+               ;; XXX SELINUX and AFBLUETOOTH are removed for now, but we should
+               ;; think about adding them later.
+               (substitute* '("config.make" "config.h")
+                 (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR|SELINUX|AFBLUETOOTH)[ =]1.*$")
+                  ""))
+               #t)))
+         (add-after 'install 'remove-redundant-commands
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Remove commands and man pages redundant with Inetutils.
+             (let* ((out (assoc-ref outputs "out"))
+                    (dup (append-map (cut find-files out <>)
+                                     '("^hostname"
+                                       "^(yp|nis|dns)?domainname"))))
+               (for-each delete-file dup)
+               #t))))
+       ;; Binaries that depend on libnet-tools.a don't declare that
+       ;; dependency, making it parallel-unsafe.
+       #:parallel-build? #f
 
-         #:tests? #f                                ; no test suite
-         #:make-flags (let ((out (assoc-ref %outputs "out")))
-                        (list ,(string-append "CC=" (cc-for-target))
-                              (string-append "BASEDIR=" out)
-                              (string-append "INSTALLNLSDIR=" out "/share/locale")
-                              (string-append "mandir=/share/man")))))
-      (native-inputs `(("gettext" ,gettext-minimal)
-                       ("unzip" ,unzip)))
-      (supported-systems (delete "i586-gnu" %supported-systems))
-      (synopsis "Tools for controlling the network subsystem in Linux")
-      (description
-       "This package includes the important tools for controlling the network
+       #:tests? #f                                ; no test suite
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list ,(string-append "CC=" (cc-for-target))
+                            (string-append "BASEDIR=" out)
+                            (string-append "INSTALLNLSDIR=" out "/share/locale")
+                            (string-append "mandir=/share/man")))))
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("unzip" ,unzip)))
+    (supported-systems (delete "i586-gnu" %supported-systems))
+    (synopsis "Tools for controlling the network subsystem in Linux")
+    (description
+     "This package includes the important tools for controlling the network
 subsystem of the Linux kernel.  This includes arp, ifconfig, netstat, rarp and
 route.  Additionally, this package contains utilities relating to particular
 network hardware types (plipconfig, slattach) and advanced aspects of IP
 configuration (iptunnel, ipmaddr).")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.64")
+    (version "2.69")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3476,7 +3471,7 @@ configuration (iptunnel, ipmaddr).")
                     "libcap2/libcap-" version ".tar.xz"))
               (sha256
                (base32
-                "04qy0z6yhlljb29xxcb2srbdnymcrhsi28wrc705z3861cgmwin8"))))
+                "1sypj9sdbprir7iwl57p525jkaa3r5z6y7bdav89jinqvbrzh4gk"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
@@ -8240,14 +8235,14 @@ used by nftables.")
 ;; variant to avoid accidental rebuilds of rust.
 (define-public libnftnl/pinned
   (package (inherit libnftnl)
-    (version "1.2.3")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
-                           "libnftnl-" version ".tar.bz2"))
+                           "libnftnl-" version ".tar.xz"))
        (sha256
-        (base32 "0m82bmh8i24hwxmz7rxwxjll4904ghd2b1x1p5h8algrg6dyl5p9"))))
+        (base32 "1x3pqxclpxcw8x5qx0vyi7znf9xwlkqsfd9sy4cxlir1v4nfmsnf"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
