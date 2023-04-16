@@ -500,8 +500,8 @@ complexity of working with shared libraries across platforms.")
     (home-page "https://www.gnu.org/software/libtool/")))
 
 (define-public config
-  (let ((revision "1")
-        (commit "c8ddc8472f8efcadafc1ef53ca1d863415fddd5f"))
+  (let ((revision "2")
+        (commit "63acb96f92473ceb5e21d873d7c0aee266b3d6d3"))
     (package
       (name "config")
       (version (git-version "0.0.0" revision commit)) ;no release tag
@@ -513,7 +513,7 @@ complexity of working with shared libraries across platforms.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0x6ycvkmmhhhag97wsf0pw8n5fvh12rjvrck90rz17my4ys16qwv"))))
+                  "0rbm3z350rxw7vpfs9lxbz07lwplbqs57cdrvrlms856ivbh274x"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
