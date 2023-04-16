@@ -78,7 +78,7 @@
     (outputs '("out"
                "doc"))                  ;1.2 MiB of man3 pages
     (inputs
-     (list gnutls libidn mit-krb5 `(,nghttp2 "lib") zlib))
+     (list gnutls libidn2 mit-krb5 `(,nghttp2 "lib") zlib))
     (native-inputs
      (list nghttp2 perl pkg-config python-minimal-wrapper))
     (native-search-paths

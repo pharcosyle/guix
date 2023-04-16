@@ -121,9 +121,9 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/ext/Errno/Errno_pm.PL perl-5.20.0/e
  	# Some Linuxes have weird errno.hs which generate
  	# no #file or #line directives
  	($linux_errno_h) = grep { -e $_ } map { "$_/errno.h" }
-@@ -134,13 +134,6 @@ sub get_files {
+@@ -135,13 +135,6 @@ sub get_files {
  	if ($dep =~ /(\S+errno\.h)/) {
- 	     $file{$1} = 1;
+ 	     push(@file, $1);
  	}
 -    } elsif ($^O eq 'linux' &&
 -	      $Config{gccversion} ne '' && 
@@ -131,10 +131,10 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/ext/Errno/Errno_pm.PL perl-5.20.0/e
 -	      # might be using, say, Intel's icc
 -	      $linux_errno_h
 -	     ) {
--	$file{$linux_errno_h} = 1;
+-	push(@file, $linux_errno_h);
      } elsif ($^O eq 'haiku') {
  	# hidden in a special place
- 	$file{'/boot/develop/headers/posix/errno.h'} = 1;
+ 	push(@file, '/boot/system/develop/headers/posix/errno.h');
 diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/freebsd.sh perl-5.20.0/hints/freebsd.sh
 --- perl-5.20.0-orig/hints/freebsd.sh	2014-01-31 22:55:51.000000000 +0100
 +++ perl-5.20.0/hints/freebsd.sh	2014-06-25 10:25:53.263964680 +0200
@@ -177,7 +177,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/li
 -# (such as -lm) in /lib or /usr/lib.  So we have to ask gcc to tell us
 -# where to look.  We don't want gcc's own libraries, however, so we
 -# filter those out.
--# This could be conditional on Unbuntu, but other distributions may
+-# This could be conditional on Ubuntu, but other distributions may
 -# follow suit, and this scheme seems to work even on rather old gcc's.
 -# This unconditionally uses gcc because even if the user is using another
 -# compiler, we still need to find the math library and friends, and I don't

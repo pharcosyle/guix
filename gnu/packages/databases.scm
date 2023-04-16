@@ -3802,7 +3802,7 @@ PickleShare.")
     (build-system pyproject-build-system)
     (native-inputs
      (list unzip))
-    (inputs (list sqlite-next))         ;SQLite 3.45.1 required.
+    (inputs (list sqlite))
     (arguments
      (list
       #:phases
