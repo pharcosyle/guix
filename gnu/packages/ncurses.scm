@@ -42,7 +42,7 @@
   #:use-module (ice-9 match))
 
 (define ncurses-rollup-patch
-  (mlambda (version)
+  (mlambda (version hash)
     (origin
       (method url-fetch)
       (uri (match (string-split (version-major+minor+point version) #\.)
@@ -52,12 +52,12 @@
                              major "." minor "-" point "-patch.sh.bz2"))))
       (sha256
        (base32
-        "1b6522cvi4066bgh9lp93q8lk93zcjjssvnw1512z447xvazy2y6")))))
+        hash)))))
 
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.2.20210619")
+    (version "6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
@@ -65,7 +65,7 @@
                                   ".tar.gz"))
               (sha256
                (base32
-                "17bcm2z1rdx5gmzj5fb8cp7f28aw5b4g2z4qvvqg3yg0fq66wc1h"))))
+                "0nc14knjp080h6n06dpwnhmn68azqz290qhbydrm0z68k8yjhcb9"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                ;1 MiB of man pages
@@ -96,12 +96,22 @@
             ;; scripts(!) so we decompress and apply them in a phase.
             ;; See <https://invisible-mirror.net/archives/ncurses/6.1/README>.
             #~(lambda* (#:key inputs native-inputs #:allow-other-keys)
-                (let ((rollup-patch #$(ncurses-rollup-patch
-                                       (package-version this-package))))
-                  (copy-file rollup-patch
-                             (string-append (getcwd) "/rollup-patch.sh.bz2"))
-                  (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
-                  (invoke "sh" "rollup-patch.sh"))))
+                ;; We write the ncurses version string as
+                ;; "<major>.<minor>.<point>" (e.g. "6.2.20210619") using the
+                ;; rollup patch date stamp as point.  When point is not
+                ;; present, there's no rollup patch to get and the phase will
+                ;; be empty.
+                #$(match (string-split version #\.)
+                    ((_ _ _)
+                     (let ((rollup-patch (ncurses-rollup-patch
+                                          version
+                                          "1b6522cvi4066bgh9lp93q8lk93zcjjssvnw1512z447xvazy2y6")))
+                       #~(begin
+                           (copy-file #$rollup-patch
+                                      (string-append (getcwd) "/rollup-patch.sh.bz2"))
+                           (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
+                           (invoke "sh" "rollup-patch.sh"))))
+                    (_ #f))))
            (remove-shebang-phase
             #~(lambda _
                 ;; To avoid retaining a reference to the bootstrap Bash via the

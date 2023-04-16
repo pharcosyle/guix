@@ -880,7 +880,7 @@ SHA-1, SHA-2, and SHA-3, yet is at least as secure as SHA-3.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
@@ -889,7 +889,7 @@ SHA-1, SHA-2, and SHA-3, yet is at least as secure as SHA-3.")
        (file-name (string-append "rhash-" version ".tar.gz"))
        (sha256
         (base32
-         "0glaghjvwh9ziiqf599v0fdr6jrgc7lcnriq0h7r41k3jrkglh0y"))))
+         "0apm9vw55nlc0gs179hpx8cz2pa8gp3bm3mnx67kq560ra61lzcf"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags

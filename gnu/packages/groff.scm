@@ -47,13 +47,13 @@
 (define-public groff
   (package
    (name "groff")
-   (version "1.22.4")
+   (version "1.23.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/groff/groff-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "14q2mldnr1vx0l9lqp9v2f6iww24gj28iyh4j2211hyynx67p3p7"))))
+                     "04qwa5ikibih5pdzswd86yxcrgbh8pjzfspb094qnldpjbsmg5vb"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                    ;12MiB of PS, PDF, HTML, and examples

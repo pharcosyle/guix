@@ -112,11 +112,10 @@ scripts are self-contained and portable, freeing the user from needing to
 know anything about Autoconf or M4.")
     (license gpl3+))) ; some files are under GPLv2+
 
-;; This is the renaissance version, which is not widely supported yet.
 (define-public autoconf-2.71
   (package
     (inherit autoconf-2.69)
-    (version "2.71")
+    (version "2.72")
     (source
      (origin
        (method url-fetch)
@@ -124,7 +123,7 @@ know anything about Autoconf or M4.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "197sl23irn6s9pd54rxj5vcp5y8dv65jb9yfqgr2g56cxg7q6k7i"))))
+         "0niz4852fgyavfh3gr4h4kzalk01nk70v6vfsja6r3ap349mr25s"))))
     (arguments
      (substitute-keyword-arguments (package-arguments autoconf-2.69)
        ((#:tests? _ #f)
@@ -143,7 +142,7 @@ know anything about Autoconf or M4.")
                                               (lambda (file stat)
                                                 (executable-file? file)))))))))))))
 
-(define-public autoconf autoconf-2.69)
+(define-public autoconf autoconf-2.71)
 
 (define-public autoconf-2.68
   (package (inherit autoconf)
@@ -500,8 +499,8 @@ complexity of working with shared libraries across platforms.")
     (home-page "https://www.gnu.org/software/libtool/")))
 
 (define-public config
-  (let ((revision "1")
-        (commit "c8ddc8472f8efcadafc1ef53ca1d863415fddd5f"))
+  (let ((revision "2")
+        (commit "28ea239c53a2d5d8800c472bc2452eaa16e37af2"))
     (package
       (name "config")
       (version (git-version "0.0.0" revision commit)) ;no release tag
@@ -513,7 +512,7 @@ complexity of working with shared libraries across platforms.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0x6ycvkmmhhhag97wsf0pw8n5fvh12rjvrck90rz17my4ys16qwv"))))
+                  "1fh3ar2bp5qzzl8l3yr05y81n2v4qicax8aciibm3j4g36cv32mf"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
