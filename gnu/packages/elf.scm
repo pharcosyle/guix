@@ -276,7 +276,7 @@ static analysis of the ELF binaries at hand.")
 (define-public patchelf
   (package
     (name "patchelf")
-    (version "0.18.0")
+    (version "0.17.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -285,7 +285,7 @@ static analysis of the ELF binaries at hand.")
                    "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "02s7ap86rx6yagfh9xwp96sgsj0p6hp99vhiq9wn4mxshakv4lhr"))))
+               "1qnql97ghbb7nhv9zpm4ip0cqj05xyyxk391jv0j5r3jc0vymqms"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
