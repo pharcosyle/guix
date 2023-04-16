@@ -2940,7 +2940,7 @@ modification time.")
       #:tests? #f                       ; no tests
       #:make-flags #~(list (string-append "CC=" #$(cc-for-target))
                            (string-append "PREFIX=" #$output))))
-    (inputs (list ncurses zlib sqlite-next))
+    (inputs (list ncurses zlib sqlite))
     (home-page "https://fnc.bsdbox.org")
     (synopsis "Interactive text-based user interface for Fossil")
     (description "fnc uses ncurses and libfossil to create a fossil user
