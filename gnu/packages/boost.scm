@@ -67,20 +67,15 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.83.0")
+    (version "1.84.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://boostorg.jfrog.io/artifactory/main/release/"
                                   version "/source/boost_"
                                   (version-with-underscores version) ".tar.bz2"))
-              (patches
-               (list (boost-patch
-                      "0001-unordered-fix-copy-assign.patch" version
-                      "09j61m5xh7099k5na9i43x5rra51znf7vm2nyh89yqpizcll9q66")))
-              (patch-flags '("-p2"))
               (sha256
                (base32
-                "13iviiwk1srpw9dmiwabkxv56v0pl0zggjp8zxy1419k5zzfsy34"))))
+                "0m4l20j9r577qca5q9v8difslil8r840z6lfd55rsp34rwx8jjyc"))))
     (build-system gnu-build-system)
     (inputs
      (append
