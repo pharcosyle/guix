@@ -272,6 +272,20 @@ standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/tar/")))
 
+(define-public tar-1.34
+  (package
+    (inherit tar)
+    (version "1.34")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/tar/tar-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0a0x87anh9chbi2cgcyy7pmnm5hzk4yd1w2j8gm1wplwhwkbvgk3"))
+              (patches (search-patches "tar-skip-unreliable-tests.patch"
+                                       "tar-remove-wholesparse-check.patch"))))))
+
 (define-public patch
   (package
    (name "patch")
@@ -486,6 +500,18 @@ offer extended functionality beyond that which is outlined in the POSIX
 standard.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/coreutils/")))
+
+(define-public coreutils-9.2
+  (package
+    (inherit sed)
+    (version "9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/coreutils/coreutils-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1cxh0k62kphhvznalj5ik2pxl1pladwc2s6k8zg13cndp53zz1b8"))))))
 
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.
