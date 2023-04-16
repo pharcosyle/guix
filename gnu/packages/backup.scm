@@ -261,7 +261,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.6.1")
+    (version "3.7.2")
     (source
      (origin
        (method url-fetch)
@@ -273,7 +273,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
        (patches (search-patches "libarchive-remove-potential-backdoor.patch"))
        (sha256
         (base32
-         "1rj8q5v26lxxr8x4b4nqbrj7p06qvl91hb8cdxi3xx3qp771lhas"))))
+         "1jqs4ldqcc94zcymjq52cyf83r0sfjnh5picd10njyviwrhpcd84"))))
     (build-system gnu-build-system)
     (inputs
      (list bzip2
