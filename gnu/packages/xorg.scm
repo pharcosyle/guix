@@ -1235,17 +1235,17 @@ themselves.")
 (define-public libpthread-stubs
   (package
     (name "libpthread-stubs")
-    (version "0.4")
+    (version "0.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/xcb/libpthread-stubs-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0cz7s9w8lqgzinicd4g36rjg08zhsbyngh0w68c3np8nlc8mkl74"))))
+            "1g224hyy694jch54357zc895z46r90xs193hg4m7rfnfxinmdnjr"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -1346,17 +1346,17 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxdmcp
   (package
     (name "libxdmcp")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXdmcp-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0ab53h0rkq721ihk5hi469x500f3pgbkm1wy01yf24x5m923nli0"))))
+            "005dsry6nfqrv32i7gbqn7mxnb2m3pc8fz9lxj2b9w7q2z1mrkid"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1378,7 +1378,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
         (uri (string-append
                "mirror://xorg/individual/lib/libXft-"
                version
-               ".tar.gz"))
+               ".tar.xz"))
         (sha256
           (base32
             "1a3qybcvhdshgj1wynhsahdnrlmfv2wrjklyh1j2whj4v3i8zr1j"))))
@@ -1983,17 +1983,17 @@ management to participate in an X11R6 session.")
 (define-public util-macros
   (package
     (name "util-macros")
-    (version "1.19.3")
+    (version "1.20.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/util/util-macros-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0w8ryfqylprz37zj9grl4jzdsqq67ibfwq5raj7vm1i7kmp2x08g"))))
+            "1nrh8kmbix5pspva6y7h14fj97xdvxqc6fr3zysfswg9vdib51hb"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (arguments
@@ -2204,16 +2204,15 @@ emulate a TI-30 or an HP-10C.")
 (define-public xcb-proto
   (package
     (name "xcb-proto")
-    (version "1.15.2")
+    (version "1.16.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://xcb.freedesktop.org/dist/xcb-proto-"
-               version ".tar.xz"))
+        (uri (string-append "mirror://xorg/individual/proto/xcb-proto-"
+                            version ".tar.xz"))
         (sha256
          (base32
-          "1vak6q53abwxnkfn6by7j24m48kd2iy7jnskkqzzx8l0ysqvwwkh"))))
+          "06aij66rs8g378wg8swd7b3g73wqrrbbwl8shhnsi29amm41hnm7"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config python-minimal-wrapper))
@@ -4306,17 +4305,17 @@ a display running X server.")
 (define-public xtrans
   (package
     (name "xtrans")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/xtrans-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0wyp0yc6gi72hwc3kjmvm3vkj9p6s407cb6dxx37jh9wb68l8z1p"))))
+            "1gdiiw64p279a1x033w7i002myry9v75pwmc1gsdpzbbd41vg90v"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -4517,17 +4516,17 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxext
   (package
     (name "libxext")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXext-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXext-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0azqxllcsfxc3ilhz6kwc6x7m8wc477p59ir9p0yrsldx766zbar"))))
+            "1jkv7l9qm4vms6af4faax916rirxp6r8rpjrhlxa6zn5jp4c056v"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))             ;man pages represent 40% of the total
     (arguments
@@ -4603,17 +4602,17 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
-    (version "0.9.10")
+    (version "0.9.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXrender-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXrender-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0j89cnb06g8x79wmmnwzykgkkfdhin9j7hjpvsxwlr3fz1wmjvf0"))))
+            "096whakny5h16nlwz80z0l2nxigpsarl35mm5xqgzlc37ad7alxw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -4841,16 +4840,16 @@ common definitions and porting layer.")
 (define-public libxau
   (package
     (name "libxau")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXau-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXau-"
                version ".tar.xz"))
         (sha256
           (base32
-            "02hc3azypiiahr9y1cyn0mqc5zd997hh3h0rp7jqfbsd6f9g5rlb"))))
+            "1sxv56rql3vsb14za0hgr07mipgvvcw48910srmky32pyn135ypk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -5059,7 +5058,7 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.15")
+    (version "1.16")
     (source
       (origin
         (method url-fetch)
@@ -5067,7 +5066,7 @@ protocol.")
                             "libxcb-" version ".tar.xz"))
         (sha256
           (base32
-           "0nd035rf83xf531cnjzsf9ykb5w9rdzz6bbyhi683xkwh57p8f6c"))))
+           "0w8xf6ff6axvla734lfb2291hrjrqqhn6mqabvdrdwgvl1m5cj23"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                      ;5.5 MiB of man pages
     (propagated-inputs
