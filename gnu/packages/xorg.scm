@@ -1284,17 +1284,17 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxft
   (package
     (name "libxft")
-    (version "2.3.4")
+    (version "2.3.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXft-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "1pdbr6gzfvixc791pjf42i9gg8wvfq6cpq6sdca04h4i42mxmpjp"))))
+            "0wagvndjw0r56s7a9wnvcr8rbba48rsw5457f71q2wq08myb7w3r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -4349,17 +4349,17 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxext
   (package
     (name "libxext")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXext-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXext-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0azqxllcsfxc3ilhz6kwc6x7m8wc477p59ir9p0yrsldx766zbar"))))
+            "1jkv7l9qm4vms6af4faax916rirxp6r8rpjrhlxa6zn5jp4c056v"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))             ;man pages represent 40% of the total
     (arguments
@@ -4435,17 +4435,17 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
-    (version "0.9.10")
+    (version "0.9.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXrender-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXrender-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0j89cnb06g8x79wmmnwzykgkkfdhin9j7hjpvsxwlr3fz1wmjvf0"))))
+            "096whakny5h16nlwz80z0l2nxigpsarl35mm5xqgzlc37ad7alxw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -4656,16 +4656,16 @@ common definitions and porting layer.")
 (define-public libxau
   (package
     (name "libxau")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libXau-"
+               "ftp://ftp.freedesktop.org/pub/xorg//individual/lib/libXau-"
                version ".tar.xz"))
         (sha256
           (base32
-            "02hc3azypiiahr9y1cyn0mqc5zd997hh3h0rp7jqfbsd6f9g5rlb"))))
+            "1sxv56rql3vsb14za0hgr07mipgvvcw48910srmky32pyn135ypk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -5246,7 +5246,7 @@ Wayland.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.8.1")
+    (version "1.8.4")
     (source
      (origin
        (method url-fetch)
@@ -5254,7 +5254,7 @@ Wayland.")
                            "/individual/lib/libX11-" version ".tar.xz"))
        (sha256
         (base32
-         "1xyry8i7zqmlkvpbyyqwi18rrdw6ycczlvfp63rh2570pfhimi0v"))))
+         "067mgmsqck78b7pf5h25irz3zvcnzqbgbz7s7k70967smsjqg8n9"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ;8 MiB of man pages + XML

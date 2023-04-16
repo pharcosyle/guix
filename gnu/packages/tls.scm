@@ -200,7 +200,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.7.7")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -208,11 +208,10 @@ living in the same process.")
               (uri (string-append "mirror://gnupg/gnutls/v"
                                   (version-major+minor version)
                                   "/gnutls-" version ".tar.xz"))
-              (patches (search-patches "gnutls-skip-trust-store-test.patch"
-                                       "gnutls-cross.patch"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
               (sha256
                (base32
-                "01i1gl15k6qwvxmxx0by1mn9nlmcmym18wdpm7dn9awfsp8474dy"))))
+                "1idxp4q5k0dk3x7f4nr5nf60qvdyg8cpn58gjqzyd8b02qdd380f"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? (not (or (%current-target-system)
@@ -583,7 +582,7 @@ OpenSSL for TARGET."
 (define-public openssl-3.0
   (package
     (inherit openssl-1.1)
-    (version "3.0.8")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -596,7 +595,7 @@ OpenSSL for TARGET."
               (patches (search-patches "openssl-3.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "0gjb7qjl2jnzs1liz3rrccrddxbk6q3lg8z27jn1xwzx72zx44vc"))))
+                "1d4pqjvi44kwgnnc7wnw5h7q5jnyffrgx7lxmm65qx18k2njbada"))))
     (arguments
      (substitute-keyword-arguments (package-arguments openssl-1.1)
        ((#:phases phases '%standard-phases)

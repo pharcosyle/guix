@@ -1091,7 +1091,7 @@ to allow automatic login and starting any app.")
 (define-public net-base
   (package
     (name "net-base")
-    (version "5.3")
+    (version "6.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1099,7 +1099,7 @@ to allow automatic login and starting any app.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "12xqjwg3p4rzmmh2iib6sigm9l29y3dgk74mmnw64k84jnbwdxl1"))))
+               "1mvay9sjrpywnryj0ks0j3gybbzclk4c62yr3dc0w5gidy122rps"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1109,23 +1109,17 @@ to allow automatic login and starting any app.")
        #:target #f
        #:allowed-references ()
        #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
+                   (use-modules (guix build utils))
 
                    (let* ((source (assoc-ref %build-inputs "source"))
                           (tar    (assoc-ref %build-inputs "tar"))
                           (xz     (assoc-ref %build-inputs "xz"))
-                          (output (assoc-ref %outputs "out"))
-                          (etc    (string-append output "/etc")))
+                          (output (assoc-ref %outputs "out")))
                      (setenv "PATH" (string-append xz "/bin"))
                      (invoke (string-append tar "/bin/tar") "xvf"
                              source)
-                     (chdir ,(string-append "netbase-" version))
-                     (mkdir-p etc)
-                     (for-each copy-file
-                               '("etc-services" "etc-protocols" "etc-rpc")
-                               (map (cut string-append etc "/" <>)
-                                    '("services" "protocols" "rpc")))
+                     (copy-recursively "netbase/etc"
+                                       (string-append output "/etc"))
                      #t))))
     (native-inputs (list tar xz))
     (synopsis "IANA protocol, port, and RPC number assignments")
@@ -2950,7 +2944,7 @@ provides the following commands:
      ;; variable in the tests/cpan.scm test.
      (list (search-path-specification
             (variable "GUIX_PYTHONPATH")
-            (files (list "lib/python3.10/site-packages")))))
+            (files (list "lib/python3.11/site-packages")))))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible aims to be a radically simple IT automation system.

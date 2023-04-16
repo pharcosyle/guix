@@ -1595,7 +1595,7 @@ or junctions, and always follows hard links.")
  archives from InstallShield installers.")
     (license license:expat)))
 
-(define-public zstd
+(define-public zstd-prev
   (package
     (name "zstd")
     (version "1.5.2")
@@ -1677,9 +1677,9 @@ speed.")
                    license:public-domain ; zlibWrapper/examples/fitblk*
                    license:zlib))))      ; zlibWrapper/{gz*.c,gzguts.h}
 
-(define-public zstd-1.5.5
+(define-public zstd
   (package
-    (inherit zstd)
+    (inherit zstd-prev)
     ;; Don't hide this package from the UI.
     (properties '())
     (version "1.5.5")

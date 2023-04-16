@@ -182,7 +182,7 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.14")
+    (version "2.10.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.gnome.org/sources/libxml2/"
@@ -190,11 +190,12 @@ hierarchical form with variable field lengths.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1vnzk33wfms348lgz9pvkq9li7jm44pvm73lbr3w1khwgljlmmv0"))))
+               "0icdjj2xhrpf8hgm9ij28z4w2cam0gifxr1rcy9z222hhk2r237d"))))
     (build-system gnu-build-system)
     (outputs '("out" "static" "doc"))
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags '("--without-python" "--enable-static")
+       #:phases (modify-phases %standard-phases
                   (add-after 'install 'use-other-outputs
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((src (assoc-ref outputs "out"))
@@ -268,6 +269,18 @@ to output XPath results with a null delimiter.")))
           (add-before 'build 'configure
             (lambda* (#:key inputs #:allow-other-keys)
               (chdir "python")
+              ;; Manually create setup.py with the same settings it had
+              ;; before it stopped being included in the distributed tarball.
+              ;; This might not be the best way.
+              (copy-file "setup.py.in" "setup.py")
+              (substitute* "setup.py"
+                (("@prefix@") "/usr/local")
+                (("@WITH_THREADS@") "1")
+                (("@WITH_ICONV@") "1")
+                (("@WITH_ZLIB@") "1")
+                (("@WITH_LZMA@") "1")
+                (("@WITH_ICU@") "0")
+                (("@LIBXML_VERSION@") #$(package-version libxml2)))
               (let ((libxml2-headers (search-input-directory
                                       inputs "include/libxml2")))
                 (substitute* "setup.py"
