@@ -293,7 +293,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "1.2.1")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -301,7 +301,7 @@ files and generates build instructions for the Ninja build system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x9rnrbwvzhnzmz4zqag44w06khks8wckcajxsbr8m4760akmnxi"))))
+                "1mra0gh5jz254p8wg2m25pazbvrqpqaq5qj1zga465nyvs5mc830"))))
     (build-system python-build-system)
     (arguments
      (list #:tests? #f                  ;disabled to avoid extra dependencies
@@ -433,7 +433,7 @@ other lower-level build files.")))
 (define-public scons
   (package
     (name "scons")
-    (version "4.4.0")
+    (version "4.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -443,7 +443,7 @@ other lower-level build files.")))
               (patches (search-patches "scons-test-environment.patch"))
               (sha256
                (base32
-                "1czswx1fj2j48rspkrvarkr43k0vii9rsmz054c9yby1dq362fgr"))))
+                "1fk4w19gq919hfflq6mqnlvkzmyfgspmw3ywnvfc63i3dv7nq4mz"))))
     (build-system python-build-system)
     (arguments
      (list

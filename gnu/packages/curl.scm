@@ -150,7 +150,7 @@
     (native-inputs
      (list nghttp2 perl pkg-config python-minimal-wrapper))
     (inputs
-     (list gnutls libidn libpsl mit-krb5 `(,nghttp2 "lib") zlib))
+     (list gnutls libidn2 libpsl mit-krb5 `(,nghttp2 "lib") zlib))
     (native-search-paths
      ;; These variables are introduced by curl-use-ssl-cert-env.patch.
      (list $SSL_CERT_DIR

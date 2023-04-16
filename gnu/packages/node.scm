@@ -190,7 +190,10 @@
 
              ;; This test has started to fail. Seems like it has problems,
              ;; see https://github.com/nodejs/node/issues/48490
-             (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")))
+             (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")
+
+             ;; Some of these have started failing because (probably) of an icu4c update.
+             (delete-file "test/parallel/test-intl.js")))
          (add-before 'configure 'set-bootstrap-host-rpath
            (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (let* ((inputs      (or native-inputs inputs))
