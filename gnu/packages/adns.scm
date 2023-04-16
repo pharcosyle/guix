@@ -65,7 +65,7 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.18.1")
+    (version "1.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +73,7 @@ scripts.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1kxviskwsaa7dcgscvssxa8ps88pdq7kq4z93gxvz7sam2l54z8s"))))
+                "1lqxmnvqar93j9zkz4jmvjk4kvq10jn2q01970lk3m9zw8vvmkmz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

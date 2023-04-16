@@ -384,7 +384,7 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (version "6.24.01")
+    (version "6.24.10")
     (source (origin
               (method url-fetch)
               ;; Old tarballs are moved to old/.
@@ -394,20 +394,9 @@ written by Paul Haahr and Byron Rakitzis.")
                                         "old/tcsh-" version ".tar.gz")))
               (sha256
                (base32
-                "0zhxp4m1fxyd3a2qyvs97gzlrb0h0ah1gjrqcbilgydiffws2nan"))
+                "0r36lfmn01s1g93487gvr4nsrcmvzw0bz4yp7v9kjhdppq7mqiqk"))
               (patches
-               (append
-                (search-patches "tcsh-fix-autotest.patch")
-                (list
-                 (origin
-                   (method url-fetch)
-                   (uri (string-append
-                         "https://github.com/tcsh-org/tcsh/commit/"
-                         "391b04ec25b0d046d532d46a7468fa7a759d0115.patch"))
-                   (file-name (string-append name "-bash-5.2-fix.patch"))
-                   (sha256
-                    (base32
-                     "1d116fz9np75zkkg39hv93m9qz5mq4h6406z1xhph7nh79n1bl9s"))))))))
+               (search-patches "tcsh-fix-autotest.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      (append (if (target-riscv64?)
@@ -454,10 +443,13 @@ written by Paul Haahr and Byron Rakitzis.")
               (with-fluids ((%default-port-encoding #f))
                 (substitute* "tests/testsuite"
                   (("/bin/sh") (which "sh"))))))
+          ;; TODO Fix for a bad merge or something, don't upstream this!
           (add-after 'install 'post-install
-            (lambda _
-              (with-directory-excursion (string-append #$output "/bin")
-                (symlink "tcsh" "csh")))))))
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref %outputs "out"))
+                     (bin (string-append out "/bin")))
+                (with-directory-excursion bin
+                  (symlink "tcsh" "csh"))))))))
     (home-page "https://www.tcsh.org/")
     (synopsis "Unix shell based on csh")
     (description

@@ -152,7 +152,7 @@ using the CMake build system.")
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
-    (version "3.24.2")
+    (version "3.26.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmake.org/files/v"
@@ -160,7 +160,7 @@ using the CMake build system.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1ny8y2dzc6fww9gzb1ml0vjpx4kclphjihkxagxigprxdzq2140d"))
+                "0ngny20mg4icwp9haag2hgf6srmc51j0v924nly1d7ah2y9d7n5v"))
               (patches (search-patches "cmake-curl-certificates-3.24.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -330,7 +330,7 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake-minimal)
     (name "cmake")
-    (version "3.25.1")
+    (version "3.26.3")
     (source (origin
               (inherit (package-source cmake-minimal))
               (method url-fetch)
@@ -345,7 +345,7 @@ and workspaces that can be used in the compiler environment of your choice.")
                                   ,@rest))))
               (sha256
                (base32
-                "1n4inb3fvk70sni5gmkljqw3cyllalyg3fnr9rlr7x3aa44isl8w"))
+                "0ngny20mg4icwp9haag2hgf6srmc51j0v924nly1d7ah2y9d7n5v"))
               (patches (search-patches "cmake-curl-certificates-3.24.patch"))))
     (outputs '("out" "doc"))
     (arguments

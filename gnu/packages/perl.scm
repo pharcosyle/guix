@@ -11928,7 +11928,7 @@ MYMETA.yml.")
 (define-public perl-module-build
   (package
     (name "perl-module-build")
-    (version "0.4231")
+    (version "0.4232")
     (source
      (origin
        (method url-fetch)
@@ -11936,7 +11936,7 @@ MYMETA.yml.")
                            "Module-Build-" version ".tar.gz"))
        (sha256
         (base32
-         "05xpn8qg814y49vrih16zfr9iiwb7pmdf57ahjnc2h0p5illq3vy"))))
+         "06vp850canzlv24l4289j1md5p2znwm5f9gsxins0jyr8pi2xj37"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-cpan-meta))
