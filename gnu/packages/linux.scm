@@ -33,6 +33,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019, 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019-2022 Brice Waegeneire <brice@waegenei.re>
@@ -2378,32 +2379,32 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'patch-bootstrap-scripts
-           (lambda _
-             (substitute* "usbhid-dump/bootstrap"
-               (("/bin/sh") (which "sh")))))
-         (add-after 'install 'separate-python-output
-           ;; Separating one Python script shaves more than 106 MiB from :out.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out        (assoc-ref outputs "out"))
-                   (out:python (assoc-ref outputs "python")))
-               (for-each (lambda (file)
-                           (let ((old (string-append out "/" file))
-                                 (new (string-append out:python "/" file)))
-                             (mkdir-p (dirname new))
-                             (rename-file old new)))
-                         (list "bin/lsusb.py"))))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'bootstrap 'patch-bootstrap-scripts
+            (lambda _
+              (substitute* "usbhid-dump/bootstrap"
+                (("/bin/sh") (which "sh")))))
+          (add-after 'install 'separate-python-output
+            ;; Separating one Python script shaves more than 106 MiB from :out.
+            (lambda _
+              (for-each (lambda (file)
+                          (let ((old (string-append #$output "/" file))
+                                (new (string-append #$output:python "/" file)))
+                            (mkdir-p (dirname new))
+                            (rename-file old new)))
+                        (list "bin/lsusb.py")))))))
     (inputs
      (list eudev libusb python))
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (home-page "http://www.linux-usb.org/")
     (synopsis
-     "Tools for working with USB devices, such as lsusb")
+     "Tools for working with USB devices")
     (description
-     "Tools for working with USB devices, such as lsusb.")
+     "Collection of tools to query what type of USB devices are connected to the
+system, including @command{lsusb}.")
     (license license:gpl2+)))
 
 (define-public usbip-utils
@@ -9138,7 +9139,7 @@ types and interfaces and translates so that the X server can use them.")
 (define-public pipewire
   (package
     (name "pipewire")
-    (version "0.3.63")
+    (version "0.3.66")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9147,7 +9148,7 @@ types and interfaces and translates so that the X server can use them.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pkngynvhxc6iyv75gsyqjy18ky4si9dhvpavb9xwq5xj71nj0hr"))))
+                "0w1hy9r2047cyrv3qwak9wf6q6kzamcgiaf6zdddhcb1sj02c7mb"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -9155,11 +9156,12 @@ types and interfaces and translates so that the X server can use them.")
       #~(list (string-append "-Dudevrulesdir=" #$output "/lib/udev/rules.d")
               "-Dsystemd=disabled"
               "-Dsession-managers=[]"
-              "-Dsysconfdir=/etc"
+              ;; "-Dsysconfdir=/etc"
               "-Dman=enabled")))
     (native-inputs
      (list pkg-config
-           python-docutils))
+           python-docutils
+           `(,glib "bin"))) ; for gdbus-codegen
     (inputs (list alsa-lib
                   avahi
                   bluez

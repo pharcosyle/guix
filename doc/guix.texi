@@ -19187,6 +19187,12 @@ The user to use for running the greeter.
 Can be either instance of @code{greetd-agreety-session} configuration or
 @code{gexp->script} like object to use as greeter.
 
+@item @code{initial-session-user} (default: @code{#f})
+Like @code{default-session-user}, but for the (optional) initial session.
+
+@item @code{initial-session-command} (default: @code{#f})
+Like @code{default-session-command}, but for the (optional) initial session.
+
 @end table
 @end deftp
 
