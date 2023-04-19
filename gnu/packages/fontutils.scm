@@ -1361,7 +1361,7 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.13")
+   (version "1.3.14")
    (source
      (origin
        (method url-fetch)
@@ -1369,7 +1369,7 @@ applications should be.")
                            "download/" version "/" name "-" version ".tgz"))
        (sha256
         (base32
-         "01jzhwnj1c3d68dmw15jdxly0hwkmd8ja4kw755rbkykn1ly2qyx"))))
+         "1790ajyhk0ax8xxamnrk176gc9gvhadzy78qia4rd8jzm89ir7gr"))))
    (build-system cmake-build-system)
    (native-inputs
     (list python python-fonttools-minimal))
