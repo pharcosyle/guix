@@ -46,8 +46,7 @@
   #:use-module (gnu packages wine)
   #:use-module (gnu packages xorg))
 
-;; Note: Remember to change vulkan-loader version when bumping this.
-(define %vulkan-sdk-version "sdk-1.3.231.1")
+(define %vulkan-sdk-version "sdk-1.3.243.0")
 
 (define-public spirv-headers
   (package
@@ -196,10 +195,9 @@ translation between LLVM IR and SPIR-V.")
        (uri (git-reference
              (url "https://github.com/KhronosGroup/glslang")
              (commit version)))
-       (patches (search-patches "glslang-install-static-libs.patch"))
        (sha256
         (base32
-         "12a1zl8qxa28nbf6m67260c0lwdw3bqbj0jz1382wgm5px1fpqw6"))
+         "06g5m0y94a021zqvn1xmqfg44id3hqnyxqcc7y2cv8rndpn7z3jk"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -246,9 +244,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    ;; XXX: Take a slightly newer commit to fix a test failure on i686:
-    ;; https://github.com/KhronosGroup/Vulkan-Loader/pull/1036
-    (version "sdk-1.3.232")
+    (version %vulkan-sdk-version)
     (source
      (origin
        (method git-fetch)
