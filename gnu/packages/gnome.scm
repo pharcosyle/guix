@@ -2901,26 +2901,25 @@ guidelines.")
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
-    (version "1.15")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/"
-                   "b27eb88e4155d8fccb8bb3cd12025d5b/shared-mime-info-" version
-                   ".tar.xz"))
-             (sha256
-              (base32
-               "146vynj78wcwdq0ms52jzm1r4m6dzi1rhyh3h4xyb6bw8ckv10pl"))))
-    (build-system gnu-build-system)
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.freedesktop.org"
+                           "/xdg/shared-mime-info/ -/archive/" version
+                           "/shared-mime-info-" version ".tar.bz2"))
+       (sha256
+        (base32 "0qcyj4r09dgsvxfda18jjyzki7qfw26vipr2z5kmz1nr3404i321"))))
+    (build-system meson-build-system)
     (arguments
-     ;; The build system appears not to be parallel-safe.
-     '(#:parallel-build? #f))
+     '(#:configure-flags '("-Dupdate-mimedb=true")
+       #:parallel-build? #f)) ; The build system appears not to be parallel-safe.
     (inputs
      (list glib libxml2))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (home-page "https://www.freedesktop.org/wiki/Software/shared-mime-info")
     (synopsis "Database of common MIME types")
     (description

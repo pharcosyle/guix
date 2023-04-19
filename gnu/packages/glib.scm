@@ -292,12 +292,6 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
               (substitute* "gio/tests/file.c"
                (("[ \t]*g_test_add_func.*test_measure);") "")
                (("[ \t]*g_test_add_func.*test_measure_async);") ""))
-              ;; Skip test broken for unknown reasons possibly related to the
-              ;; recent gcc/glibc/binutils update. Later glib versions (like
-              ;; glib-next) don't seem to have a problem so tracking down the
-              ;; source of the issue doesn't feel worth it.
-              (substitute* "glib/tests/error.c"
-               (("[ \t]*g_test_add_func.*test_new_valist_invalid);") ""))
 
               #$@(if (target-x86-32?)
                      ;; Comment out parts of timer.c that fail on i686 due to
@@ -654,7 +648,7 @@ translated.")
 (define dbus-glib
   (package
     (name "dbus-glib")
-    (version "0.110")
+    (version "0.112")
     (source (origin
              (method url-fetch)
              (uri
@@ -662,7 +656,7 @@ translated.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "09g8swvc95bk1z6j8sw463p2v0dqmgm2zjfndf7i8sbcyq67dr3w"))))
+               "0fhlkdqyzbh89bdslwsfc5fbdvkiv6g840ami4rnwa6dvz60smbx"))))
     (build-system gnu-build-system)
     (arguments
      (if (%current-target-system)

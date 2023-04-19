@@ -1448,11 +1448,11 @@ Library.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 ;; Default LLVM and Clang version.
-(define-public libomp libomp-13)
-(define-public llvm llvm-13)
-(define-public clang-runtime clang-runtime-13)
-(define-public clang clang-13)
-(define-public clang-toolchain clang-toolchain-13)
+(define-public libomp libomp-15)
+(define-public llvm llvm-15)
+(define-public clang-runtime clang-runtime-15)
+(define-public clang clang-15)
+(define-public clang-toolchain clang-toolchain-15)
 
 (define-public llvm-for-rocm
   (package
