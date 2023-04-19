@@ -1267,9 +1267,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gnutls-cross.patch			\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
-  %D%/packages/patches/gobject-introspection-absolute-shlib-path-1.72.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
-  %D%/packages/patches/gobject-introspection-cc-1.72.patch	\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
   %D%/packages/patches/go-fix-script-tests.patch			\
   %D%/packages/patches/go-github-com-golang-snappy-32bit-test.patch \
@@ -1309,6 +1307,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
   %D%/packages/patches/guile-emacs-fix-configure.patch		\
   %D%/packages/patches/gtk2-fix-builder-test.patch		\
+  %D%/packages/patches/gtk2-harden-list-store.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\

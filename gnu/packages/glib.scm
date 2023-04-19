@@ -215,7 +215,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
 (define glib
   (package
     (name "glib")
-    (version "2.72.3")
+    (version "2.76.1")
     (source
      (origin
        (method url-fetch)
@@ -224,14 +224,14 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1w25sf2wxkkah2p2w189q58mza3zv8z1fh2q1m82sldq4kva4faa"))
+        (base32 "17x1zpr2avj8hjbpc6hp2sf2885lxac46v0kajsgan3929m0zp23"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           (substitute* "tests/spawn-test.c"
+           (substitute* "glib/tests/spawn-test.c"
              (("/bin/sh") "sh"))))))
     (build-system meson-build-system)
     (outputs '("out"                    ;libraries, locales, etc
@@ -257,6 +257,9 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
       #:phases
       #~(modify-phases %standard-phases
           ;; Needed to pass the test phase on slower ARM and i686 machines.
+          (add-after 'unpack 'set-G_TEST_SRCDIR
+            (lambda _
+              (setenv "G_TEST_SRCDIR" (string-append (getcwd) "/gio/tests"))))
           (add-after 'unpack 'increase-test-timeout
             (lambda _
               (substitute* "meson.build"
@@ -271,9 +274,19 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                 (substitute* '("unix.c" "utils.c")
                   (("[ \t]*g_test_add_func.*;") "")))
               (with-directory-excursion "gio/tests"
-                (substitute* '("contenttype.c" "gdbus-address-get-session.c"
-                               "gdbus-peer.c" "appinfo.c" "desktop-app-info.c")
-                  (("[ \t]*g_test_add_func.*;") "")))
+                (substitute* '("contenttype.c"
+                               "gdbus-address-get-session.c"
+                               "gdbus-server-auth.c"
+                               "gdbus-peer.c"
+                               "appinfo.c"
+                               "desktop-app-info.c")
+                  (("[ \t]*g_test_add_func.*;") ""))
+                (unless (which "update-desktop-database")
+                  (substitute* "file.c"
+                    (("[ \t]*g_test_add_func.*query-default-handler.*;") "")))
+                (substitute* '("portal-support-snap.c")
+                  (("g_test_init .*")
+                   "return EXIT_SUCCESS;")))
               ;; Test failures with coreutils 9.2, see:
               ;; https://gitlab.gnome.org/GNOME/glib/-/issues/2965
               (substitute* "gio/tests/file.c"
@@ -363,7 +376,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
       python-wrapper))
     (propagated-inputs
      (list libffi             ;in the Requires.private field of gobject-2.0.pc
-           pcre               ;in the Requires.private field of glib-2.0.pc
+           pcre2              ;in the Requires.private field of glib-2.0.pc
            `(,util-linux "lib")  ;for libmount
            zlib))                ;in the Requires.private field of glib-2.0.pc
     (native-search-paths
@@ -389,65 +402,7 @@ functions for strings and common data structures.")
     (license license:lgpl2.1+)
     (properties '((hidden? . #t)))))
 
-(define-public glib-next
-  (package
-    (inherit glib)
-    (name "glib")
-    (version "2.73.3")
-    (source
-     (origin
-       (inherit (package-source glib))
-       (uri
-        (string-append "mirror://gnome/sources/"
-                       name "/" (string-take version 4) "/"
-                       name "-" version ".tar.xz"))
-       (snippet
-        '(substitute* "glib/tests/spawn-test.c"
-           (("/bin/sh") "sh")))
-       (sha256
-        (base32 "1bgfch7zj1pq4rkqcibfky1470ijljyrx5pn5s5v9mk72s22n6nz"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments glib)
-       ((#:test-options test-options ''())
-        ;; Skip flaky or slow tests.
-        `(cons* "--no-suite=slow" "--no-suite=flaky" ,test-options))
-       ((#:phases phases #~%standard-phases)
-        #~(modify-phases #$phases
-            (replace 'disable-failing-tests
-              (lambda _
-                (with-directory-excursion "glib/tests"
-                  (substitute* '("unix.c" "utils.c")
-                    (("[ \t]*g_test_add_func.*;") "")))
-                ;; The "glib:gio / file" test fails with the error "No
-                ;; application is registered as handling this file" (see:
-                ;; https://gitlab.gnome.org/GNOME/glib/-/issues/2742).
-                ;; Also avoid the failing tests with coreutils 9.2 in file.c
-                ;; (see: https://gitlab.gnome.org/GNOME/glib/-/issues/2965).
-                (with-directory-excursion "gio/tests"
-                  (substitute* '("appinfo.c"
-                                 "contenttype.c"
-                                 "desktop-app-info.c"
-                                 "file.c"
-                                 "gdbus-address-get-session.c"
-                                 "gdbus-peer.c")
-                    (("[ \t]*g_test_add_func.*;") "")))
-
-                #$@(if (target-x86-32?)
-                       ;; Comment out parts of timer.c that fail on i686 due to
-                       ;; excess precision when building with GCC 10:
-                       ;; <https://gitlab.gnome.org/GNOME/glib/-/issues/820>.
-                       '((substitute* "glib/tests/timer.c"
-                           (("^  g_assert_cmpuint \\(micros.*" all)
-                            (string-append "//" all "\n"))
-                           (("^  g_assert_cmpfloat \\(elapsed, ==.*" all)
-                            (string-append "//" all "\n"))))
-                       '())))))))
-    (native-inputs
-     (modify-inputs (package-native-inputs glib)
-       (append desktop-file-utils)))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs glib)
-       (replace "pcre" pcre2)))))
+(define-public glib-next glib)
 
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
@@ -527,14 +482,14 @@ be used when cross-compiling."
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.72.0")
+    (version "1.76.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1g5aps3b20ck96ahy7fjl4nhp9nabkd9rlqd0s1qzn3111cqxzh2"))
+              (base32 "1grq6wmbi2nbnwffgvsljd481zm6darnk12dvkf02m9lcjzphq8r"))
              (patches (search-patches
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"
@@ -610,25 +565,7 @@ provide bindings to call into the C library.")
       ;; For tools.
       license:gpl2+))))
 
-(define-public gobject-introspection-next
-  (package
-    (inherit gobject-introspection)
-    (name "gobject-introspection")
-    (version "1.73.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/"
-                                  "gobject-introspection/" (version-major+minor version)
-                                  "/gobject-introspection-" version ".tar.xz"))
-              (sha256
-               (base32 "1gkbx32as3v2286w7k3j24fwhkxj6brr49881m2zavxamfwxdm34"))
-              (patches (search-patches
-                        "gobject-introspection-cc-1.72.patch"
-                        "gobject-introspection-girepository.patch"
-                        "gobject-introspection-absolute-shlib-path-1.72.patch"))))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs gobject-introspection)
-       (replace "glib" glib-next)))))
+(define-public gobject-introspection-next gobject-introspection)
 
 (define intltool
   (package
@@ -984,7 +921,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.42.2")
+    (version "3.44.1")
     (source
      (origin
        (method url-fetch)
@@ -993,7 +930,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "0my95gjnps093inzznbipkhf25cffbc32v9is2fq8wvh59g6ks5d"))
+         "042pmpyaz7bsbr68znnwdqyhs3j3cajib0k45v1hrs8v6b8has1w"))
        (modules '((guix build utils)))
        (snippet
         '(begin

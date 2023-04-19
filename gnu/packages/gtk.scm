@@ -366,7 +366,7 @@ applications.")
 (define-public pango
   (package
     (name "pango")
-    (version "1.50.10")
+    (version "1.50.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/pango/"
@@ -375,7 +375,7 @@ applications.")
               (patches (search-patches "pango-skip-libthai-test.patch"))
               (sha256
                (base32
-                "0rj9sszflckk8gj47ppirpndpp3mzsx97l64lalj8kc580g2ypby"))))
+                "1s41sprfgkc944fva36zjmkmdpv8hn1bdpyg55xc4663pw2z4rqx"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
@@ -894,6 +894,7 @@ is part of the GNOME accessibility project.")
                 "1nn6kks1zyvb5xikr9y2k7r9bwjy1g4b0m0s66532bclymbwfamc"))
               (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
                                        "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
+                                       "gtk2-harden-list-store.patch"
                                        "gtk2-theme-paths.patch"
                                        "gtk2-fix-builder-test.patch"))))
     (build-system gnu-build-system)
