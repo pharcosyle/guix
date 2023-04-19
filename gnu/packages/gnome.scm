@@ -7270,7 +7270,7 @@ environments.")
 (define-public yelp-xsl
   (package
     (name "yelp-xsl")
-    (version "41.0")
+    (version "42.1")
     (source
      (origin
        (method url-fetch)
@@ -7279,7 +7279,7 @@ environments.")
                        (version-major version) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "19d46rkajvr0f04560vlrzwvac88x5j8ilvzwkawbn5vjg069kf8"))))
+        (base32 "1kav039g62q35h508shdbrcjcfkdsc7k6wcr2g780c35n58f32r3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-doc")))
@@ -7344,7 +7344,7 @@ freedesktop.org help system specification.")
 (define-public yelp-tools
   (package
     (name "yelp-tools")
-    (version "3.32.2")
+    (version "42.1")
     (source
      (origin
        (method url-fetch)
@@ -7353,17 +7353,18 @@ freedesktop.org help system specification.")
                        (version-major+minor version) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1yg8f5g5wadhmy4yfd9yjhvd8vll4gq4l86ibp0b42qbxnsmcf0q"))))
-    (build-system gnu-build-system)
+        (base32 "01gr255nlb77462040499qx50sik17x2b2jhzncmn56l4106lj9y"))))
+    (build-system meson-build-system)
     (native-inputs
-     (list pkg-config))
+     (list pkg-config python))
     (inputs
      (list yelp-xsl))
     (propagated-inputs
      ;; Needed by `yelp-build', `yelp-check' or 'yelp.m4'.
      `(("itstool" ,itstool)
        ("xmllint" ,libxml2)
-       ("xsltproc" ,libxslt)))
+       ("xsltproc" ,libxslt)
+       ("python-lxml" ,python-lxml)))
     (synopsis "Yelp documentation tools")
     (description
      "Yelp-tools is a collection of scripts and build utilities to help create,
