@@ -68,7 +68,7 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (version "7.0.1")
+    (version "8.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/api/v4/projects/4207231"
@@ -76,7 +76,7 @@
                                   version "/graphviz-" version ".tar.xz"))
               (sha256
                (base32
-                "1b6x3g03j7q77lzyvdp34hkzld5sg1l1ippc6sh1qxnmm59xs3ly"))))
+                "1hgyy18jksinwiq9n1bs72qygr16wwj16c84jz2csxrk2xsjdw1s"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.

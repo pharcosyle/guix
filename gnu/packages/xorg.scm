@@ -1318,17 +1318,17 @@ configuration files.")
 (define-public libxkbfile
   (package
     (name "libxkbfile")
-    (version "1.1.0")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://xorg/individual/lib/libxkbfile-"
              version
-             ".tar.bz2"))
+             ".tar.xz"))
        (sha256
         (base32
-         "1irq9crvscd3yb8sr802dhvvfr35jdy1n2yz094xplmd42mbv3bm"))))
+         "1ca4crhzc5a2gdkc4r0m92wyirsy5mngnz0430bj02s2mi7pi8xq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -3579,15 +3579,15 @@ alternative implementations like XRandR or TwinView.")
 (define-public xkbcomp-intermediate        ;used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.5")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/app/xkbcomp-"
-                           version ".tar.bz2"))
+                           version ".tar.xz"))
        (sha256
         (base32
-         "0pmhshqinwqh5rip670l3szjpywky67hv232ql6gvdj489n0hlb8"))))
+         "164fqnpq80vbl7693x82h38kvxcdf668vggpg9439q21xw8xcl7s"))))
     (build-system gnu-build-system)
     (inputs
      (list xorgproto libxkbfile libx11))
