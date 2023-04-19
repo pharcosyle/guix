@@ -43,7 +43,7 @@
     ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -51,7 +51,7 @@
                    version "/libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "1yypywkh8vphcy4qqpf51kxpb0a3r7rjqk3fc61rpn70hiq092j7"))
+               "0qas3q9xz3wgw06dm2fj0i189rain6n60z1vyq50d5h7wbn25s1z"))
              (patches
               (search-patches "gd-fix-tests-on-i686.patch"
                               "gd-brect-bounds.patch"
