@@ -2951,7 +2951,7 @@ hardware.")
 (define-public alsa-topology-conf
   (package
     (name "alsa-topology-conf")
-    (version "1.2.4")
+    (version "1.2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2959,7 +2959,7 @@ hardware.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "01zdg6q4s6d01k39z96wi4vbhrfw1i2g4yi5dijwfk6a5vjfdq2m"))))
+                "0ydifvbhlpkgq3qs12qqxami23il5kkz95xw4hwdgg2sakhvmigp"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -3063,14 +3063,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.2.2")
+    (version "1.2.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0z9k3ssbfk2ky2w13avgyf202j1drsz9sv3834bp33cj1i2hc3qw"))))
+               "04958fiiirja5bna7jzc28gr78j2c42accv78mkw3dsbjla7hcwc"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
