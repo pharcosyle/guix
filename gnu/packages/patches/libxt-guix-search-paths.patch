@@ -6,7 +6,7 @@ diff --git a/src/Intrinsic.c b/src/Intrinsic.c
  
  /*
 - * default path used if environment variable XFILESEARCHPATH
-- * is not defined.  Also substitued for %D.
+- * is not defined.  Also substituted for %D.
 - * The exact value should be documented in the implementation
 - * notes for any Xt implementation.
 +   Return the default search path for the function
