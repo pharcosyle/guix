@@ -272,6 +272,9 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
             (lambda _
               (setenv "G_TEST_SRCDIR" (string-append (getcwd) "/gio/tests"))))
           ;; Needed to pass the test phase on slower ARM and i686 machines.
+          (add-after 'unpack 'set-G_TEST_SRCDIR
+            (lambda _
+              (setenv "G_TEST_SRCDIR" (string-append (getcwd) "/gio/tests"))))
           (add-after 'unpack 'increase-test-timeout
             (lambda _
               (substitute* "meson.build"
@@ -676,22 +679,7 @@ provide bindings to call into the C library.")
       ;; For tools.
       license:gpl2+))))
 
-(define-public gobject-introspection-next
-  (package
-    (inherit gobject-introspection)
-    (name "gobject-introspection")
-    (version "1.73.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/"
-                                  "gobject-introspection/" (version-major+minor version)
-                                  "/gobject-introspection-" version ".tar.xz"))
-              (sha256
-               (base32 "1gkbx32as3v2286w7k3j24fwhkxj6brr49881m2zavxamfwxdm34"))
-              (patches (search-patches
-                        "gobject-introspection-cc-1.72.patch"
-                        "gobject-introspection-girepository.patch"
-                        "gobject-introspection-absolute-shlib-path-1.72.patch"))))))
+(define-public gobject-introspection-next gobject-introspection)
 
 (define intltool
   (package
