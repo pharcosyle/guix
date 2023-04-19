@@ -1028,15 +1028,15 @@ of new capabilities and controls for text keyboards.")
 (define-public libxshmfence
   (package
     (name "libxshmfence")
-    (version "1.3")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://xorg/individual/lib/"
-                    name "-" version ".tar.bz2"))
+                    name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ir0j92mnd1nk37mrv9bz5swnccqldicgszvfsh62jd14q6k115q"))))
+                "0vv0c7rjf6nd1afbal4c4ralallarak1v3ss3gcjdca0pibz43c7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1174,25 +1174,25 @@ hit when running single-threaded.")
 (define-public libsm
   (package
     (name "libsm")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libSM-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "1fwwfq9v3sqmpzpscymswxn76xhxnysa24pfim1mcpxhvjcl89id"))))
+            "113vx53k6pyxf84v5kqb7qhcldx1fi78lym77lcb2xhj9lgfbjzx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
     (propagated-inputs
-      (list libice)) ; SMlib.h includes ICElib.h
+      `(("libice" ,libice) ; SMlib.h includes ICElib.h
+        ("libuuid" ,util-linux "lib"))) ; For .pc file
     (inputs
-      `(("xtrans" ,xtrans)
-        ("libuuid" ,util-linux "lib")))
+      `(("xtrans" ,xtrans)))
     (native-inputs
       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -1345,17 +1345,17 @@ configuration files.")
 (define-public libxmu
   (package
     (name "libxmu")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXmu-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0cdpqnx6258i4l6qhphvkdiyspysg0i5caqjy820kp63wwjk4d4w"))))
+            "0i42fng5gizablqziib25ipcwm5830jprl955ibq54rykjmy6391"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1376,17 +1376,17 @@ treat it as part of their software base when porting.")
 (define-public libxpm
   (package
     (name "libxpm")
-    (version "3.5.13")
+    (version "3.5.16")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXpm-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "09dc6nwlb2122h02vl64k9x56mxnyqz2gwpga0abfv4bb1bxmlcw"))))
+            "0lczckznwbzsf5pca487g8bzbqjgj3a96z78cz69pgcxlskmvg76"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -4324,17 +4324,17 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxdamage
   (package
     (name "libxdamage")
-    (version "1.1.5")
+    (version "1.1.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXdamage-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0igaw2akjf712y3rv7lx473jigxmcv9rs9y8sbrvbhya8f30cd5p"))))
+            "04axzdx75w0wcb4na7lfpa0ai0fddw60dmg7cigs7z32a8gkqwsj"))))
     (build-system gnu-build-system)
     (propagated-inputs
       ;; These are all in the Requires or Requires.private field of xdamage.pc
@@ -4629,17 +4629,17 @@ common definitions and porting layer.")
 (define-public libice
   (package
     (name "libice")
-    (version "1.0.10")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libICE-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0j638yvmyna2k4mz465jywgdybgdchdqppfx6xfazg7l5khxr1kg"))))
+            "0lg4sddalwmmzsnxv3fgdm2hzqp66j8b3syc0ancfhi9yzx7mrq3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -4683,17 +4683,17 @@ an X Window System display.")
 (define-public libxfixes
   (package
     (name "libxfixes")
-    (version "6.0.0")
+    (version "6.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXfixes-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0k2v4i4r24y3kdr5ici1qqhp69djnja919xfqp54c2rylm6s5hd7"))))
+            "0n1dq2mi60i0c06i7j6lq64cq335ir2l89yj0amj3529s8ygk5dn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -4788,17 +4788,17 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXrandr-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "08z0mqywrm7ij8bxlfrx0d2wy6kladdmkva1nw5k6qix82z0xsla"))))
+            "0a5l9q37c9m6gfdchlj43a9j3mw2avfwasfn0ivlkqbq980kjxl9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
@@ -4842,17 +4842,17 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxxf86vm
   (package
     (name "libxxf86vm")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXxf86vm-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0mydhlyn72i7brjwypsqrpkls3nm6vxw0li8b2nw0caz7kwjgvmg"))))
+            "1rw8z01vgfc4wvf0q75sgnj6n04dkrw1w7z455qydrz0nd4fyzr4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
@@ -5311,17 +5311,17 @@ Wayland.")
 (define-public libxt
   (package
     (name "libxt")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXt-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-           "0q1x7842r8rcn2m0q4q9f69h4qa097fyizs8brzx5ns62s7w1737"))
+           "14dz66rp66ar2a5q0fbsnlcqkbd34801pzdxj3f0hzc2vcy0p0jj"))
         (patches (search-patches "libxt-guix-search-paths.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
@@ -5347,17 +5347,17 @@ Wayland.")
 (define-public libxaw
   (package
     (name "libxaw")
-    (version "1.0.14")
+    (version "1.0.15")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXaw-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "13kg59r3086383g1dyhnwxanhp2frssh9062mrgn34nzlf7gkbkn"))))
+            "0jkm2ards3nj08y7185k9jvjhhx78r46abrl3g3jrc4zvq7zfddb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -5402,14 +5402,14 @@ keyboard focus, and user-specified key and pointer button bindings.")
 (define-public xcb-util
   (package
     (name "xcb-util")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://xorg/individual/xcb/"
-                                 name "-" version ".tar.bz2"))
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1sahmrgbpyki4bb72hxym0zvxwnycmswsxiisgqlln9vrdlr9r26"))))
+               "04p54r0zjc44fpw1hdy4rhygv37sx2vr2lllxjihykz5v2xkpgjs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))

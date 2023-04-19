@@ -35,7 +35,7 @@
 (define-public swig
   (package
     (name "swig")
-    (version "4.0.2")
+    (version "4.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -43,12 +43,10 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))
-             ;; Remove with next release.
-             (patches (search-patches "swig-support-gcc-12.patch"))))
+               "16xc767gf5ip40jh698wbdrxrghli5v2c966bkdmrmpwv378mw1a"))))
     (build-system gnu-build-system)
     (native-inputs (list boost
-                         `(,pcre "bin") ;for 'pcre-config'
+                         pcre2 ;for 'pcre-config'
                          ;; The following are for tests and examples:
                          guile-3.0
                          perl))
