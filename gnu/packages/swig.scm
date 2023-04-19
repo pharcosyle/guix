@@ -37,7 +37,7 @@
 (define-public swig
   (package
     (name "swig")
-    (version "4.0.2")
+    (version "4.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -45,17 +45,14 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))
-             ;; Remove with next release.
-             (patches (search-patches "swig-support-gcc-12.patch"))))
+               "16xc767gf5ip40jh698wbdrxrghli5v2c966bkdmrmpwv378mw1a"))))
     (build-system gnu-build-system)
     (native-inputs (list boost
-                         `(,pcre "bin") ;for 'pcre-config'
                          ;; The following are for tests and examples:
                          guile-3.0
                          perl))
                      ;;("python" ,python-wrapper)
-    (inputs (list pcre))
+    (inputs (list pcre2))
     (arguments (list #:tests? (not (or (target-hurd?)
                                        (%current-target-system)))))
     (home-page "https://swig.org/")
@@ -71,21 +68,3 @@ you tailor the wrapping process to suit your application.")
 
     ;; See http://www.swig.org/Release/LICENSE for details.
     (license gpl3+)))
-
-(define-public swig-next
-  ;; a number of packages using swig do not build with this version
-  ;; so we need to keep swig 4.0.2 above and place the current release
-  ;; as swig-next
-  (package
-    (inherit swig)
-    (name "swig")
-    (version "4.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                 name "-" version "/"
-                                 name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1n5pb77hwadjpbqgqn28i5v4cp94ar19wmv9vk6v4j6hw9a5617s"))))
-    (inputs (list pcre2))))
