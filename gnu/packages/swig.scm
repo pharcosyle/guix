@@ -34,10 +34,10 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 
-(define-public swig
+(define-public swig-prev
   (package
     (name "swig")
-    (version "4.0.2")
+    (version "4.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -45,12 +45,10 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))
-             ;; Remove with next release.
-             (patches (search-patches "swig-support-gcc-12.patch"))))
+               "16xc767gf5ip40jh698wbdrxrghli5v2c966bkdmrmpwv378mw1a"))))
     (build-system gnu-build-system)
     (native-inputs (list boost
-                         `(,pcre "bin") ;for 'pcre-config'
+                         pcre2 ;for 'pcre-config'
                          ;; The following are for tests and examples:
                          guile-3.0
                          perl))
@@ -72,14 +70,14 @@ you tailor the wrapping process to suit your application.")
     ;; See http://www.swig.org/Release/LICENSE for details.
     (license gpl3+)))
 
-(define-public swig-next
+(define-public swig
   ;; a number of packages using swig do not build with this version
   ;; so we need to keep swig 4.0.2 above and place the current release
   ;; as swig-next
   (package
-    (inherit swig)
+    (inherit swig-prev)
     (name "swig")
-    (version "4.2.0")
+    (version "4.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -87,5 +85,8 @@ you tailor the wrapping process to suit your application.")
                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15wwh9215rdkflpr85r7zxr2nmrib03jr4bvh5i0f9lyb3bs4716"))))
+                "1n5pb77hwadjpbqgqn28i5v4cp94ar19wmv9vk6v4j6hw9a5617s"))))
+    (native-inputs
+     (modify-inputs (package-native-inputs swig-prev)
+       (delete pcre2)))
     (inputs (list pcre2))))

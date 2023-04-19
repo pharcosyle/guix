@@ -2836,7 +2836,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-ucm-conf
   (package
     (name "alsa-ucm-conf")
-    (version "1.2.4")
+    (version "1.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2844,7 +2844,7 @@ intercept and print the system calls executed by the program.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0h6kzi1cfdqyxp4pwpqh5wb89c8s9wrgix315bvamffwfxf56frc"))))
+                "1s0a4qiphpi2gp0gqrnrxy3b1giinai4dnl3knb5zlhghcvsgr7y"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -2861,7 +2861,7 @@ hardware.")
 (define-public alsa-topology-conf
   (package
     (name "alsa-topology-conf")
-    (version "1.2.4")
+    (version "1.2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2869,7 +2869,7 @@ hardware.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "01zdg6q4s6d01k39z96wi4vbhrfw1i2g4yi5dijwfk6a5vjfdq2m"))))
+                "0ydifvbhlpkgq3qs12qqxami23il5kkz95xw4hwdgg2sakhvmigp"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -2884,7 +2884,7 @@ configuration files that can be used for specific audio hardware.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.4")
+    (version "1.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2892,7 +2892,7 @@ configuration files that can be used for specific audio hardware.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1xq8d48wfy59qw4x7383j32n8j5njndw5hcgnmlg9pvclphlnmgp"))))
+                "0izkrg5sr4wgzr0852dxjcqjg238zm20hv73qacwl99lwds1pc0s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -2931,14 +2931,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.4")
+    (version "1.2.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "09m4dnn4kplawprd2bl15nwa0b4r1brab3x44ga7f1fyk7aw5zwq"))))
+               "0g1kx4wdwka3ss93kdbamrjbk0cxqrh8hz0nfaykc7rm9ihglh71"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -2972,14 +2972,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.2.2")
+    (version "1.2.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0z9k3ssbfk2ky2w13avgyf202j1drsz9sv3834bp33cj1i2hc3qw"))))
+               "04958fiiirja5bna7jzc28gr78j2c42accv78mkw3dsbjla7hcwc"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
