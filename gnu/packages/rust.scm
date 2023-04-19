@@ -812,7 +812,7 @@ safety and thread safety guarantees.")
       ;; Add test inputs.
       (native-inputs
        (modify-inputs (package-native-inputs base-rust)
-         (prepend gdb
+         (prepend gdb/pinned
                   procps
                   gnu-make-4.3)))))) ; 1 test failure on newer versions of
                                      ; GNU Make: `jobserver::jobserver_and_j'

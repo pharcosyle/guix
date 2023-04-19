@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017-2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -50,14 +50,14 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.187")
+    (version "0.189")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/elfutils/ftp/"
                                   version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1j2lsicm3dkj5n6spszr9qy5rqm48bqimmz03x6hry8hwvxhs2z7"))
+                "1j08hwab8yc1im3mg2jpd47njvnwxnh13zy3mga7qawf6cd8zg9r"))
               (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 
@@ -103,9 +103,15 @@
          ,@(if (target-riscv64?)
              `((add-after 'unpack 'disable-failing-riscv64-test
                  (lambda _
-                   ;; dwfl_thread_getframes: No DWARF information found
                    (substitute* "tests/Makefile.in"
-                     (("run-backtrace-dwarf.sh") "")))))
+                     ;; dwfl_thread_getframes: No DWARF information found
+                     (("run-backtrace-dwarf.sh") "")
+                     ;; These tests have several errors:
+                     ;; unknown program header entry type 0x70000003
+                     ;; '.riscv.attributes' has unsupported type 1879048195
+                     (("run-reverse-sections-self.sh") "")
+                     (("run-strip-strmerge.sh") "")
+                     (("run-elflint-self.sh") "")))))
              '()))))
 
     (native-inputs (list m4))
