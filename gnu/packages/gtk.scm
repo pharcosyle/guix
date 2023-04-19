@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020-2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
@@ -687,7 +687,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
     (name "gdk-pixbuf")
-    (version "2.42.8")
+    (version "2.42.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -695,7 +695,7 @@ highlighting and other features typical of a source code editor.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1iplb43nn74pp3w1wjwwn522i9man6jia85k6j8v4494rcxfmb44"))))
+                "0jz4kziz5lirnjjvbspbqzsigk8vnqknng1fga89d81vs5snr6zf"))))
     (build-system meson-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -705,8 +705,10 @@ highlighting and other features typical of a source code editor.")
        (modify-phases %standard-phases
          (add-before 'configure 'disable-failing-tests
            (lambda _
-             (substitute* "tests/meson.build"
-               (("\\[ 'pixbuf-fail', \\['conform', 'slow'\\], \\],")
+             ;; The test for the fix for issue 205 causes failures.
+             ;; https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/215
+             (substitute* "tests/pixbuf-jpeg.c"
+               ((".*/pixbuf/jpeg/issue205.*")
                 ""))))
          ;; The slow tests take longer than the specified timeout.
          ,@(if (target-arm? (%current-system))
@@ -716,29 +718,24 @@ highlighting and other features typical of a source code editor.")
                        (invoke "meson" "test" "--timeout-multiplier" "5")))))
                '()))))
     (propagated-inputs
-     (list glib                         ;in Requires of gdk-pixbuf-2.0.pc
-
-           ;; These are in Requires.private of gdk-pixbuf-2.0.pc
+     (list ;; Required by gdk-pixbuf-2.0.pc
+           glib
            libjpeg-turbo
            libpng
            libtiff
-           shared-mime-info))           ;required at runtime, too
+           ;; Used for testing and required at runtime.
+           shared-mime-info))
     (inputs
      (if (%current-target-system)
-         (list bash-minimal)            ;for glib-or-gtk-wrap
-         '()))
+       (list bash-minimal)                      ; for glib-or-gtk-wrap
+       '()))
     (native-inputs
      (list gettext-minimal
-           `(,glib "bin")               ;glib-mkenums, etc.
-           gobject-introspection        ;g-ir-compiler, etc.
+           (list glib "bin")                    ; glib-mkenums, etc.
+           gobject-introspection                ; g-ir-compiler, etc.
            perl
            pkg-config
-
-           ;; For the documentation.
-           docbook-xml-4.3
-           docbook-xsl
-           libxml2                      ;for XML_CATALOG_FILES
-           libxslt))                    ;for xsltproc
+           python-docutils))
     (native-search-paths
      ;; This file is produced by the gdk-pixbuf-loaders-cache-file
      ;; profile hook.

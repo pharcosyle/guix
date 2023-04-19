@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021, 2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
@@ -36,12 +36,14 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages video))
 
 ;;;
@@ -199,7 +201,7 @@ text or blue underlined text, on ANSI terminals.")
 (define-public rust-aom-sys-0.3
   (package
     (name "rust-aom-sys")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
       (origin
         (method url-fetch)
@@ -207,17 +209,16 @@ text or blue underlined text, on ANSI terminals.")
         (file-name
           (string-append name "-" version ".tar.gz"))
         (sha256
-          (base32
-            "0dhikfl7l5nacspajbllbhhysad3vl845cpfplqgm5mf67nmx9w8"))))
+         (base32 "0swg90iwypakh7vq77zwh34238c1r7vd5smj0vza7dv7xa22wh0g"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs
-        (("rust-bindgen" ,rust-bindgen-0.54)
-         ("rust-metadeps" ,rust-metadeps-1))))
+        (("rust-bindgen" ,rust-bindgen-0.61)
+         ("rust-system-deps" ,rust-system-deps-6))))
     (native-inputs
      (list pkg-config))
     (inputs
-     (list libaom clang llvm))
+     (list clang libaom llvm))
     (home-page "https://github.com/rust-av/aom-rs")
     (synopsis "FFI bindings to aom")
     (description "This package provides FFI bindings to aom.")
@@ -248,8 +249,38 @@ the term library to handle the ANSI nonsense and hence it works on Windows,
 Mac, and Unix.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-avif-parse-1
+  (package
+    (name "rust-avif-parse")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "avif-parse" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1vhd4n06g5mbf4sznz67mk352pw9hh97f4ysafp737xvzfd3zyw7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitreader" ,rust-bitreader-0.3)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-fallible-collections" ,rust-fallible-collections-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-static-assertions" ,rust-static-assertions-1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.9)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/kornelski/avif-parse")
+    (synopsis "Parser for AVIF image files")
+    (description "This AVIF parser allows extracting the AV1 payload and alpha
+channel metadata out of AVIF image files.  The parser is a fork of Mozilla's
+MP4 parser used in Firefox, so it's designed to be robust and safely handle
+untrusted data.")
+    (license license:mpl2.0)))
+
 (define-public rust-avif-parse-0.13
   (package
+    (inherit rust-avif-parse-1)
     (name "rust-avif-parse")
     (version "0.13.2")
     (source
@@ -261,7 +292,6 @@ Mac, and Unix.")
        (sha256
         (base32
          "1vylrjq77mpl6flmd85j5f2qimh6vjn03syvq8agb62x56khm0xj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-bitreader" ,rust-bitreader-0.3)
@@ -271,17 +301,35 @@ Mac, and Unix.")
         ("rust-static-assertions" ,rust-static-assertions-1))
        #:cargo-development-inputs
        (("rust-env-logger" ,rust-env-logger-0.8)
-        ("rust-walkdir" ,rust-walkdir-2))))
-    (home-page "https://github.com/kornelski/avif-parse")
-    (synopsis "Parser for AVIF image files")
-    (description "This AVIF parser allows extracting the AV1 payload and alpha
-channel metadata out of AVIF image files.  The parser is a fork of Mozilla's
-MP4 parser used in Firefox, so it's designed to be robust and safely handle
-untrusted data.")
-    (license license:mpl2.0)))
+        ("rust-walkdir" ,rust-walkdir-2))))))
+
+(define-public rust-avif-serialize-0.7
+  (package
+    (name "rust-avif-serialize")
+    (version "0.7.7")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "avif-serialize" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0d2makdw756978i8s3qhlhh1h91y5maxriay6r4kmsmk8pky2qfc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f              ; Undeclared dependencies
+       #:cargo-inputs (("rust-arrayvec" ,rust-arrayvec-0.7))
+       #:cargo-development-inputs (("rust-avif-parse" ,rust-avif-parse-1))))
+    (home-page "https://lib.rs/avif-serialize")
+    (synopsis "Writer for AVIF header structure (MPEG/HEIF/MIAF/ISO-BMFF)")
+    (description
+     "This package provides a minimal writer for AVIF header structure.  This
+is a tiny alternative to @code{libavif}.  It creates the jungle of
+MPEG/HEIF/MIAF/ISO-BMFF ``boxes'' as appropriate for AVIF files.  It supports
+alpha channel embedding.")
+    (license license:bsd-3)))
 
 (define-public rust-avif-serialize-0.6
   (package
+    (inherit rust-avif-serialize-0.7)
     (name "rust-avif-serialize")
     (version "0.6.5")
     (source
@@ -291,19 +339,10 @@ untrusted data.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "130wq838lslkcqcp2kjci7q3aq9qpir07pvxndc81xqbn63wvdjg"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-arrayvec" ,rust-arrayvec-0.5))))
-    (home-page "https://lib.rs/avif-serialize")
-    (synopsis "Writer for AVIF header structure (MPEG/HEIF/MIAF/ISO-BMFF)")
-    (description
-     "This package provides a minimal writer for AVIF header structure.  This
-is a tiny alternative to @code{libavif}.  It creates the jungle of
-MPEG/HEIF/MIAF/ISO-BMFF ``boxes'' as appropriate for AVIF files.  It supports
-alpha channel embedding.")
-    (license license:bsd-3)))
+       (("rust-arrayvec" ,rust-arrayvec-0.5))))))
 
 (define-public rust-cgl-0.3
   (package
@@ -574,10 +613,59 @@ types.")
 and iOS.")
     (license license:expat)))
 
-(define-public rust-dav1d-sys-0.3
+(define-public rust-dav1d-0.6
+  (package
+    (name "rust-dav1d")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "dav1d" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qz2lx37pmx798lysgh6k5lk5y20ckr7pp8c1p6v2z0p721i913j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-dav1d-sys" ,rust-dav1d-sys-0.3))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list dav1d clang llvm))
+    (home-page "https://github.com/rust-av/dav1d-rs")
+    (synopsis "Libdav1d bindings")
+    (description "This package provides libdav1d bindings in rust.")
+    (license license:expat)))
+
+(define-public rust-dav1d-sys-0.7
   (package
     (name "rust-dav1d-sys")
-    (version "0.3.4")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "dav1d-sys" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "16gzjsfnvfd5zr8mrx5n9mdd4vjvwfwpk9hfscgz7sjyzjdjzcm0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-6))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list dav1d))
+    (home-page "https://github.com/rust-av/dav1d-rs")
+    (synopsis "FFI bindings to dav1d")
+    (description "This package provides FFI bindings to dav1d.")
+    (license license:expat)))
+
+(define-public rust-dav1d-sys-0.3
+  (package
+    (inherit rust-dav1d-sys-0.7)
+    (name "rust-dav1d-sys")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
@@ -585,20 +673,42 @@ and iOS.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "020lla2l703iy69gbksq18snj2b1sp7vmjf39qqykd4242d4msr5"))))
-    (build-system cargo-build-system)
+        (base32 "10y8637snqc3kb9mhs8p9zi8171ba2hlbvhk06vs6hfifx60rr48"))))
     (arguments
      `(#:cargo-inputs
-       (("rust-bindgen" ,rust-bindgen-0.58)
-        ("rust-system-deps" ,rust-system-deps-3))))
+       (("rust-bindgen" ,rust-bindgen-0.59)
+        ("rust-system-deps" ,rust-system-deps-6))))
     (native-inputs
      (list pkg-config))
     (inputs
-     (list dav1d clang llvm))
-    (home-page "https://github.com/rust-av/dav1d-rs")
-    (synopsis "FFI bindings to dav1d")
-    (description "This package provides FFI bindings to dav1d.")
-    (license license:expat)))
+     (list dav1d clang llvm))))
+
+(define-public rust-dcv-color-primitives-0.4
+  (package
+    (name "rust-dcv-color-primitives")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "dcv-color-primitives" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "01c0ag8dwzz00hyq9qam9d5j6yzdh8xpidcn37vgkzlmhgfz8mql"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-paste" ,rust-paste-1)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-getrandom" ,rust-getrandom-0.2)
+        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://github.com/aws/dcv-color-primitives")
+    (synopsis "Library to perform image color model conversion")
+    (description
+     "This package provides a library to perform image color model conversion.")
+    (license license:expat-0)))
 
 (define-public rust-euclid-0.22
   (package
@@ -672,6 +782,39 @@ EUI-64, also known as MAC-48 media access control addresses.")
        #:cargo-inputs
        (("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
         ("rust-serde" ,rust-serde-1))))))
+
+(define-public rust-exr-1
+  (package
+    (name "rust-exr")
+    (version "1.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "exr" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1ssgq9zkf53mhwvhj9khvrlh0f9h3dl1pg7cs0irvn1fgvs5xbz8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                  ; Not all files included
+       #:cargo-inputs
+       (("rust-bit-field" ,rust-bit-field-0.10)
+        ("rust-flume" ,rust-flume-0.10)
+        ("rust-half" ,rust-half-2)
+        ("rust-lebe" ,rust-lebe-0.5)
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.6)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-threadpool" ,rust-threadpool-1)
+        ("rust-zune-inflate" ,rust-zune-inflate-0.2))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-image" ,rust-image-0.24)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/johannesvollmer/exrs")
+    (synopsis "Read and write OpenEXR files without any unsafe code")
+    (description "Read and write OpenEXR files without any unsafe code")
+    (license license:bsd-3)))
 
 (define-public rust-gfx-0.18
   (package
@@ -794,25 +937,6 @@ EUI-64, also known as MAC-48 media access control addresses.")
     (description "This package provides OpenGL bindings for rust.")
     (license license:asl2.0)))
 
-(define-public rust-gl-0.11
-  (package
-    (inherit rust-gl-0.14)
-    (name "rust-gl")
-    (version "0.11.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "gl" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1wcqpyhck0xriffkmgmldy33lwk2044hb4l02d44vm4fbvicin6p"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-gl-generator" ,rust-gl-generator-0.10))))))
-
 (define-public rust-gl-generator-0.14
   (package
     (name "rust-gl-generator")
@@ -867,33 +991,6 @@ EUI-64, also known as MAC-48 media access control addresses.")
       (sha256
        (base32
         "1gdchvay0k0g931b2ki33mkfixcw4radk5b8sqsm29rahxg3v8ir"))))))
-
-(define-public rust-gl-generator-0.10
-  (package
-    (name "rust-gl-generator")
-    (version "0.10.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "gl_generator" version))
-        (file-name
-         (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0146yd4i9wbgfrhnkc04w7n7civbanznc0q87skp6v7p7hbszzx0"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-log" ,rust-log-0.4)
-        ("rust-xml-rs" ,rust-xml-rs-0.8)
-        ("rust-khronos-api" ,rust-khronos-api-3))))
-    (home-page "https://github.com/brendanzab/gl-rs/")
-    (synopsis
-     "Code generators for creating bindings to the Khronos OpenGL APIs")
-    (description
-     "Code generators for creating bindings to the Khronos OpenGL APIs.")
-    (license license:asl2.0)))
 
 (define-public rust-gleam-0.6
   (package
@@ -1192,8 +1289,54 @@ EUI-64, also known as MAC-48 media access control addresses.")
 similar formats like VCard.")
     (license license:asl2.0)))
 
+(define-public rust-image-0.24
+  (package
+    (name "rust-image")
+    (version "0.24.5")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "image" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0iarjrn9rimnri1g0hagdzljq3v9fy6gy7qlmz80yyskkfafmdv9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f              ; Not all files included.
+       #:cargo-inputs
+       (("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-color-quant" ,rust-color-quant-1)
+        ("rust-dav1d" ,rust-dav1d-0.6)
+        ("rust-dcv-color-primitives" ,rust-dcv-color-primitives-0.4)
+        ("rust-exr" ,rust-exr-1)
+        ("rust-gif" ,rust-gif-0.11)
+        ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.3)
+        ("rust-mp4parse" ,rust-mp4parse-0.12)
+        ("rust-num-rational" ,rust-num-rational-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-png" ,rust-png-0.17)
+        ("rust-ravif" ,rust-ravif-0.8)
+        ("rust-rgb" ,rust-rgb-0.8)
+        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
+        ("rust-tiff" ,rust-tiff-0.8)
+        ("rust-webp" ,rust-webp-0.2))
+       #:cargo-development-inputs
+       (("rust-crc32fast" ,rust-crc32fast-1)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-glob" ,rust-glob-0.3)
+        ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.3)
+        ("rust-num-complex" ,rust-num-complex-0.4)
+        ("rust-quickcheck" ,rust-quickcheck-1))))
+    (home-page "https://github.com/image-rs/image")
+    (synopsis "Imaging library written in Rust")
+    (description
+     "This package is an imaging library written in Rust.  It provides basic
+filters and decoders for the most common image formats.")
+    (license license:expat)))
+
 (define-public rust-image-0.23
   (package
+    (inherit rust-image-0.24)
     (name "rust-image")
     (version "0.23.14")
     (source
@@ -1203,7 +1346,6 @@ similar formats like VCard.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "18gn2f7xp30pf9aqka877knlq308khxqiwjvsccvzaa4f9zcpzr4"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
@@ -1219,13 +1361,7 @@ similar formats like VCard.")
         ("rust-ravif" ,rust-ravif-0.6)
         ("rust-rgb" ,rust-rgb-0.8)
         ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
-        ("rust-tiff" ,rust-tiff-0.6))))
-    (home-page "https://github.com/image-rs/image")
-    (synopsis "Imaging library written in Rust")
-    (description
-     "This package is an imaging library written in Rust.  It provides basic
-filters and decoders for the most common image formats.")
-    (license license:expat)))
+        ("rust-tiff" ,rust-tiff-0.6))))))
 
 (define-public rust-image-0.22
   (package
@@ -1324,16 +1460,15 @@ filters and decoders for the most common image formats.")
 (define-public rust-imgref-1
   (package
     (name "rust-imgref")
-    (version "1.7.1")
+    (version "1.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "imgref" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "19dd5xss3nd40avv8az2kzicpxx71c2akiqznr616hki30w9vj07"))))
+        (base32 "0b3czpz206z4nvpq7yq0v58bwjmqjwjmkr302hbzpp4523glkkxj"))))
     (build-system cargo-build-system)
-    (arguments `(#:skip-build? #t))
     (home-page "https://github.com/kornelski/imgref")
     (synopsis "2D slice of a @code{Vec}")
     (description
@@ -1341,8 +1476,40 @@ filters and decoders for the most common image formats.")
 pixel buffers with width, height and stride.")
     (license license:cc0)))
 
+(define-public rust-jpeg-decoder-0.3
+  (package
+    (name "rust-jpeg-decoder")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "jpeg-decoder" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0gkv0zx95i4fr40fj1a10d70lqi6lfyia8r5q8qjxj8j4pj0005w"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "Cargo.toml"
+                    (("=0\\.2\\.83") "^0.2.83"))))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f                  ; Not all files included
+       #:cargo-inputs
+       (("rust-rayon" ,rust-rayon-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-png" ,rust-png-0.16)
+        ("rust-walkdir" ,rust-walkdir-2)
+        ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://github.com/image-rs/jpeg-decoder")
+    (synopsis "JPEG decoder")
+    (description "JPEG decoder written in Rust.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-jpeg-decoder-0.1
   (package
+    (inherit rust-jpeg-decoder-0.3)
     (name "rust-jpeg-decoder")
     (version "0.1.22")
     (source
@@ -1353,7 +1520,6 @@ pixel buffers with width, height and stride.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1wnh0bmmswpgwhgmlizz545x8334nlbmkq8imy9k224ri3am7792"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Some test files missing.
        #:cargo-inputs
@@ -1362,11 +1528,29 @@ pixel buffers with width, height and stride.")
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-png" ,rust-png-0.14)
-        ("rust-walkdir" ,rust-walkdir-2))))
-    (home-page "https://github.com/image-rs/jpeg-decoder")
-    (synopsis "JPEG decoder")
-    (description "JPEG decoder written in Rust.")
-    (license (list license:expat license:asl2.0))))
+        ("rust-walkdir" ,rust-walkdir-2))))))
+
+(define-public rust-libwebp-sys-0.4
+  (package
+    (name "rust-libwebp-sys")
+    (version "0.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "libwebp-sys" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1gvjaqhjpzdskx8x4q1lfgw24jnbjgkx4s6dxpkkg2d2ba4d37s3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags
+       '("--release" "--"
+         "--skip=tests::poke")
+       #:cargo-inputs
+       (("rust-cc" ,rust-cc-1))))
+    (home-page "https://github.com/NoXF/libwebp-sys")
+    (synopsis "Bindings to libwebp (bindgen, static linking)")
+    (description "Bindings to libwebp (bindgen, static linking)")
+    (license license:expat)))
 
 (define-public rust-line-drawing-0.7
   (package
@@ -1472,6 +1656,36 @@ graphics and video games.")
     (synopsis "SVG helpers for the lyon crates")
     (description "This package provides SVG helpers for the lyon crates.")
     (license (list license:expat license:asl2.0))))
+
+(define-public rust-mp4parse-0.12
+  (package
+    (name "rust-mp4parse")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "mp4parse" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1ppqv60qiyrnbb996gb1sik08c0j2i317llv3rrcwb1cjg3bdlk7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f              ; Not all files included.
+       #:cargo-inputs
+       (("rust-bitreader" ,rust-bitreader-0.3)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-env-logger" ,rust-env-logger-0.8)
+        ("rust-fallible-collections" ,rust-fallible-collections-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-static-assertions" ,rust-static-assertions-1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-test-assembler" ,rust-test-assembler-0.1)
+        ("rust-walkdir" ,rust-walkdir-2))))
+    (home-page "https://github.com/mozilla/mp4parse-rust")
+    (synopsis "Parser for ISO base media file format (mp4)")
+    (description "Parser for ISO base media file format (mp4)")
+    (license license:mpl2.0)))
 
 (define-public rust-osmesa-sys-0.1
   (package
@@ -1717,14 +1931,14 @@ interactive applications.")
 (define-public rust-png-0.17
   (package
     (name "rust-png")
-    (version "0.17.5")
+    (version "0.17.7")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "png" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1fp3vnaxmjdv71dcakc21k07ir5s31dlx1mrazfqddzgaynw0f6w"))))
+        (base32 "0f66slx641p7an277xskz8vq7syy9cmhsx1qwnfb268ahspqww2x"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #false                  ;XXX missing files in tarball
@@ -1732,7 +1946,7 @@ interactive applications.")
        (("rust-bitflags" ,rust-bitflags-1)
         ("rust-crc32fast" ,rust-crc32fast-1)
         ("rust-deflate" ,rust-deflate-1)
-        ("rust-miniz-oxide" ,rust-miniz-oxide-0.5))
+        ("rust-miniz-oxide" ,rust-miniz-oxide-0.6))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-getopts" ,rust-getopts-0.2)
@@ -1852,8 +2066,43 @@ interactive applications.")
         ("rust-glob" ,rust-glob-0.2)
         ("rust-term" ,rust-term-0.4))))))
 
+(define-public rust-ravif-0.8
+  (package
+    (name "rust-ravif")
+    (version "0.8.10+rust-1.67.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "ravif" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1r3s78781kb9lwysdvpdc80gavly33dcs4inhhp2dawml9g3rjss"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-avif-serialize" ,rust-avif-serialize-0.7)
+        ("rust-imgref" ,rust-imgref-1)
+        ("rust-loop9" ,rust-loop9-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-quick-error" ,rust-quick-error-2)
+        ("rust-rav1e" ,rav1e)
+        ("rust-rayon" ,rust-rayon-1)
+        ("rust-rgb" ,rust-rgb-0.8))
+       #:cargo-development-inputs
+       (("rust-avif-parse" ,rust-avif-parse-1))))
+    (native-inputs
+     (list nasm pkg-config))
+    (inputs
+     (list libgit2 zlib))
+    (home-page "https://lib.rs/ravif")
+    (synopsis "Rust library for encoding images in AVIF format")
+    (description
+     "This package provides a rav1e-based pure Rust library for encoding images in
+AVIF format (powers the `cavif` tool).")
+    (license license:bsd-3)))
+
 (define-public rust-ravif-0.6
   (package
+    (inherit rust-ravif-0.8)
     (name "rust-ravif")
     (version "0.6.4")
     (source
@@ -1863,7 +2112,6 @@ interactive applications.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1gyc7w1fz3qdk95cdpkj185dm6lskxfp329xm69waxc565fcz9rx"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-avif-serialize" ,rust-avif-serialize-0.6)
@@ -1877,11 +2125,7 @@ interactive applications.")
        (("rust-avif-parse" ,rust-avif-parse-0.13))))
     (native-inputs
      (list nasm))                 ;for building rav1e
-    (home-page "https://lib.rs/ravif")
-    (synopsis "Library for encoding images in AVIF format")
-    (description "This package is a rav1e-based pure Rust library for encoding
-images in AVIF format.")
-    (license license:bsd-3)))
+    (inputs '())))
 
 (define-public rust-raw-window-handle-0.4
   (package
@@ -1925,7 +2169,7 @@ images in AVIF format.")
 (define-public rust-rgb-0.8
   (package
     (name "rust-rgb")
-    (version "0.8.25")
+    (version "0.8.36")
     (source
      (origin
        (method url-fetch)
@@ -1933,7 +2177,7 @@ images in AVIF format.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lrv3x5h1lvdzg1qqr8aiysz978m35zpjdkyicnvkarnh8zkqzr8"))))
+         "0ncgzkgifbyfx7vpnygfl4mgpdhhbaywxybx6pnjraf77wz2vv10"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -2094,8 +2338,34 @@ first-class Rust objects.")
 applications.")
     (license license:expat)))
 
+(define-public rust-tiff-0.8
+  (package
+    (name "rust-tiff")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "tiff" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0wg4a6w8sakyy0mggblg340mx8bgglx9hwsxsn8g5fpjkx7k6jbl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f              ; Not all files included
+       #:cargo-inputs
+       (("rust-flate2" ,rust-flate2-1)
+        ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.3)
+        ("rust-weezl" ,rust-weezl-0.1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3))))
+    (home-page "https://github.com/image-rs/image-tiff")
+    (synopsis "TIFF decoding and encoding library in pure Rust")
+    (description
+     "This package provides TIFF decoding and encoding library in pure Rust.")
+    (license license:expat)))
+
 (define-public rust-tiff-0.6
   (package
+    (inherit rust-tiff-0.8)
     (name "rust-tiff")
     (version "0.6.1")
     (source
@@ -2105,18 +2375,12 @@ applications.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0ds48vs919ccxa3fv1www7788pzkvpg434ilqkq7sjb5dmqg8lws"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-jpeg-decoder" ,rust-jpeg-decoder-0.1)
         ("rust-miniz-oxide" ,rust-miniz-oxide-0.4)
-        ("rust-weezl" ,rust-weezl-0.1))))
-    (home-page "https://github.com/image-rs/image-tiff")
-    (synopsis "TIFF decoding and encoding library in pure Rust")
-    (description
-     "This package provides TIFF decoding and encoding library in pure Rust.")
-    (license license:expat)))
+        ("rust-weezl" ,rust-weezl-0.1))))))
 
 (define-public rust-tiff-0.5
   (package
@@ -2905,6 +3169,28 @@ crate @code{rust-wayland-client} for usable bindings.")
        (sha256
         (base32
          "0a0ndgkg98pvmkv44yya4f7mxzjaxylknqh64bpa05w0azyv02jj"))))))
+
+(define-public rust-webp-0.2
+  (package
+    (name "rust-webp")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "webp" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "1bhw6xp7vg4rx7flxgzvdzk21q2dx1bsn06h0yj7jq0n3y12y0ng"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-image" ,rust-image-0.24)
+        ("rust-libwebp-sys" ,rust-libwebp-sys-0.4))
+       #:cargo-development-inputs
+       (("rust-image" ,rust-image-0.24))))
+    (home-page "https://github.com/jaredforth/webp")
+    (synopsis "WebP conversion library")
+    (description "This package procides a WebP conversion library.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-winit-0.26
   (package
