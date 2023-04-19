@@ -50,7 +50,7 @@
 (define-public lcms
   (package
     (name "lcms")
-    (version "2.13.1")
+    (version "2.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lcms/lcms/"
@@ -58,7 +58,7 @@
                                   "/lcms2-" version ".tar.gz"))
               (sha256
                (base32
-                "121v414bg2zk0fcwx0kigr2l6nxl88nmblfn3gq5lz5jwybffwyl"))))
+                "0fdbf7cr4rrm9r5c4k876l50aqgs0qhld0af5az36d2h1yyvq35j"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
