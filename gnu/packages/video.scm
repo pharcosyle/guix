@@ -4078,7 +4078,7 @@ and MPEG system streams.")
        (sha256
         (base32 "02n87lysqn4kg2qk7d1ffrp96c44zkdlxdj0n16hbgrlrpiwlcd6"))))
     (inputs
-     (list libgcrypt))
+     (list libgcrypt libgpg-error))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libbdplus.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
