@@ -104,58 +104,63 @@
          "1nwvpg5inpjzbq7r6wqsgmwcnfqyahcw9hi8discqvmrcq4nfg4y"))))
     (build-system gnu-build-system)
     (arguments
-     (cond
-      ((%current-target-system)
-       (list
-        #:modules '((guix build gnu-build-system)
-                    (guix build utils))
-        #:phases
-        #~(modify-phases %standard-phases
-            ;; If this is left out, some generated header
-            ;; files will be sprinkled with ‘\c’, which
-            ;; the compiler won't like.
-            (add-after 'unpack 'fix-gen-lock-obj.sh
-              (lambda _
-                (substitute* "src/gen-lock-obj.sh"
-                  (("if test -n `echo -n`") "if ! test -n `echo -n`"))))
-            ;; When cross-compiling, some platform specific properties cannot
-            ;; be detected. Create a symlink to the appropriate platform
-            ;; file if required. Note that these platform files depend on
-            ;; both the operating system and architecture!
-            ;;
-            ;; See Cross-Compiling section at:
-            ;; https://github.com/gpg/libgpg-error/blob/master/README
-            (add-after 'unpack 'cross-symlinks
-              (lambda _
-                (define (link triplet source)
-                  (symlink (string-append "lock-obj-pub." triplet ".h")
-                           (string-append "src/syscfg/lock-obj-pub."
-                                          source ".h")))
-                #$(let ((target (%current-target-system)))
-                    (cond ((target-linux? target)
-                           (match (string-take target
-                                               (string-index target #\-))
-                             ("armhf"
-                              `(link "arm-unknown-linux-gnueabi" "linux-gnu"))
-                             ("mips64el"
-                              `(link "mips-unknown-linux-gnu" "linux-gnu"))
-                             ;; Don't always link to the "linux-gnu"
-                             ;; configuration, as this is not correct for
-                             ;; all architectures.
-                             (_ #t)))
-                          (#t #t))))))))
-      ((system-hurd?)
-       (list
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'skip-tests
-              (lambda _
-                (substitute*
-                    "tests/t-syserror.c"
-                  (("(^| )main *\\(.*" all)
-                   (string-append all "{\n  exit (77);//"))))))))
-      (else
-       '())))
+     (append
+      ;; Workaround for packages that check for `gpg-error-confg' and fail
+      ;; to build if it's not found (at the time of this writing, libbdplus).
+      ;; See https://dev.gnupg.org/T6257#164567.
+      '(#:configure-flags '("--enable-install-gpg-error-config"))
+      (cond
+       ((%current-target-system)
+        (list
+         #:modules '((guix build gnu-build-system)
+                     (guix build utils))
+         #:phases
+         #~(modify-phases %standard-phases
+             ;; If this is left out, some generated header
+             ;; files will be sprinkled with ‘\c’, which
+             ;; the compiler won't like.
+             (add-after 'unpack 'fix-gen-lock-obj.sh
+               (lambda _
+                 (substitute* "src/gen-lock-obj.sh"
+                   (("if test -n `echo -n`") "if ! test -n `echo -n`"))))
+             ;; When cross-compiling, some platform specific properties cannot
+             ;; be detected. Create a symlink to the appropriate platform
+             ;; file if required. Note that these platform files depend on
+             ;; both the operating system and architecture!
+             ;;
+             ;; See Cross-Compiling section at:
+             ;; https://github.com/gpg/libgpg-error/blob/master/README
+             (add-after 'unpack 'cross-symlinks
+               (lambda _
+                 (define (link triplet source)
+                   (symlink (string-append "lock-obj-pub." triplet ".h")
+                            (string-append "src/syscfg/lock-obj-pub."
+                                           source ".h")))
+                 #$(let ((target (%current-target-system)))
+                     (cond ((target-linux? target)
+                            (match (string-take target
+                                                (string-index target #\-))
+                              ("armhf"
+                               `(link "arm-unknown-linux-gnueabi" "linux-gnu"))
+                              ("mips64el"
+                               `(link "mips-unknown-linux-gnu" "linux-gnu"))
+                              ;; Don't always link to the "linux-gnu"
+                              ;; configuration, as this is not correct for
+                              ;; all architectures.
+                              (_ #t)))
+                           (#t #t))))))))
+       ((system-hurd?)
+        (list
+         #:phases
+         #~(modify-phases %standard-phases
+             (add-after 'unpack 'skip-tests
+               (lambda _
+                 (substitute*
+                     "tests/t-syserror.c"
+                   (("(^| )main *\\(.*" all)
+                    (string-append all "{\n  exit (77);//"))))))))
+       (else
+        '()))))
     (native-inputs (list gettext-minimal))
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -228,7 +233,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.5")
+    (version "2.5.6")
     (source
      (origin
       (method url-fetch)
@@ -236,7 +241,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1r1lvcp67gn5lfrj1g388sd77ca6qwnmxndirdysd71gk362z34f"))))
+        "09pllidbv01km8qrls21dcz1qwa22ydqyy1r9r79152kilhjgzg9"))))
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error pth))
@@ -255,7 +260,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.6.3")
+    (version "1.6.5")
     (source
      (origin
       (method url-fetch)
@@ -264,7 +269,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0p6y82j9y6n0l7scjgqhz3as9w13jiqjfx9n2jzynw89nf6wcwiz"))))
+        "05kd5bpnc10lmm31yifvx6j93gdsa3brhgvmk1wji6acay664r55"))))
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error))
@@ -312,9 +317,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    ;; Note: The 2.2.X releases are Long Term Support (LTS), so stick to it
-    ;; for our stable 'gnupg'.
-    (version "2.2.39")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -322,7 +325,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "0bscgv9gg9yhlpyia7b9l438cq6dvv6pwlhbl70df9phhmkdnx5b"))))
+                "1791plkc3my4519y9hrkvj7lrjfripl9xbaqqa04svrgfdnswwd2"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -361,9 +364,9 @@ compatible to GNU Pth.")
                  (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
           (add-before 'build 'patch-test-paths
             (lambda _
-              (substitute* '("tests/inittests"
+              (substitute* '("tests/cms/inittests"
+                             "tests/cms/Makefile"
                              "tests/pkits/inittests"
-                             "tests/Makefile"
                              "tests/pkits/common.sh"
                              "tests/pkits/Makefile")
                 (("/bin/pwd") (which "pwd")))
@@ -409,13 +412,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.18.0")
+    (version "1.23.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32 "17hfigfnq6xz45b5xrp299f68b5mwx0aysd51sx5v4nf8yp4w79n"))))
+       (base32 "092jrqdmdggjhl0swpvci8cscdcx0hbbr897an0vdk1wyfqyi6cl"))))
     (build-system gnu-build-system)
     (native-inputs
      (list gnupg))
