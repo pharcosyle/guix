@@ -1818,14 +1818,14 @@ The central program included in this package is @code{onsgmls}, which replaces
 (define-public python-elementpath
   (package
     (name "python-elementpath")
-    (version "2.0.3")
+    (version "4.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "elementpath" version))
        (sha256
         (base32
-         "1kxx573ywqfh6j6aih2i6hhsya6kz79qq4bgz6yskwk6b18jyr8z"))))
+         "0n5fiinm713s1a1psv39csmxhixfdj6693kj1x48mpydx0yzyayd"))))
     (build-system python-build-system)
     ;; The test suite is not run, to avoid a dependency cycle with
     ;; python-xmlschema.
@@ -1910,7 +1910,7 @@ XML document to a Python object.")
 (define-public python-xmlschema
   (package
     (name "python-xmlschema")
-    (version "1.2.5")
+    (version "2.2.3")
     (source (origin
               ;; Unit tests are not distributed with the PyPI archive.
               (method git-fetch)
@@ -1920,7 +1920,7 @@ XML document to a Python object.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rsa75x86gdjalvy4riq7613szb616hff80crx006chyppzdkxmq"))))
+                "17cb9iwyg7kq1z9gk3rgvlp6fhh31ibjqh5byy17i52zhx8mag19"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
