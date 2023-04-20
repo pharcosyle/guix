@@ -4644,13 +4644,13 @@ addon modules.")
 (define-public python-bottle
   (package
     (name "python-bottle")
-    (version "0.12.23")
+    (version "0.12.25")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "bottle" version))
       (sha256
-        (base32 "0rs1w293gp5bhxip2cci8mfkhld6n5qcznvlna3nxclz76mf6gb8"))))
+        (base32 "08g0wnq0zi4dp6jg7vw19b5z51pbvya64lml7w5p2vdff14wkag1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
