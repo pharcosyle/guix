@@ -2866,13 +2866,13 @@ counterexamples for you.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "6.54.5")
+    (version "6.72.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "1ivyrjpnahvj359pfndnk8x3h0gw37kqm02fmnzibx4mas15d44a"))))
+                "0mgv3xfdlzfkmxcsh2fig5c3dbnbx6l9m3gwz834vdm41rjcklig"))))
     (build-system python-build-system)
     (arguments
      ;; XXX: Tests are not distributed with the PyPI archive.
