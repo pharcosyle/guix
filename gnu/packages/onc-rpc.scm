@@ -40,16 +40,15 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "1.3.1")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
                                   version "/libtirpc-"
                                   version ".tar.bz2"))
-              (patches (search-patches "libtirpc-CVE-2021-46828.patch"))
               (sha256
                (base32
-                "05zf16ilwwkzv4cccaac32nssrj3rg444n9pskiwbgk6y359an14"))))
+                "1wqj1vka4gnnk1dbp6pflpcdkp2gf7lxwzcmf4wg7xnra64fjx34"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")
