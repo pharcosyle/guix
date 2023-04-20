@@ -232,14 +232,14 @@ with a PKCS #11 Cryptographic Token Interface.")
 (define-public pcsc-lite
   (package
     (name "pcsc-lite")
-    (version "1.9.8")
+    (version "1.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pcsclite.apdu.fr/files/"
                                   "pcsc-lite-" version ".tar.bz2"))
               (sha256
                (base32
-                "12923c6l5qzga1xlcxvm0vzbqrxnxq1qgzlrxf2y5gpcaz2q0bah"))))
+                "12jfj4fdw25wzsvrfazbi2qkgm4l7i133n60xhf2jlqzqqs3pk6b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers"
