@@ -196,13 +196,13 @@ Python file, so it can be easily copied into your project.")
 (define-public python-trove-classifiers
   (package
     (name "python-trove-classifiers")
-    (version "2023.3.9")
+    (version "2023.4.18")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "trove-classifiers" version))
               (sha256
                (base32
-                "00xvldq94dy0zxz40idbbx40smrkfvq75r26ywszxg6lq7wg4hpf"))))
+                "1fnxg2gidi3gszqzxbj9yj3imffm0dmpr50shrlydydxrj1jm2cz"))))
     (build-system pyproject-build-system)
     (arguments (list #:build-backend "setuptools.build_meta"
                      #:tests? #f))      ;keep dependencies to a minimum
@@ -362,14 +362,14 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
   (hidden-package
    (package
      (name "python-pep517-bootstrap")
-     (version "0.9.1")
+     (version "0.10.0")
      (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pep517" version))
         (sha256
          (base32
-          "0zqidxah03qpnp6zkg3zd1kmd5f79hhdsfmlc0cldaniy80qddxf"))))
+          "06wkh3l6hpnjd54dyfbyd7h7dks2ji9p9534bbhljskjp7vg6ndc"))))
      (build-system python-build-system)
      (arguments
       `(#:tests? #f))                     ;to avoid circular dependencies
@@ -384,13 +384,16 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "3.0.6")
+    (version "3.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32 "109b9r802wb472hgmxclljprh5cid0w3p6mk9alba7pg2c0frgfr"))))
+        (base32 "1siyxm70kws5fhszpl6h6w5vcg88c1j9acvp31ahq9sxfwi91vhq"))
+       (patches
+        ;; Remove this when updating to version 3.0.8 or later.
+        (search-patches "pyparsing-3.0.7-sre-const-deprecation.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -464,13 +467,13 @@ information.")
 (define-public python-pypa-build
   (package
     (name "python-pypa-build")
-    (version "0.7.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "build" version))
               (sha256
                (base32
-                "17xqija27x4my1yrnk6q2vwln60r39g2dhby9zg2l99qjgbdrahs"))))
+                "0g5w28ban6k9qywqwdqiqms3crg75rsvfphl4f4qkg8wi57741qs"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ;to tests in the PyPI release

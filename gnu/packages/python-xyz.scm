@@ -4400,12 +4400,28 @@ JavaScript-like message boxes.  Types of dialog boxes include:
       #~(modify-phases %standard-phases
           (add-after 'unpack 'skip-broken-test
             (lambda _
+              ;; Skip three tests that fail with Python 3.11. See:
+              ;; https://github.com/pympler/pympler/issues/148
+              (substitute* "test/muppy/test_refbrowser.py"
+                (("^([[:blank:]]+)def test_get_tree" all indent)
+                 (string-append indent "@unittest.skipIf(True, \
+'Fails with Python 3.11')\n" all)))
+              (substitute* "test/gui/test_garbage.py"
+                (("^([[:blank:]]+)def test_findgarbage" all indent)
+                 (string-append indent "@unittest.skipIf(True, \
+'Fails with Python 3.11')\n" all))
+                (("^([[:blank:]]+)def test_prune" all indent)
+                 (string-append indent "@unittest.skipIf(True, \
+'Fails with Python 3.11')\n" all)))
+
               ;; FIXME: This test fails for no good reason:
               ;; https://github.com/pympler/pympler/issues/153
               (substitute* "test/muppy/test_tracker.py"
                 (("^([[:blank:]]+)def test_stracker_create_summary" all indent)
                  (string-append indent "@unittest.skipIf(True, \
 'Fails on Guix too for unknown reasons')\n" all))))))))
+    (native-inputs
+     (list python-bottle))
     (synopsis "Measure, monitor and analyze memory behavior")
     (description
      "Pympler is a development tool to measure, monitor and analyze
@@ -4665,14 +4681,14 @@ possible.")
 (define-public python-markupsafe
   (package
     (name "python-markupsafe")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "MarkupSafe" version))
        (sha256
         (base32
-         "0jqxp5sfrc0byp6bk0gwdmildi4mck2gprp42afri3z4r5y1k4bz"))))
+         "03a515mrh1l3cynrhcb5rjphmxkwdwd3hin7sii6s0r65f6brjmb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -6327,13 +6343,13 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.32")
+    (version "0.29.34")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
-        (base32 "1xqsihpqnfal29nb5kmw8z71nd4jbsnbz7p3lkr094xpb13wycw7"))))
+        (base32 "1a19kb9fgqg105a0iysbg39b58a7ksx0pllnqdh1llkvbn7nh28r"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -13187,14 +13203,14 @@ primary use case is APIs defined before keyword-only parameters existed.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.4.8")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "1fnhbi3rmk47l9851gbik0flfr64vs5j0hbqx24cafjap6gprxxf"))))
+         "1plzwvna1hk1p3c3jw3wbnzi3yfb2mprghwfalrahqlflq62kdwp"))))
     (build-system python-build-system)
     (home-page "https://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
@@ -13268,14 +13284,14 @@ for OER and UPER.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "0v8f6qjfi5i7qc5icsbv2pi24qy6k6m8wjqjvdf2sxjvlpq3yr4x"))))
+         "1d1cs1in0lmm61sjmlach9qvyq3xm3xcb49vhclx7mzain754kw1"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
@@ -16069,14 +16085,14 @@ of @acronym{REGEXPs, regular expressions}.")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.2.2")
+    (version "1.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "0gqnv9py1dqp01jmf5zxp0vj2dbhq1l9zy55fai319iv6sdqc91p"))))
+         "0d3s7x6d8lxsfcvixvy81ffcdbaf5szcv2bamlc1mc1vvh1kj2nn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -16089,7 +16105,7 @@ of @acronym{REGEXPs, regular expressions}.")
     (propagated-inputs
      (list python-markupsafe))
     (native-inputs
-     (list python-mock python-pytest))
+     (list python-pytest))
     (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
@@ -18160,17 +18176,16 @@ until the object is actually required, and caches the result of said call.")
 (define-public python-dnspython
   (package
     (name "python-dnspython")
-    (version "2.1.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "dnspython" version ".zip"))
+              (uri (pypi-uri "dnspython" version))
               (sha256
                (base32
-                "1m0xvyby8baaxp6pfm0fgq8d2pq5dd8qm8bzfbrs009jaw5pza74"))))
-    (build-system python-build-system)
+                "1fa0lm90sibdzwi0hk5b47k68fhjpvh68vgg287ffsxl7sq34ki2"))))
+    (build-system pyproject-build-system)
     (arguments
-     `(#:tests? #f                      ; XXX: requires internet access
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-getprotobyname-calls
            ;; These calls are problematic in the build environment as there is
@@ -18181,8 +18196,30 @@ until the object is actually required, and caches the result of said call.")
                (("socket.getprotobyname\\('tcp'\\)")
                 "6")
                (("socket.getprotobyname\\('udp'\\)")
-                "17")))))))
-    (native-inputs (list unzip))
+                "17"))))
+         (add-before 'check 'disable-tests
+           (lambda _
+             (substitute* "tests/test_dnssec.py"
+               ;; NameError: name 'ed448' is not defined
+               (("testMakeCDS")
+                "skip_testMakeCDS")
+               (("testMakeManyDSfromCDS")
+                "skip_testMakeManyDSfromCDS")
+               (("testMakeManyDSfromDNSKEY")
+                "skip_testMakeManyDSfromDNSKEY"))
+             (substitute* "tests/test_rdata.py"
+               ;; dns.exception.SyntaxError: protocol not found
+               (("test_misc_good_WKS_text")
+                "skip_test_misc_good_WKS_text")))))))
+    (native-inputs
+     (list python-poetry-core
+           python-pytest
+           ;; For tests.
+           ;; TODO: Enable more tests? At present 172 tests are skipped. Some
+           ;; cannot be run because there's no internet access during build
+           ;; but there's a number of optional dependencies we could add to
+           ;; run more of the tests.
+           python-idna))
     (home-page "https://www.dnspython.org")
     (synopsis "DNS toolkit for Python")
     (description
@@ -20217,14 +20254,14 @@ both as keys and as attributes.")
 (define-public python-attrs
   (package
     (name "python-attrs")
-    (version "21.2.0")
+    (version "23.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "attrs" version))
               (sha256
                (base32
-                "1yzmwi5d197p0qhl7rl4xi9q1w8mk9i3zn6hrl22knbcrb1slspg"))))
-    (build-system python-build-system)
+                "05g0a3y9hv74zblgf51zd0ar3g1ksfngjdgj3dps44qmb1nq6yb2"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'remove-test-hypothesis-deadlines
@@ -20238,7 +20275,8 @@ both as keys and as attributes.")
                       (when tests?
                         (invoke "pytest")))))))
     (native-inputs
-     (list python-coverage python-hypothesis python-pympler python-pytest
+     (list python-hatchling python-hatch-vcs python-hatch-fancy-pypi-readme
+           python-coverage python-hypothesis python-pympler python-pytest
            python-six))
     (home-page "https://github.com/python-attrs/attrs/")
     (synopsis "Attributes without boilerplate")
@@ -20251,7 +20289,8 @@ both as keys and as attributes.")
   (package
     (inherit python-attrs)
     (name "python-attrs-bootstrap")
-    (native-inputs `())
+    (native-inputs
+     (list python-hatchling python-hatch-vcs python-hatch-fancy-pypi-readme))
     (arguments `(#:tests? #f))))
 
 (define-public python-cliapp
@@ -26718,30 +26757,23 @@ choose to use Base64 without the “=” padding.")
     (license license:asl2.0)))
 
 (define-public python-py-cpuinfo
-  ;; This is the first commit where riscv64-linux support is available.
-  ;; We can move back to pypi releases with the next release.
-  (let ((commit "4d6987e5c30f2ebacb20781892c01329042cce60")
-        (revision "1"))
-    (package
-      (name "python-py-cpuinfo")
-      (version (git-version "8.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-                (url "https://github.com/workhorsy/py-cpuinfo")
-                (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0h5wi1bfcqqr1x3j1pa7dmkx7siprsyksbsy80fl2sdrrgpji0b0"))))
-      (build-system python-build-system)
-      (home-page "https://github.com/workhorsy/py-cpuinfo")
-      (synopsis "Get CPU info with Python")
-      (description
-       "This Python module returns the CPU info by using the best sources of
+  (package
+    (name "python-py-cpuinfo")
+    (version "9.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py-cpuinfo" version))
+       (sha256
+        (base32
+         "144nyk1izyigy0bzpj6p0bcsvply617khr7xic8nzp4hmhzvznrw"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/workhorsy/py-cpuinfo")
+    (synopsis "Get CPU info with Python")
+    (description
+     "This Python module returns the CPU info by using the best sources of
 information for your operating system.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public python-canonicaljson
   (package

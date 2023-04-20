@@ -340,14 +340,14 @@ ISO 8601 dates, time and duration.")
 (define-public python-iso8601
   (package
     (name "python-iso8601")
-    (version "1.0.2")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "iso8601" version))
        (sha256
         (base32
-         "1ccl6plks706hxm35cn1wsvxhqh3bfwi5cjgjpdxjib81qi07x97"))))
+         "0gzhpqrah7x44cvd4j8yh7rx31lsh7w98bkdx9ij1vnyh5xix09j"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
