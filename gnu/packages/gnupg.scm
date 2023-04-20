@@ -168,6 +168,19 @@ Daemon and possibly more in the future.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgpg-error")))))
 
+(define-public libgpg-error-1.45
+  (package
+    (inherit libgpg-error)
+    (version "1.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "09haz1kk48b8q0hd58g98whylah0fp121yfgjms7pzsbzgj8w3sp"))))))
+
 (define-public libgcrypt
   (package
     (name "libgcrypt")
@@ -239,7 +252,8 @@ generation.")
         "1r1lvcp67gn5lfrj1g388sd77ca6qwnmxndirdysd71gk362z34f"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     (list libgpg-error pth))
+     (list libgpg-error-1.45 ; Currently won't build with version 1.47.
+           pth))
     (home-page "https://gnupg.org")
     (synopsis
      "IPC library used by GnuPG and related software")
@@ -312,9 +326,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    ;; Note: The 2.2.X releases are Long Term Support (LTS), so stick to it
-    ;; for our stable 'gnupg'.
-    (version "2.2.39")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -322,7 +334,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "0bscgv9gg9yhlpyia7b9l438cq6dvv6pwlhbl70df9phhmkdnx5b"))))
+                "1s4xnmr7k1smwjx6gyvsd10q6z313clcijz91j8zsfs4xdd1xdvn"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -361,16 +373,25 @@ compatible to GNU Pth.")
                  (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
           (add-before 'build 'patch-test-paths
             (lambda _
-              (substitute* '("tests/inittests"
+              (substitute* '("tests/cms/inittests"
+                             "tests/cms/Makefile"
                              "tests/pkits/inittests"
-                             "tests/Makefile"
                              "tests/pkits/common.sh"
                              "tests/pkits/Makefile")
                 (("/bin/pwd") (which "pwd")))
               (substitute* "common/t-exectool.c"
                 (("/bin/cat") (which "cat"))
                 (("/bin/true") (which "true"))
-                (("/bin/false") (which "false"))))))))
+                (("/bin/false") (which "false")))))
+          ;; Backport for a fix (https://github.com/gpg/gnupg/commit/e89d57a2).
+          ;; Remove this on the next update.
+          (add-before 'build 'fix-gpgme-for-source-build
+            (lambda _
+              (substitute* "tests/gpgme/Makefile"
+                (("setup.scm/tests") "")
+                (("-rm -rf") "-rm -rf tests lang"))
+              (substitute* "tests/gpgme/all-tests.scm"
+                (("\"setup.scm\"") "")))))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
@@ -409,13 +430,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32 "17hfigfnq6xz45b5xrp299f68b5mwx0aysd51sx5v4nf8yp4w79n"))))
+       (base32 "0l17whiczw2ywd1pgss97khh4zcn9swjc2a40686hmm3bmd7i995"))))
     (build-system gnu-build-system)
     (native-inputs
      (list gnupg))
