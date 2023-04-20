@@ -5079,40 +5079,54 @@ make direct processing by LaTeX easier.  The package can be used either in
 conjunction with BibTeX or as a replacement for BibTeX.")
     (license license:lppl1.3+)))
 
-(define-public texlive-latex-bigfoot
-  (package
-    (name "texlive-latex-bigfoot")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "bigfoot"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "092g8alnsdwlgl1isdnqrr32l161994295kadr1n05d81xgj5wnv"))))
-    (build-system texlive-build-system)
-    (arguments
-     '(#:tex-directory "latex/bigfoot"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-generated-file
-           (lambda _
-             (for-each delete-file (find-files "." "\\.drv$"))
-             #t)))))
-    (home-page "https://www.ctan.org/pkg/bigfoot")
-    (synopsis "Footnotes for critical editions")
-    (description
-     "This package aims to provide a one-stop solution to requirements for
-footnotes.  It offers: Multiple footnote apparatus superior to that of
+(define-public texlive-bigfoot
+  (let ((template (simple-texlive-package
+                   "texlive-bigfoot"
+                   (list "doc/latex/bigfoot/"
+                         "source/latex/bigfoot/"
+                         "tex/latex/bigfoot/")
+                   (base32
+                    "140b4bbjcgajd1flznmi3ga6lx5pna2nxybr2dqm9515lny8gwf0"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t) "latex/bigfoot")
+         ((#:build-targets _ '()) '(list "bigfoot.ins"))
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'chdir
+                (lambda _ (chdir "source/latex/bigfoot/")))
+              (add-after 'chdir 'delete-drv-files
+                (lambda _
+                  (for-each delete-file (find-files "." "\\.drv$"))))
+              (replace 'copy-files
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((origin (assoc-ref inputs "source"))
+                        (source (string-append #$output
+                                               "/share/texmf-dist/source"))
+                        (doc (string-append #$output:doc
+                                            "/share/texmf-dist/doc")))
+                    (copy-recursively (string-append origin "/source") source)
+                    (copy-recursively (string-append origin "/doc") doc))))))))
+      (propagated-inputs
+       (list texlive-etex texlive-ncctools))
+      (home-page "https://ctan.org/pkg/bigfoot")
+      (synopsis "Footnotes for critical editions")
+      (description
+       "The package aims to provide a one-stop solution to requirements for
+footnotes.  It offers multiple footnote apparatus superior to that of
 @code{manyfoot}.  Footnotes can be formatted in separate paragraphs, or be run
-into a single paragraph (this choice may be selected per footnote series);
-Things you might have expected (such as @code{\\verb}-like material in
-footnotes, and color selections over page breaks) now work.  Note that the
-majority of the bigfoot package's interface is identical to that of
-@code{manyfoot}; users should seek information from that package's
-documentation.  The bigfoot bundle also provides the @code{perpage} and
-@code{suffix} packages.")
-    (license license:gpl2+)))
+into a single paragraph.  Note that the majority of the @code{bigfoot}
+package's interface is identical to that of @code{manyfoot}; users should seek
+information from that package's documentation.
+
+The @code{bigfoot} bundle also provides the @code{perpage} and @code{suffix}
+packages.")
+      (license license:gpl2+))))
+
+(define-deprecated-package texlive-latex-bigfoot texlive-bigfoot)
 
 (define-public texlive-latex-blindtext
   (package
@@ -5579,7 +5593,7 @@ rotated.")
                "12clzcw2cl7g2chr2phgmmiwxw4859cln1gbx1wgp8bl9iw590nc")
               #:trivial? #t))
     (propagated-inputs
-     (list texlive-latex-bigfoot ; for suffix
+     (list texlive-bigfoot ; for suffix
            texlive-filemod
            texlive-graphics
            texlive-latex-ifplatform
@@ -8538,28 +8552,47 @@ dvipng, but it also works when you are using PDFTeX for generating PDF
 files.")
     (license license:gpl3+)))
 
-(define-public texlive-latex-acronym
-  (package
-    (name "texlive-latex-acronym")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "acronym"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "09pd4wynksg1y1ddxnqbhk2dc185zw5nyi794d86n3qx8l014ijy"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/acronym"))
-    (home-page "https://www.ctan.org/pkg/acronym")
-    (synopsis "Expand acronyms at least once")
-    (description
-     "This package ensures that all acronyms used in the text are spelled out
-in full at least once.  It also provides an environment to build a list of
+(define-public texlive-acronym
+  (let ((template (simple-texlive-package
+                   "texlive-acronym"
+                   (list "doc/latex/acronym/"
+                         "source/latex/acronym/"
+                         "tex/latex/acronym/")
+                   (base32
+                    "0p2sws3qy7wv0v6bsy6c5j36n9s1ps7b1z7dmg1370schrjpqnfh"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t) "latex/acronym")
+         ((#:build-targets _ '()) '(list "acronym.ins"))
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'chdir
+                (lambda _ (chdir "source/latex/acronym/")))
+              (replace 'copy-files
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((origin (assoc-ref inputs "source"))
+                        (source (string-append #$output
+                                               "/share/texmf-dist/source"))
+                        (doc (string-append #$output:doc
+                                            "/share/texmf-dist/doc")))
+                    (copy-recursively (string-append origin "/source") source)
+                    (copy-recursively (string-append origin "/doc") doc))))))))
+      (propagated-inputs
+       (list texlive-bigfoot texlive-relsize texlive-xstring))
+      (home-page "https://ctan.org/pkg/acronym")
+      (synopsis "Expand acronyms at least once")
+      (description
+       "This package ensures that all acronyms used in the text are spelled
+out in full at least once.  It also provides an environment to build a list of
 acronyms used.  The package is compatible with PDF bookmarks.  The package
-requires the suffix package, which in turn requires that it runs under
+requires the @code{suffix} package, which in turn requires that it runs under
 e-TeX.")
-    (license license:lppl1.3+)))
+      (license license:lppl1.3+))))
+
+(define-deprecated-package texlive-latex-acronym texlive-acronym)
 
 (define-public texlive-pdftex
   (package
@@ -9234,6 +9267,70 @@ typeset the table of contents in multiple columns.")
       (license license:lppl))))
 
 (define-deprecated-package texlive-latex-ms texlive-ms)
+
+(define-public texlive-ncctools
+  (let ((template (simple-texlive-package
+                   "texlive-ncctools"
+                   (list "doc/latex/ncctools/"
+                         "source/latex/ncctools/"
+                         "tex/latex/ncctools/")
+                   (base32
+                    "1g3fpvrg6kx2ns97ih6iwdk0rcbxlv043x8rdppxdincl2lvbdx5"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t) "latex/ncctools")
+         ((#:build-targets _ '()) '(list "ncctools.ins"))
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'chdir
+                (lambda _ (chdir "source/latex/ncctools/")))
+              (replace 'copy-files
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((origin (assoc-ref inputs "source"))
+                        (source (string-append #$output
+                                               "/share/texmf-dist/source"))
+                        (doc (string-append #$output:doc
+                                            "/share/texmf-dist/doc")))
+                    (copy-recursively (string-append origin "/source") source)
+                    (copy-recursively (string-append origin "/doc") doc))))))))
+      (propagated-inputs
+       (list texlive-amsmath texlive-latex-graphics))
+      (home-page "https://ctan.org/pkg/ncctools")
+      (synopsis "Collection of general packages for LaTeX")
+      (description
+       "The NCCtools bundle contains many packages for general use under LaTeX;
+many are also used by NCC LaTeX.  The bundle includes tools for:
+@itemize
+@item executing commands after a package is loaded;
+@item watermarks;
+@item counter manipulation;
+@item improvements to the @code{description} environment;
+@item hyphenation of compound words;
+@item new levels of footnotes;
+@item space-filling patterns;
+@item poor man's Black Board Bold symbols;
+@item alignment of the content of a box; use comma as decimal separator;
+@item boxes with their own crop marks;
+@item page cropmarks;
+@item improvements to fancy headers;
+@item float styles, mini floats, side floats;
+@item manually marked footnotes;
+@item extension of amsmath;
+@item control of paragraph skip;
+@item an envelope to the @code{graphicx} package;
+@item dashed and multiple rules;
+@item alternative techniques for declarations of sections, captions, and
+toc-entries;
+@item generalised text-stretching;
+@item generation of new theorem-like environments;
+@item control of the text area;
+@item centered page layouts;
+@item un-numbered top-level section.
+@end itemize")
+      (license license:lppl))))
 
 (define-public texlive-numprint
   (let ((template
@@ -12735,6 +12832,23 @@ allow hyphenation (the corresponding commands in LaTeX, all of whose names are
 lower-case, prevent hyphenation altogether).")
     (license license:lppl1.3c)))
 
+(define-public texlive-relsize
+  (package
+    (inherit (simple-texlive-package
+              "texlive-relsize"
+              (list "doc/latex/relsize/"
+                    "tex/latex/relsize/")
+              (base32
+               "07g9wqxsh3a9rmfbppaqhyic82a1i1habizaf4hpdi3246w6nnby")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/relsize")
+    (synopsis "Set the font size relative to the current font size")
+    (description
+     "The basic command of the package is @code{\\relsize}, whose argument is
+a number of @code{\\magsteps} to change size; from this are defined commands
+@code{\\larger}, @code{\\smaller}, @code{\\textlarger}, etc.")
+    (license license:public-domain)))
+
 (define-public texlive-everysel
   (package
     (inherit
@@ -13022,23 +13136,44 @@ underscores), and hyphenation of text typeset in monospaced (e.g., cmtt)
 fonts.")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-lastpage
-  (package
-    (inherit (simple-texlive-package
-              "texlive-latex-lastpage"
-              (list "doc/latex/lastpage/"
-                    "tex/latex/lastpage/")
-              (base32 "0q6x743b8fkw9r82lrxy49f9xsg81bffynwvpnvpnp3h4mkafvdb")
-              #:trivial? #t))
-    (build-system texlive-build-system)
-    (home-page "https://ctan.org/pkg/lastpage")
-    (synopsis "Reference last page for Page N of M type footers")
-    (description
-     "This package enables referencing the number of pages in a LaTeX document
-through the introduction of a new label which can be referenced like
+(define-public texlive-lastpage
+  (let ((template  (simple-texlive-package
+                    "texlive-lastpage"
+                    (list "doc/latex/lastpage/"
+                          "source/latex/lastpage/"
+                          "tex/latex/lastpage/")
+                    (base32
+                     "1cmzl0jkid4w60bjlyxrc5bynbc3lwq5nr77rsip0q9hprxykxks"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t) "latex/lastpage")
+         ((#:build-targets _ '()) '(list "lastpage.ins"))
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'chdir
+                (lambda _ (chdir "source/latex/lastpage/")))
+              (replace 'copy-files
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((origin (assoc-ref inputs "source"))
+                        (source (string-append #$output
+                                               "/share/texmf-dist/source"))
+                        (doc (string-append #$output:doc
+                                            "/share/texmf-dist/doc")))
+                    (copy-recursively (string-append origin "/source") source)
+                    (copy-recursively (string-append origin "/doc") doc))))))))
+      (home-page "https://ctan.org/pkg/lastpage")
+      (synopsis "Reference last page for Page N of M type footers")
+      (description
+       "This package enables referencing the number of pages in a LaTeX
+document through the introduction of a new label which can be referenced like
 @code{\\pageref{LastPage}} to give a reference to the last page of a document.
-It is particularly useful in the page footer that says: Page N of M.")
-    (license license:lppl1.3c+)))
+It is particularly useful in the page footer that says: @samp{Page N of M}.")
+      (license license:lppl1.3+))))
+
+(define-deprecated-package texlive-latex-lastpage texlive-lastpage)
 
 (define-public texlive-latex-tabto-ltx
   (package
@@ -13204,22 +13339,89 @@ are provided to:
 @end itemize")
     (license license:lppl1.0+)))
 
-(define-public texlive-latex-totcount
-  (package
-    (inherit (simple-texlive-package
-              "texlive-latex-totcount"
-              (list "doc/latex/totcount/"
-                    "tex/latex/totcount/")
-              (base32 "0z4mijyk3z7555q8da41aiji602plis5z261z4rr1fl8sndhnhn1")
-              #:trivial? #t))
-    (build-system texlive-build-system)
-    (home-page "https://ctan.org/pkg/totcount")
-    (synopsis "Find the last value of a counter")
-    (description
-     "This package records the value that was last set, for any counter of
+(define-public texlive-totcount
+  (let ((template (simple-texlive-package
+                   "texlive-totcount"
+                   (list "doc/latex/totcount/"
+                         "source/latex/totcount/"
+                         "tex/latex/totcount/")
+                   (base32
+                    "1rj9ncip5h2cbdljjqwxqsg14pb4mimzhz290q872n32w7rxkp28"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (build-system texlive-build-system)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t) "latex/totcount")
+         ((#:tex-format _ #t) "latex")
+         ((#:build-targets _ '()) '(list "totcount.ins"))
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'chdir
+                (lambda _ (chdir "source/latex/totcount/")))
+              (replace 'copy-files
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((origin (assoc-ref inputs "source"))
+                        (source (string-append #$output
+                                               "/share/texmf-dist/source"))
+                        (doc (string-append #$output:doc
+                                            "/share/texmf-dist/doc")))
+                    (copy-recursively (string-append origin "/source") source)
+                    (copy-recursively (string-append origin "/doc") doc))))))))
+      (propagated-inputs
+       (list texlive-latex-graphics))
+      (home-page "https://ctan.org/pkg/totcount")
+      (synopsis "Find the last value of a counter")
+      (description
+       "This package records the value that was last set, for any counter of
 interest.  Since most such counters are simply incremented when they are
 changed, the recorded value will usually be the maximum value.")
-    (license license:lppl1.3c+)))
+      (license license:lppl1.3c+))))
+
+(define-deprecated-package texlive-latex-totcount texlive-totcount)
+
+(define-public texlive-totpages
+  (let ((template (simple-texlive-package
+                   "texlive-totpages"
+                   (list "doc/latex/totpages/"
+                         "source/latex/totpages/"
+                         "tex/latex/totpages/")
+                   (base32
+                    "1mmya2fqdskyavw3hvdiygfyp9cll7bl4lpi7pl2jf9s7ds49j5a"))))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (build-system texlive-build-system)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t) "latex/totpages")
+         ((#:tex-format _ #t) "latex")
+         ((#:build-targets _ '()) '(list "totpages.ins"))
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'chdir
+                (lambda _ (chdir "source/latex/totpages/")))
+              (replace 'copy-files
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((origin (assoc-ref inputs "source"))
+                        (source (string-append #$output
+                                               "/share/texmf-dist/source"))
+                        (doc (string-append #$output:doc
+                                            "/share/texmf-dist/doc")))
+                    (copy-recursively (string-append origin "/source") source)
+                    (copy-recursively (string-append origin "/doc") doc))))))))
+      (native-inputs
+       (list (texlive-updmap.cfg)))
+      (propagated-inputs
+       (list texlive-everyshi texlive-latex-graphics))
+      (home-page "https://ctan.org/pkg/totpages")
+      (synopsis "Count pages in a document, and report last page number")
+      (description
+       "The package counts the actual pages in the document (as opposed to
+reporting the number of the last page, as does @code{lastpage}).  The counter
+itself may be shipped out to the DVI file.")
+      (license license:lppl))))
 
 (define-public texlive-xetex
   (package

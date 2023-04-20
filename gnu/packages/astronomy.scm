@@ -214,7 +214,7 @@ moment, supported SPICE files are:
 (define-public calcmysky
   (package
     (name "calcmysky")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
@@ -223,7 +223,7 @@ moment, supported SPICE files are:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bib5shy8wzc7j5ph218dl9hqrqip491mn25gakyghbvaqxgm27d"))))
+        (base32 "1lgn937px4am0lggniwby1f1dl3v4l3iigq72rl9rlhx58zv4lj1"))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags
@@ -962,7 +962,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "1.2")
+    (version "23.1")
     (source
      (origin
        (method git-fetch)
@@ -971,7 +971,7 @@ deconvolution).  Such post-processing is not performed by Stackistry.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1655lz848k7m4vqs7n3vxjwn5n4pkykwl6x7nbanqcqzlixm5xnk"))))
+        (base32 "03gq7n15dsvb32pfq7j3a0vc5wf1y9xdxaq09q1gp534jkgd4g7f"))))
     (build-system cmake-build-system)
     ;; TODO: Complete documentation build and split into dedicated outputs.
     (arguments

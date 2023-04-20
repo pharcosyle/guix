@@ -290,23 +290,17 @@ by calling @code{FrozenList.freeze}.")
 (define-public python-aiosignal
   (package
     (name "python-aiosignal")
-    (version "1.2.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiosignal" version))
        (sha256
-        (base32 "1wkxbdgw07ay8yzx3pg1jcm46p3d21rfb5g4k17ysz3vdkdngvbq"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "pytest" "tests")))))))
+        (base32 "1z4cnqww6j0xl6f3vx2r6kfv1hdny1pnlll7difvfj8nbvhrdkal"))))
+    (build-system pyproject-build-system)
+    (arguments (list #:test-flags #~(list "tests")))
     (propagated-inputs (list python-frozenlist))
-    (native-inputs (list python-pytest python-pytest-asyncio))
+    (native-inputs (list python-pytest python-pytest-asyncio python-pytest-cov))
     (home-page "https://github.com/aio-libs/aiosignal")
     (synopsis "Callback manager for Python @code{asyncio} projects")
     (description "This Python module provides @code{Signal}, an abstraction to
@@ -317,13 +311,13 @@ for adding, removing and dropping callbacks.")
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.8.1")
+    (version "3.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
-        (base32 "0y3m1dzl4h6frg8vys0fc3m83ijd1plfpihv3kvmxqadlphp2m7w"))
+        (base32 "0p5bj6g7ca19gvwk8fz00k579ma9w9kd27ssh2zl3r61ca8ilbmz"))
        (snippet
         #~(begin
             (use-modules ((guix build utils)))
@@ -339,12 +333,14 @@ for adding, removing and dropping callbacks.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
            (lambda _
-             ;; disable brotli tests, because we’re not providing that optional library
+             ;; Disable brotli tests, because we’re not providing that
+             ;; optional library.
              (substitute* "tests/test_http_parser.py"
                (("    async def test_feed_eof_no_err_brotli")
                 "    @pytest.mark.xfail\n    async def test_feed_eof_no_err_brotli"))
-             ;; make sure the timestamp of this file is > 1990, because a few
-             ;; tests like test_static_file_if_modified_since_past_date depend on it
+             ;; Make sure the timestamp of this file is > 1990, because a few
+             ;; tests like test_static_file_if_modified_since_past_date depend
+             ;; on it.
              (let ((late-90s (* 60 60 24 365 30)))
                (utime "tests/data.unknown_mime_type" late-90s late-90s))
 
@@ -384,33 +380,35 @@ for adding, removing and dropping callbacks.")
                        "not test_client_session_timeout_zero and "
                        "not test_empty_body and "
                        "not test_mark_formdata_as_processed[pyloop] and "
-                       "not test_receive_runtime_err[pyloop]")))
+                       "not test_receive_runtime_err[pyloop] "
+                       ;; These tests fail for unknown reasons (see:
+                       ;; https://github.com/aio-libs/aiohttp/issues/7130)
+                       "and not test_no_warnings "
+                       "and not test_default_loop "
+                       "and not test_ctor_global_loop "
+                       "and not test_set_loop_default_loop ")))
                (when tests?
                  ;; This tests requires the 'proxy.py' module, not yet
                  ;; packaged.
                  (delete-file "tests/test_proxy_functional.py")
                  ;; Sometimes tests fail when run in parallel.
-                 (or
-                   (invoke "pytest" "-vv"
-                           ;; Disable loading the aiohttp coverage plugin
-                           ;; to avoid a circular dependency (code coverage
-                           ;; is not very interesting to us anyway).
-                           "-o" "addopts=''" "--ignore=aiohttp"
-                           "-n" (number->string (parallel-job-count))
-                           "-k" skipped-tests)
-                   (invoke "pytest" "-vv"
-                           "-o" "addopts=''" "--ignore=aiohttp"
-                           "-k" skipped-tests)))))))))
+                 (invoke "pytest" "-vv"
+                         "-o" "addopts=''" "--ignore=aiohttp"
+                         ;; These tests cause errors (see:
+                         ;; https://github.com/aio-libs/aiohttp/issues/7130).
+                         "--ignore" "tests/test_web_sendfile_functional.py"
+                         "--ignore" "tests/test_web_urldispatcher.py"
+                         "-k" skipped-tests))))))))
     (propagated-inputs
      (list python-aiodns
            python-aiosignal
            python-attrs
+           python-asynctest
            python-async-timeout
            python-charset-normalizer
            python-frozenlist
            python-idna-ssl
            python-multidict
-           python-typing-extensions
            python-yarl))
     (native-inputs
      (list gunicorn-bootstrap
@@ -458,17 +456,16 @@ aiohttp.  It supports SOCKS4(a) and SOCKS5.")
 (define-public python-aiodns
   (package
     (name "python-aiodns")
-    (version "1.1.1")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiodns" version))
        (sha256
         (base32
-         "1snr5paql8dgvc676n8xq460wypjsb1xj53cf3px1s4wczf7lryq"))))
+         "1mlcw14hxyzd2yg89gj1l84gfi8nbl7h32iw17myxz23wymxyswl"))))
     (build-system python-build-system)
-    (propagated-inputs
-     (list python-pycares))
+    (propagated-inputs (list python-pycares))
     (arguments
      `(#:tests? #f))                    ;tests require internet access
     (home-page "https://github.com/saghul/aiodns")
@@ -4812,17 +4809,17 @@ supports features like HTTP keep-alive, reget, throttling and more.")
 (define-public python-pycares
   (package
     (name "python-pycares")
-    (version "2.3.0")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycares" version))
        (sha256
         (base32
-         "0h4fxw5drrhfyslzmfpljk0qnnpbhhb20hnnndzahhbwylyw1x1n"))))
+         "0i8d0433wmm7wi8i2l2hjiyhmy35b9s888qrk6fqx5xcdmpnjhn5"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f))                    ;tests require internet access
+    (arguments `(#:tests? #f))          ;tests require internet access
+    (propagated-inputs (list python-cffi))
     (home-page "https://github.com/saghul/pycares")
     (synopsis "Python interface for @code{c-ares}")
     (description "@code{pycares} is a Python module which provides an

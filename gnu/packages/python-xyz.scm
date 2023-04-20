@@ -1763,51 +1763,6 @@ compositions like @code{XOR} and @code{NAND} are emulated on top of them.
 Expressions are constructed from parsed strings or directly in Python.")
     (license license:bsd-2)))
 
-(define-public python-hatchling
-  (package
-    (name "python-hatchling")
-    (version "1.13.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "hatchling" version))
-              (sha256
-               (base32
-                "1isk1kqra0sm2sj2yp39sgk62mx0bp1jnbkwdcl3a1vjrji7blpq"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:tests? #false ;there are none
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'do-not-depend-on-hatchling
-            (lambda _
-              ;; We don't use hatchling.
-              (delete-file "pyproject.toml")
-              (call-with-output-file "pyproject.toml"
-                (lambda (port)
-                  (format port "\
-[build-system]
-build-backend = 'setuptools.build_meta'
-requires = ['setuptools']
-")))
-              (call-with-output-file "setup.cfg"
-                (lambda (port)
-                  (format port "\
-[metadata]
-name = hatchling
-version = '~a' " #$version))))))))
-    (propagated-inputs
-     (list python-editables
-           python-importlib-metadata
-           python-packaging
-           python-pathspec
-           python-pluggy
-           python-tomli))
-    (home-page "https://pypi.org/project/hatchling/")
-    (synopsis "Extensible Python build backend")
-    (description "Hatchling is an extensible Python build backend.")
-    (license license:expat)))
-
 (define-public python-hdf4
   (package
    (name "python-hdf4")
@@ -6216,25 +6171,6 @@ and integrated feature-set for programming Python effectively.")
 (define-public python-language-server
   (deprecated-package "python-language-server" python-lsp-server))
 
-(define-public python-pathspec
-  (package
-    (name "python-pathspec")
-    (version "0.9.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pathspec" version))
-       (sha256
-        (base32
-         "1cdbdb3s6ldnjpwbi0bgl0xlmw4mbfxk08bbdxc3srx26na4jr75"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/cpburnz/python-path-specification")
-    (synopsis "Utility library for gitignore style pattern matching of file paths")
-    (description
-     "This package provides a utility library for gitignore style pattern
-matching of file paths.")
-    (license license:mpl2.0)))
-
 (define-public python-black
   (package
     (name "python-black")
@@ -7059,23 +6995,18 @@ parse and apply unified diffs.  It has features such as:
 (define-public python-numpydoc
   (package
     (name "python-numpydoc")
-    (version "1.2.1")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "numpydoc" version))
        (sha256
         (base32
-         "1xjsli2fqks4iv3524v1d329siad7bbsi4kr174zvhsl1pnjds3w"))))
+         "0k2z3g4s3w39h1nd293542hl9qv55j29gcr3bkia0rr3ldsppnxh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'relax-requirements
-           (lambda _
-             (substitute* "setup.py"
-               (("'Jinja2>=2.10,<3.1'")
-                "'Jinja2>=2.10'"))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
@@ -7313,7 +7244,7 @@ tests = True~%" (assoc-ref inputs "tcl") (assoc-ref inputs "tk"))))))
            python-certifi
            python-cycler
            python-dateutil
-           python-fonttools
+           python-fonttools-minimal
            python-kiwisolver
            python-numpy
            python-packaging
@@ -11221,11 +11152,15 @@ applications.")
        (list (string-append "--zmq=" (assoc-ref %build-inputs "zeromq")))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-draft-test
-           ;; FIXME: The test_draft.TestDraftSockets test fails with:
-           ;;   zmq.error.Again: Resource temporarily unavailable
+         (add-after 'unpack 'disable-problematic-tests
            (lambda _
-             (delete-file "zmq/tests/test_draft.py")))
+             ;; FIXME: The test_draft.TestDraftSockets test fails with:
+             ;;   zmq.error.Again: Resource temporarily unavailable
+             (delete-file "zmq/tests/test_draft.py")
+             ;; These tests fail for unknown reasons (see:
+             ;; https://github.com/zeromq/pyzmq/issues/1853).
+             (delete-file "zmq/tests/test_auth.py")
+             (delete-file "zmq/tests/test_zmqstream.py")))
          (add-before 'check 'build-extensions
            (lambda _
              ;; Cython extensions have to be built before running the tests.
@@ -12348,17 +12283,17 @@ number of lines in the contained files easily.")
     (license license:expat)))
 
 ;;; Tests are left out in the main package to avoid cycles.
-(define-public python-fonttools
+(define-public python-fonttools-minimal
   (hidden-package
    (package
-     (name "python-fonttools")
-     (version "4.37.1")
+     (name "python-fonttools-minimal")
+     (version "4.39.3")
      (source (origin
                (method url-fetch)
                (uri (pypi-uri "fonttools" version ".zip"))
                (sha256
                 (base32
-                 "1ryc1wca2v92wn24baryj5fr32lspl8rbsig32fnkxp1islf21j6"))))
+                 "1msibi5cmi5znykkg66dq7xshl07lkqjxhrz5hcipqvlggsvjd4j"))))
      (build-system python-build-system)
      (native-inputs
       (list unzip))
@@ -12373,48 +12308,48 @@ also contains a tool called “TTX” which converts TrueType/OpenType fonts to 
 from an XML-based format.")
      (license license:expat))))
 
-;;; Rename 'python-fonttools' in next cycle, renaming the current
-;;; 'python-fonttools' to 'python-fonttools-minimal'.
-(define-public python-fonttools-full
-  (package/inherit python-fonttools
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-fonttools)
-       ((#:tests? _ #f)
-        (not (%current-target-system)))
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (replace 'check
-             (lambda* (#:key tests? #:allow-other-keys)
-               (when tests?
-                 (invoke "pytest" "-vv"
-                         "-k"
-                         ;; XXX: These tests need .trm files that are
-                         ;; not shipped with the PyPI release.
-                         (format #f "not ~a"
-                                 (string-join
-                                  '("test_read_fontdimens_mathsy"
-                                    "test_read_fontdimens_mathex"
-                                    "test_read_fontdimens_vanilla"
-                                    "test_read_boundary_char"
-                                    "fontTools.tfmLib"
-                                    ;; The MtiTest tests fail for unknown
-                                    ;; reasons (see:
-                                    ;; https://github.com/fonttools/
-                                    ;; fonttools/issues/3078)
-                                    "MtiTest")
-                                  " and not "))))))))))
-    (native-inputs
-     (modify-inputs (package-native-inputs python-fonttools)
-       (append python-pytest)))
-    (propagated-inputs
-     (list python-brotli
-           python-fs
-           python-lxml
-           python-lz4
-           python-scipy
-           python-unicodedata2
-           python-zopfli))
-    (properties (alist-delete 'hidden? (package-properties python-fonttools)))))
+(define-public python-fonttools
+  (let ((base python-fonttools-minimal))
+    (package/inherit base
+      (name "python-fonttools")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:tests? _ #f)
+          (not (%current-target-system)))
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (replace 'check
+               (lambda* (#:key tests? #:allow-other-keys)
+                 (when tests?
+                   (invoke "pytest" "-vv"
+                           "-k"
+                           ;; XXX: These tests need .trm files that are
+                           ;; not shipped with the PyPI release.
+                           (format #f "not ~a"
+                                   (string-join
+                                    '("test_read_fontdimens_mathsy"
+                                      "test_read_fontdimens_mathex"
+                                      "test_read_fontdimens_vanilla"
+                                      "test_read_boundary_char"
+                                      "fontTools.tfmLib"
+                                      ;; The MtiTest tests fail for unknown
+                                      ;; reasons (see:
+                                      ;; https://github.com/fonttools/
+                                      ;; fonttools/issues/3078)
+                                      "MtiTest")
+                                    " and not "))))))))))
+      (native-inputs
+       (modify-inputs (package-native-inputs base)
+         (append python-pytest)))
+      (propagated-inputs
+       (list python-brotli
+             python-fs
+             python-lxml
+             python-lz4
+             python-scipy
+             python-unicodedata2
+             python-zopfli))
+      (properties (alist-delete 'hidden? (package-properties base))))))
 
 (define-public python-ly
   (package
@@ -12540,37 +12475,6 @@ reading and writing MessagePack data.")
               (sha256
                (base32
                 "1109s2yynrahwi64ikax68hx0mbclz8p35afmpphw5dwynb49q7s"))))))
-
-;; This msgpack library's name changed from "python-msgpack" to "msgpack" with
-;; release 0.5. Some packages like borg still call it by the old name for now.
-;; <https://bugs.gnu.org/30662>
-(define-public python-msgpack-transitional
-  (package
-    (inherit python-msgpack)
-    (name "python-msgpack-transitional")
-    (version "0.5.6")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "msgpack" version))
-              (sha256
-               (base32
-                "1hz2dba1nvvn52afg34liijsm7kn65cmn06dl0xbwld6bb4cis0f"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-msgpack)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'configure-transitional
-             (lambda _
-               ;; Keep using the old name.
-               (substitute* "setup.py"
-                 (("TRANSITIONAL = False")
-                   "TRANSITIONAL = 1"))
-               ;; This old version is not compatible with Python 3.9
-               (substitute* '("test/test_buffer.py" "test/test_extension.py")
-                 ((".tostring\\(") ".tobytes("))
-               (substitute* '("test/test_buffer.py" "test/test_extension.py")
-                 ((".fromstring\\(") ".frombytes("))
-               #t))))))))
 
 (define-public python-netaddr
   (package
@@ -15241,34 +15145,59 @@ pure Python module that works on virtually all Python versions.")
     (license license:expat)))
 
 (define-public python-execnet
-  (package
-    (name "python-execnet")
-    (version "1.9.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "execnet" version))
-              (sha256
-               (base32
-                "1ia7dvrh0gvzzpi758mx55f9flr16bzdqlmi12swm4ncm4xlyscg"))
-              (patches (search-patches "python-execnet-read-only-fix.patch"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-                      (when tests?
-                        ;; Unset PYTHONDONTWRITEBYTECODE to match the
-                        ;; expectations of a test in
-                        ;; 'testing/test_gateway.py'.
-                        (unsetenv "PYTHONDONTWRITEBYTECODE")
-
-                        (add-installed-pythonpath inputs outputs)
-                        (invoke "pytest" "-vv")))))))
-    (native-inputs
-     (list python-pytest python-setuptools-scm))
-    (synopsis "Rapid multi-Python deployment")
-    (description "Execnet provides a share-nothing model with
+  ;; The latest release (1.9.0) is old and lacks support for Pytest 7.2.
+  (let ((commit "d6aa1a56773c2e887515d63e50b1d08338cb78a7")
+        (revision "1"))
+    (package
+      (name "python-execnet")
+      (version (git-version "1.9.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pytest-dev/execnet")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0s60jggcjiw38b7xsh1q2lnnr4c4kaki7c5zsv7xyj7df8ngbbsm"))))
+      (build-system pyproject-build-system)
+      (arguments
+       (list
+        ;; ;; This test hasn't been updated for the latest Pytest yet:
+        ;; #:test-flags #~(list "--ignore" "testing/test_rsync.py")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'adjust-for-pytest-7.2+
+              (lambda _
+                ;; This test fails with an error because @py.test has been
+                ;; deprecated for @pytest in recent Pytest.
+                (substitute* "testing/test_rsync.py"
+                  (("@py.test")
+                   "@pytest"))))
+            (add-before 'build 'pretend-version
+              ;; The version string is usually derived via setuptools-scm, but
+              ;; without the git metadata available this fails.
+              (lambda _
+                ;; hatch-vcs uses setuptools under the hood.
+                (setenv "SETUPTOOLS_SCM_PRETEND_VERSION"
+                        ;; Massage the version string to a PEP-0440 compatible
+                        ;; one.
+                        #$(car (string-split version #\-)))))
+            (add-before 'check 'prepare-for-tests
+              (lambda _
+                ;; Unset PYTHONDONTWRITEBYTECODE to match the
+                ;; expectations of a test in
+                ;; 'testing/test_gateway.py'.
+                (unsetenv "PYTHONDONTWRITEBYTECODE"))))))
+      (native-inputs
+       (list python-hatchling
+             python-hatch-vcs
+             python-py
+             python-pytest
+             python-pytest-timeout
+             python-setuptools-scm))
+      (synopsis "Rapid multi-Python deployment")
+      (description "Execnet provides a share-nothing model with
 channel-send/receive communication for distributing execution across many
 Python interpreters across version, platform and network barriers.  It has a
 minimal and fast API targeting the following uses:
@@ -15277,8 +15206,8 @@ minimal and fast API targeting the following uses:
 @item write and deploy hybrid multi-process applications
 @item write scripts to administer multiple environments
 @end enumerate")
-    (home-page "https://codespeak.net/execnet/")
-    (license license:expat)))
+      (home-page "https://codespeak.net/execnet/")
+      (license license:expat))))
 
 (define-public python-icalendar
   (package
@@ -15668,25 +15597,6 @@ generation according to PKCS#1 version 1.5.  It can be used as a Python
 library as well as on the command line.")
    (home-page "https://stuvel.eu/rsa")
    (license license:asl2.0)))
-
-(define-public python-pluggy
-  (package
-   (name "python-pluggy")
-   (version "1.0.0")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri "pluggy" version))
-     (sha256
-      (base32
-       "0n8iadlas2z1b4h0fc73b043c7iwfvx9rgvqm1azjmffmhxkf922"))))
-   (build-system python-build-system)
-   (native-inputs (list python-setuptools-scm))
-   (synopsis "Plugin and hook calling mechanism for Python")
-   (description "Pluggy is an extraction of the plugin manager as used by
-Pytest but stripped of Pytest specific details.")
-   (home-page "https://pypi.org/project/pluggy/")
-   (license license:expat)))
 
 (define-public python-plumbum
   (package
@@ -18080,25 +17990,26 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "1.1.12")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "0rr54mvcfcv9cv6vw2122y28xvd2pwqpv2x8c8j5ayz3gwsy4rjw"))))
+         "0g0vczn6qa4b2bdkq4k7fm1g739vyxp2iiblwwsrcmw24jj81m8b"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ;PyPI does not have tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-setup-py
-           (lambda _
-             (substitute* "setup.py"
-               ;; Relax some of the requirements.
-               (("(keyring>=21.2.0),<22.0.0" _ keyring) keyring)
-               (("(packaging>=20.4),<21.0" _ packaging) packaging)))))))
+       ;; #:phases
+       ;; (modify-phases %standard-phases
+       ;;   (add-before 'build 'patch-setup-py
+       ;;     (lambda _
+       ;;       (substitute* "setup.py"
+       ;;         ;; Relax some of the requirements.
+       ;;         (("(keyring>=21.2.0),<22.0.0" _ keyring) keyring)
+       ;;         (("(packaging>=20.4),<21.0" _ packaging) packaging)))))
+       ))
     (propagated-inputs
      (list python-cachecontrol
            python-cachy
@@ -18107,9 +18018,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
            python-entrypoints
            python-html5lib
            python-keyring
-           ; Use of deprecated version of msgpack reported upstream:
-           ; https://github.com/python-poetry/poetry/issues/3607
-           python-msgpack-transitional
+           python-msgpack
            python-packaging
            python-pexpect
            python-pip
@@ -19056,6 +18965,35 @@ callback-heavy mode of interaction typical in some Kivy applications.")
     (description "This package provides support for async/await applications
 without requiring an event loop, useful for creative responsive GUIs.")
     (license license:expat)))
+
+(define-public python-asynctest
+  (package
+    (name "python-asynctest")
+    (version "0.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "asynctest" version))
+              (sha256
+               (base32
+                "1b3zsy7p84gag6q8ai2ylyrhx213qdk2h2zb6im3xn0m5n264y62"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The test suite appears to be incompatible with Python 3.9+, completes
+     ;; with 25 failures and 41 errors out of 220 tests (see:
+     ;; https://github.com/Martiusweb/asynctest/issues/149).
+     (list #:tests? #f
+           #:phases #~(modify-phases %standard-phases
+                        (replace 'check
+                          (lambda* (#:key tests? #:allow-other-keys)
+                            (when tests?
+                              (invoke "python" "-m" "unittest" "test")))))))
+    (home-page "https://github.com/Martiusweb/asynctest/")
+    (synopsis "Unittest extensions for testing asyncio libraries")
+    (description
+     "The @code{asynctest} Python package is built on top of the standard
+@code{unittest} module and cuts down boilerplate code when testing libraries
+for @code{asyncio}.")
+    (license license:asl2.0)))
 
 (define-public python-binaryornot
   (package
@@ -20434,7 +20372,7 @@ builds partial trees by inspecting living objects.")
 (define-public python-isort
   (package
     (name "python-isort")
-    (version "5.10.1")
+    (version "5.12.0")
     (source
      (origin
        (method git-fetch)
@@ -20447,61 +20385,42 @@ builds partial trees by inspecting living objects.")
        (snippet '(for-each delete-file (find-files "." "\\.whl$")))
        (sha256
         (base32
-         "09spgl2k9xrprr5gbpfc91a8p7mx7a0c64ydgc91b3jhrmnd9jg1"))))
+         "1vbwc4gpffclf6hw08lvvgqlvsgfjlw7gjsm28jfcrln2pixla7j"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'loosen-requirements
-           (lambda _
-             ;; Permit newer versions of black.
-             (substitute* "example_isort_formatting_plugin/pyproject.toml"
-               (("\\^20\\.08b1")
-                ">= 20.08b1"))))
-         ;; A foretaste of what our future python-build-system will need to
-         ;; do.
-         (replace 'build
-           (lambda _
-             (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (whl (car (find-files "dist" "\\.whl$"))))
-               (invoke "pip" "--no-cache-dir" "--no-input"
-                       "install" "--no-deps" "--prefix" out whl))))
-         (add-after 'install 'install-example-plugins
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; Patch to use the core poetry API.
-               (substitute* '("example_isort_formatting_plugin/pyproject.toml"
-                              "example_isort_sorting_plugin/pyproject.toml"
-                              "example_shared_isort_profile/pyproject.toml")
-                 (("poetry>=0.12")
-                  "poetry-core>=1.0.0")
-                 (("poetry.masonry.api")
-                  "poetry.core.masonry.api"))
-               ;; Build the example plugins.
-               (for-each (lambda (source-directory)
-                           (invoke "python" "-m" "build" "--wheel"
-                                   "--no-isolation" "--outdir=dist"
-                                   source-directory))
-                         '("example_isort_formatting_plugin"
-                           "example_isort_sorting_plugin"
-                           "example_shared_isort_profile"))
-               ;; Install them to temporary storage, for the test.
-               (setenv "HOME" (getcwd))
-               (let ((example-whls (find-files "dist" "^example.*\\.whl$")))
-                 (apply invoke "pip" "--no-cache-dir" "--no-input"
-                        "install"  "--user" "--no-deps" example-whls)))))
-         (replace 'check
-           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
-             (when tests?
-               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (setenv "PATH" (string-append (getenv "PATH") ":" bin)))
-               (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv" "tests/unit/"
-                       "-k" "not test_gitignore" ;requires git
-                       "--ignore=tests/unit/test_deprecated_finders.py")))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'build
+            (lambda _
+              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
+          (replace 'install
+            (lambda _
+              (let ((whl (car (find-files "dist" "\\.whl$"))))
+                (invoke "pip" "--no-cache-dir" "--no-input"
+                        "install" "--no-deps" "--prefix" #$output whl))))
+          (add-after 'install 'install-example-plugins
+            (lambda _
+              (for-each (lambda (source-directory)
+                          (invoke "python" "-m" "build" "--wheel"
+                                  "--no-isolation" "--outdir=dist"
+                                  source-directory))
+                        '("example_isort_formatting_plugin"
+                          "example_isort_sorting_plugin"
+                          "example_shared_isort_profile"))
+              ;; Install them to temporary storage, for the test.
+              (setenv "HOME" (getcwd))
+              (let ((example-whls (find-files "dist" "^example.*\\.whl$")))
+                (apply invoke "pip" "--no-cache-dir" "--no-input"
+                       "install"  "--user" "--no-deps" example-whls))))
+          (replace 'check
+            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+              (when tests?
+                (let ((bin (string-append #$output "/bin")))
+                  (setenv "PATH" (string-append (getenv "PATH") ":" bin)))
+                (invoke "pytest" "-vv" "tests/unit/"
+                        "-k" "not test_gitignore" ;requires git
+                        "--ignore=tests/unit/test_deprecated_finders.py")))))))
     (native-inputs
      (list python-black
            python-colorama
@@ -20887,12 +20806,8 @@ while only declaring the test-specific fields.")
                       (if tests?
                           (invoke "pytest" "-vv")
                           (format #t "test suite not run~%")))))))
-    (native-inputs
-     `(("python-pretend" ,python-pretend)
-       ("python-pytest" ,python-pytest)))
-    (propagated-inputs
-     `(("python-pyparsing" ,python-pyparsing)
-       ("python-six" ,python-six)))
+    (native-inputs (list python-pretend python-pytest))
+    (propagated-inputs (list python-pyparsing python-six))
     (home-page "https://github.com/pypa/packaging")
     (synopsis "Core utilities for Python packages")
     (description "Packaging is a Python module for dealing with Python packages.
@@ -22777,75 +22692,6 @@ based on the CPython 2.7 and 3.7 parsers.")
      "@code{typeguard} provides run-time type checking for functions defined
 with PEP 484 argument (and return) type annotations.")
     (license license:expat)))
-
-(define-public python-typing-extensions
-  (package
-    (name "python-typing-extensions")
-    (version "4.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "typing_extensions" version))
-              (sha256
-               (base32
-                "19n4l57qazwrbvxjrbxw2vvfyd0zbk8ivnwm4zmwfzzl69x6glp6"))))
-    (build-system python-build-system)
-    (arguments
-     (list
-      #:tests? #f       ;requires Python's test module, not available in Guix
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; XXX: PEP 517 manual build copied from python-isort.
-          (replace 'build
-            (lambda _
-              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (invoke "python" "src/test_typing_extensions.py"))))
-          (replace 'install
-            (lambda _
-              (let ((whl (car (find-files "dist" "\\.whl$"))))
-                (invoke "pip" "--no-cache-dir" "--no-input"
-                        "install" "--no-deps" "--prefix" #$output whl)))))))
-    (native-inputs (list python-pypa-build python-flit-core))
-    (home-page "https://github.com/python/typing/typing_extensions")
-    (synopsis "Experimental type hints for Python")
-    (description
-     "The typing_extensions module contains additional @code{typing} hints not
-yet present in the of the @code{typing} standard library.
-Included are implementations of:
-@enumerate
-@item ClassVar
-@item ContextManager
-@item Counter
-@item DefaultDict
-@item Deque
-@item NewType
-@item NoReturn
-@item overload
-@item Protocol
-@item runtime
-@item Text
-@item Type
-@item TYPE_CHECKING
-@item AsyncGenerator
-@end enumerate\n")
-    (license license:psfl)))
-
-(define-public python-typing-extensions-next
-  (package
-    (inherit python-typing-extensions)
-    (name "python-typing-extensions")
-    (version "4.2.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/python/typing")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1bbry1rg7q5ppkgzdk4nwl7q1w8bbhajm4q68wb9dm6rf7hg1023"))))))
 
 (define-public bpython
   (package
@@ -25747,14 +25593,14 @@ standard error channel (stderr) in your program.")
 (define-public python-anyio
   (package
     (name "python-anyio")
-    (version "3.5.0")
+    (version "3.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "anyio" version))
        (sha256
         (base32
-         "19m58805wir4i2s45dd5ynwlzb7ky1218isbir53gpqzzgigzbm0"))))
+         "08bljjq5xq0l9id36q3vvjgygirq7g7q2bs41hdg82p379khvsi5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -28870,13 +28716,13 @@ and frame grabber interface.")
 (define-public python-scikit-build
   (package
     (name "python-scikit-build")
-    (version "0.14.0")
+    (version "0.17.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "scikit-build" version))
+       (uri (pypi-uri "scikit_build" version))
        (sha256
-        (base32 "1wx1m9vnxnnz59lyaisgyxldp313kciyd4af8lf112vb8vbjy9yk"))))
+        (base32 "0v1qcn3nsjxqdl6fa07b7acq6xndqbvvic5dvsgbjgldkjr1drqp"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -28894,7 +28740,9 @@ and frame grabber interface.")
                 ;; These tests attempt to pull dependencies from the Internet.
                 (delete-file "tests/test_distribution.py")
                 (delete-file "tests/test_pep518.py")
-                (invoke "pytest" "-vv"
+                ;; The tests marked as "isolate" are tests that require access
+                ;; to the network.
+                (invoke "pytest" "-vv" "-m" "not isolated"
                         "-n" (number->string (parallel-job-count))
                         "-k" (string-append
                               ;; These tests attempt to write to read-only
@@ -28913,14 +28761,21 @@ and frame grabber interface.")
                               ;; nondeterministically (see:
                               ;; https://github.com/scikit-build/scikit-build/issues/711).
                               "and not test_generator_cleanup "
-                              "and not test_generator_selection "))))))))
+                              "and not test_generator_selection "
+                              ;; The compiler test fails with a
+                              ;; SKBuildGeneratorNotFoundError error (see:
+                              ;; https://github.com/scikit-build/scikit-build/issues/945).
+                              "and not test_cxx_compiler "))))))))
     (native-inputs
      (list cmake-minimal
            gfortran
-           git-minimal/pinned                      ;for tests
+           git-minimal/pinned           ;for tests
            ninja
            python-coverage
            python-cython
+           python-hatchling
+           python-hatch-fancy-pypi-readme
+           python-hatch-vcs
            python-mock
            python-packaging
            python-path
@@ -28932,7 +28787,7 @@ and frame grabber interface.")
            python-requests
            python-setuptools-scm))
     (propagated-inputs
-     (list python-distro python-packaging python-wheel))
+     (list python-distro python-packaging python-tomli python-wheel))
     (home-page "https://github.com/scikit-build/scikit-build")
     (synopsis "Build system generator for Python C/C++/Fortran/Cython extensions")
     (description "Scikit-build is an improved build system generator for

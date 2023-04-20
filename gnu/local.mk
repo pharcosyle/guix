@@ -1080,6 +1080,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-yasnippet-fix-tests.patch	\
   %D%/packages/patches/emacs-kv-fix-tests.patch	\
   %D%/packages/patches/emacs-pgtk-super-key-fix.patch	\
+  %D%/packages/patches/emacs-xelb-ignore-length-element.patch	\
   %D%/packages/patches/enjarify-setup-py.patch			\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
@@ -1527,6 +1528,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lua-5.4-liblua-so.patch			\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/lvm2-static-link.patch			\
+  %D%/packages/patches/lxqt-session-procps-4.patch              \
   %D%/packages/patches/mailutils-variable-lookup.patch		\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
@@ -1671,6 +1673,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pypdf-annotate-tests-appropriately.patch	\
   %D%/packages/patches/python-sip-include-dirs.patch	\
   %D%/packages/patches/python-sgmllib3k-assertions.patch	\
+  %D%/packages/patches/python-shiboken-2-compat.patch		\
   %D%/packages/patches/python-telingo-fix-comparison.patch	\
   %D%/packages/patches/python-typeguard-python3.10.patch	\
   %D%/packages/patches/python-w3lib-fix-test-failure.patch	\
@@ -1755,7 +1758,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-dateutil-pytest-compat.patch	\
   %D%/packages/patches/python-debugpy-unbundle-pydevd.patch	\
   %D%/packages/patches/python-docopt-pytest6-compat.patch	\
-  %D%/packages/patches/python-execnet-read-only-fix.patch	\
   %D%/packages/patches/python-fixtures-remove-monkeypatch-test.patch	\
   %D%/packages/patches/python-hiredis-fix-header.patch		\
   %D%/packages/patches/python-hiredis-use-system-hiredis.patch	\

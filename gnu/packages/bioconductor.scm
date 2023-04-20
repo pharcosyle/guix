@@ -8367,13 +8367,13 @@ browser.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.42.0")
+    (version "2.42.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "1vxs227d1295fz8irr6fsv603cw96a801j8njhblvs0cry38d087"))))
+                "04qg758b98ggn8gnwppz4f441qx62jzwyscccnh2dr323x62bxhh"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-rhdf5filters r-rhdf5lib))
@@ -9147,13 +9147,13 @@ that integrates the various evidences.")
 (define-public r-structuralvariantannotation
   (package
     (name "r-structuralvariantannotation")
-    (version "1.13.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "StructuralVariantAnnotation" version))
        (sha256
-        (base32 "11z3acsbaifrxkghd7i8503ki9s1lc6c22880yna6qcfprlzb44g"))))
+        (base32 "04vh1j2cv3qfs4q4w4xx5rn61kxrxmj5ghi54m602981cm02c3hw"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-assertthat
@@ -12653,14 +12653,14 @@ data.")
 (define-public r-enrichplot
   (package
     (name "r-enrichplot")
-    (version "1.18.3")
+    (version "1.18.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "enrichplot" version))
        (sha256
         (base32
-         "0nzcr23m58z3h0n0frxf26z14j7ilcl4fjy7rqm7f2i1wyld70zl"))))
+         "1642yc2rw2c023bkz26y3kvmvg8badrc4vfx890mvsa70in2mi89"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-aplot
@@ -13541,14 +13541,14 @@ needed.")
 (define-public r-ebimage
   (package
     (name "r-ebimage")
-    (version "4.40.0")
+    (version "4.40.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "EBImage" version))
        (sha256
         (base32
-         "1k6gbivwlai451whq2vr3c0shzs9p4g188jn5waw7973gdzdi00q"))))
+         "08hsfxfqfznfqnpl2vygry7xn6npjpibswy4qi6zmvifdarx6i1j"))))
     (properties `((upstream-name . "EBImage")))
     (build-system r-build-system)
     (propagated-inputs
@@ -15860,14 +15860,14 @@ metrics, with methods for objects produced by the @code{methylumi} and
 (define-public r-gdsfmt
   (package
     (name "r-gdsfmt")
-    (version "1.34.0")
+    (version "1.34.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gdsfmt" version))
        (sha256
         (base32
-         "1ck3qq4vhjp6vvicpldr7d2rkpspp5albjkbqjbshnbq11fhrk06"))
+         "1sx7yw44djrnc6km8fip3w3vclkgz5s0w6ibp8lpvmjcay8nv2sx"))
        (modules '((guix build utils)))
        ;; Remove bundled sources of zlib, lz4, and xz.  Don't attempt to build
        ;; them and link with system libraries instead.
@@ -18179,14 +18179,14 @@ packages.")
 (define-public r-beachmat
   (package
     (name "r-beachmat")
-    (version "2.14.0")
+    (version "2.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "beachmat" version))
        (sha256
         (base32
-         "0sa1wh997jfiz2y0dr7v12b7pvlf7icgv6arlyqy57winbnqa96m"))))
+         "1m7d227axnrlal1cy32z7i3hilzf55y0vlqg5xasv3m1n4kzihn4"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-biocgenerics r-delayedarray r-matrix r-rcpp))
@@ -20325,14 +20325,14 @@ fragments by exact matching.")
 (define-public r-dmrseq
   (package
     (name "r-dmrseq")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "dmrseq" version))
        (sha256
         (base32
-         "1zx62lbj0am85p0c1vk06s7qf8294vk8yyh67nkiqc7xgqqwybyk"))))
+         "0djd2r0xzjcyw496wdw2gwzk4wjf3jp639b198x4pc0g0mmgw245"))))
     (properties `((upstream-name . "dmrseq")))
     (build-system r-build-system)
     (propagated-inputs

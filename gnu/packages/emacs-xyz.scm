@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013-2022 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2023 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -3748,7 +3748,7 @@ or XEmacs.")
 (define-public emacs-autothemer
   (package
     (name "emacs-autothemer")
-    (version "0.2.14")
+    (version "0.2.17")
     (source
      (origin
        (method git-fetch)
@@ -3758,8 +3758,14 @@ or XEmacs.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0jxlfwcfqdjr3da2xzjnigmckarhjbn6b1i1x4pdzb5djjcz00qc"))))
+         "13lj0igrsdycsr8ldv2hilj2x79c888g4lx2ixqn7w29lw6cb44g"))))
     (build-system emacs-build-system)
+    (arguments
+     (list
+      #:tests? #true
+      #:test-command #~(list "emacs" "-Q" "--batch"
+                             "-l" "tests/autothemer-tests.el"
+                             "-f" "ert-run-tests-batch-and-exit")))
     (propagated-inputs
      (list emacs-dash))
     (home-page "https://github.com/sebastiansturm/autothemer")
@@ -4051,7 +4057,7 @@ be regarded as @code{emacs-company-quickhelp} for @code{emacs-corfu}.")
 (define-public emacs-cape
   (package
     (name "emacs-cape")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method git-fetch)
@@ -4060,7 +4066,7 @@ be regarded as @code{emacs-company-quickhelp} for @code{emacs-corfu}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xicfjf49fz8kbh7wqpj9fwhm5f6s6fcb3919icggjsf2465yqls"))))
+        (base32 "1aivq3v00l17lmq7fmdzhc6lczi9ky2wl0ayab13vkdcidl5j1kd"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -11084,7 +11090,7 @@ expansion and overwriting the marked region with a new snippet completion.")
 (define-public emacs-marginalia
   (package
     (name "emacs-marginalia")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -11093,7 +11099,7 @@ expansion and overwriting the marked region with a new snippet completion.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0zi3q7dd9dgrhbz6ww270i43kkqs0ddk0vzs89mfvwa5pzw32d2q"))))
+        (base32 "0zf88pvjs3v231rpk4km03n19xyfx6hn0fny08y4pv42dz3xkcwg"))))
     (build-system emacs-build-system)
     (arguments
      (list
@@ -17808,7 +17814,9 @@ conflicts.")
                                   version ".tar"))
               (sha256
                (base32
-                "1fp5mzl63sh0h3ws4l5p4qgvi7ny8a3fj6k4dhqa98xgw2bx03v7"))))
+                "1fp5mzl63sh0h3ws4l5p4qgvi7ny8a3fj6k4dhqa98xgw2bx03v7"))
+              (patches
+               (search-patches "emacs-xelb-ignore-length-element.patch"))))
     (build-system emacs-build-system)
     ;; The following functions and variables needed by emacs-xelb are
     ;; not included in emacs-minimal:
@@ -19442,7 +19450,7 @@ from within Elisp using a DSL similar to CSS selectors.")
 (define-public emacs-envrc
   (package
     (name "emacs-envrc")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -19452,8 +19460,23 @@ from within Elisp using a DSL similar to CSS selectors.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nqqx4qlw75lmbn0v927sg3xyjkk86ihw1q3rdbbn59va41grds4"))))
+         "0vjk8k5k9xsngk50nf611c4j0bikqn9l1y3m35s8y3knwqw22ii0"))))
     (build-system emacs-build-system)
+    (arguments
+     (list
+      #:tests? #false                   ;FIXME: 8 out of 11 tests fail
+      #:test-command #~(list "emacs" "-Q" "--batch"
+                             "-l" "envrc-tests.el"
+                             "-f" "ert-run-tests-batch-and-exit")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'set-direnv-location
+            (lambda* (#:key inputs #:allow-other-keys)
+              (emacs-substitute-variables "envrc.el"
+                ("envrc-direnv-executable"
+                 (search-input-file inputs "/bin/direnv"))))))))
+    (inputs
+     (list direnv))
     (propagated-inputs
      (list emacs-inheritenv))
     (home-page "https://github.com/purcell/envrc")
@@ -36112,17 +36135,16 @@ hacker.")
 (define-public emacs-osm
   (package
     (name "emacs-osm")
-    (version "0.10")
-    (home-page "https://github.com/minad/osm")
+    (version "0.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url home-page)
+                    (url "https://github.com/minad/osm")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07caffh30sgmcbhxqk3wfpml3310ldvwkqbh19czq7nx4llynixc"))))
+                "1g4scrk7cgdlfyfaycq0576p5kiycy2jsq3iigppz7iky3xiqa9c"))))
     (build-system emacs-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
@@ -36148,6 +36170,7 @@ hacker.")
     (inputs (list curl))
     (native-inputs (list texinfo))
     (propagated-inputs (list emacs-compat))
+    (home-page "https://github.com/minad/osm")
     (synopsis "OpenStreetMap viewer for Emacs")
     (description
      "This package provides an OpenStreetMap viewer for Emacs, featuring
