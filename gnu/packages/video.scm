@@ -4366,7 +4366,7 @@ and MPEG system streams.")
         (base32 "0n0ayjq2ld7lfhrfcdj9bam96m2hih34phyjan8nwggkmqzflgmr"))))
     (build-system gnu-build-system)
     (inputs
-     (list libgcrypt))
+     (list libgcrypt libgpg-error))
     (home-page "https://www.videolan.org/developers/libbdplus.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
     (description "libbdplus is a library which implements the BD+ System
