@@ -1123,7 +1123,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.15")
+    (version "0.16")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1131,7 +1131,7 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1im484iz08j3gmzpw07v16brwq46pxxj65i996kkp2vivcfhmn5q"))))
+               "0syri018mfn5638g3l5qhyybn011kh7fazmvygm92xzcjs7sqicf"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
