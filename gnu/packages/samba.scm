@@ -310,14 +310,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.3.4")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01b5pq39z1l26f86dy8jqb37fsjbvsvx5ji65jmy8rsy4sz9x7qp"))))
+                "1fj61iyql0647hw88v01z4s6kx0fhw9lai30yf4fyri4qii6iwvd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -377,14 +377,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.13.0")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "030x6ziapxiqvmi2m23ri2p9rsa202gfqr7b3cv48lx5gy8plhxr"))))
+                "03fh7k8blrh4hbqsfr597nna3wpy61v38jxs6q83blpzh2mgr1gg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -411,14 +411,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "2.6.1")
+    (version "2.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1j9n2yzhd35xjh0mdfgym58xfbma1d27bcavjv1q4rzqgpvh6x26"))
+                "1j09jb7va3v5sqw0i6gl66zmlra1sfrb4gk4k4nnckl58zb75vi6"))
               (modules '((guix build utils)))
               (snippet
                '(begin

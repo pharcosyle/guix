@@ -1231,17 +1231,17 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxcomposite
   (package
     (name "libxcomposite")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXcomposite-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "13sfcglvz87vl58hd9rszwr73z0z4nwga3c12rfh7f5s2ln8l8dk"))))
+            "11rcvk380l5540gfqy9p8mbzw3l1p5g8l214p870f28smvqbqh7y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1403,17 +1403,17 @@ treat it as part of their software base when porting.")
 (define-public libxres
   (package
     (name "libxres")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXres-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "049b7dk6hx47161hg47ryjrm6pwsp27r5pby05b0wqb1pcggprmn"))))
+            "0pvlzahqd8fcyq10wi7ipbxvgrg93hn0vqsymhw7b6sb93rlcx4s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -2344,7 +2344,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.11.0")
+    (version "1.13.0")
     (source
      (origin
        (method url-fetch)
@@ -2352,7 +2352,7 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1l628xblk36vh7aqia1fw6hh62af7va0pd70h28112l5i4afmx33"))))
+         "1nbw4gpfh84d7q1w7hjdxqhsh49xjbn3hz34g590b9c6rh321pwy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -4384,17 +4384,17 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxinerama
   (package
     (name "libxinerama")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXinerama-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "086p0axqj57nvkaqa6r00dnr9kyrn1m8blgf0zjy25zpxkbxn200"))))
+            "0p08q8q1wg0sixhizl2l1i935bk6x3ckj3bdd6qqr0n1zkqd352h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
@@ -4480,17 +4480,17 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxtst
   (package
     (name "libxtst")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXtst-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "012jpyj7xfm653a9jcfqbzxyywdmwb2b5wr1dwylx14f3f54jma6"))))
+            "1j1kr90b7vmpqniqd0pd786kn5924q799c5m2kpgzd2lj85z7xc4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -4745,19 +4745,19 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxfont2
   (package
     (inherit libxfont)
-    (version "2.0.4")
+    (version "2.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
-                                  version ".tar.bz2"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "1rk9pjxcm01lbr1dxhnvk4f2qrn6zp068qjbvvz5w0z5d0rin5bd"))))))
+                "1x5f4w6f94dq9hfcd11xzzjqbz30yn2hdrnmv1b3zyxhgq0j1jkl"))))))
 
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.10")
+    (version "1.8")
     (source
       (origin
         (method url-fetch)
@@ -4767,7 +4767,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0q8hz3slga3w3ch8wp0k7ay9ilhz315qnab0w1y2x9w3cf7hv8rn"))))
+            "005sicls6faddkcj449858i9xz1nafy70y26frsk7iv1d9283l9f"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))             ;man pages represent 28% of the total
     (arguments
@@ -4918,14 +4918,14 @@ over Xlib, including:
 (define-public libxcvt
   (package
     (name "libxcvt")
-    (version "0.1.1")
+    (version "0.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.x.org/releases/individual"
                                   "/lib/libxcvt-" version ".tar.xz"))
               (sha256
                (base32
-                "0acc7vrj5kfb19zvyl7f29rnsvx383dvwc19k70r8prm1lccxsr7"))))
+                "0f6vf47lay9y288n8yg9ckjgz5ypn2hnp03ipp7javkr8h2njq85"))))
     (build-system meson-build-system)
     (home-page "https://gitlab.freedesktop.org/xorg/lib/libxcvt")
     (synopsis "VESA Coordinated Video Timings (CVT) library")
@@ -4940,7 +4940,7 @@ by the Xorg server.")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "21.1.4")
+    (version "21.1.8")
     (source
      (origin
        (method url-fetch)
@@ -4948,7 +4948,7 @@ by the Xorg server.")
                            "/xserver/xorg-server-" version ".tar.xz"))
        (sha256
         (base32
-         "11y5w6z3rz3i4jyv0wc3scd2jh3bsmcklq0fm7a5invywj7bxi2w"))
+         "0lmimvaw9x0ymdhjfqsrbx689bcapy8c24ajw9705j2harrxpaiq"))
        (patches
         (list
          ;; See:
@@ -5066,7 +5066,7 @@ draggable titlebars and borders.")
   (hidden-package
    (package
      (inherit xorg-server)
-     (version "21.1.4")
+     (version "21.1.8")
      (source
       (origin
         (method url-fetch)
@@ -5074,7 +5074,7 @@ draggable titlebars and borders.")
                             "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "11y5w6z3rz3i4jyv0wc3scd2jh3bsmcklq0fm7a5invywj7bxi2w"))
+          "0lmimvaw9x0ymdhjfqsrbx689bcapy8c24ajw9705j2harrxpaiq"))
         (patches
          (list
           ;; See:
@@ -5170,7 +5170,7 @@ EGLStream families of extensions.")
 (define-public xorg-server-xwayland
   (package
     (name "xorg-server-xwayland")
-    (version "21.1.3")
+    (version "23.1.1")
     (source
      (origin
        (method url-fetch)
@@ -5178,18 +5178,7 @@ EGLStream families of extensions.")
                            "/xserver/xwayland-" version ".tar.xz"))
        (sha256
         (base32
-         "18pqvg76grbsyxa3mm3j06i1l8cwb28nbn2gcnqpsk7x75zpbhpb"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://gitlab.freedesktop.org/xorg/xserver/-/commit/"
-                 "1d98f8b7d96a81d5912cef533d18bad396c62840.patch"))
-           (file-name (string-append name "-gcc-12-fix.patch"))
-           (sha256
-            (base32
-             "09bdab0gqiqhnzmcq3a5sm99yb3wrdr6ak6rqbjxkaak2jf7lgw0")))))))
+         "05aclfdgcnpb0nnfn5xh8f43xd481hdk30hqx43mxslzrgsn357v"))))
     (inputs (list font-dejavu
                   dbus
                   egl-wayland
@@ -5199,6 +5188,7 @@ EGLStream families of extensions.")
                   libepoxy
                   libgcrypt
                   libtirpc
+                  libxcvt
                   libxfont2
                   libxkbfile
                   pixman
@@ -5466,46 +5456,29 @@ The XCB util module provides the following libraries:
       "See COPYING in the distribution."))))
 
 (define-public xcb-util-errors
-  (let ((commit "5d660ebe872cadcdc85de9d6f9afe05de629c030")
-        (revision "1"))
-    (package
-      (name "xcb-util-errors")
-      (version (git-version "1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://anongit.freedesktop.org/git/xcb/util-errors.git")
-                      (commit commit)
-                      (recursive? #t)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "12bah0iz5k6b9hwlc5zffyfg2gnrajll3gn5s8zmazgynvw72ahg"))))
-     (build-system gnu-build-system)
-     (outputs '("out"))
-     (inputs
-      (list util-macros xcb-proto))
-     (propagated-inputs
-      (list libxcb))
-     (native-inputs
-      `(("autoconf" ,autoconf)
-        ("automake" ,automake)
-        ("libtool" ,libtool)
-        ("python" ,python-wrapper)
-        ("pkg-config" ,pkg-config)))
-     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (replace 'bootstrap
-            (lambda _
-              ;; The default 'bootstrap' phase would run 'autogen.sh', which
-              ;; would try to run ./configure and fail due to unpatched
-              ;; shebangs.
-              (invoke "autoreconf" "-v" "--install"))))))
-     (home-page "https://cgit.freedesktop.org/xcb/util-errors/")
-     (synopsis "XCB helper library for printing information about X11 errors")
-     (description
-      "The XCB util module provides a number of libraries which sit on
+  (package
+    (name "xcb-util-errors")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/xcb/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0mzkh3xj1n690dw8hrdhyjykd71ib0ls9n5cgf9asna2k1xwha2n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
+    (inputs
+     (list xcb-proto))
+    (propagated-inputs
+     (list libxcb))
+    (native-inputs
+     (list pkg-config m4 python-wrapper))
+    (home-page "https://cgit.freedesktop.org/xcb/util-errors/")
+    (synopsis "XCB helper library for printing information about X11 errors")
+    (description
+     "The XCB util module provides a number of libraries which sit on
 top of libxcb, the core X protocol library, and some of the extension
 libraries.  These experimental libraries provide convenience functions
 and interfaces which make the raw X protocol more usable.  Some of the
@@ -5515,19 +5488,19 @@ the X protocol but which has traditionally been provided by Xlib.
 The XCB util-errors module provides a utility library that gives human
 readable names to error codes, event codes, and also to major and minor
 numbers.")
-     (license license:x11))))
+    (license license:x11)))
 
 (define-public xcb-util-image
   (package
     (name "xcb-util-image")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://xorg/individual/xcb/"
-                                 name "-" version ".tar.bz2"))
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1z1gxacg7q4cw6jrd26gvi5y04npsyavblcdad1xccc8swvnmf9d"))))
+               "0g8dwknrlz96k176qxh8ar84x9kpppci9b978zyp24nvvbjqxbfc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -5555,14 +5528,14 @@ The XCB util-image module provides the following library:
 (define-public xcb-util-keysyms
   (package
     (name "xcb-util-keysyms")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://xorg/individual/xcb/"
-                                 name "-" version ".tar.bz2"))
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1nbd45pzc1wm6v5drr5338j4nicbgxa5hcakvsvm5pnyy47lky0f"))))
+               "0f66snk179hmp8ppgv1zp9y7pl1vzn52znpikm1fsaj1ji90l9kw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -5588,14 +5561,14 @@ The XCB util-keysyms module provides the following library:
 (define-public xcb-util-renderutil
   (package
     (name "xcb-util-renderutil")
-    (version "0.3.9")
+    (version "0.3.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://xorg/individual/xcb/"
-                                 name "-" version ".tar.bz2"))
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0nza1csdvvxbmk8vgv8vpmq7q8h05xrw3cfx9lwxd1hjzd47xsf6"))))
+               "1fh4dnlwlqyccrhmmwlv082a7mxc7ss7vmzmp7xxp39dwbqd859y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -5621,14 +5594,14 @@ The XCB util-renderutil module provides the following library:
 (define-public xcb-util-wm
   (package
     (name "xcb-util-wm")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://xorg/individual/xcb/"
-                                 name "-" version ".tar.bz2"))
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0gra7hfyxajic4mjd63cpqvd20si53j1q3rbdlkqkahfciwq3gr8"))))
+               "02wai17mxfbvlnj4l4bjbvah97rccdivzvd7mrznhr32s0hlxhv2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))

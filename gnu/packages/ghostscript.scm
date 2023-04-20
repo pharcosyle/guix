@@ -105,7 +105,7 @@ paper size.")
 (define-public psutils
   (package
     (name "psutils")
-    (version "2.09")
+    (version "2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rrthomas/psutils/releases"
@@ -113,7 +113,7 @@ paper size.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nmp0hb7c4a315vv1mqw2cbckvca8bzh1cv3gdvwwy24w9qba6p3"))))
+                "12z9sw258xr8b857187w40r3a4z5i6gmsdgv5dw5rpr2agykk0vg"))))
     (build-system gnu-build-system)
     (inputs (list perl))
     (native-inputs
