@@ -376,7 +376,9 @@ compatible to GNU Pth.")
                  (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
           (add-before 'build 'patch-test-paths
             (lambda _
-              (substitute* '("tests/pkits/inittests"
+              (substitute* '("tests/cms/inittests"
+                             "tests/cms/Makefile"
+                             "tests/pkits/inittests"
                              "tests/pkits/common.sh"
                              "tests/pkits/Makefile")
                 (("/bin/pwd") (which "pwd")))
