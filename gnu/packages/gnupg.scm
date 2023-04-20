@@ -256,7 +256,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.6.3")
+    (version "1.6.5")
     (source
      (origin
       (method url-fetch)
@@ -265,7 +265,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0p6y82j9y6n0l7scjgqhz3as9w13jiqjfx9n2jzynw89nf6wcwiz"))))
+        "05kd5bpnc10lmm31yifvx6j93gdsa3brhgvmk1wji6acay664r55"))))
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error))
@@ -313,9 +313,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    ;; Note: The 2.2.X releases are Long Term Support (LTS), so stick to it
-    ;; for our stable 'gnupg'.
-    (version "2.2.39")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -323,7 +321,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "0bscgv9gg9yhlpyia7b9l438cq6dvv6pwlhbl70df9phhmkdnx5b"))))
+                "1791plkc3my4519y9hrkvj7lrjfripl9xbaqqa04svrgfdnswwd2"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -362,9 +360,9 @@ compatible to GNU Pth.")
                  (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
           (add-before 'build 'patch-test-paths
             (lambda _
-              (substitute* '("tests/inittests"
+              (substitute* '("tests/cms/inittests"
+                             "tests/cms/Makefile"
                              "tests/pkits/inittests"
-                             "tests/Makefile"
                              "tests/pkits/common.sh"
                              "tests/pkits/Makefile")
                 (("/bin/pwd") (which "pwd")))
@@ -410,13 +408,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.18.0")
+    (version "1.23.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32 "17hfigfnq6xz45b5xrp299f68b5mwx0aysd51sx5v4nf8yp4w79n"))))
+       (base32 "092jrqdmdggjhl0swpvci8cscdcx0hbbr897an0vdk1wyfqyi6cl"))))
     (build-system gnu-build-system)
     (arguments
      (list
