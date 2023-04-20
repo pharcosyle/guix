@@ -2495,10 +2495,13 @@ XC-APPGROUP, XTEST.")
        (sha256
         (base32
          "1gygrc20d7cw70fdb5mp0ns3pmy8skggyl1mbpfyp3i0hv7amwdb"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--disable-static")))
-    (native-inputs (list python))
+     (list #:configure-flags #~(list "-Ddocumentation=disabled")))
+    (native-inputs
+     (list check
+           pkg-config
+           python))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
     (synopsis "Wrapper library for evdev devices")
     (description
