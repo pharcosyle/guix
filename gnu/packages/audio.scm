@@ -3038,18 +3038,17 @@ frequencies.  This data is then formatted to MIDI and written to disk.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.12")
+    (version "0.24.20")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "0qchfsyrsrp2pdpd59025kllycr04ddpzd03ha1iz70ci687g8r6"))))
-    (build-system waf-build-system)
+               "1g7f29i0jajswyg67k7hdnmyqk32fmmxw6xppf9fm1mjp2wq5c2g"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:tests? #f                      ; no check target
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-ldflags
           (lambda* (#:key outputs #:allow-other-keys)
@@ -3078,20 +3077,21 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.18.2")
+    (version "1.18.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://lv2plug.in/spec/lv2-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "0pp0n9x1rg8d4fw853z9cvfifjdi4bl85yjxxddqa1acfjy1z2af"))))
-    (build-system waf-build-system)
+               "0gwm63jrvg9lww0rl3sjkgbjwfz0vascpb19cfxmhkmm477ipibq"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:tests? #f                      ; no check target
-       #:configure-flags '("--no-plugins")))
+     ;; Just example plugins, we don't need these. In fact they might
+     ;; eventually be moved out of the project, see:
+     ;; https://gitlab.com/lv2/lv2/-/issues/57#note_1096060029
+     (list #:configure-flags #~(list "-Dplugins=disabled")))
     (inputs
-     ;; Leaving off cairo and gtk+-2.0 which are needed for example plugins
      (list libsndfile))
     (native-inputs
      (list pkg-config))
@@ -3685,16 +3685,15 @@ input/output.")
 (define-public sratom
   (package
     (name "sratom")
-    (version "0.6.6")
+    (version "0.6.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/sratom-"
-                                  version ".tar.bz2"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "178v90qvsp6lw4sqdmdz0bzyjkgwhv9m75ph1d1z8say5bv0p4gv"))))
-    (build-system waf-build-system)
-    (arguments `(#:tests? #f))          ;no check target
+                "1rm1mkzmqr8k818xxpm69f5jp1fnxjglj3l5ngcysfmq1psgm0lr"))))
+    (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of sratom-0.pc.
      (list lv2 serd sord))
@@ -5139,7 +5138,7 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
 (define-public libfdk
   (package
     (name "libfdk")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
       (origin
         (method git-fetch)
@@ -5149,7 +5148,7 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1fkrnzs78fmj11n9z3l0w53i2fl16jcfiyavwidck9bzmkmsf486"))))
+          "1lp9zw406jljy1f4p9cnr9ahxbwdwxacy4yhp13cxgvyfqk3ggyf"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake libtool))
