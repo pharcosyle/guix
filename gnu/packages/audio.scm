@@ -4081,7 +4081,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "2.2")
+    (version "2.3.1")
     (source
      (origin
        (method git-fetch)
@@ -4090,7 +4090,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12i6yg8vvqwyk412lxl2krbfby6hnxld8qxy0k4m5xp4g94jiq4p"))))
+        (base32 "10znckb8mrnmvwj7vq12732al873qhqw27fpb5f8r0bkjdpcj3vr"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake libtool file))
