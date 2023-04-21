@@ -33,11 +33,11 @@
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
-  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -66,16 +66,14 @@
 (define-public raptor2
   (package
     (name "raptor2")
-    (version "2.0.15")
+    (version "2.0.16")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.librdf.org/source/" name
                                  "-" version ".tar.gz"))
-             (patches
-              (search-patches "raptor2-heap-overflow.patch"))
              (sha256
               (base32
-               "1vc02im4mpc28zxzgli68k6j0dakh0k3s389bm436yvqajxg19xd"))))
+               "1026whyxpajwijlr4k5c0iliwn09mwxrg7gkvd5kb0n9ga6vg788"))))
     (build-system gnu-build-system)
     (inputs
      (list curl libxml2 libxslt zlib))
