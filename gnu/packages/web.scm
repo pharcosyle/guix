@@ -273,14 +273,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.52")
+    (version "2.4.57")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1jgmfbazc2n9dnl7axhahwppyq25bvbvwx0lqplq76by97fgf9q1"))))
+               "0ajdz5f2w9nbmqydip2mv9m4xlnc4swmw7mqzgnrbq4mxr5bik6v"))))
     (build-system gnu-build-system)
     (native-inputs (list `(,pcre "bin")))       ;for 'pcre-config'
     (inputs (list apr apr-util openssl perl)) ; needed to run bin/apxs
@@ -1693,7 +1693,7 @@ perform the opening handshake in HTTP.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.21.1")
+    (version "0.21.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -1701,7 +1701,7 @@ perform the opening handshake in HTTP.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "0k0d46bbh1jj2ll369f134vciplrzbqkg7fv9m62bl6lzghy2v5c"))))
+                "0pr8lrl3fbw0j9s9n84n4nwh41k5az1i0fyaq2iay0bhw6v92ng3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
