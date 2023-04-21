@@ -2734,7 +2734,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "42.0")
+    (version "44.0")
     (source
      (origin
        (method url-fetch)
@@ -2743,7 +2743,7 @@ on the GNOME Desktop with a single simple application.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1li3fcqwnw20f4j0i21i88fygm0hli8gmzkn4apgf8ynkrd371k6"))))
+         "03pc3wlfmf07586x89h63fr42pdpvqx64ak4ks298nchmmff8bgb"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2774,7 +2774,7 @@ schemas for settings shared by various components of the GNOME desktop.")
   (package
     (inherit gsettings-desktop-schemas)
     (name "gsettings-desktop-schemas-next") ;to avoid propagation conflicts
-    (version "42.0")
+    (version "44.0")
     (source
      (origin
        (method url-fetch)
@@ -2783,7 +2783,7 @@ schemas for settings shared by various components of the GNOME desktop.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1li3fcqwnw20f4j0i21i88fygm0hli8gmzkn4apgf8ynkrd371k6"))))))
+         "03pc3wlfmf07586x89h63fr42pdpvqx64ak4ks298nchmmff8bgb"))))))
 
 (define-public python-liblarch
   (package
@@ -4538,7 +4538,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.56.3")
+    (version "0.56.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4546,7 +4546,7 @@ passwords in the GNOME keyring.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "1gwrnr0d0bqkh6m4bgz39mh3pcswcj43hyijlwgwp2bvpwhn41p1"))))
+                "00xhv11q9di7i93hi4vvgxxhbxqiz1lncixfzs5sxaazdmcwff9x"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      (list
@@ -9898,7 +9898,7 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "42.0")
+    (version "44.0")
     (source
      (origin
        (method url-fetch)
@@ -9907,7 +9907,7 @@ is complete it provides a graphical representation of each selected folder.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0p99q434c8qgj5wxcma9jj4dh1ff9x984ncs31vmz725kyhf2zsc"))))
+         "0kp09gh537wj7j9a0dc25fv441sfr4x0q6ja89m2lpqkhyrr70sa"))))
     (build-system meson-build-system)
     (native-inputs (list gettext-minimal))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-backgrounds")
