@@ -5952,17 +5952,24 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "1saawzys14l1p4kafs7hkihmnvqjq8fwxjmkjiqx3jq1nm5ys2v4"))))
+         "0lp86yadzf8dph67f6g3yxmvnhrzzi863z58jmsrx2j059q1ld9i"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-tests
+                    (lambda _
+                      ;; Prevent pytest warnings from making tests fail (see
+                      ;; https://github.com/pallets/jinja/issues/1758).
+                      ;; Remove this on the next update.
+                      (substitute* "tests/test_loader.py"
+                        (("teardown") "teardown_method"))))
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       (if tests?
@@ -12228,14 +12235,14 @@ Introspection bindings, which is the recommended way to use GLib from Python.")
 (define-public python-dbus
   (package
     (name "python-dbus")
-    (version "1.2.18")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dbus.freedesktop.org/releases/dbus-python/"
                            "dbus-python-" version ".tar.gz"))
        (sha256
-        (base32 "0q3jrw515z98mqdk9x822nd95rky455zz9876f1nqna5igkd3gcj"))))
+        (base32 "1y28h90v2ib8zqhs3r2yr7ycg8ccwvw3gqkvadlm12v1129q2rxd"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
