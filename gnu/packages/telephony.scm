@@ -453,7 +453,7 @@ internet.")
 (define-public libsrtp
   (package
     (name "libsrtp")
-    (version "2.4.2")
+    (version "2.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -462,7 +462,7 @@ internet.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gswpjm4jacfxmgglbf8hxi3yzsag4drk4q943p0wkmv21zj8l78"))))
+                "1ichw2v9s2mggi5p2wbbmlg55q4r48dxi3ks7ykfcfkmh7pb1w1s"))))
     (native-inputs
      (list psmisc ;some tests require 'killall'
            procps))
