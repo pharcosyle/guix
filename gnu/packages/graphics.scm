@@ -792,7 +792,7 @@ many more.")
 (define-public imath
   (package
     (name "imath")
-    (version "3.1.3")
+    (version "3.1.7")
     (source
      (origin
        (method git-fetch)
@@ -801,7 +801,7 @@ many more.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1nyld18mf220ghm1vidnfnn0rdns9z5i4l9s66xgd0kfdgarb31f"))))
+        (base32 "1k88ffg9qki3cn056qjnaj74hh0821hxply8ld3rz7hqli32nfgi"))))
     (build-system cmake-build-system)
     (arguments
      ;; XXX: On i686-linux, tests fail due to rounding issues (excess
