@@ -74,7 +74,7 @@
 (define-public libwpe
   (package
     (name "libwpe")
-    (version "1.12.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
@@ -82,7 +82,7 @@
         (string-append "https://wpewebkit.org/releases/libwpe-"
                        version ".tar.xz"))
        (sha256
-        (base32 "13618imck69w7fbmljlh62j4gnlspb9zfqzv9hlkck3bi8icmvp8"))))
+        (base32 "1plsprnql8yip6vzpx2p1nddl1ki6lz93xxhcm74kfwd1z7wvl5i"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
@@ -102,14 +102,14 @@ the WPE-flavored port of WebKit.")
 (define-public wpebackend-fdo
   (package
     (name "wpebackend-fdo")
-    (version "1.12.0")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wpewebkit.org/releases/"
                                   "wpebackend-fdo-" version ".tar.xz"))
               (sha256
                (base32
-                "1b3l02dns1yxw3rq18cv00qan4hp95mxw5b3ssc0fh93ap0wjfb2"))))
+                "0f0d72755wl6n1axn6qs5ks8v85w5kr782ibxvmflkl6x5m7djck"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
