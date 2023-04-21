@@ -1157,7 +1157,7 @@ graphics.")
 (define-public openexr
   (package
     (name "openexr")
-    (version "3.1.3")
+    (version "3.1.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1167,7 +1167,7 @@ graphics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c9vla0kbsbbhkk42jlbf94nzfb1anqh7dy9b0b3nna1qr6v4bh6"))))
+                "1rg90ym7k63nbwrr2yg2adh3n9bm8w1nbf7mmrpsdvgx1qw9lpra"))))
     (build-system cmake-build-system)
     (arguments
      (list #:phases
@@ -1175,8 +1175,6 @@ graphics.")
                (add-after 'unpack 'patch-test-directory
                  (lambda _
                    (substitute* (list
-                                 "src/test/OpenEXRUtilTest/tmpDir.h"
-                                 "src/test/OpenEXRFuzzTest/tmpDir.h"
                                  "src/test/OpenEXRTest/tmpDir.h"
                                  "src/test/OpenEXRCoreTest/main.cpp")
                      (("/var/tmp")
