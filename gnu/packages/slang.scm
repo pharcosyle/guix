@@ -38,14 +38,14 @@
 (define-public slang
   (package
     (name "slang")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.jedsoft.org/releases/slang/slang-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "06p379fqn6w38rdpqi98irxi2bf4llb0rja3dlgkqz7nqh7kp7pw"))
+                "062siwy785q699y3plnsbhy0xlaxdm485sh82b37668kmra5057r"))
               (modules '((guix build utils)))
               (snippet
                #~(begin
@@ -89,14 +89,14 @@ slsh, which is part of the S-Lang distribution.")
 (define-public most
   (package
     (name "most")
-    (version "5.1.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.jedsoft.org/releases/most/most-"
                            version ".tar.gz"))
        (sha256
-        (base32 "008537ns659pw2aag15imwjrxj73j26aqq90h285is6kz8gmv06v"))
+        (base32 "00wrdligdipj9fx3yhn3ndlr1kr21yzj5p2hr22q7yi6z2wawmcl"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -134,14 +134,14 @@ to inspect different parts of the same file, at the same time.")
 (define-public newt
   (package
     (name "newt")
-    (version "0.52.21")
+    (version "0.52.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pagure.io/releases/newt/"
                                   "newt-" version ".tar.gz"))
               (sha256
                (base32
-                "0cdvbancr7y4nrj8257y5n45hmhizr8isynagy4fpsnpammv8pi6"))))
+                "0am1mp2vn1zdiajl80k1j2r367glc8m523cg57zfrv0lgf8758ya"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (inputs
