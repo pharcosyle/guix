@@ -15,10 +15,10 @@ diff --git a/resolvconf.in b/resolvconf.in
 index 3cad04d..5ef5294 100644
 --- a/resolvconf.in
 +++ b/resolvconf.in
-@@ -369,6 +369,13 @@ detect_init()
- 			then
- 				/etc/rc.d/$1 restart
+@@ -375,6 +375,13 @@
  			fi'
+ 	elif [ -d /etc/dinit.d ] && command -v dinitctl >/dev/null 2>&1; then
+ 		RESTARTCMD='dinitctl --quiet restart --ignore-unstarted $1'
 +	elif [ -e /gnu/store ] && [ -e /run/current-system/profile ]; then
 +		# Guix System
 +		RESTARTCMD='
@@ -29,6 +29,5 @@ index 3cad04d..5ef5294 100644
  	else
  		for x in /etc/init.d/rc.d /etc/rc.d /etc/init.d; do
  			[ -d $x ] || continue
--- 
 2.26.0
 

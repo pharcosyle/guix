@@ -1336,14 +1336,16 @@ and TCP-capable recursive DNS server for finding domains on the internet.")
 (define-public openresolv
   (package
     (name "openresolv")
-    (version "3.12.0")
+    (version "3.13.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://roy.marples.name/downloads/openresolv/"
-                                  "openresolv-" version ".tar.xz"))
+              (uri (string-append
+                    "https://github.com/NetworkConfiguration/openresolv"
+                    "/releases/download/v" version
+                    "/openresolv-" version ".tar.xz"))
               (sha256
                (base32
-                "15qvp5va2yrqpz0ba54clvn8cbc66v4sl7k3bi9ji8jpx040bcs2"))
+                "0yvzi7s9jlf46gmwck7m0grvjsf67sc6925q8ripnr9pvidlac4c"))
               (patches
                (search-patches "openresolv-restartcmd-guix.patch"))))
     (build-system gnu-build-system)
