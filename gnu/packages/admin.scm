@@ -1622,14 +1622,14 @@ supports Neighbor Solicitation and Neighbor Advertisement messages.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.10.1")
+    (version "1.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1m5x26vlbymp90k1qh0w3nj2nxzyvfrmfmwpj17k81dgri55ya7d"))))
+                "0pxy1qb4f3njb40masbjp0b4kml0rpbkkljz8fny6wmd7wwa06gd"))))
     (build-system gnu-build-system)
     (native-inputs
      (list bison flex))
