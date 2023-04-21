@@ -4064,7 +4064,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4073,7 +4073,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yr6nsjpnazq4z6dvjfyanljwgwnyjh3ddxa0sq6hl9qc59yq91r"))))
+                "09mirgg2br9d61xqlnfgarqs0ly9v9z28vbpcjsp2srk9b3b96rg"))))
     (build-system gnu-build-system)
     (native-inputs
      (list nasm python))
