@@ -351,16 +351,25 @@ compatible to GNU Pth.")
                  (string-append (getcwd) "/tests/gpgscm/gpgscm")))))
           (add-before 'build 'patch-test-paths
             (lambda _
-              (substitute* '("tests/inittests"
+              (substitute* '("tests/cms/inittests"
+                             "tests/cms/Makefile"
                              "tests/pkits/inittests"
-                             "tests/Makefile"
                              "tests/pkits/common.sh"
                              "tests/pkits/Makefile")
                 (("/bin/pwd") (which "pwd")))
               (substitute* "common/t-exectool.c"
                 (("/bin/cat") (which "cat"))
                 (("/bin/true") (which "true"))
-                (("/bin/false") (which "false"))))))))
+                (("/bin/false") (which "false")))))
+          ;; Backport for a fix (https://github.com/gpg/gnupg/commit/e89d57a2).
+          ;; Remove this on the next update.
+          (add-before 'build 'fix-gpgme-for-source-build
+            (lambda _
+              (substitute* "tests/gpgme/Makefile"
+                (("setup.scm/tests") "")
+                (("-rm -rf") "-rm -rf tests lang"))
+              (substitute* "tests/gpgme/all-tests.scm"
+                (("\"setup.scm\"") "")))))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
