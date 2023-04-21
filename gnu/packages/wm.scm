@@ -1683,7 +1683,7 @@ modules for building a Wayland compositor.")
 (define-public swayidle
   (package
     (name "swayidle")
-    (version "1.7.1")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -1692,7 +1692,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06iq12p4438d6bv3jlqsf01wjaxrzlnj1bnicn41kad563aq41xl"))))
+        (base32 "0y0qdqzx90kvk6l80darldvizr7p5g65bnblhxlq5a2rgvs9hkpx"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")))
@@ -1706,16 +1706,16 @@ modules for building a Wayland compositor.")
 (define-public swaylock
   (package
     (name "swaylock")
-    (version "1.6")
+    (version "1.7.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/swaywm/swaylock")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ihdvx6gdinzabvnazjmkk3ajrp7ngg0jzfwcjqn4hcjv64s0lam"))))
+        (base32 "03jrjwlwxkcyd6m9a1bbwapasnz7b7aws7h0y6jigjm4m478phv6"))))
     (build-system meson-build-system)
     (inputs (list cairo gdk-pixbuf libxkbcommon
                   ;("linux-pam" ,linux-pam) ; FIXME: Doesn't work.
@@ -1730,7 +1730,7 @@ modules for building a Wayland compositor.")
   (package
     (inherit swaylock)
     (name "swaylock-effects")
-    (version "1.6.10")
+    (version "1.6.11")
     (source
      (origin
        (method git-fetch)
@@ -1740,7 +1740,7 @@ modules for building a Wayland compositor.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d8ri7bzwfr53ybgf23acz57wyhcl2f1nqprcda1v9bzfgsqfk2n"))))
+         "0j7dxn66xqlf6iv2arqzz7mxlh7nf85anvpyf30d2frcidarda9h"))))
     (arguments
      (list #:configure-flags #~'("-Dsse=false")))
     (synopsis "Screen locking utility for Wayland compositors with effects")
