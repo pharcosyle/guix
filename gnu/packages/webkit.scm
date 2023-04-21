@@ -74,7 +74,7 @@
 (define-public libwpe
   (package
     (name "libwpe")
-    (version "1.12.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
@@ -82,7 +82,7 @@
         (string-append "https://wpewebkit.org/releases/libwpe-"
                        version ".tar.xz"))
        (sha256
-        (base32 "13618imck69w7fbmljlh62j4gnlspb9zfqzv9hlkck3bi8icmvp8"))))
+        (base32 "1plsprnql8yip6vzpx2p1nddl1ki6lz93xxhcm74kfwd1z7wvl5i"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
@@ -102,14 +102,14 @@ the WPE-flavored port of WebKit.")
 (define-public wpebackend-fdo
   (package
     (name "wpebackend-fdo")
-    (version "1.12.0")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wpewebkit.org/releases/"
                                   "wpebackend-fdo-" version ".tar.xz"))
               (sha256
                (base32
-                "1b3l02dns1yxw3rq18cv00qan4hp95mxw5b3ssc0fh93ap0wjfb2"))))
+                "0f0d72755wl6n1axn6qs5ks8v85w5kr782ibxvmflkl6x5m7djck"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
@@ -127,13 +127,13 @@ engine that uses Wayland for graphics output.")
 (define-public webkitgtk-prev
   (package
     (name "webkitgtk")                  ; webkit2gtk4
-    (version "2.41.2")
+    (version "2.41.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "07j0ry8mpwhaf1cfyikyj87b6a258asq0bbv7n5f0pr9r1v3y2wk"))
+               (base32 "13i8dwwkckq7xfjxlm1w1nxk8iw4bkhffvx2v9c8rx4j620264q0"))
               (patches (search-patches
                         "webkitgtk-adjust-bubblewrap-paths.patch"))))
     (build-system cmake-build-system)
@@ -311,13 +311,13 @@ propagated by default) such as @code{gst-plugins-good} and
   (package
     (inherit webkitgtk)
     (name "wpewebkit")
-    (version "2.40.0")
+    (version "2.41.2")
     (source (origin
               (inherit (package-source webkitgtk))
               (uri (string-append "https://wpewebkit.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "1dl663nbm011sx099x9gdhk3aj119yn5rxp77jmnhdv1l77jpv58"))))
+               (base32 "1kpkplay55p6136ddg7gz06qkvdyad0900lkn6r6az40adb8njaj"))))
     (arguments
      (substitute-keyword-arguments (package-arguments webkitgtk)
        ((#:configure-flags flags)
