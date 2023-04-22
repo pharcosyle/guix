@@ -1596,28 +1596,18 @@ Python's @code{random.seed}.")
        (uri (pypi-uri "pytest-mock" version))
        (sha256
         (base32 "0kzdwwdjw001qzf1n4qzh7c364rvmb0cmkfqdwr2l9bwxy2v1ggv"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Some tests do a string match on Pytest output, and fails when
-        ;; warnings are present.  Adjust to cope with warnings from
-        ;; third-party libraries (looking at you, pytest-asyncio).
-        '(substitute* "tests/test_pytest_mock.py"
-           (("1 passed in \\*")
-            "1 passed*")))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               ;; Skip the assertion rewriting tests, which don't work in the
-               ;; presence of read-only Python modules (a limitation of
-               ;; Pytest).  Also skip the "test_standalone_mock" test, which
-               ;; can only work when 'python-mock' is not available
-               ;; (currently propagated by Pytest 5).
-               (invoke "pytest" "--assert=plain" "-vv"
-                       "-k" "not test_standalone_mock")))))))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/pytest-dev/pytest-mock/commit/"
+                 "e2016928db1147a2a46de6ee9fa878ca0e9d8fc8.patch"))
+           (file-name (string-append name "-py-code-fix.patch"))
+           (sha256
+            (base32
+             "1y6n57nyc4bfb5cpkf4hfq584v3r2gf72q437aps4zcg62y205i8")))))))
+    (build-system pyproject-build-system)
     (native-inputs
      (list python-pytest-asyncio python-setuptools-scm))
     (propagated-inputs
