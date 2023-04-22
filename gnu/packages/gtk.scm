@@ -784,7 +784,7 @@ ever use this library.")
   (hidden-package
    (package
      (name "at-spi2-core")
-     (version "2.45.90")
+     (version "2.48.0")
      (source (origin
                (method url-fetch)
                (uri (string-append "mirror://gnome/sources/" name "/"
@@ -792,7 +792,7 @@ ever use this library.")
                                    name "-" version ".tar.xz"))
                (sha256
                 (base32
-                 "03dba3c6m3sfapkkbbgzvbi1qcmrrlppydxjjs1m8ds9qb9hl1g9"))))
+                 "0c4a9qflzi8jqvwb5q7snhgmksscmdgrzymz0gl8xdlh2xpmnnlh"))))
      (build-system meson-build-system)
      (arguments
       (list
