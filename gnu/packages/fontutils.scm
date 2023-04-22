@@ -1573,7 +1573,7 @@ using the above tables.")
 (define-public libspiro
   (package
     (name "libspiro")
-    (version "20200505")
+    (version "20221101")
     (source
      (origin
       (method url-fetch)
@@ -1581,7 +1581,7 @@ using the above tables.")
                           "/download/" version "/libspiro-dist-" version ".tar.gz"))
       (sha256
        (base32
-        "0j8fmyj4wz6mqk17dqs6f8jx0i52n68gv5px17qbrjnbilg9mih6"))))
+        "1gp881j7h28b2zkaa0j8523gn4d70nvm0j57yckzkqg4yddgp12r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1675,14 +1675,6 @@ definitions.")
               ;; 'msgstr' is not a valid C format string
               (substitute* "po/CMakeLists.txt"
                 ((" --check") ""))))
-          #$@(if (target-hurd?)
-                 #~((add-after 'unpack 'apply-hurd-patch
-                      (lambda _
-                        (let ((patch-file
-                               #$(local-file
-                                  (search-patch "fontforge-hurd.patch"))))
-                          (invoke "patch" "--force" "-p1" "-i" patch-file)))))
-                 #~())
           #$@(if (system-hurd?)
                  #~((replace 'check
                       ;; cmake-build-system ignores #:make-flags for make check
