@@ -141,7 +141,7 @@ is usually the formatter of \"man\" documentation pages.")
     (outputs '("out"))
 
     ;; Omit the DVI, PS, PDF, and HTML backends.
-    (inputs '())
+    (inputs (list diffutils-3.8)) ; `gdiffmk' is broken on newer diffutils.
     (native-inputs `(("bison" ,bison)
                      ("perl" ,perl)
                      ("groff" ,groff)))
