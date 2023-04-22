@@ -41,6 +41,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pretty-print)
@@ -130,15 +131,16 @@ driver is known to work with these printers:
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.28.15")
+    (version "1.28.17")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append "https://openprinting.org/download/cups-filters/"
-                       "cups-filters-" version ".tar.xz"))
+       (uri (string-append "https://github.com/OpenPrinting/cups-filters"
+                           "/releases/download/" version
+                           "/cups-filters-" version ".tar.xz"))
        (sha256
-        (base32 "12s7s2jgnh4q7ws7r2is6xp3pqq818jhnm4vpyzyywmvkxvfq1x9"))
+        (base32
+         "1fcvbhcdil8j0s26smrwjjnb4fa09z9va7s3knlqldk0m593f2i7"))
        (modules '((guix build utils)))
        (snippet
         ;; Install backends, banners and filters to cups-filters output
@@ -181,7 +183,10 @@ driver is known to work with these printers:
                                   (assoc-ref %build-inputs "bash")
                                   "/bin/bash")
                    (string-append "--with-rcdir="
-                                  #$output "/etc/rc.d"))
+                                  #$output "/etc/rc.d")
+                   ;; Fix build with qpdf 11.3.0, see:
+                   ;; https://github.com/OpenPrinting/cups-filters/issues/512
+                   "CXXFLAGS=-std=c++17")
            #:phases
            #~(modify-phases %standard-phases
                (add-after 'unpack 'patch-foomatic-hardcoded-file-names
@@ -219,6 +224,7 @@ driver is known to work with these printers:
            ijs
            dbus
            lcms
+           libexif
            libjpeg-turbo
            libpng
            libtiff
