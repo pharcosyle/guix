@@ -1988,6 +1988,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-angr-addition-type-error.patch	\
   %D%/packages/patches/python-angr-check-exec-deps.patch	\
   %D%/packages/patches/python-3-reproducible-build.patch	\
+  %D%/packages/patches/python-cffi-3.11-and-pytest-fixes.patch	\
   %D%/packages/patches/python-cross-compile.patch		\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-dateutil-pytest-compat.patch	\
