@@ -1944,6 +1944,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-reproducible-build.patch	\
   %D%/packages/patches/python-aionotify-0.2.0-py3.8.patch	\
   %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
+  %D%/packages/patches/python-cffi-3.11-and-pytest-fixes.patch	\
   %D%/packages/patches/python-cross-compile.patch		\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-dateutil-pytest-compat.patch	\
