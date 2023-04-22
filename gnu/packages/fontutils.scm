@@ -1561,7 +1561,7 @@ using the above tables.")
 (define-public libspiro
   (package
     (name "libspiro")
-    (version "20200505")
+    (version "20221101")
     (source
      (origin
       (method url-fetch)
@@ -1569,7 +1569,7 @@ using the above tables.")
                           "/download/" version "/libspiro-dist-" version ".tar.gz"))
       (sha256
        (base32
-        "0j8fmyj4wz6mqk17dqs6f8jx0i52n68gv5px17qbrjnbilg9mih6"))))
+        "1gp881j7h28b2zkaa0j8523gn4d70nvm0j57yckzkqg4yddgp12r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1609,14 +1609,14 @@ definitions.")
 (define-public fontforge
   (package
     (name "fontforge")
-    (version "20220308")
+    (version "20230101")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/fontforge/fontforge/releases/download/"
                     version "/fontforge-" version ".tar.xz"))
               (sha256
-               (base32 "0ncfc4ajwy4ng6b6h79w52jh9z3lngvf3f3ldi1wzkhcg9zh3r01"))))
+               (base32 "1y30bk9rdya8bkw4q77y6nq5xfg7nm0qliz5miqdlk8c0r6fr0na"))))
     (build-system cmake-build-system)
     (native-inputs
      (list pkg-config))
@@ -1657,14 +1657,6 @@ definitions.")
               (substitute* "CMakeLists.txt"
                 (("^set_default_rpath\\(\\)")
                  ""))))
-          #$@(if (target-hurd?)
-                 #~((add-after 'unpack 'apply-hurd-patch
-                      (lambda _
-                        (let ((patch-file
-                               #$(local-file
-                                  (search-patch "fontforge-hurd.patch"))))
-                          (invoke "patch" "--force" "-p1" "-i" patch-file)))))
-                 #~())
           #$@(if (system-hurd?)
                  #~((replace 'check
                       ;; cmake-build-system ignores #:make-flags for make check
@@ -1732,7 +1724,19 @@ generate bitmaps.")
     (inputs
      (modify-inputs (package-inputs fontforge)
        (prepend libuninameslist)
-       (replace "python" python-2)))))
+       (replace "python" python-2)
+       (replace "gettext-minimal"
+         ;; Fails to build with gettext 0.22+
+         (package
+           (inherit gettext-minimal)
+           (version "0.21.1")
+           (source (origin
+                     (method url-fetch)
+                     (uri (string-append "mirror://gnu/gettext/gettext-"
+                                         version ".tar.gz"))
+                     (sha256
+                      (base32
+                       "0ibdcinjgky0an2yw4aspmc31y0x5hw44mim9xf8gvlc3l76bhz8"))))))))))
 
 (define-public python-statmake
   (package
