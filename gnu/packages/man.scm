@@ -108,7 +108,7 @@ textfiles to roff for terminal display, and also to HTML for the web.")
 (define-public libpipeline
   (package
     (name "libpipeline")
-    (version "1.5.6")
+    (version "1.5.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -116,7 +116,7 @@ textfiles to roff for terminal display, and also to HTML for the web.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "15xpx7kbzkn63ab8mkghv7jkzji8pdbsyxm7ygjji19rvkkvkyv0"))))
+                "1c4h8qp2mjq4fzv0dsjvlnr525avlyi68zriq6gaf8lhk2a53d5q"))))
     (build-system gnu-build-system)
     (home-page "https://libpipeline.nongnu.org/")
     (synopsis "C library for manipulating pipelines of subprocesses")
