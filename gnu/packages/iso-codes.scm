@@ -34,17 +34,17 @@
   ;; ‘guix install’, where any deviation from ISO gospel might be harmful.
   (package
     (name "iso-codes")
-    (version "4.5.0")
+    (version "4.13.0")
     (home-page "https://salsa.debian.org/iso-codes-team/iso-codes")
     (source (origin
              (method git-fetch)
              (uri (git-reference
                    (url home-page)
-                   (commit (string-append "iso-codes-" version))))
+                   (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1q6x9c5x4x0x4q11iygldsmxdyzhz1mb4n8im76glwsgqsqyjs80"))))
+               "0ha2h348zghdcgyp4a4aqb29dvqhn42mbjrdb87qsbrsllxhr1z8"))))
     (build-system gnu-build-system)
     (native-inputs
      (list gettext-minimal perl python-wrapper))
