@@ -130,15 +130,16 @@ driver is known to work with these printers:
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.28.16")
+    (version "1.28.17")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append "https://openprinting.org/download/cups-filters/"
-                       "cups-filters-" version ".tar.xz"))
+       (uri (string-append "https://github.com/OpenPrinting/cups-filters"
+                           "/releases/download/" version
+                           "/cups-filters-" version ".tar.xz"))
        (sha256
-        (base32 "1h4s35xkbxhxpid39yaiy0gmaj3lck8lhzfdfl3h58hxfpx0nh1s"))
+        (base32
+         "1fcvbhcdil8j0s26smrwjjnb4fa09z9va7s3knlqldk0m593f2i7"))
        (modules '((guix build utils)))
        (snippet
         ;; Install backends, banners and filters to cups-filters output
