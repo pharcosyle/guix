@@ -100,7 +100,9 @@ conversions for values passed between the two languages.")
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1y9lr651svbzf1m03s4lqbnbv2byx8f6f0ml7hjm24vvlfwvy06l"))))
+       (base32 "1y9lr651svbzf1m03s4lqbnbv2byx8f6f0ml7hjm24vvlfwvy06l"))
+      (patches
+       (search-patches "python-cffi-3.11-and-pytest-fixes.patch"))))
     (build-system python-build-system)
     (inputs
      (list libffi))
