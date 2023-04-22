@@ -861,7 +861,7 @@ exception-handling library.")
 (define-public lib2geom
   (package
     (name "lib2geom")
-    (version "1.2")
+    (version "1.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -870,7 +870,7 @@ exception-handling library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dq981g894hmvhd6rmfl1w32mksg9hpvpjs1qvfxrnz87rhkknj8"))))
+                "1riyv6nvqsbfmfzwjl0sizjgw94qw2dyx4fdwc5rja1w15q32if6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
