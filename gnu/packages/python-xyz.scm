@@ -2989,8 +2989,13 @@ Python's built-in @code{re} module with compatible interfaces.")
        (uri (pypi-uri "filelock" version))
        (sha256
         (base32
-         "0ngzlvb5j8gqs2nxlp2b0jhzii792h66wsn694qm8kqixr225n0q"))))
-    (build-system python-build-system)
+         "0677p0b7jch94kz5g75d38sxna8i3c09g19wm0p3s0cc511sw0zw"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-hatchling
+           python-hatch-vcs
+           python-pytest
+           python-pytest-mock))
     (home-page "https://github.com/tox-dev/py-filelock")
     (synopsis "Platform independent file lock")
     (description "@code{filelock} contains a single module implementing
