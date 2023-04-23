@@ -737,7 +737,7 @@ credentials and service-specific settings.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "3.0.6")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -745,7 +745,7 @@ credentials and service-specific settings.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1kn57b039lg20182lnchl1ys27vf34brn43f895cal8nc7sdq3mp"))))
+                "0zkhp0b62nkn3pa9cvishql361p7vwhkahiq5kakrsawzc7n7qh2"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -758,7 +758,7 @@ credentials and service-specific settings.")
                              (string-append #$output "/share/doc")
                              (string-append #$output:doc "/share/doc")))))))
     (native-inputs
-     (list docbook-xml-4.1.2
+     (list docbook-xml
            docbook-xsl
            graphviz
            doxygen
@@ -808,7 +808,7 @@ libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.72.1")
+    (version "2.76.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -816,7 +816,7 @@ libraries.")
                                   "/glibmm-" version ".tar.xz"))
               (sha256
                (base32
-                "1n2w2pcpbxjbsxynmar3i5ibr7src6gnrdxb9nn57p5miai4jxia"))))
+                "1cia8vrpwzn8zwalws42mga5hi965840m5s8dvfzv55xx86dhdw6"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
