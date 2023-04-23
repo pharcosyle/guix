@@ -1374,6 +1374,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/git-filter-repo-generate-doc.patch	\
+  %D%/packages/patches/ghostscript-9.56-no-header-id.patch		\
+  %D%/packages/patches/ghostscript-9.56-no-header-creationdate.patch \
   %D%/packages/patches/gklib-suitesparse.patch			\
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-skip-failing-test.patch		\
