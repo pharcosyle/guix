@@ -109,7 +109,7 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
 (define-public nss-mdns
   (package
     (name "nss-mdns")
-    (version "0.14.1")
+    (version "0.15.1")
     (home-page "https://github.com/lathiat/nss-mdns")
     (source (origin
               (method url-fetch)
@@ -117,7 +117,7 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "134wdr0n9cm5ab4g6dwq76lvzqns9dcylr470i2xxjimnw0l22d2"))))
+                "088sfsb8aj9plji99ksdkz2c7l2gna3z6gp53y9cbkd7sx9i9xyx"))))
     (build-system gnu-build-system)
     (arguments
      ;; The Avahi daemon socket is expected by 'configure.ac' to be at
