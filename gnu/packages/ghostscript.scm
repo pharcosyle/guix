@@ -265,6 +265,31 @@ output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
 
+(define-public ghostscrpt-9.56
+  (package
+    (inherit ghostscript)
+    (version "9.56.1")
+    (source
+     (origin
+       (inherit (package-source ghostscript))
+       (method url-fetch)
+       (uri (string-append "https://github.com/ArtifexSoftware/"
+                           "ghostpdl-downloads/releases/download/gs"
+                           (string-delete #\. version)
+                           "/ghostscript-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1r5qash65m6ignki6z72q4rlai9ka99xrxnmqd19n02has00cd6l"))
+       (patches
+        (search-patches "ghostscript-9.56-no-header-creationdate.patch"
+                        "ghostscript-9.56-no-header-id.patch"
+                        "ghostscript-no-header-uuid.patch"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ghostscript)
+       ((#:configure-flags configure-flags '())
+        #~(append #$configure-flags
+                  (list "--enable-dynamic")))))))
+
 (define-public ghostscript/x
   (package/inherit ghostscript
     (name (string-append (package-name ghostscript) "-with-x"))
