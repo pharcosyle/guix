@@ -747,7 +747,7 @@ credentials and service-specific settings.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "3.0.6")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -755,7 +755,7 @@ credentials and service-specific settings.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1kn57b039lg20182lnchl1ys27vf34brn43f895cal8nc7sdq3mp"))))
+                "0zkhp0b62nkn3pa9cvishql361p7vwhkahiq5kakrsawzc7n7qh2"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -764,14 +764,6 @@ credentials and service-specific settings.")
         "-Dbuild-documentation=true")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-docbook-xml
-           (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion "docs"
-               (substitute* (find-files "." "\\.xml$")
-                 (("http://www.oasis-open.org/docbook/xml/4\\.1\\.2/")
-                  (string-append (assoc-ref inputs "docbook-xml")
-                                 "/xml/dtd/docbook/"))))
-             #t))
          (add-after 'install 'move-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -782,7 +774,7 @@ credentials and service-specific settings.")
                 (string-append doc "/share/doc"))
                #t))))))
     (native-inputs
-     `(("docbook-xml" ,docbook-xml-4.1.2)
+     `(("docbook-xml" ,docbook-xml)
        ("docbook-xsl" ,docbook-xsl)
        ("dot" ,graphviz)
        ("doxygen" ,doxygen)
@@ -845,7 +837,7 @@ credentials and service-specific settings.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.72.1")
+    (version "2.76.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -853,7 +845,7 @@ credentials and service-specific settings.")
                                   "/glibmm-" version ".tar.xz"))
               (sha256
                (base32
-                "1n2w2pcpbxjbsxynmar3i5ibr7src6gnrdxb9nn57p5miai4jxia"))))
+                "1cia8vrpwzn8zwalws42mga5hi965840m5s8dvfzv55xx86dhdw6"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
