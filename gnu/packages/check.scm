@@ -1103,24 +1103,30 @@ syntax validation, ...
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
-        (base32 "0p1vhfw552rgd7gb2vy4l4l4k8mnbdz7f3chgzvk0r0qsqvzzfs1"))))
-    (build-system python-build-system)
+        (base32 "1c89vc40zj5aj2zvbvw875wqpyf0x6xrqhm3q5jg797g5hkhbjbz"))))
+    (build-system pyproject-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
-                      (if tests?
-                          (invoke "nosetests" "-v")
-                          (format #t "test suite not run~%"))
-                      #t)))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-tests
+            (lambda _
+              ;; Workaround for apparently crummy pytest7 support, see:
+              ;; https://github.com/wolever/parameterized/issues/167
+              (substitute* "parameterized/test.py"
+                (("assert_equal\\(missing, \\[\\]\\)") ""))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "pytest" "-vv" "parameterized/test.py")))))))
     (native-inputs
-     (list python-mock python-nose))
+     (list python-mock python-pytest))
     (home-page "https://github.com/wolever/parameterized")
     (synopsis "Parameterized testing with any Python test framework")
     (description
@@ -1149,20 +1155,19 @@ doctest.")
 (define-public python-mock
   (package
     (name "python-mock")
-    (version "3.0.5")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mock" version))
        (sha256
         (base32
-         "1hrp6j0yrx2xzylfv02qa8kph661m6yq4p0mc8fnimch9j4psrc3"))))
+         "14bq6xj4c7c8mw6dz4mr3q6y0blwx4v9lnhl5ch2hi5lcmyqvw86"))))
+    (build-system python-build-system)
+    (native-inputs
+     (list python-pytest))
     (propagated-inputs
      (list python-six))
-    (build-system python-build-system)
-    (arguments
-     ;; FIXME: Tests require "pytest", which depends on this package.
-     '(#:tests? #f))
     (home-page "https://github.com/testing-cabal/mock")
     (synopsis "Python mocking and patching library for testing")
     (description
