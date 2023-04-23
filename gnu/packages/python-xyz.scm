@@ -2201,15 +2201,20 @@ Python's built-in @code{re} module with compatible interfaces.")
 (define-public python-filelock
   (package
     (name "python-filelock")
-    (version "3.0.12")
+    (version "3.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "filelock" version))
        (sha256
         (base32
-         "0ngzlvb5j8gqs2nxlp2b0jhzii792h66wsn694qm8kqixr225n0q"))))
-    (build-system python-build-system)
+         "0677p0b7jch94kz5g75d38sxna8i3c09g19wm0p3s0cc511sw0zw"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-hatchling
+           python-hatch-vcs
+           python-pytest
+           python-pytest-mock))
     (home-page
      "https://github.com/benediktschmitt/py-filelock")
     (synopsis "Platform independent file lock")
@@ -5017,13 +5022,13 @@ important tasks for becoming a daemon process:
               (sha256
                (base32
                 "1aycpc387wqz7h9w2p53qxn43qsh3m6by6ak4kkc66x9aprr63rz"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (propagated-inputs
      (list python-six))
     (native-inputs
      (list ;; For tests.
            graphviz ;for 'dot'
-           python-nose))
+           python-pytest))
     (home-page "https://github.com/c0fec0de/anytree")
     (synopsis "Lightweight tree data library")
     (description
@@ -12131,22 +12136,18 @@ functionalities with some extras.")
 (define-public python-ptyprocess
   (package
     (name "python-ptyprocess")
-    (version "0.5.2")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ptyprocess" version))
        (sha256
         (base32
-         "0ra31k10v3629xq0kdn8lwmfbi97anmk48r03yvh7mks0kq96hg6"))))
-    (build-system python-build-system)
+         "081j893x6c9qrfszp8swfqlpvk8agh1jc32y9140pvnf90xhlpaw"))))
+    (build-system pyproject-build-system)
     (native-inputs
-     (list python-nose))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _ (invoke "nosetests"))))))
+     (list python-flit-core
+           python-nose))
     (home-page "https://github.com/pexpect/ptyprocess")
     (synopsis "Run a subprocess in a pseudo terminal")
     (description
