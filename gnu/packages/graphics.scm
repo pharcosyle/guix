@@ -419,7 +419,9 @@ objects!")
            procps))                     ;for tests
     (inputs
      (list glib
-           imagemagick
+           ;; Change this to Imagemagick 7 on the next update (support exists
+           ;; in as-yet unreleased code).
+           imagemagick-6
            libjpeg-turbo
            libpng
            pstoedit
@@ -995,7 +997,8 @@ Angus Johnson}.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list ghostscript
+     ;; TODO Figure out if this will work with newer Ghostscript. Update: upstream bumped to 4.00 (I had it at 3.78) so even more likely the newer ghostscript works
+     (list ghostscript-9.56
            imagemagick
            plotutils
            libjpeg-turbo
