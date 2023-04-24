@@ -1706,13 +1706,11 @@ following improvements:
        (modify-phases %standard-phases
          (replace 'check
           (lambda _
-            ;; Options taken from tox.ini.
-            ;; TODO: make "--restructuredtext" tests pass. They currently fail
-            ;; with "Duplicate implicit target name".
             (invoke "python" "./setup.py" "check"
-                    "--strict" "--metadata"))))))
+                    "--strict" "--metadata" "--restructuredtext"))))))
     (native-inputs
-     (list python-setuptools
+     (list python-docutils
+           python-setuptools
            python-wheel))
     (propagated-inputs
      (list python-coverage python-pytest))
@@ -2114,7 +2112,7 @@ same arguments.")
                          python-setuptools
                          python-setuptools-scm
                          python-wheel))
-    (propagated-inputs (list python-execnet python-pytest-forked))
+    (propagated-inputs (list python-execnet))
     (home-page "https://github.com/pytest-dev/pytest-xdist")
     (synopsis
      "Plugin for py.test with distributed testing and loop-on-failing modes")
@@ -2541,8 +2539,6 @@ have failed since the last commit or what tests are currently failing.")))
            python-flaky
            python-setuptools
            python-wheel))
-    (propagated-inputs
-     (list python-tomli))
     (home-page "https://coverage.readthedocs.io")
     (synopsis "Code coverage measurement for Python")
     (description

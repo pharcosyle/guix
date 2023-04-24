@@ -19728,17 +19728,8 @@ pure Python module that works on virtually all Python versions.")
       (build-system pyproject-build-system)
       (arguments
        (list
-        ;; ;; This test hasn't been updated for the latest Pytest yet:
-        ;; #:test-flags #~(list "--ignore" "testing/test_rsync.py")
         #:phases
         #~(modify-phases %standard-phases
-            (add-after 'unpack 'adjust-for-pytest-7.2+
-              (lambda _
-                ;; This test fails with an error because @py.test has been
-                ;; deprecated for @pytest in recent Pytest.
-                (substitute* "testing/test_rsync.py"
-                  (("@py.test")
-                   "@pytest"))))
             (add-before 'build 'pretend-version
               ;; The version string is usually derived via setuptools-scm, but
               ;; without the git metadata available this fails.
