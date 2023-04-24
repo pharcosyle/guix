@@ -1639,7 +1639,7 @@ library.")
   (package
     (inherit cairomm)
     (name "cairomm")
-    (version "1.14.2")
+    (version "1.14.4")
     (source
      (origin
        (method url-fetch)
@@ -1647,10 +1647,10 @@ library.")
         (string-append "https://www.cairographics.org/releases/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1qwdj9xw1w651kqwh82nipbryimm1ir5n3c6q34nphsx576bj9h1"))))
+        (base32 "0n2i0p935j8gzf3f3vdkqhppjipshxfazjhlq307rxif5ddd4ja7"))))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs cairomm)
-       (prepend libsigc++-2)))))
+       (prepend libsigc++-2.12)))))
 
 (define-public pangomm
   (package
@@ -1701,7 +1701,7 @@ text rendering library.")
   (package
     (inherit pangomm)
     (name "pangomm")
-    (version "2.46.2")
+    (version "2.46.3")
     (source
      (origin
        (method url-fetch)
@@ -1710,9 +1710,9 @@ text rendering library.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1x56xb4k1d9g88a1d9rlcvy97mmj39rib6c3wfzpff04vjs2li2p"))))
+        (base32 "0ya3yb36d745m5ccgwhgxl8xjh82hiys3lvk08zqyq0s8x6y03s1"))))
     (propagated-inputs
-     (list cairomm-1.14 glibmm-2.64 pango))))
+     (list cairomm-1.14 glibmm-2.66 pango))))
 
 (define-public atkmm
   (package
@@ -1768,7 +1768,7 @@ text rendering library.")
   (package
     (inherit atkmm)
     (name "atkmm")
-    (version "2.28.1")
+    (version "2.28.3")
     (source
      (origin
        (method url-fetch)
@@ -1777,10 +1777,10 @@ text rendering library.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1b8vycqzr3lfvk2l73f4kk74hj48081zbh9r1r2ilr3h8xh7cs0i"))))
+        (base32 "0scricjx6p7acxrxmj232d6qi42zdkjh90xila6vw2d9hss8h83w"))))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs atkmm)
-       (replace "glibmm" glibmm-2.64)))))
+       (replace "glibmm" glibmm-2.66)))))
 
 (define-public gtkmm
   (package
@@ -1854,7 +1854,7 @@ tutorial.")
   (package
     (inherit gtkmm)
     (name "gtkmm")
-    (version "3.24.6")
+    (version "3.24.7")
     (source
      (origin
        (method url-fetch)
@@ -1863,7 +1863,7 @@ tutorial.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1mhi3ws43l051fha4zssfpykraa1qc2hd408l2xk65jfjhp18gjb"))))
+        (base32 "173qwr3rjvsbdxz5rb0hhl6p4idjp7gc5qsf4k5wmv2wkjpkayhx"))))
     (propagated-inputs
      `(("atkmm-2.28" ,atkmm-2.28)
        ("cairomm-1.14" ,cairomm-1.14)
