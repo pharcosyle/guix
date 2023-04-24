@@ -6461,7 +6461,7 @@ writing C extensions for Python as easy as Python itself.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.23.2")
+    (version "1.24.3")
     (source
      (origin
        (method url-fetch)
@@ -6470,7 +6470,7 @@ writing C extensions for Python as easy as Python itself.")
              version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "00bx3idjwhmzkdawg2dx1bp0316ig37jfx0dm82bvyv1hbj013dp"))))
+         "0maipk88s08dl25iyy882k07sissqg3xnzz4p3d0l50zy8dlyd5b"))))
     (build-system python-build-system)
     (arguments
      (list
@@ -8974,7 +8974,18 @@ wraps Python's standard library threading and multiprocessing objects.")
        (method url-fetch)
        (uri (pypi-uri "pexpect" version))
        (sha256
-        (base32 "032cg337h8awydgypz6f4wx848lw8dyrj4zy988x0lyib4ws8rgw"))))
+        (base32 "032cg337h8awydgypz6f4wx848lw8dyrj4zy988x0lyib4ws8rgw"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/pexpect/pexpect/commit/"
+                 "52af5b0ae0627139524448a3f2e83d9f40802bc2.patch"))
+           (file-name (string-append name "-python-3.11-fix.patch"))
+           (sha256
+            (base32
+             "18dpzbhzq2v3wmc9kpy38vmgp6hi1qxg9yy8v09wwc9i5hh1prhj")))))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -15293,21 +15304,23 @@ pure Python module that works on virtually all Python versions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0s60jggcjiw38b7xsh1q2lnnr4c4kaki7c5zsv7xyj7df8ngbbsm"))))
+                  "0s60jggcjiw38b7xsh1q2lnnr4c4kaki7c5zsv7xyj7df8ngbbsm"))
+                (patches
+                 (list
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://github.com/pytest-dev/execnet/commit/"
+                          "1f22ac0286396cb6c2d370af9a538b4b97aefa25.patch"))
+                    (file-name (string-append name "-pytest-fix.patch"))
+                    (sha256
+                     (base32
+                      "0idm56c8y30lr65cr3yns3p86ksfr9y450pbzd38wrjb0lm6g70n")))))))
       (build-system pyproject-build-system)
       (arguments
        (list
-        ;; ;; This test hasn't been updated for the latest Pytest yet:
-        ;; #:test-flags #~(list "--ignore" "testing/test_rsync.py")
         #:phases
         #~(modify-phases %standard-phases
-            (add-after 'unpack 'adjust-for-pytest-7.2+
-              (lambda _
-                ;; This test fails with an error because @py.test has been
-                ;; deprecated for @pytest in recent Pytest.
-                (substitute* "testing/test_rsync.py"
-                  (("@py.test")
-                   "@pytest"))))
             (add-before 'build 'pretend-version
               ;; The version string is usually derived via setuptools-scm, but
               ;; without the git metadata available this fails.
@@ -15326,10 +15339,8 @@ pure Python module that works on virtually all Python versions.")
       (native-inputs
        (list python-hatchling
              python-hatch-vcs
-             python-py
              python-pytest
-             python-pytest-timeout
-             python-setuptools-scm))
+             python-pytest-timeout))
       (synopsis "Rapid multi-Python deployment")
       (description "Execnet provides a share-nothing model with
 channel-send/receive communication for distributing execution across many
@@ -18822,12 +18833,12 @@ etc.")
             "1nyd4m4mnrz8scbfqn4zpq8gnbl4x42w5zz62vcgpzqd2waf0xrw"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: 3/49 tests are failing.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (replace 'check
-       ;;     (lambda _
-       ;;       (zero? (system* "python" "test/run_all_tests.py" "loop://")))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "python" "test/run_all_tests.py")))))))
     (home-page
       "https://github.com/pyserial/pyserial")
     (synopsis "Python Serial Port Bindings")

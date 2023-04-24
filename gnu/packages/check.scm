@@ -1375,24 +1375,23 @@ following improvements:
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "3.0.0")
+    (version "4.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
-         (base32 "0w6lfv8gc1lxmnvsz7mq5z9shxac5zz6s9mwrai108kxc6qzbw77"))))
+         (base32 "0w04vnw4pw9llsxwss4bazhpzvdkbyy2v1w802ywscv4vvppjswr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
           (lambda _
-            ;; Options taken from tox.ini.
-            ;; TODO: make "--restructuredtext" tests pass. They currently fail
-            ;; with "Duplicate implicit target name".
             (invoke "python" "./setup.py" "check"
-                    "--strict" "--metadata"))))))
+                    "--strict" "--metadata" "--restructuredtext"))))))
+    (native-inputs
+     (list python-docutils))
     (propagated-inputs
      (list python-coverage python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-cov")
@@ -1633,15 +1632,15 @@ same arguments.")
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
-    (version "2.5.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-xdist" version))
        (sha256
         (base32
-         "1psf5dqxvc38qzxvc305mkg5xpdmdkbkkfiyqlmdnkgh7z5dx025"))))
-    (build-system python-build-system)
+         "09s7yn2l1n9fk63yv3raj5hk7gwhw1w79nvjwi4bjhmjv2cbsj8q"))))
+    (build-system pyproject-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1651,7 +1650,7 @@ same arguments.")
                (invoke "pytest" "-vv"
                        "-n" (number->string (parallel-job-count)))))))))
     (native-inputs (list python-setuptools-scm python-filelock python-pytest))
-    (propagated-inputs (list python-execnet python-pytest-forked))
+    (propagated-inputs (list python-execnet))
     (home-page "https://github.com/pytest-dev/pytest-xdist")
     (synopsis
      "Plugin for py.test with distributed testing and loop-on-failing modes")
@@ -1684,7 +1683,7 @@ result back.")
                       (add-installed-pythonpath inputs outputs)
                       (invoke "pytest" "-vv"))))))
     (propagated-inputs
-     (list python-pytest python-pytest-cov))
+     (list python-pytest))
     (native-inputs
      (list python-pexpect))
     (home-page "https://github.com/pytest-dev/pytest-timeout")
@@ -2003,20 +2002,28 @@ have failed since the last commit or what tests are currently failing.")))
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "6.4.3")
+    (version "7.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "157vndwrzyv9ypn2w3b6g8gv7vw07v994hq8nxasdb75k3ry2apc"))))
-    (build-system python-build-system)
+         "0n8jp7wzdszxlfp17zfrgm6101s2rgkdcnmykbfix2d4by0w566j"))))
+    (build-system pyproject-build-system)
     (arguments
-     ;; FIXME: 95 tests failed, 539 passed, 6 skipped, 2 errors.
-     '(#:tests? #f))
-    (propagated-inputs
-     (list python-tomli))
+     (list
+      ;; FIXME: 75 failed, 1225 passed, 20 skipped, 9 warnings, 14 errors.
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'pre-check
+            (lambda _
+              ;; Test setup looks for a place to write .pth files by searching
+              ;; sys.path for a directory that already conatains one.
+              (invoke "touch" "dummy.pth"))))))
+    (native-inputs
+     (list python-pytest python-pytest-xdist python-flaky))
     (home-page "https://coverage.readthedocs.io")
     (synopsis "Code coverage measurement for Python")
     (description
