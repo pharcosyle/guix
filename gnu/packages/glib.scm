@@ -780,10 +780,24 @@ dissimilar callbacks and has an ease of use unmatched by other C++ callback
 libraries.")
     (license license:lgpl3+)))
 
-(define-public libsigc++-2
+(define-public libsigc++-2.12
   (package
     (inherit libsigc++)
     (name "libsigc++")
+    (version "2.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/libsigc++/"
+                       (version-major+minor version)
+                       "/libsigc++-" version ".tar.xz"))
+       (sha256
+        (base32 "1dd3kwynrklh5bgrf57ns0jd2zn372qj3svni48rnkxkchp6sihw"))))))
+
+(define-public libsigc++-2
+  (package
+    (inherit libsigc++-2.12)
     (version "2.9.3")
     (source
      (origin
@@ -794,16 +808,7 @@ libraries.")
                        "/libsigc++-" version ".tar.xz"))
        (sha256
         (base32 "0zq963d0sss82q62fdfjs7l9iwbdch51albck18cb631ml0v7y8b"))))
-    (build-system gnu-build-system)
-    (arguments
-     (list #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'install 'move-doc
-                 (lambda _
-                   (mkdir-p (string-append #$output:doc "/share"))
-                   (rename-file
-                    (string-append #$output "/share/doc")
-                    (string-append #$output:doc "/share/doc")))))))))
+    (build-system gnu-build-system)))
 
 (define glibmm
   (package
@@ -856,6 +861,23 @@ libraries.")
      "Glibmm provides a C++ programming interface to the part of GLib that are
 useful for C++.")
     (license license:lgpl2.1+)))
+
+(define-public glibmm-2.66
+  (package
+    (inherit glibmm)
+    (version "2.66.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/glibmm/"
+                       (version-major+minor version)
+                       "/glibmm-" version ".tar.xz"))
+       (sha256
+        (base32 "0bqm9vqwhas69q6n89wd2xgxvrlkpxra13dzsx8m67hqk0jp8n2k"))))
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs glibmm)
+       (replace "libsigc++" libsigc++-2.12)))))
 
  (define-public glibmm-2.64
    (package
