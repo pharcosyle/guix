@@ -4593,7 +4593,6 @@ the GObject type system and has additional code generation routines that make
 targeting the GNOME stack simple.")
     (license license:lgpl2.1+)))
 
-;;; An older variant kept to build libsoup-minimal-2.
 (define-public vala-0.52
   (package/inherit vala
     (version "0.52.11")
@@ -5153,18 +5152,9 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
        (modify-phases %standard-phases
          (add-after 'unpack 'adjust-tests
            (lambda _
-             ;; This test fails due to missing /etc/nsswitch.conf
-             ;; in the build environment.
-             (substitute* "tests/unix-socket-test.c"
-               ((".*/sockets/unconnected.*") ""))
-
-             ;; These fail because "subdomain.localhost" does not resolve in
-             ;; the build environment.  Moreover, the hsts-test suite fails on
-             ;; i686-linux because of errors from `session_get_uri' like
+             ;; Fails because of errors from `session_get_uri' like
              ;; "Unexpected status 200 OK (expected 301 Moved Permanently)"
              ;; (see: https://gitlab.gnome.org/GNOME/libsoup/-/issues/239).
-             (substitute* "tests/meson.build"
-               ((".*'name': 'hsts'.*") ""))
              (substitute* "tests/hsts-db-test.c"
                ((".*/hsts-db/subdomains.*") "")))))))
     (native-inputs
@@ -5213,15 +5203,13 @@ and the GLib main loop, to integrate well with GNOME applications.")
      (substitute-keyword-arguments (package-arguments libsoup-minimal)
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'adjust-tests)
            (add-after 'unpack 'disable-failing-tests
              (lambda _
                ;; Disable the SSL test, failing since 2.68 and resolved in
                ;; libsoup 3.
                (substitute* "tests/meson.build"
-                 (("[ \t]*\\['ssl', true, \\[\\]\\],") ""))))))))
-    (native-inputs
-     (modify-inputs (package-native-inputs libsoup-minimal)
-       (replace "vala" vala-0.52)))))
+                 (("[ \t]*\\['ssl', true, \\[\\]\\],") ""))))))))))
 
 (define-public libsoup
   (package/inherit libsoup-minimal
