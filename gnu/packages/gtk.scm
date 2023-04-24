@@ -1031,8 +1031,7 @@ application suites.")
            harfbuzz
            iso-codes
            json-glib-minimal
-           libxml2
-           rest))
+           libxml2))
     (native-inputs
      (list docbook-xml-4.3
            docbook-xsl
@@ -1256,7 +1255,6 @@ application suites.")
            libpng
            libtiff
            python
-           rest
            tracker))                    ;for filechooser search support
     (propagated-inputs
      ;; Following dependencies are referenced in .pc files.
