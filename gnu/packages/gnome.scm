@@ -5147,22 +5147,6 @@ and the GLib main loop, to integrate well with GNOME applications.")
                 (delete "-Ddocs=disabled" #$configure-flags)))
        ((#:phases phases)
         #~(modify-phases #$phases
-            (replace 'adjust-tests
-              (lambda _
-                ;; This test fails due to missing /etc/nsswitch.conf
-                ;; in the build environment.
-                (substitute* "tests/unix-socket-test.c"
-                  ((".*/sockets/unconnected.*") ""))
-
-                ;; These fail because "subdomain.localhost" does not resolve in
-                ;; the build environment.  Moreover, the hsts-test suite fails on
-                ;; i686-linux because of errors from `session_get_uri' like
-                ;; "Unexpected status 200 OK (expected 301 Moved Permanently)"
-                ;; (see: https://gitlab.gnome.org/GNOME/libsoup/-/issues/239).
-                (substitute* "tests/meson.build"
-                  ((".*'name': 'hsts'.*") ""))
-                (substitute* "tests/hsts-db-test.c"
-                  ((".*/hsts-db/subdomains.*") ""))))
             (add-after 'install 'move-doc
               (lambda _
                 (mkdir-p (string-append #$output:doc "/share"))
