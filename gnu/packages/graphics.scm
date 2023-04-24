@@ -397,7 +397,9 @@ objects!")
            procps))                     ;for tests
     (inputs
      (list glib
-           imagemagick
+           ;; Change this to Imagemagick 7 on the next update (support exists
+           ;; in as-yet unreleased code).
+           imagemagick-6
            libjpeg-turbo
            libpng
            pstoedit))
@@ -956,19 +958,20 @@ Angus Johnson}.")
 (define-public pstoedit
   (package
     (name "pstoedit")
-    (version "3.77")
+    (version "3.78")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pstoedit/pstoedit/"
                                   version "/pstoedit-" version ".tar.gz"))
               (sha256
                (base32
-                "02av76j75g5sq3bg353yl6dlllda9ihmmk4c8hvgiscix816nv4s"))))
+                "00fqj074l05zshv6nsh5q85alnnx2gl7900gg09xk23zphs8xhlc"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("ghostscript" ,ghostscript)
+     ;; TODO Figure out if this will work with newer Ghostscript.
+     `(("ghostscript" ,ghostscript-9.56)
        ("imagemagick" ,imagemagick)
        ("libplot" ,plotutils)
        ("libjpeg" ,libjpeg-turbo)
