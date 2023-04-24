@@ -5138,7 +5138,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
 (define-public libsoup-minimal
   (package
     (name "libsoup-minimal")
-    (version "3.0.7")
+    (version "3.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -5146,17 +5146,16 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "1j7p3cz6hwi9js9rp0pbas7cdln97yg9v2l1nv5imhcr6p7r1pzb"))))
+                "0125c5skvbwrb0fvivs8v6sihwqqwlais3vmlaybjv0n3dxqc2sk"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dgtk_doc=false")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'adjust-tests
            (lambda _
              ;; This test fails due to missing /etc/nsswitch.conf
              ;; in the build environment.
-             (substitute* "tests/socket-test.c"
+             (substitute* "tests/unix-socket-test.c"
                ((".*/sockets/unconnected.*") ""))
 
              ;; These fail because "subdomain.localhost" does not resolve in
@@ -5227,7 +5226,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsoup
   (package/inherit libsoup-minimal
     (name "libsoup")
-    (version "3.1.4")
+    (version "3.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -5235,30 +5234,12 @@ and the GLib main loop, to integrate well with GNOME applications.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "0m5mf2ahb462jzr40d916swv3040h9500jcmr87vnilpr4zrj584"))))
+                "0125c5skvbwrb0fvivs8v6sihwqqwlais3vmlaybjv0n3dxqc2sk"))))
     (outputs (cons "doc" (package-outputs libsoup-minimal)))
     (arguments
      (substitute-keyword-arguments (package-arguments libsoup-minimal)
-       ((#:configure-flags configure-flags)
-        #~(delete "-Dgtk_doc=false" #$configure-flags))
        ((#:phases phases)
         #~(modify-phases #$phases
-            (replace 'adjust-tests
-              (lambda _
-                ;; This test fails due to missing /etc/nsswitch.conf
-                ;; in the build environment.
-                (substitute* "tests/unix-socket-test.c"
-                  ((".*/sockets/unconnected.*") ""))
-
-                ;; These fail because "subdomain.localhost" does not resolve in
-                ;; the build environment.  Moreover, the hsts-test suite fails on
-                ;; i686-linux because of errors from `session_get_uri' like
-                ;; "Unexpected status 200 OK (expected 301 Moved Permanently)"
-                ;; (see: https://gitlab.gnome.org/GNOME/libsoup/-/issues/239).
-                (substitute* "tests/meson.build"
-                  ((".*'name': 'hsts'.*") ""))
-                (substitute* "tests/hsts-db-test.c"
-                  ((".*/hsts-db/subdomains.*") ""))))
             (add-after 'install 'move-doc
               (lambda _
                 (mkdir-p (string-append #$output:doc "/share"))
