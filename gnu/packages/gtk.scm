@@ -1718,7 +1718,7 @@ library.")
   (package
     (inherit cairomm)
     (name "cairomm")
-    (version "1.14.2")
+    (version "1.14.4")
     (source
      (origin
        (method url-fetch)
@@ -1726,10 +1726,10 @@ library.")
         (string-append "https://www.cairographics.org/releases/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1qwdj9xw1w651kqwh82nipbryimm1ir5n3c6q34nphsx576bj9h1"))))
+        (base32 "0n2i0p935j8gzf3f3vdkqhppjipshxfazjhlq307rxif5ddd4ja7"))))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs cairomm)
-       (prepend libsigc++-2)))))
+       (prepend libsigc++-2.12)))))
 
 (define-public pangomm
   (package
