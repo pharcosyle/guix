@@ -302,7 +302,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
        ("freetype" ,freetype)
        ("gd" ,gd)
        ("gmp" ,gmp)
-       ("ghostscript" ,ghostscrpt-9.56)
+       ("ghostscript" ,ghostscript-9.56)
        ("graphite2" ,graphite2)
        ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
