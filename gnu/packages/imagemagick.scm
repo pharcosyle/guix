@@ -62,27 +62,29 @@
   (hidden-package
    (package
      (name "imagemagick")
-     ;; The 7 release series has an incompatible API, while the 6 series is still
-     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
-     ;; users are ready for the 7-series API.
-     (version "6.9.11-48")
+     (version "7.1.1-8")
      (source (origin
                (method url-fetch)
                (uri (string-append "mirror://imagemagick/ImageMagick-"
                                    version ".tar.xz"))
                (sha256
                 (base32
-                 "0m8nkmywkqwyrr01q7aiakj6mi4rb2psjgzv8n0x82x3s1rpfyql"))))
+                 "02hnkllk1lzvz4hdlv1kf8csfhj8q9jhvyjma8cc3laarfalk8h5"))
+               (patches
+                (search-patches "imagemagick-CVE-2020-27829.patch"))))
      (build-system gnu-build-system)
      (arguments
-      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
+      `(#:configure-flags
+        `("--with-frozenpaths" "--without-gcc-arch"
 
-                            ;; Do not embed the build date in binaries.
-                            "--enable-reproducible-build")
+          ;; Do not embed the build date in binaries.
+          "--enable-reproducible-build"
 
-        ;; FIXME: The test suite succeeded before version 6.9.6-2.
-        ;; Try enabling it again with newer releases.
-        #:tests? #f
+          ,(string-append "--with-gs-font-dir="
+                          (search-input-directory
+                           %build-inputs
+                           "share/fonts/type1/ghostscript")))
+
         #:phases (modify-phases %standard-phases
                    (add-before
                        'build 'pre-build
@@ -117,6 +119,7 @@
      (inputs `(("fftw" ,fftw)
                ("graphviz" ,graphviz)
                ("ghostscript" ,ghostscript)
+               ("font-ghostscript" ,font-ghostscript)
                ("lcms" ,lcms)
                ("libx11" ,libx11)
                ("zlib" ,zlib)
@@ -146,22 +149,28 @@ text, lines, polygons, ellipses and Bézier curves.")
   (package
     (inherit imagemagick/stable)
     (properties (alist-delete 'hidden? (package-properties imagemagick/stable)))
-    ;; The 7 release series has an incompatible API, while the 6 series is still
-    ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
-    ;; users are ready for the 7-series API.
-    (version "6.9.12-4")
+    (version "7.1.1-8")
     (source (origin
+              (inherit (package-source imagemagick/stable))
               (method url-fetch)
               (uri (string-append "mirror://imagemagick/ImageMagick-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1pkwij76yz7vd5grl6520pgpa912qb6kh34qamx4zfndwcx6cf6b"))
-              (patches
-               (search-patches "imagemagick-ReadDCMImage-fix.patch"
-                               "imagemagick-ReadDCMPixels-fix.patch"
-                               "imagemagick-WriteTHUMBNAILImage-fix.patch"
-                               "imagemagick-CVE-2020-27829.patch"))))))
+                "02hnkllk1lzvz4hdlv1kf8csfhj8q9jhvyjma8cc3laarfalk8h5"))))))
+
+(define-public imagemagick-6
+  (package
+    (inherit imagemagick)
+    (version "6.9.12-86")
+    (source (origin
+              (inherit (package-source imagemagick))
+              (method url-fetch)
+              (uri (string-append "mirror://imagemagick/ImageMagick-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0kvjma181gd2n00c51kz9w6fssqf37s2g3q0lsd9v6fppbqrwfsz"))))))
 
 (define-public perl-image-magick
   (package
