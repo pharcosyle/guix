@@ -62,10 +62,7 @@
   (hidden-package
    (package
      (name "imagemagick")
-     ;; The 7 release series has an incompatible API, while the 6 series is still
-     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
-     ;; users are ready for the 7-series API.
-     (version "6.9.13-5")
+     (version "7.1.1-8")
      (source (origin
                (method url-fetch)
                (uri (string-append "mirror://imagemagick/ImageMagick-"
@@ -148,11 +145,21 @@ text, lines, polygons, ellipses and Bézier curves.")
   (package
     (inherit imagemagick/stable)
     (properties (alist-delete 'hidden? (package-properties imagemagick/stable)))
-    ;; The 7 release series has an incompatible API, while the 6 series is still
-    ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
-    ;; users are ready for the 7-series API.
+    (version "7.1.1-8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://imagemagick/ImageMagick-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "02hnkllk1lzvz4hdlv1kf8csfhj8q9jhvyjma8cc3laarfalk8h5"))))))
+
+(define-public imagemagick-6
+  (package
+    (inherit imagemagick)
     (version "6.9.13-5")
     (source (origin
+              (inherit (package-source imagemagick))
               (method url-fetch)
               (uri (string-append "mirror://imagemagick/ImageMagick-"
                                   version ".tar.xz"))
