@@ -32,7 +32,7 @@
 (define-public libunibreak
   (package
     (name "libunibreak")
-    (version "5.0")
+    (version "6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -42,29 +42,15 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r5dndhwsiy65lmavz3vdgal9nl8g97hbmdjg6zyq3zh5hs87vwf"))))
+                "0mhkbji89cyjg4g1rviyprchxzpv8pmlmqw4m10cvgfjwmpmwa7k"))))
     (build-system gnu-build-system)
     (native-inputs
       (list autoconf-wrapper
             automake
-            libtool
-            ucd))
+            libtool))
     (arguments
-     `(#:parallel-tests? #f  ; parallel tests cause non-deterministic
-                             ; build failures
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (for-each (lambda (file)
-                         (copy-file
-                           (search-input-file inputs
-                             (string-append "/share/ucd/auxiliary/"
-                                            file))
-                           (string-append "src/" file)))
-                       '("LineBreakTest.txt"
-                         "WordBreakTest.txt"
-                         "GraphemeBreakTest.txt")))))))
+     `(#:parallel-tests? #f)) ; parallel tests cause non-deterministic
+                              ; build failures
     (home-page "https://vimgadgets.sourceforge.net/libunibreak/")
     (synopsis "Unicode line breaking and word breaking algorithms")
     (description
@@ -108,7 +94,7 @@ test data for conformance to several important Unicode algorithms.")
 (define-public unicode-emoji
   (package
     (name "unicode-emoji")
-    (version "12.0")
+    (version "15.1")
     (source #f)
     (build-system trivial-build-system)
     (arguments
@@ -127,26 +113,18 @@ test data for conformance to several important Unicode algorithms.")
           %build-inputs)
          #t)))
     (inputs
-     `(("unicode-emoji-data"
-        ,(unicode-emoji-file
-          "data" version
-          "03sf7h1d6kb9m5s02lif88jsi5kjszpkfvcymaqxj8ds70ar9pgv"))
-       ("unicode-emoji-sequences"
+     `(("unicode-emoji-sequences"
         ,(unicode-emoji-file
           "sequences" version
-          "1hghki2rn3n7m4lwpwi2a5wrsf2nij4bxga9ldabx4g0g2k23svs"))
+          "1lahs35c3dqpai22yvn5ri31livrz0cvc8c63jzgn11mbq8wjwpb"))
        ("unicode-emoji-test"
         ,(unicode-emoji-file
           "test" version
-          "1dqd0fh999mh6naj816ni113m9dimfy3ih9nffjq2lrv9mmlgdck"))
-       ("unicode-emoji-variation-sequences"
-        ,(unicode-emoji-file
-          "variation-sequences" version
-          "1cccwx5bl79w4c19vi5dhjqxrph92s8hihp9y8s2cqvdzmgbln7a"))
+          "1nby2gl5wffhcpa8i91a0qxx3a2751qampx6rxvam3m2k8jfwxnq"))
        ("unicode-emoji-zwj-sequences"
         ,(unicode-emoji-file
           "zwj-sequences" version
-          "1l791nbijmmhwa7kmvfn8gp26ban512l6mgqpz1mnbq3xm19181n"))))
+          "0mqfzcz1ka78jjk8gk6bfywq4ldmj26rri08zsdqzkfgr8ys0xls"))))
     (home-page "https://www.unicode.org")
     (synopsis "Unicode Emoji data")
     (description
@@ -158,7 +136,7 @@ Unicode Technological Standard #51.")
 (define-public unicode-cldr-common
   (package
     (name "unicode-cldr-common")
-    (version "36.0")
+    (version "45.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -167,7 +145,7 @@ Unicode Technological Standard #51.")
                            "/cldr-common-" version ".zip"))
        (sha256
         (base32
-         "0hxsc3j5zb32hmiaj0r3ajchmklx6zng6zlh1ca6s9plq5b9w9q7"))))
+         "07x2jjlc061ljy7nwsmrlcas0rsnal97xajlxf2kyqpwqlp7idh3"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
