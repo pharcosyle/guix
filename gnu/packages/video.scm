@@ -3819,16 +3819,16 @@ and MPEG system streams.")
 (define-public libbdplus
   (package
     (name "libbdplus")
-    (version "0.1.2")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://ftp.videolan.org/pub/videolan/libbdplus/"
                            version "/" name "-" version ".tar.bz2"))
        (sha256
-        (base32 "02n87lysqn4kg2qk7d1ffrp96c44zkdlxdj0n16hbgrlrpiwlcd6"))))
+        (base32 "0n0ayjq2ld7lfhrfcdj9bam96m2hih34phyjan8nwggkmqzflgmr"))))
     (inputs
-     (list libgcrypt))
+     (list libgcrypt libgpg-error-1.45))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libbdplus.html")
     (synopsis "Library for decrypting certain Blu-Ray discs")
