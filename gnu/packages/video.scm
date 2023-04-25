@@ -1358,20 +1358,20 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
 (define-public libcaca
   (package
     (name "libcaca")
-    (version "0.99.beta19")
+    (version "0.99.beta20")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://caca.zoy.org/files/libcaca/libcaca-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cacalabs/libcaca")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))
-              (patches (search-patches "libcaca-CVE-2021-3410-pt1.patch"
-                                       "libcaca-CVE-2021-3410-pt2.patch"))))
+                "0p3ijz9ch7jqxaawqa345fyiddkakvbqvj26mii3r4kq8y5xyhip"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (native-inputs (list pkg-config))
+    (native-inputs (list pkg-config automake autoconf-2.71 libtool))
     (inputs
      (list freeglut
            ftgl
