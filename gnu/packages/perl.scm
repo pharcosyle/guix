@@ -5215,14 +5215,14 @@ a safe way.")
 (define-public perl-file-which
   (package
     (name "perl-file-which")
-    (version "1.23")
+    (version "1.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
                                   "File-Which-" version ".tar.gz"))
               (sha256
                (base32
-                "0y70qh5kn2hyrrvbsfhg0iws2qggk5vkpz37f7rbd5rd9cjc57dp"))))
+                "0fm9ydx2qapx43kb57yy8p1iy9j2d24mq176h904h5iz1skg209j"))))
     (build-system perl-build-system)
     (native-inputs `(("test-script" ,perl-test-script)))
     (synopsis "Portable implementation of the `which' utility")
@@ -5540,7 +5540,7 @@ caller function works correctly within the wrapped subroutine.")
 (define-public perl-importer
   (package
     (name "perl-importer")
-    (version "0.025")
+    (version "0.026")
     (source
       (origin
         (method url-fetch)
@@ -5548,7 +5548,7 @@ caller function works correctly within the wrapped subroutine.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0iirw6csfbycr6z5s6lgd1zdqdjhb436zcxy1hyh6x3x92616i87"))))
+          "1vxhj5c8gvrn7qscq9gzd9qw3z2r6jffrj3zi5x8p6fb2d7ai3z0"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Importer")
     (synopsis "Alternative but compatible interface to modules that export symbols")
@@ -5942,7 +5942,7 @@ allowing data to be efficiently communicated between processes.")
 (define-public perl-ipc-system-simple
   (package
     (name "perl-ipc-system-simple")
-    (version "1.26")
+    (version "1.30")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5950,7 +5950,7 @@ allowing data to be efficiently communicated between processes.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1zb5ni8ikaq6s60amwdsq69nz8gxl484yiga6ax5nqp8v0hpy5sp"))))
+                "17msx650m9r3m6j5r3mr742vism1nxda7p4g0l9yapjh5cigbri2"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IPC-System-Simple")
     (synopsis "Run commands simply, with detailed diagnostics")
@@ -10553,7 +10553,7 @@ Now in pure Perl, with the exception of a C probe run at build time.")
 (define-public perl-term-table
   (package
     (name "perl-term-table")
-    (version "0.008")
+    (version "0.016")
     (source
       (origin
         (method url-fetch)
@@ -10561,7 +10561,7 @@ Now in pure Perl, with the exception of a C probe run at build time.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0gi4lyvs6n8y6hjwmflfpamfl65y7mb1g39zi0rx35nclj8xb370"))))
+          "1gwp5nkqgy4sn45flz5z3k5rncb6gvyqrss9958nqbbax6wgpd4g"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-importer))
