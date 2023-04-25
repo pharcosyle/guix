@@ -5672,15 +5672,14 @@ event traces from the kernel (via the relaying through the debug file system).")
 (define-public sbc
   (package
     (name "sbc")
-    (version "1.5")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
                                   version ".tar.xz"))
-              (patches (search-patches "sbc-fix-build-non-x86.patch"))
               (sha256
                (base32
-                "1liig5856crb331dps18mp0s13zbkv7yh007zqhq97m94fcddfhc"))))
+                "14krl3a0ydlq8avck74kjarq931kzcy4f835aca5xxdv3n73c4lg"))))
     (build-system gnu-build-system)
     (inputs
      (list libsndfile))
