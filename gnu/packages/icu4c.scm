@@ -45,7 +45,7 @@
 (define-public icu4c
   (package
     (name "icu4c")
-    (version "74.1")
+    (version "75.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -55,7 +55,7 @@
                     (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                     "-src.tgz"))
               (sha256
-               (base32 "1l5qa85nv8pvpzwsa06l1p3cwgs6jz39096b9l7fcwhrd1h8xkl6"))))
+               (base32 "1vya31v549pq89kgr02jajwi7gc7qw0mv6n4265pxs6jwkrqv5nb"))))
     (build-system gnu-build-system)
     (native-inputs
      (append (list python-minimal)
