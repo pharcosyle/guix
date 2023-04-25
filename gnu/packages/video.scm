@@ -4572,27 +4572,19 @@ alpha blending etc).")
 (define-public frei0r-plugins
   (package
     (name "frei0r-plugins")
-    (version "1.7.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://files.dyne.org/frei0r/"
-                           "frei0r-plugins-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0fjji3060r4fwr7vn91lwfzl80lg3my9lkp94kbyw8xwz7qgh7qv"))))
-    (build-system gnu-build-system)
+    (version "2.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dyne/frei0r")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1cvgzjv2bhgxzhhrwjcg07swv5qbwmzzlfnxyi4cnsrvl0by4aaz"))
+              (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-Makefile
-           (lambda _
-             ;; XXX: The 1.7.0 Makefile looks for files that have slightly different
-             ;; names in the tarball.  Try removing this for future versions.
-             (substitute* "Makefile.in"
-               (("README\\.md ChangeLog TODO AUTHORS")
-                "README.txt ChangeLog.txt TODO.txt AUTHORS.txt"))
-             #t)))))
+     `(#:tests? #f))
     ;; TODO: opencv for additional face detection filters.
     (inputs
      (list gavl cairo))
