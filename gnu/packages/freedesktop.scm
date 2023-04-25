@@ -2267,13 +2267,13 @@ update-desktop-database: updates the database containing a cache of MIME types
 (define-public xdg-user-dirs
   (package
     (name "xdg-user-dirs")
-    (version "0.17")
+    (version "0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://user-dirs.freedesktop.org/releases/"
                                     name "-" version ".tar.gz"))
               (sha256
-               (base32 "13216b8rfkzak5k6bvpx6jvqv3cnbgpijnjwj8a8d3kq4cl0a1ra"))))
+               (base32 "0g6z40igbcpd83df1zbncllwp2spw6szjf90fdxa7nsw97bhcvzc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
