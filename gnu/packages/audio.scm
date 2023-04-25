@@ -2703,42 +2703,41 @@ plugin function as a JACK application.")
 (define-public ladspa
   (package
     (name "ladspa")
-    (version "1.13")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
-       ;; Since the official link is dead,
-       ;; we download the tarball from Debian or Internet Archive.
-       (uri (list (string-append "http://http.debian.net"
+       (uri (list (string-append "https://www.ladspa.org/download/"
+                                 "ladspa_sdk_" version ".tgz")
+                  ;; The official link has been sketchy in the past, provide
+                  ;; a backup in case it's down.
+                  (string-append "http://http.debian.net"
                                  "/debian/pool/main/l/ladspa-sdk/ladspa-sdk_"
-                                 version ".orig.tar.gz")
-                  (string-append "https://web.archive.org/web/20140717172251/"
-                                 "http://www.ladspa.org/download/ladspa_sdk_"
-                                 version ".tgz")))
+                                 version ".orig.tar.gz")))
        (sha256
         (base32
-         "0srh5n2l63354bc0srcrv58rzjkn4gv8qjqzg8dnq3rs4m7kzvdm"))))
+         "0nyssdcypq3w0q0b5h16i0wbp499qkj3ik5xxhbvv0abkqklzli7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; the "test" target is a listening test only
+       #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
              (chdir "src")
              (let ((out (assoc-ref outputs "out")))
-               (substitute* "makefile"
+               (substitute* "Makefile"
                  (("/usr/lib/ladspa/") (string-append out "/lib/ladspa/"))
                  (("/usr/include/")    (string-append out "/include/"))
                  (("/usr/bin/")        (string-append out "/bin/"))
-                 (("-mkdirhier")       "mkdir -p")
                  (("^CC.*")            "CC = gcc\n")
                  (("^CPP.*")           "CPP = g++\n")))
              #t))
          (delete 'build))))
-    ;; Since the home page is gone, we provide a link to the archived version.
-    (home-page
-     "https://web.archive.org/web/20140729190945/http://www.ladspa.org/")
+    (inputs
+     (list libsndfile))
+    (home-page "https://www.ladspa.org/")
     (synopsis "Linux Audio Developer's Simple Plugin API (LADSPA)")
     (description
      "LADSPA is a standard that allows software audio processors and effects
