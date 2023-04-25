@@ -108,7 +108,7 @@ test data for conformance to several important Unicode algorithms.")
 (define-public unicode-emoji
   (package
     (name "unicode-emoji")
-    (version "12.0")
+    (version "15.0")
     (source #f)
     (build-system trivial-build-system)
     (arguments
@@ -127,26 +127,18 @@ test data for conformance to several important Unicode algorithms.")
           %build-inputs)
          #t)))
     (inputs
-     `(("unicode-emoji-data"
-        ,(unicode-emoji-file
-          "data" version
-          "03sf7h1d6kb9m5s02lif88jsi5kjszpkfvcymaqxj8ds70ar9pgv"))
-       ("unicode-emoji-sequences"
+     `(("unicode-emoji-sequences"
         ,(unicode-emoji-file
           "sequences" version
-          "1hghki2rn3n7m4lwpwi2a5wrsf2nij4bxga9ldabx4g0g2k23svs"))
+          "0vdmbsa3x2pby59rirp2zjq4ggsgn1a2z35666h9dn1jlkc248jw"))
        ("unicode-emoji-test"
         ,(unicode-emoji-file
           "test" version
-          "1dqd0fh999mh6naj816ni113m9dimfy3ih9nffjq2lrv9mmlgdck"))
-       ("unicode-emoji-variation-sequences"
-        ,(unicode-emoji-file
-          "variation-sequences" version
-          "1cccwx5bl79w4c19vi5dhjqxrph92s8hihp9y8s2cqvdzmgbln7a"))
+          "1nskm3qqb568dlsz54r0ympqbzyf9zhn40lxw5mhk3iqr0xg4ic4"))
        ("unicode-emoji-zwj-sequences"
         ,(unicode-emoji-file
           "zwj-sequences" version
-          "1l791nbijmmhwa7kmvfn8gp26ban512l6mgqpz1mnbq3xm19181n"))))
+          "10hig5b0igrm97ajny9sj0jrppvy2f3xar9p0rv6cx5p2y8pydgy"))))
     (home-page "https://www.unicode.org")
     (synopsis "Unicode Emoji data")
     (description
