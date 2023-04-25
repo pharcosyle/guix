@@ -850,7 +850,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "3.5.0")
+    (version "3.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -859,7 +859,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0arn8a88jz4mj69n8cs4qmrdjwhbvzsqgnx20wr9mq01b06kqich"))))
+                "0ia06qkdqpzxz21jk2h2xqi35rqxs8n0an50mdmxygqr5d87vpdn"))))
     (build-system cmake-build-system)
     (native-inputs
      (list perl pkg-config python)) ; to detect the version
