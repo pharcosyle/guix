@@ -2054,7 +2054,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/rw-igraph-0.10.patch			\
   %D%/packages/patches/rxvt-unicode-fix-cursor-position.patch	\
   %D%/packages/patches/s7-flint-3.patch                      	\
-  %D%/packages/patches/sbc-fix-build-non-x86.patch		\
   %D%/packages/patches/sbcl-aserve-add-HTML-5-elements.patch	\
   %D%/packages/patches/sbcl-aserve-fix-rfe12668.patch	\
   %D%/packages/patches/sbcl-burgled-batteries3-fix-signals.patch	\
