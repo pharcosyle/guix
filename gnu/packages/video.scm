@@ -2395,7 +2395,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.12.0")
+    (version "1.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2404,7 +2404,7 @@ To load this plugin, specify the following option when starting mpv:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x12f2bd4jqd532rnixmwvcx8d29yxiacpcxqqh86qczc49la8gm"))
+                "1rh1vmnbxp2j0bqibn2y5cacax0s9pkpp668dmglx5aln1crjzr0"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
