@@ -71,7 +71,7 @@ lexically, just dynamically.")
 (define-public perl-test2-suite
   (package
     (name "perl-test2-suite")
-    (version "0.000072")
+    (version "0.000150")
     (source
       (origin
         (method url-fetch)
@@ -79,7 +79,7 @@ lexically, just dynamically.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0hgd6n29qjh1pwqvbglm2kb852yqshmixqqjhsr2kvvibdr58qpf"))))
+          "0fn36jjw6xg6nhp4mmrjdfi7kqiw1ka11wf86jb1p05wblr2wa6l"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -87,7 +87,8 @@ lexically, just dynamically.")
          (add-after 'unpack 'set-env
            (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (propagated-inputs
-     (list perl-importer perl-term-table perl-sub-info))
+     (list perl-importer perl-term-table perl-sub-info perl-scope-guard
+           perl-module-pluggable))
     (home-page "https://metacpan.org/pod/Test2-Suite")
     (synopsis "Full set of tools for Test2::Suite")
     (description "This package provides a rich set of tools, plugins, bundles,
@@ -1246,17 +1247,17 @@ errors (such as memory leaks) in an arbitrary binary executable.")
 (define-public perl-test-script
   (package
     (name "perl-test-script")
-    (version "1.20")
+    (version "1.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
                                   "Test-Script-" version ".tar.gz"))
               (sha256
                (base32
-                "1msavbi6przkxq3npm90nv925v58iym9jrk677wn46x19whwzwzm"))))
+                "0l491ywy4lm9dv0sjjpx5vp0xdys1dfcyhlrj086gcd73rn7wbl9"))))
     (build-system perl-build-system)
     (propagated-inputs
-     (list perl-capture-tiny perl-probe-perl))
+     (list perl-capture-tiny perl-probe-perl perl-test2-suite))
     (synopsis "Basic cross-platform tests for scripts")
     (description
      "The intent of the Test::Script module is to provide a series of basic
