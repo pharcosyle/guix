@@ -804,7 +804,7 @@ to GitHub contributions calendar.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "1.5.1")
+    (version "1.6.4")
     (source (origin
               ;; Since v1.1.1, release artifacts are no longer offered (see:
               ;; https://github.com/libgit2/libgit2/discussions/5932#discussioncomment-1682729).
@@ -815,7 +815,7 @@ to GitHub contributions calendar.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04ypzpicpgq1wh6anwcmjjyh2b854lvjhxq0hq2hbsx7kb14qc1b"))
+                "078jnis7lwzb38ha5lcrs8hzi4br3c8v7c9xaqkvkcaa8nifcvcm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
