@@ -150,7 +150,7 @@ Unicode Technological Standard #51.")
 (define-public unicode-cldr-common
   (package
     (name "unicode-cldr-common")
-    (version "36.0")
+    (version "43.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -159,7 +159,7 @@ Unicode Technological Standard #51.")
                            "/cldr-common-" version ".zip"))
        (sha256
         (base32
-         "0hxsc3j5zb32hmiaj0r3ajchmklx6zng6zlh1ca6s9plq5b9w9q7"))))
+         "14pmxsxb8q7avvc57ja1sjg79q47m8q2i32z8yhnpq0idbdxl03q"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
