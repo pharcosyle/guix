@@ -32,7 +32,7 @@
 (define-public libunibreak
   (package
     (name "libunibreak")
-    (version "5.0")
+    (version "5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -42,7 +42,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r5dndhwsiy65lmavz3vdgal9nl8g97hbmdjg6zyq3zh5hs87vwf"))))
+                "147kk1r2padqnz7gspzm3vlg6qf4yfrg8r2w59bs3s4h63j16f46"))))
     (build-system gnu-build-system)
     (native-inputs
       (list autoconf-wrapper
