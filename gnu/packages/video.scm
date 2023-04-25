@@ -2743,7 +2743,7 @@ Both command-line and GTK2 interface are available.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "1.0.2")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -2751,7 +2751,7 @@ Both command-line and GTK2 interface are available.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1zxfnw1xbghcj7b3zz5djndv6gwssxda19cz1lrlqrkg8577r7kd"))))
+                "0aszpsz3pc7p7z6yahlib4na585m6pqbg2d9dkpyipgml1lgv3s7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bdjava-jar"
