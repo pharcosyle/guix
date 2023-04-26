@@ -285,10 +285,11 @@ See <http://music.columbia.edu/pipermail/portaudio/2015-March/016611.html>.
      return result;
 --- a/src/hostapi/oss/pa_unix_oss.c
 +++ b/src/hostapi/oss/pa_unix_oss.c
-@@ -2028,3 +2028,26 @@
+@@ -2050,3 +2050,27 @@
+     return result;
  #endif
  }
- 
++
 +const char *PaOSS_GetStreamInputDevice( PaStream* s )
 +{
 +    PaOssStream *stream = (PaOssStream*)s;
