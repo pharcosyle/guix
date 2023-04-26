@@ -861,6 +861,21 @@ write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
     (license license:gpl2)))
 
+(define-public libgit2-1.5
+  (package
+    (inherit libgit2)
+    (version "1.5.1")
+    (source (origin
+              (inherit (package-source libgit2))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libgit2/libgit2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "libgit2" version))
+              (sha256
+               (base32
+                "04ypzpicpgq1wh6anwcmjjyh2b854lvjhxq0hq2hbsx7kb14qc1b"))))))
+
 (define-public libgit2-1.4
   (package
     (inherit libgit2)

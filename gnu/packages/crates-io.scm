@@ -32219,7 +32219,7 @@ algorithm and related formats (ZLIB, GZIP).")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list libgit2 openssl zlib))
+     (list libgit2-1.5 openssl zlib))
     (home-page "https://github.com/rust-lang/git2-rs")
     (synopsis "Native bindings to the libgit2 library")
     (description
