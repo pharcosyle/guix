@@ -4861,11 +4861,6 @@ GLib and GObject, and integrates JSON with GLib data types.")
            (add-after 'unpack 'patch-docbook
              (lambda* (#:key native-inputs inputs #:allow-other-keys)
                (with-directory-excursion "doc"
-                 (substitute* (find-files "." "\\.xml$")
-                   (("http://www.oasis-open.org/docbook/xml/4\\.3/")
-                    (string-append (assoc-ref (or native-inputs inputs)
-                                              "docbook-xml")
-                                   "/xml/dtd/docbook/")))
                  (substitute* "meson.build"
                    (("http://docbook.sourceforge.net/release/xsl/current/")
                     (string-append (assoc-ref (or native-inputs inputs)
@@ -4882,16 +4877,20 @@ GLib and GObject, and integrates JSON with GLib data types.")
                      (let* ((out (assoc-ref outputs "out"))
                             (doc (assoc-ref outputs "doc")))
                        (mkdir-p (string-append doc "/share"))
-                       (rename-file
-                        (string-append out "/share/gtk-doc")
-                        (string-append doc "/share/gtk-doc"))))))))))
+                       ;; FIXME: Docs generation has changed since the last
+                       ;; version and apparently there are quirks (check out
+                       ;; the Nix package for help or more confusion):
+                       ;; https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/libraries/json-glib/default.nix
+                       ;; (rename-file
+                       ;;  (string-append out "/share/doc")
+                       ;;  (string-append doc "/share/doc"))
+                       ))))))))
     (native-inputs
      (append
-         `(("docbook-xml" ,docbook-xml-4.3)
-           ("docbook-xsl" ,docbook-xsl)
+         `(("docbook-xsl" ,docbook-xsl)
            ("gobject-introspection" ,gobject-introspection)
-           ("gtk-doc" ,gtk-doc)
-           ("xsltproc" ,libxslt))
+           ("xsltproc" ,libxslt)
+           ("gi-docgen" ,gi-docgen))
          (package-native-inputs json-glib-minimal)))))
 
 (define-public libxklavier
