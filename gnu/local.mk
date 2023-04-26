@@ -1458,6 +1458,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/grub-setup-root.patch			\
   %D%/packages/patches/grub-ignore-metadata-csum-seed.patch			\
+  %D%/packages/patches/gst-plugins-base-glib-2.76.1-fix.patch	\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
   %D%/packages/patches/guile-2.2-skip-so-test.patch             \
