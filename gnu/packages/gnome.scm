@@ -3111,7 +3111,7 @@ configuring CUPS.")
 (define-public libnotify
   (package
     (name "libnotify")
-    (version "0.7.9")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
@@ -3120,7 +3120,7 @@ configuring CUPS.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0qa7cx6ra5hwqnxw95b9svgjg5q6ynm8y843iqjszxvds5z53h36"))))
+         "05n6qm7mikr8p20k2sqcdwzfswqqhv5sl5b4qwcb3rc63wyyvx65"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -3149,7 +3149,8 @@ configuring CUPS.")
        ;; For the documentation.
        ("gtk-doc" ,gtk-doc/stable)
        ("xsltproc" ,libxslt)
-       ("docbook-xsl" ,docbook-xsl)))
+       ("docbook-xsl" ,docbook-xsl)
+       ("gi-docgen" ,gi-docgen)))
     (home-page "https://developer-next.gnome.org/libnotify/")
     (synopsis
      "GNOME desktop notification library")
