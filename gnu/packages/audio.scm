@@ -3362,7 +3362,7 @@ and ALSA.")
 (define-public pcaudiolib
   (package
     (name "pcaudiolib")
-    (version "1.1")
+    (version "1.2")
     (home-page "https://github.com/espeak-ng/pcaudiolib")
     (source (origin
               (method git-fetch)
@@ -3370,7 +3370,7 @@ and ALSA.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c55hlqqh0m7bcb3nlgv1s4a22s5bgczr1cakjh3767rjb10khi0"))))
+                "0hfwfflvaw5ap07hphsszyf3cwxgqddx7k3xzi7sc7a39q3cfvv4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
