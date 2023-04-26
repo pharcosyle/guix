@@ -3198,7 +3198,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.17.13")
+    (version "0.17.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -3206,7 +3206,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "1kqkraag5v1jl5qfv0mb3ckm8yq2im21mng08sbs9dh9c9pbyvkc"))))
+                "0v6zgws4w4i67vivra2l51jqcjw2cydp76garw1j1csqwjqj3ri0"))))
     (build-system meson-build-system)
     (arguments
      (list #:phases
