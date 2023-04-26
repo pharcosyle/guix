@@ -901,7 +901,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.11.2")
+    (version "10.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -909,7 +909,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1p3ivh43zfn03w7yxxkrl7k50c8jiawkw80x5ay6h3zdrbhdx28w"))
+                "1ciw7y08wms9g3hzhyria49r1b9n5wpbhkndazv95d925c8x1jsp"))
               (modules '((guix build utils)))
               (snippet
                '(begin
