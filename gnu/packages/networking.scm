@@ -620,7 +620,7 @@ from any network device in any of three ASCII graph formats.")
 (define-public srt
   (package
     (name "srt")
-    (version "1.4.4")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -630,7 +630,7 @@ from any network device in any of three ASCII graph formats.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zr1l9zkai7rpw9cn5j9h4zrv08hgpfmwscwyscf2j4cgwf0rxrr"))))
+        (base32 "0y9x0qsn2c8fllz6wwzv46d8m3nhgwrsd66za7mrid2fshgfhnx9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
