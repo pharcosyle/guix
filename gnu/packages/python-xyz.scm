@@ -4324,13 +4324,13 @@ Capabilities include:
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "1.1.1")
+    (version "1.3.6")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "1s6cp2lv4m0f00hjckjz8p6m7d3n3v16jvg353llf5ia1iqsnsib"))))
+               "0c5qf8mfqh4yf6c4zvna0x21jwpwvmd2lb34j6ribx4cpvq9rl7y"))))
     (build-system python-build-system)
     (home-page "https://pypi.org/project/Unidecode/")
     (synopsis "ASCII transliterations of Unicode text")
