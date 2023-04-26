@@ -78,7 +78,7 @@
 (define-public ibus-minimal
   (package
     (name "ibus")
-    (version "1.5.27")
+    (version "1.5.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -86,7 +86,7 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "1pwppcy0xpidxa7db9lykjjjj1rcjrqf5l88f77hgxlnvdddmyvf"))))
+                "0rsnfq4f11i901kl6468k1rfnrz4gvs30q1q9wk62gbcaykz77vc"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
