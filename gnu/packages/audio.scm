@@ -2540,7 +2540,7 @@ synchronous execution of all clients, and low latency operation.")
   (package
     (inherit jack-1)
     (name "jack2")
-    (version "1.9.21")
+    (version "1.9.22")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2549,7 +2549,7 @@ synchronous execution of all clients, and low latency operation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0sbrffmdbajvrk7iqvsvrnwnpvmicvbjyq3f52r6ashdsznsz03b"))))
+                "109g08j3jj9jbsrgdcrq53w7a5z4rkwzg7l7sbr90wazrv55zj8a"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
