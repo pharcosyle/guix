@@ -9750,7 +9750,7 @@ older system-wide @file{/sys} interface.")
 (define-public libtraceevent
   (package
     (name "libtraceevent")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method git-fetch)
@@ -9760,7 +9760,7 @@ older system-wide @file{/sys} interface.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1kbl11lqh8cadi6r3qqxx68idr7597l6i50pr5p5mdgsf6k2i83c"))
+         "1667igb9552w83kf4i43vg7h96l123qbvbxq478i3kj18hh6i4dz"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
