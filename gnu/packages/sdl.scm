@@ -46,7 +46,6 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages fcitx)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -115,7 +114,7 @@ joystick, and graphics hardware.")
   (package
     (inherit sdl)
     (name "sdl2")
-    (version "2.26.2")
+    (version "2.26.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -123,7 +122,7 @@ joystick, and graphics hardware.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1q4r1camsr17mnpv00d6h3qy93b481rp68r6fbxbszq3vv1rplwm"))))
+                "1xxbbvn0jmw5fgn26fyybc7xd3xsnjk67lxi8lychr5yl4yym3xd"))))
     (arguments
      (substitute-keyword-arguments (package-arguments sdl)
        ((#:configure-flags flags)
@@ -146,7 +145,6 @@ joystick, and graphics hardware.")
      (modify-inputs (package-inputs sdl)
        (append dbus
                eudev                    ;for discovering input devices
-               fcitx                    ;helps with CJK input
                glib
                ibus-minimal
                libxkbcommon
