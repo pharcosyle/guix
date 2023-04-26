@@ -4739,17 +4739,21 @@ GLib and GObject, and integrates JSON with GLib data types.")
                    #~((add-after 'install 'move-docs
                         (lambda _
                           (mkdir-p (string-append #$output:doc "/share"))
-                          (rename-file
-                           (string-append #$output "/share/gtk-doc")
-                           (string-append #$output:doc
-                                          "/share/gtk-doc"))))))))))
+                          ;; FIXME: Docs generation has changed since the last
+                          ;; version and apparently there are quirks (check out
+                          ;; the Nix package for help or more confusion):
+                          ;; https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/libraries/json-glib/default.nix
+                          ;; (rename-file
+                          ;;  (string-append #$output "/share/gtk-doc")
+                          ;;  (string-append #$output:doc
+                          ;;                 "/share/gtk-doc"))
+                          ))))))))
     (native-inputs
      (modify-inputs (package-native-inputs json-glib-minimal)
-       (prepend docbook-xml-4.3
-                docbook-xsl
+       (prepend docbook-xsl
                 gobject-introspection
-                gtk-doc
-                libxslt)))))
+                libxslt
+                gi-docgen)))))
 
 (define-public libxklavier
   (package
