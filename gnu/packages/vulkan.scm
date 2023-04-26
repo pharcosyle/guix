@@ -57,7 +57,7 @@
              (commit version)))
        (sha256
         (base32
-         "0z8b485hryya2g0jxv7amwg3fjj7pchbgnsa5ldf5fwgh5js0icm"))
+         "1yf9bly4fp6wnc0gal0ga2gvjq1h1y5f10isqs332v2wlspvgsjl"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -88,7 +88,7 @@ and for the GLSL.std.450 extended instruction set.
             (url "https://github.com/KhronosGroup/SPIRV-Tools")
             (commit version)))
       (sha256
-       (base32 "03d489ind2az7w7q1slj3mdc04372r3qqbnd7m9akxbg7yix1a5j"))
+       (base32 "0z8r8k7bl5zvfl8qpxjg6swbbn0s162djgym1h2f8i538nxi33lp"))
       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -120,7 +120,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
              (url "https://github.com/KhronosGroup/SPIRV-Cross")
              (commit version)))
        (sha256
-        (base32 "1ypbc1krkr0yywa1m976g3sjyb80l7hxwrnh6gp70w6va1dlnnn9"))
+        (base32 "1r0dqbksyvsipgi551k74bv7khvjwhyl0k9yy4m89l9air65nz5j"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -195,7 +195,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "167zdank6pn66mzjdwgrdlmhmsy4v2k0nhw0nwg649k863rgi00j"))))
+         "1vfz20iazdask6z8k105nklxh286nd1mgp44mp89chkxzh1l8awa"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -215,7 +215,7 @@ interpretation of the specifications for these languages.")
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Loader")
-             (commit "v1.3.232")))
+             (commit "v1.3.243")))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -286,7 +286,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0jzwjfx4c7y15wkwfhhc64rzljpi47bxrm5jw5blfsqjh8zsd27a"))))
+         "00a332w968rjh7bp4bli9d34gqn8syrxb7q5p5nz8441x0vlwwpi"))))
     (build-system cmake-build-system)
     (inputs
      (list glslang libxrandr vulkan-loader wayland wayland-protocols))
@@ -309,7 +309,7 @@ API.")
   (package
     (name "shaderc")
     ;; shaderc doesn't follow the versioning scheme of vulkan sdk
-    (version "2022.3")
+    (version "2023.3")
     (source
      (origin
        (method git-fetch)
@@ -319,7 +319,7 @@ API.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sdbfi66zmqj0c5q5yv2zvcvry7557yzgxk2mwflyjgqh7kdhb8d"))))
+         "0sa0nmcxklx6yy67wvkc46mqzpj1x44r7w0fcif4x8zvzzh5hrwz"))))
     (build-system cmake-build-system)
     (arguments
      `(;; FIXME: Skip most of the tests, because enabling system gtest breaks
@@ -372,10 +372,10 @@ shader compilation.")
     (license license:asl2.0)))
 
 (define-public vkd3d
-  (let ((commit "56cd4a94d541707959ce7677af6d1a34739e5579")) ; Release 1.2.
+  (let ((commit "57d92a15cf93d9448f2deb91a8614f9c4c085216")) ; Release 1.7.
     (package
      (name "vkd3d")
-     (version "1.2")
+     (version "1.7")
      (source
       (origin
        (method git-fetch)
@@ -384,7 +384,7 @@ shader compilation.")
              (commit commit)))
        (sha256
         (base32
-         "1n4a622drgnprvz5hjxzyzcsg2lp5rlf1sajki2vzf5gsx6fdpk8"))
+         "0zss91918pkml1sxfgjpgdwkdhisky0n20frsqj8cnm3w01hv5mk"))
        (file-name (string-append name "-" version "-checkout"))))
      (build-system gnu-build-system)
      (arguments
@@ -433,7 +433,7 @@ shader compilation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07djrk6yym4vl2b52wr09r8y649v5lark5hnr5rwvlxwxdmd9g75"))))
+                "0qxkjayg7nfkpv45jbn48b6ivhlwk72k0rgljy13w5ragxw5q9dy"))))
     (build-system cmake-build-system)
     (inputs (list glslang
                   libxrandr
@@ -498,7 +498,7 @@ use the Vulkan API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xaw3kg754mknx8lfj1p74a9npjfvdvlpicvn0hla4495zpc10rq"))))
+                "1sysw8z066l2vqryp3x28fxx4nwxxdz5zvsmzf5s967wqc6jbj9j"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ;no test
