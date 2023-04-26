@@ -4181,16 +4181,16 @@ portions of LAME.")
 (define-public portaudio
   (package
     (name "portaudio")
-    (version "190600.20161030")
+    (version "190700.20210406")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.portaudio.com/archives/pa_stable_v"
+             "http://files.portaudio.com/archives/pa_stable_v"
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "04qmin6nj144b8qb9kkd9a52xfvm0qdgm8bg8jbl7s3frmyiv8pm"))
+        (base32 "1vrdrd42jsnffh6rq8ap2c6fr4g9fcld89z649fs06bwqx1bzvs7"))
        (patches (search-patches "portaudio-audacity-compat.patch"))))
     (build-system gnu-build-system)
     (inputs
