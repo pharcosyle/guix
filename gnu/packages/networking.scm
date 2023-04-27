@@ -537,8 +537,8 @@ networking.")
   ;; There are no tags in the repository, and the project is unlikely to
   ;; make new releases.  Take a recent commit for multiple security fixes
   ;; as well as GnuTLS compatibility.
-  (let ((commit "c5f04a58fc2aeea6296ca7c44ee4734c18401aa3")
-        (revision "0")
+  (let ((commit "f1b83c10d8beb43fcc70a6e88cf4325499f25857")
+        (revision "1")
         (version "2.4"))                ;as mentioned in README and man pages
     (package
       (name "rtmpdump")
@@ -551,7 +551,7 @@ networking.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "07ias612jgmxpam9h418kvlag32da914jsnjsfyafklpnh8gdzjb"))))
+          (base32 "0vchr0f0d5fi0zaa16jywva5db3x9dyws7clqaq32gwh5drbkvs0"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                    ; no tests
