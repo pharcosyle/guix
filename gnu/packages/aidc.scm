@@ -192,7 +192,16 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
                                "--with-python=auto"
                                (string-append "--with-dbusconfdir="
                                               (assoc-ref %outputs "out")
-                                              "/etc"))))
+                                              "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Taken from https://github.com/mchehab/zbar/commit/9bb0cc43.
+         ;; This can probably be removed on the next version update.
+         (add-after 'unpack 'python-3.11-fix
+           (lambda _
+             (substitute* "python/enum.c"
+               (("Py_SIZE\\(&self->val\\) = Py_SIZE\\(longval\\);")
+                "Py_SET_SIZE(&self->val, Py_SIZE(longval));")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
