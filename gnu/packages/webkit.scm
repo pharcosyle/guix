@@ -124,7 +124,7 @@ the WPE-flavored port of WebKit.")
 engine that uses Wayland for graphics output.")
     (license license:bsd-2)))
 
-(define-public webkitgtk-prev
+(define-public webkitgtk
   (package
     (name "webkitgtk")                  ; webkit2gtk4
     (version "2.41.3")
@@ -276,23 +276,22 @@ propagated by default) such as @code{gst-plugins-good} and
                    license:bsd-2
                    license:bsd-3))))
 
-(define-public webkitgtk
+(define-public webkitgtk-next
   (package
-    (inherit webkitgtk-prev)
+    (inherit webkitgtk)
+    (name "webkitgtk-next")             ; webkit2gtk5
     (arguments
-     (substitute-keyword-arguments (package-arguments webkitgtk-prev)
+     (substitute-keyword-arguments (package-arguments webkitgtk)
        ((#:configure-flags flags)
         #~(cons* "-DENABLE_INTROSPECTION=ON"
                  "-DUSE_GTK4=ON"
                  (delete "-DENABLE_GTKDOC=ON" #$flags)))))
     (propagated-inputs
-     (modify-inputs (package-propagated-inputs webkitgtk-prev)
+     (modify-inputs (package-propagated-inputs webkitgtk)
        (replace "gtk+" gtk)))
     (inputs
-     (modify-inputs (package-inputs webkitgtk-prev)
+     (modify-inputs (package-inputs webkitgtk)
        (delete "libnotify")))))
-
-(define-public webkitgtk-next webkitgtk)
 
 ;;; Required by e.g. emacs-next-pgtk, emacs-xwidgets, and some other GNOME
 ;;; packages for webkit2gtk-4.0.  See also the upstream tracker for libsoup 3:
