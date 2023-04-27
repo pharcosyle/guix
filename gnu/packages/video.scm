@@ -362,7 +362,7 @@ user has installed.")
      (list alsa-lib
            ffmpeg-4
            freetype
-           imagemagick
+           imagemagick-6
            lame
            liba52
            libdv
