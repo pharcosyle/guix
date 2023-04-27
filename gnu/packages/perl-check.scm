@@ -689,14 +689,14 @@ contents of a file is equal to a particular string.")
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
-    (version "3.42")
+    (version "3.44")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
                            "Test-Harness-" version ".tar.gz"))
        (sha256
-        (base32 "0lwfaamhpqia0ks4pcci83xbqz6jhng7acv95qk6wbd8zr70vn8g"))))
+        (base32 "15sj7rcmyhhi8m7brk7r6w09yrpf1kk80gpz8mkwx7j9dgm93dby"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -1289,14 +1289,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302191")
+    (version "1.302194")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "1ax7qlmkgy5b78vap8k6c0w3ajljz304zl4rmvf1vvzjqhmnabx8"))))
+                "0j4zhvb5hiaq9b773mvj4ly09p759iwcwqq5cz3wh115ndg9dm13"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description

@@ -2271,14 +2271,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.30")
+    (version "4.36")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "1d5xwk3j3pvc2s439vjrnhwcx44wkskda9mrwv3ix2c6pp7slpsn"))))
+        (base32 "1v96cyd11sxj364jrvpzvyqvb1rpvb71h6pmwh2dybnb2x14gs7c"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-common-sense))
@@ -4524,6 +4524,32 @@ By itself it is not a particularly interesting module by any measure, however
 it ties together a family of modern toolchain modules.")
     (license (package-license perl))))
 
+(define-public perl-extutils-cchecker
+  (package
+    (name "perl-extutils-cchecker")
+    (version "0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
+                                  "ExtUtils-CChecker-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1x8vafpff5nma18svxp1h3mp069fjmzlsdvnbcgn3z1pgrkkcxqi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     (list perl-module-build perl-test-fatal))
+    (home-page "https://metacpan.org/release/ExtUtils-CChecker")
+    (synopsis "Configure-time utilities for using C headers, libraries, or OS
+features")
+    (description "Often Perl modules are written to wrap functionality found
+in existing C headers, libraries, or to use OS-specific features.  It is
+useful in the Build.PL or Makefile.PL file to check for the existance of these
+requirements before attempting to actually build the module. Objects in this
+class provide an extension around ExtUtils::CBuilder to simplify the creation
+of a .c file, compiling, linking and running it, to test if a certain feature
+is present.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-cppguess
   (package
     (name "perl-extutils-cppguess")
@@ -6014,7 +6040,7 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.004003")
+    (version "1.004004")
     (source
      (origin
        (method url-fetch)
@@ -6022,7 +6048,7 @@ installed.")
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "1grg8saa318bs4x2wqnww7y0nra7azrzg35bk5pgvkwxzwbkpvjv"))))
+         "1fjd1759v8968q4mq68b7n1sdcamx5zrikjxf0hzci550q9r59bw"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-test-needs))
@@ -6731,14 +6757,14 @@ readable.  A 65-character subset ([A-Za-z0-9+/=]) of US-ASCII is used, enabling
 (define-public perl-mime-charset
   (package
     (name "perl-mime-charset")
-    (version "1.012.2")
+    (version "1.013.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
                                   "MIME-Charset-" version ".tar.gz"))
               (sha256
                (base32
-                "04qxgcg9mvia121i3zcqxgp20y0d9kg0qv6hddk93ian0af7g347"))))
+                "1w3h13k0g4fkwkz5nisqxi7bgiggmp4q9gv0dqyz4lfjq3haddqv"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/MIME-Charset")
     (synopsis "Charset information for MIME messages")
@@ -6847,7 +6873,7 @@ multiple, by now, standard libraries in a Perl program.")
 (define-public perl-module-build-tiny
   (package
     (name "perl-module-build-tiny")
-    (version "0.039")
+    (version "0.043")
     (source
      (origin
        (method url-fetch)
@@ -6855,7 +6881,7 @@ multiple, by now, standard libraries in a Perl program.")
                            "Module-Build-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "077ijxbvamybph4ymamy1i9q2993xb46vf1npxaybjz0mkv0yn3x"))))
+         "01kj5pzl5ckgimc28a81cy8hn5m55f6y9pnsw9614xca1rif9x38"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-extutils-installpaths perl-extutils-config
@@ -11721,7 +11747,7 @@ neither visible nor modifiable from Perl space).")
 (define-public perl-xs-parse-keyword
   (package
     (name "perl-xs-parse-keyword")
-    (version "0.06")
+    (version "0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -11729,9 +11755,10 @@ neither visible nor modifiable from Perl space).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0nnr8akkxb2h2y3d5r51pr84vvxkq89ynmi9azkbnn79jmbcbgvq"))))
+                "0mzwvih85ixg1xx83dq47446v661n62iqpdyr5xv7csai39846sm"))))
     (build-system perl-build-system)
     (native-inputs (list perl-module-build perl-test-simple))
+    (propagated-inputs (list perl-extutils-cchecker))
     (home-page "https://metacpan.org/dist/XS-Parse-Keyword")
     (synopsis "XS functions to assist in parsing keyword syntax")
     (description
@@ -11783,7 +11810,7 @@ best YAML support to date.")
 (define-public perl-yaml-tiny
   (package
     (name "perl-yaml-tiny")
-    (version "1.73")
+    (version "1.74")
     (source
      (origin
        (method url-fetch)
@@ -11791,7 +11818,7 @@ best YAML support to date.")
                            "YAML-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0i3p4nz8ysrsrs6vlzc6gkjcfpcaf05xjc7lwbjkw7lg5shmycdw"))))
+         "0v1xwcv5d5gm4rn6dygpwx4b6bavgzsc3gdqlqq45qiwbngwlf3v"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-json-maybexs perl-module-build-tiny))
