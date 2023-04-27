@@ -9339,7 +9339,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "3.4.2")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker/"
@@ -9347,7 +9347,7 @@ easy, safe, and automatic.")
                                   "tracker-" version ".tar.xz"))
               (sha256
                (base32
-                "0c8ppm03b9r6lyxalama8sjmw3km4jibbswqra7qf17pli1g2vaf"))))
+                "0kcpvss87b7k2vpvymcym62lch1mmvf9ksxi2gqwrzdsqw5dawpr"))))
     (build-system meson-build-system)
     (arguments
      (list
