@@ -4694,7 +4694,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.20")
+    (version "1.0.22")
     (source
      (origin
        (method url-fetch)
@@ -4702,7 +4702,7 @@ code, used in @code{libtoxcore}.")
         (string-append "http://www.quut.com/" name "/" name
                        "-" version ".tar.gz"))
        (sha256
-        (base32 "1gwhmqs24c14gc9qr91iqb2jkbr3qqy4dvf27yf8j7mq322w65b3"))))
+        (base32 "1b7hkpv3n2rlcm65b784p3gc8l68nyhg9nznn9wai1dvys8jw1zh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
