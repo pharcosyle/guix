@@ -534,7 +534,7 @@ Adaptive Multi Rate Narrowband and Wideband (AMR-NB and AMR-WB) speech codec.")
 (define-public opencore-amr
   (package
     (name "opencore-amr")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -542,7 +542,7 @@ Adaptive Multi Rate Narrowband and Wideband (AMR-NB and AMR-WB) speech codec.")
         (string-append "https://sourceforge.net/projects/opencore-amr/files/"
                        name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0hfk9khz3by0119h3jdwgdfd7jgkdbzxnmh1wssvylgnsnwnq01c"))))
+        (base32 "18f4kn0b25g6z9810dlf8v6rcnj9bl5m8iwf6m5v7ql8203b8gj8"))))
     (build-system gnu-build-system)
     (synopsis "Adaptive Multi Rate Codec")
     (description "OpenCore-AMR is a library of OpenCORE Framework
