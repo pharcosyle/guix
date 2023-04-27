@@ -605,7 +605,7 @@ applications by providing high-level classes for commonly required tasks.")
 (define-public libde265
   (package
     (name "libde265")
-    (version "1.0.8")
+    (version "1.0.11")
     (source
      (origin
        (method git-fetch)
@@ -615,7 +615,7 @@ applications by providing high-level classes for commonly required tasks.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dzflqbk248lz5ws0ni5acmf32b3rmnq5gsfaz7691qqjxkl1zml"))))
+        (base32 "0vy1brb8mnc590g5l21qfj3fg0arbw7dif1w0vizkxbqk23m996i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
