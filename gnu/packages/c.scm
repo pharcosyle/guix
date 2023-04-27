@@ -395,7 +395,7 @@ Its three main components are:
 (define-public libfixposix
   (package
     (name "libfixposix")
-    (version "0.4.3")
+    (version "0.5.1")
     (home-page "https://github.com/sionescu/libfixposix")
     (source
      (origin
@@ -406,7 +406,7 @@ Its three main components are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1x4q6yspi5g2s98vq4qszw4z3zjgk9l5zs8471w4d4cs6l97w08j"))))
+         "1wzd2vkn4jg2xpj8vf2w07v2rwg2gzzw81klwpsfy4zasv53m876"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake libtool pkg-config check))
