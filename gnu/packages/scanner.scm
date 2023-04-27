@@ -106,7 +106,7 @@ WSD and eSCL.")
 (define-public sane-backends-minimal
   (package
     (name "sane-backends-minimal")
-    (version "1.0.32")
+    (version "1.2.1")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -114,15 +114,7 @@ WSD and eSCL.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-              (base32 "13jlqdp7n7z2n78v6idl3ri5idk7ddk9j8wrmh73lba8l9y8xnsi"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; Generated HTML files and udev rules normally embed a
-              ;; timestamp.  Work around that to build things reproducibly.
-              '(begin
-                 (substitute* "tools/sane-desc.c"
-                   (("asctime \\(localtime \\(&current_time\\)\\)")
-                    "\"1970-01-01\""))))))
+              (base32 "1dyipgfn8b8g38iqipy9y1p32p8xyf5sllh4dzhpx54schc4j3hm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -154,18 +146,6 @@ WSD and eSCL.")
                ((" backend ") " "))))
          (add-before 'configure 'disable-failing-tests
            (lambda _
-             ;; Disable unmaintained tests that that fail with errors resembling:
-             ;;
-             ;; < # by sane-desc 3.5 from sane-backends 1.0.24git on Jul 31 2013
-             ;; ---
-             ;; > # by sane-desc 3.5 from sane-backends 1.0.27 on 1970-01-01#
-             ;; FAIL: sane-desc -m usermap -s ./data
-             (for-each
-              (lambda (pattern)
-                (substitute* "testsuite/tools/Makefile.in"
-                  (((string-append " " pattern " ")) " ")))
-              (list "usermap" "db" "udev" "udev\\+acl" "udev\\+hwdb" "hwdb"))
-
              ;; Disable tests that try to connect to actual USB hardware & fail
              ;; with the following error when no USB access is allowed at all:
              ;;
