@@ -47,6 +47,7 @@
   #:use-module (gnu packages xorg))
 
 (define %vulkan-sdk-version "sdk-1.3.243.0")
+(define %vulkan-version "v1.3.248")
 
 (define-public spirv-headers
   (package
@@ -220,6 +221,8 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
+    ;; TODO preventing rebuild
+    ;; (version %vulkan-version)
     (version %vulkan-sdk-version)
     (source
      (origin
@@ -230,6 +233,8 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
+         ;; TODO preventing rebuild
+         ;; "0ra4n5vbrpdsvwiwpbmzf3gjkja8a6d3j835wljkh133kxzl8abf"
          "1vfz20iazdask6z8k105nklxh286nd1mgp44mp89chkxzh1l8awa"))))
     (build-system cmake-build-system)
     (arguments
@@ -241,20 +246,37 @@ interpretation of the specifications for these languages.")
      "Vulkan-Headers contains header files and API registry for Vulkan.")
     (license (list license:asl2.0)))) ;LICENSE.txt
 
+;; TODO preventing rebuild
+(define vulkan-headers-1.3.248
+  (package
+    (inherit vulkan-headers)
+    (name "vulkan-headers")
+    (version "1.3.248")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/Vulkan-Headers")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ra4n5vbrpdsvwiwpbmzf3gjkja8a6d3j835wljkh133kxzl8abf"))))))
+
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version %vulkan-sdk-version)
+    (version %vulkan-version)
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Loader")
-             (commit "v1.3.243")))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0w69sh669sx9pwlvv2rv92ds2hm2rbzsa6qqcmd8kcad0qfq7dz2"))))
+         "0frjyi4hkkm3i547ym3b9cdf6520g6svdqbyjq0pk2x7hzbbn371"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -298,7 +320,7 @@ interpretation of the specifications for these languages.")
            python
            wayland))
     (inputs
-     (list vulkan-headers libxrandr))
+     (list vulkan-headers-1.3.248 libxrandr))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
@@ -317,7 +339,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version %vulkan-sdk-version)
+    (version %vulkan-version)
     (source
      (origin
        (method git-fetch)
@@ -327,12 +349,12 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "00a332w968rjh7bp4bli9d34gqn8syrxb7q5p5nz8441x0vlwwpi"))))
+         "0kmcn4g3v9midw008c8rf3sh2k1kcd7bv6zpxwii4cizkahlzdhd"))))
     (build-system cmake-build-system)
     (inputs
      (list glslang libxrandr vulkan-loader wayland wayland-protocols))
     (native-inputs
-     (list pkg-config python vulkan-headers))
+     (list pkg-config python vulkan-headers-1.3.248))
     (arguments
      `(#:tests? #f                      ;no tests
        #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
@@ -450,7 +472,7 @@ shader compilation.")
             libxcb
             spirv-headers
             spirv-tools
-            vulkan-headers
+            vulkan-headers-1.3.248
             vulkan-loader
             wine-minimal ; Needed for 'widl'.
             xcb-util
@@ -464,7 +486,7 @@ shader compilation.")
 (define-public vulkan-validationlayers
   (package
     (name "vulkan-validationlayers")
-    (version %vulkan-sdk-version)
+    (version %vulkan-version)
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -474,7 +496,7 @@ shader compilation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qxkjayg7nfkpv45jbn48b6ivhlwk72k0rgljy13w5ragxw5q9dy"))))
+                "1c1z2884z5xqxkh2mc29q33bqmai9zqm9p4qvm0rv22agj1ykm26"))))
     (build-system cmake-build-system)
     (inputs (list glslang
                   libxrandr
@@ -483,7 +505,7 @@ shader compilation.")
                   spirv-tools
                   vulkan-loader
                   wayland))
-    (native-inputs (list pkg-config python spirv-headers vulkan-headers))
+    (native-inputs (list pkg-config python spirv-headers vulkan-headers-1.3.248))
     (arguments
      (list #:tests? #f ;no tests
            #:configure-flags
@@ -544,7 +566,7 @@ use the Vulkan API.")
     (arguments
      '(#:tests? #f                      ;no test
        #:configure-flags '("-DVOLK_INSTALL=ON" "-DVOLK_PULL_IN_VULKAN=ON")))
-    (inputs (list vulkan-headers))
+    (inputs (list vulkan-headers-1.3.248))
     (synopsis "Meta loader for Vulkan API")
     (description
      "Volk is a meta-loader for Vulkan.  It allows you to dynamically load
@@ -575,7 +597,7 @@ skipping loader dispatch overhead.")
     (arguments
      ;; no test
      `(#:tests? #f))
-    (inputs (list vulkan-loader vulkan-headers))
+    (inputs (list vulkan-loader vulkan-headers-1.3.248))
     (synopsis "Vulkan memory allocation library")
     (description
      "The Vulkan Memory Allocator (VMA) library provides a simple and easy to
