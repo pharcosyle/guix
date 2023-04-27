@@ -933,7 +933,7 @@ model to base your own plug-in on, here it is.")
             wildmidi
             wpebackend-fdo
             zbar
-            zxing-cpp-1.2)))
+            zxing-cpp)))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
     (description
