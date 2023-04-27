@@ -816,12 +816,7 @@ model to base your own plug-in on, here it is.")
                          '())
 
                   ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
-                  ((".*elements/dtls\\.c.*") ""))
-                (substitute* "tests/check/elements/zxing.c"
-                  ;; zxing 1.2.0 seemingly changed the type representation of
-                  ;; the EAN_13 structure; disable it.
-                  ((".*\"EAN_13\".*")
-                   "")))))
+                  ((".*elements/dtls\\.c.*") "")))))
           (add-before 'check 'pre-check
             (lambda _
               ;; Tests require a running X server.
@@ -944,7 +939,7 @@ model to base your own plug-in on, here it is.")
             wildmidi
             wpebackend-fdo
             zbar
-            zxing-cpp-1.2)))
+            zxing-cpp)))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
     (description
