@@ -140,7 +140,7 @@ from the protocol files.")
 (define-public libnsl
   (package
     (name "libnsl")
-    (version "1.3.0")
+    (version "2.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -149,7 +149,7 @@ from the protocol files.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dayj5i4bh65gn7zkciacnwv2a0ghm6nn58d78rsi4zby4lyj5w5"))))
+                "0p4bq572qwlpnhsqfr9rj12w3yivrbk8faxqk3wsfvbw6k7hvnbz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
