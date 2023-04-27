@@ -37,7 +37,7 @@
 (define-public netpbm
   (package
    (name "netpbm")
-   (version "10.78.3")
+   (version "11.2.0")
    (source (origin
             (method svn-fetch)
             ;; At the time of first packaging, the "super-stable" and
@@ -49,10 +49,10 @@
             ;; To determine the correct release: "svn log version.mk".
             (uri (svn-reference
                    (url "http://svn.code.sf.net/p/netpbm/code/advanced")
-                   (revision 2965)))
+                   (revision 4539)))
             (sha256
               (base32
-               "1k7as9qi1942wyjxpvbf02wg0h4braw44m3m3vvi8sm9y5z1m967"))
+               "1q71x0ba45dr4gspyl4nbsi1kgy69xkbsswqqf2kh6ac83q031rc"))
             (patches (search-patches "netpbm-CVE-2017-2586.patch"
                                      "netpbm-CVE-2017-2587.patch"))
             (file-name (string-append name "-" version "-checkout"))
@@ -151,20 +151,20 @@
            (substitute* "test/all-in-place.test" (("pamx") ""))
            ;; do not worry about non-existing file
            (substitute* "test/all-in-place.test" (("^rm ") "rm -f "))
-           ;; remove four tests that fail for unknown reasons
+
            (substitute* "test/Test-Order"
+             ;; Remove three tests that fail for unknown reasons.
              (("all-in-place.test") "")
              (("pnmpsnr.test") "")
              (("pnmremap1.test") "")
-             (("gif-roundtrip.test") "")
 
-             ;; These two tests started failing in netpbm-10.78.3.
-             (("jpeg-roundtrip.test") "")
+             ;; Started failing in netpbm-10.78.3.
              (("pbmtext.test") "")
 
              ;; Skip tests that use nonfree programs that we don't build.
              (("ps-alt-roundtrip.test") "" )
-             (("pbm-misc-converters.test") ""))
+             (("pbm-misc-converters.test") "")
+             (("lps-roundtrip.test") ""))
            #t))
        (replace 'install
          (lambda* (#:key outputs make-flags #:allow-other-keys)
@@ -175,7 +175,7 @@
              (with-directory-excursion out
                (for-each delete-file-recursively
                          '("config_template" "pkginfo" "README" "VERSION"
-                           "link/" "misc/"))
+                           "sharedlink/" "staticlink/" "misc/"))
                ;; Install the required ‘libnetpbm.so’ link.
                ;; See <https://issues.guix.gnu.org/issue/40376>.
                (with-directory-excursion "lib"
