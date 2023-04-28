@@ -1284,7 +1284,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxft
   (package
     (name "libxft")
-    (version "2.3.7")
+    (version "2.3.8")
     (source
       (origin
         (method url-fetch)
@@ -1294,7 +1294,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.xz"))
         (sha256
           (base32
-            "0wagvndjw0r56s7a9wnvcr8rbba48rsw5457f71q2wq08myb7w3r"))))
+            "0jfxqsqhjl2b2ll6b7x21mj02hxp5znkhjvbxw5a9h6lq95kr32y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
