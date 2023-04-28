@@ -186,9 +186,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    ;; TODO preventing rebuild
-    ;; (version %vulkan-version)
-    (version %vulkan-sdk-version)
+    (version %vulkan-version)
     (source
      (origin
        (method git-fetch)
@@ -198,9 +196,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         ;; TODO preventing rebuild
-         ;; "0ra4n5vbrpdsvwiwpbmzf3gjkja8a6d3j835wljkh133kxzl8abf"
-         "1vfz20iazdask6z8k105nklxh286nd1mgp44mp89chkxzh1l8awa"))))
+         "0ra4n5vbrpdsvwiwpbmzf3gjkja8a6d3j835wljkh133kxzl8abf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -210,23 +206,6 @@ interpretation of the specifications for these languages.")
     (description
      "Vulkan-Headers contains header files and API registry for Vulkan.")
     (license (list license:asl2.0)))) ;LICENSE.txt
-
-;; TODO preventing rebuild
-(define vulkan-headers-1.3.248
-  (package
-    (inherit vulkan-headers)
-    (name "vulkan-headers")
-    (version "1.3.248")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/KhronosGroup/Vulkan-Headers")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0ra4n5vbrpdsvwiwpbmzf3gjkja8a6d3j835wljkh133kxzl8abf"))))))
 
 (define-public vulkan-loader
   (package
@@ -279,7 +258,7 @@ interpretation of the specifications for these languages.")
            python
            wayland))
     (inputs
-     (list vulkan-headers-1.3.248))
+     (list vulkan-headers))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
@@ -313,7 +292,7 @@ and the ICD.")
     (inputs
      (list glslang libxrandr vulkan-loader wayland wayland-protocols))
     (native-inputs
-     (list pkg-config python vulkan-headers-1.3.248))
+     (list pkg-config python vulkan-headers))
     (arguments
      `(#:tests? #f                      ;no tests
        #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
@@ -431,7 +410,7 @@ shader compilation.")
             libxcb
             spirv-headers
             spirv-tools
-            vulkan-headers-1.3.248
+            vulkan-headers
             vulkan-loader
             wine-minimal ; Needed for 'widl'.
             xcb-util
@@ -464,7 +443,7 @@ shader compilation.")
                   spirv-tools
                   vulkan-loader
                   wayland))
-    (native-inputs (list pkg-config python spirv-headers vulkan-headers-1.3.248))
+    (native-inputs (list pkg-config python spirv-headers vulkan-headers))
     (arguments
      (list #:tests? #f ;no tests
            #:configure-flags
@@ -525,7 +504,7 @@ use the Vulkan API.")
     (arguments
      '(#:tests? #f                      ;no test
        #:configure-flags '("-DVOLK_INSTALL=ON" "-DVOLK_PULL_IN_VULKAN=ON")))
-    (inputs (list vulkan-headers-1.3.248))
+    (inputs (list vulkan-headers))
     (synopsis "Meta loader for Vulkan API")
     (description
      "Volk is a meta-loader for Vulkan.  It allows you to dynamically load
@@ -556,7 +535,7 @@ skipping loader dispatch overhead.")
     (arguments
      ;; no test
      `(#:tests? #f))
-    (inputs (list vulkan-loader vulkan-headers-1.3.248))
+    (inputs (list vulkan-loader vulkan-headers))
     (synopsis "Vulkan memory allocation library")
     (description
      "The Vulkan Memory Allocator (VMA) library provides a simple and easy to
