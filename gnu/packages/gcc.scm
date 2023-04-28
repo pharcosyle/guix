@@ -618,6 +618,19 @@ Go.  It also includes runtime support libraries for these languages.")
 
             "btver1" "btver2")))                  ;AMD
 
+(define %gcc-13-aarch64-micro-architectures
+  (append %gcc-11-aarch64-micro-architectures
+          '("armv9.1-a" "armv9.2-a" "armv9.3-a")))
+
+(define %gcc-13-armhf-micro-architectures
+  %gcc-11-armhf-micro-architectures)
+
+(define %gcc-13-x86_64-micro-architectures
+  (append %gcc-11-x86_64-micro-architectures
+          '("sierraforest" "grandridge" "graniterapids"
+
+            "znver4")))
+
 (define-public gcc-7
   (package
     (inherit gcc-6)
@@ -757,10 +770,32 @@ It also includes runtime support libraries for these languages.")
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))))
 
+(define-public gcc-13
+  (package
+    (inherit gcc-12)
+    (version "13.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "11pf2gy4sv18j9agirymksbyibbs8ai9i25dhmjsqxjymbq89mk1"))
+              (patches (search-patches "gcc-12-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))
+              (modules '((guix build utils)))
+              (snippet gcc-canadian-cross-objdump-snippet)))
+    (properties
+     `((compiler-cpu-architectures
+        ("aarch64" ,@%gcc-13-aarch64-micro-architectures)
+        ("armhf" ,@%gcc-13-armhf-micro-architectures)
+        ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
+       ,@(package-properties gcc-8)))))
+
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-12)
+(define-public gcc gcc-13)
 
 
 ;;;
@@ -1117,8 +1152,9 @@ misnomer.")))
 (define-public libgccjit-10 (make-libgccjit gcc-10))
 (define-public libgccjit-11 (make-libgccjit gcc-11))
 (define-public libgccjit-12 (make-libgccjit gcc-12))
+(define-public libgccjit-13 (make-libgccjit gcc-13))
 
-(define-public libgccjit libgccjit-12)
+(define-public libgccjit libgccjit-13)
 
 (define (make-gccgo gcc)
   "Return a gccgo package based on GCC."
@@ -1232,7 +1268,11 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-12 "gcc-objc" '("objc")
               %objc-search-paths))
 
-(define-public gcc-objc gcc-objc-12)
+(define-public gcc-objc-13
+  (custom-gcc gcc-13 "gcc-objc" '("objc")
+              %objc-search-paths))
+
+(define-public gcc-objc gcc-objc-13)
 
 (define %objc++-search-paths
   (list (search-path-specification
@@ -1282,7 +1322,11 @@ provides the GNU compiler for the Go programming language."))
   (custom-gcc gcc-12 "gcc-objc++" '("obj-c++")
               %objc++-search-paths))
 
-(define-public gcc-objc++ gcc-objc++-12)
+(define-public gcc-objc++-13
+  (custom-gcc gcc-13 "gcc-objc++" '("obj-c++")
+              %objc++-search-paths))
+
+(define-public gcc-objc++ gcc-objc++-13)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
