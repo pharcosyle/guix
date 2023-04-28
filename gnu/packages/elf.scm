@@ -253,16 +253,15 @@ static analysis of the ELF binaries at hand.")
 (define-public patchelf
   (package
     (name "patchelf")
-    (version "0.17.2")
+    (version "0.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://nixos.org/releases/patchelf/patchelf-"
-                   version
-                   "/patchelf-" version ".tar.bz2"))
+                   "https://github.com/NixOS/patchelf/releases/download/"
+                   version "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "1qnql97ghbb7nhv9zpm4ip0cqj05xyyxk391jv0j5r3jc0vymqms"))))
+               "02s7ap86rx6yagfh9xwp96sgsj0p6hp99vhiq9wn4mxshakv4lhr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
