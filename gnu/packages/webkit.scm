@@ -135,8 +135,7 @@ engine that uses Wayland for graphics output.")
               (sha256
                (base32 "13i8dwwkckq7xfjxlm1w1nxk8iw4bkhffvx2v9c8rx4j620264q0"))
               (patches (search-patches
-                        "webkitgtk-adjust-bubblewrap-paths.patch"
-                        "webkitgtk-libelogind.patch"))))
+                        "webkitgtk-adjust-bubblewrap-paths.patch"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc" "debug"))
     (arguments
