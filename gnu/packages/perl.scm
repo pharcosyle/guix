@@ -882,6 +882,23 @@ all known commands are checked.")
 limits like @code{getrlimit} and @code{setpriority}.")
    (license license:artistic2.0)))
 
+(define-public perl-b-cow
+  (package
+    (name "perl-b-cow")
+    (version "0.007")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/B-COW-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0i4b2p8jxscx5xszg6sf3agwzw86j7i85w8wlf4ric784zrdm40j"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/B-COW")
+    (synopsis "Additional B helpers to check COW status")
+    (description "Additional B helpers to check COW status.")
+    (license license:perl-license)))
+
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
@@ -1842,15 +1859,17 @@ arrays for their internal representation.")
 (define-public perl-clone
   (package
     (name "perl-clone")
-    (version "0.43")
+    (version "0.46")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
+              (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
                                   "Clone-" version ".tar.gz"))
               (sha256
                (base32
-                "1npf5s4b90ds6lv8gn76b2w4bdh0z5ni5zk4skgc2db5d12560lr"))))
+                "0yv9j1cdbbqa9bf84hsvksmicgjirdk01pf0d3gvpmlb9igfvpma"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     (list perl-b-cow))
     (synopsis "Recursively copy Perl datatypes")
     (description
      "This module provides a clone() method which makes recursive copies of
@@ -8770,17 +8789,16 @@ file names.")
 (define-public perl-path-tiny
   (package
     (name "perl-path-tiny")
-    (version "0.118")
+    (version "0.144")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                                   "Path-Tiny-" version ".tar.gz"))
               (sha256
                (base32
-                "1zdhc3azw6wn21db3yyygs57vlqkx72ipyd8sa21m72c1y6qs4rj"))))
+                "0za80q929ga5f2dpyw0a866xwm4kawr96y6208m9ap44rr70kspn"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:tests? #f)) ; Tests require additional test modules to be packaged
+    ;; Additional unpackaged modules recommended for tests.
     ;; (native-inputs
     ;;  `(("perl-test-failwarnings" ,perl-test-failwarnings)
     ;;    ("perl-test-mockrandom" ,perl-test-mockrandom)))
