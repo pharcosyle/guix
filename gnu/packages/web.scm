@@ -3552,7 +3552,7 @@ object knows about.")
 (define-public perl-http-daemon
   (package
     (name "perl-http-daemon")
-    (version "6.14")
+    (version "6.16")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3560,7 +3560,7 @@ object knows about.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "079fkcq2vdrzdf0bml52kz73n9gdv1xg0qf72c9v505v7izpwxph"))))
+               "0g8pgsm0ds2qldw6rqfvl2pinjbhf0apx9629l64xyp64lkhk3dk"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-module-build perl-test-needs))
@@ -3626,7 +3626,7 @@ processing of request data as it arrives.")
 (define-public perl-http-message
   (package
     (name "perl-http-message")
-    (version "6.37")
+    (version "6.44")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3634,12 +3634,12 @@ processing of request data as it arrives.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "00nq0xnpdba4valzgvzy3fgvck1ijrksdyzb4w9q6j72hl5dln8f"))))
+               "18dwmi7anr0zs896cg3pzhrblhkpc7v120gc6bs75aasyixn92rr"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-test-needs perl-try-tiny))
     (propagated-inputs
-     (list perl-encode-locale perl-http-date perl-io-html
+     (list perl-clone perl-encode-locale perl-http-date perl-io-html
            perl-lwp-mediatypes perl-uri))
     (license license:perl-license)
     (synopsis "Perl HTTP style message")
@@ -3825,7 +3825,7 @@ It provides an API compatible to HTTP::Tiny.")
 (define-public perl-io-html
   (package
     (name "perl-io-html")
-    (version "1.00")
+    (version "1.004")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3833,7 +3833,7 @@ It provides an API compatible to HTTP::Tiny.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "06nj3a0xgp5jxwxx6ayglfk2v7npf5a7gwkqsjlkapjkybarzqh4"))))
+               "1xcbplf8rxb3z4wz66h5w7vy1g83bkxksxwnjp1z5fv3jksjsyy8"))))
     (build-system perl-build-system)
     (license license:perl-license)
     (synopsis "Perl module to open an HTML file with automatic charset detection")
@@ -4478,18 +4478,20 @@ applications.")
 (define-public perl-uri
   (package
     (name "perl-uri")
-    (version "5.05")
+    (version "5.17")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                                  "URI-" version ".tar.gz"))
              (sha256
               (base32
-               "1v3r3ck67w272kzfgm1nd3wb41av1hlnza56vkxxj1i7s3917hd5"))))
+               "1y38hlq0in1cc1lv9nrjgmy9xm1pdiw4pbng2f8lj9ybd6vl4zjz"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
-     (list perl-test-needs))
+     (list perl-test-needs
+           perl-test-warnings
+           perl-test-fatal))
     (license license:perl-license)
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
     (description
