@@ -132,7 +132,7 @@ has formal semantics expressed in @url{https://mcrl2.org,mCRL2}.")
     (arguments
      (list
       #:modules `((ice-9 popen)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-imported-modules)
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'configure 'setenv
