@@ -548,7 +548,7 @@ Test::More and friends.")
 (define-public perl-test-fatal
   (package
     (name "perl-test-fatal")
-    (version "0.016")
+    (version "0.017")
     (source
      (origin
        (method url-fetch)
@@ -556,7 +556,7 @@ Test::More and friends.")
                            "Test-Fatal-" version ".tar.gz"))
        (sha256
         (base32
-         "13vqdyk95y89msk1r8g1vp1jw6rzkl1y76lprnw3085sy8qd90vj"))))
+         "19n4yfbrc8knvf83bf76fdn04dqzlhmgn0kbx7pn5dw4zgdgzprp"))))
     (build-system perl-build-system)
     (propagated-inputs (list perl-try-tiny))
     (home-page "https://metacpan.org/release/Test-Fatal")
@@ -963,7 +963,7 @@ bit more fine-grained control over test suites.")
 (define-public perl-test-needs
   (package
     (name "perl-test-needs")
-    (version "0.002009")
+    (version "0.002010")
     (source
      (origin
        (method url-fetch)
@@ -973,7 +973,7 @@ bit more fine-grained control over test suites.")
              ".tar.gz"))
        (sha256
         (base32
-         "1hsagkxw0b0xf9qk4i4c74dkjskrk23jcsxhb3graqfi78cj272p"))))
+         "0272j1y2q0bf4gakr9p47n4qc0dsn0kawjryfl4ndafbiz3zsgwj"))))
     (build-system perl-build-system)
     (home-page
      "https://metacpan.org/release/Test-Needs")
