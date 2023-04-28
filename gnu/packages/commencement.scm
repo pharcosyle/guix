@@ -3648,6 +3648,9 @@ is the GNU Compiler Collection.")
   (make-gcc-toolchain gcc-11))
 
 (define-public gcc-toolchain-12
+  (make-gcc-toolchain gcc-12))
+
+(define-public gcc-toolchain-13
   gcc-toolchain)
 
 (define-public gcc-toolchain-13
@@ -3656,7 +3659,7 @@ is the GNU Compiler Collection.")
 (define-public gcc-toolchain-aka-gcc
   ;; It's natural for users to try "guix install gcc".  This package
   ;; automatically "redirects" them to 'gcc-toolchain'.
-  (deprecated-package "gcc" gcc-toolchain-12))
+  (deprecated-package "gcc" gcc-toolchain-13))
 
 
 (define-public gdc-toolchain-10
