@@ -342,7 +342,10 @@ required structures.")
               (string-append "--with-guile-site-ccache-dir="
                              "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache")
               (string-append "--with-guile-extension-dir="
-                             "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions"))
+                             "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions")
+              ;; SRP authentication is disabled by default in gnutls since
+              ;; version 3.8.0.
+              "--disable-srp-authentication")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-more-shebangs
