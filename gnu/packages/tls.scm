@@ -447,7 +447,7 @@ OpenSSL for TARGET."
 (define-public openssl-1.1
   (package
     (name "openssl")
-    (version "1.1.1q")
+    (version "1.1.1t")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -460,7 +460,7 @@ OpenSSL for TARGET."
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "1jhhzp4gh6ymidxm1ckjk948l583awp0w3y2nvqdz7022kk9r4yp"))))
+                "0fwxhlv7ary9nzg5mx07x1jj3wkbizxh56qy7l6bzp5iplj9pvld"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"        ;6.8 MiB of man3 pages and full HTML documentation
