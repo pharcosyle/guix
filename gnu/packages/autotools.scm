@@ -112,7 +112,6 @@ scripts are self-contained and portable, freeing the user from needing to
 know anything about Autoconf or M4.")
     (license gpl3+))) ; some files are under GPLv2+
 
-;; This is the renaissance version, which is not widely supported yet.
 (define-public autoconf-2.71
   (package
     (inherit autoconf-2.69)
@@ -124,7 +123,18 @@ know anything about Autoconf or M4.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "197sl23irn6s9pd54rxj5vcp5y8dv65jb9yfqgr2g56cxg7q6k7i"))))
+         "197sl23irn6s9pd54rxj5vcp5y8dv65jb9yfqgr2g56cxg7q6k7i"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://git.savannah.gnu.org/cgit/autoconf.git/patch/"
+                 "?id=3a9802d60156809c139e9b4620bf04917e143ee2"))
+           (file-name (string-append "autoconf-2.71-race-fix.patch"))
+           (sha256
+            (base32
+             "02xyzbqw1hj5ghi20lsqgfs43hzwjbdby7nsi2pi5a4cprmyzrwc")))))))
     (arguments
      (substitute-keyword-arguments (package-arguments autoconf-2.69)
        ((#:tests? _ #f)
@@ -143,7 +153,7 @@ know anything about Autoconf or M4.")
                                               (lambda (file stat)
                                                 (executable-file? file)))))))))))))
 
-(define-public autoconf autoconf-2.69)
+(define-public autoconf autoconf-2.71)
 
 (define-public autoconf-2.68
   (package (inherit autoconf)
