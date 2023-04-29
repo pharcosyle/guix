@@ -443,13 +443,10 @@ written by Paul Haahr and Byron Rakitzis.")
               (with-fluids ((%default-port-encoding #f))
                 (substitute* "tests/testsuite"
                   (("/bin/sh") (which "sh"))))))
-          ;; TODO Fix for a bad merge or something, don't upstream this!
           (add-after 'install 'post-install
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let* ((out (assoc-ref %outputs "out"))
-                     (bin (string-append out "/bin")))
-                (with-directory-excursion bin
-                  (symlink "tcsh" "csh"))))))))
+            (lambda _
+              (with-directory-excursion (string-append #$output "/bin")
+                (symlink "tcsh" "csh")))))))
     (home-page "https://www.tcsh.org/")
     (synopsis "Unix shell based on csh")
     (description
