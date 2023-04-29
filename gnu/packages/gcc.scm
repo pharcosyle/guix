@@ -962,7 +962,12 @@ using compilers other than GCC."
        #:configure-flags `("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
                                            (assoc-ref %outputs "out")
-                                           "/include"))))
+                                           "/include")
+                           ;; FIXME: Why won't libstdc++-v3/src/c++20/tzdb.cc
+                           ;; compile? Work around it for now by disabling
+                           ;; the C++20 time zone feature.
+                           ,@(if (version>=? version "13")
+                                 '("--with-libstdcxx-zoneinfo=no") '()))))
     (outputs '("out" "debug"))
     (inputs '())
     (native-inputs
