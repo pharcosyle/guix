@@ -969,10 +969,16 @@ using compilers other than GCC."
             (lambda _
               (chdir "libstdc++-v3"))))
 
-      #:configure-flags '`("--disable-libstdcxx-pch"
+      #:configure-flags ``("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
                                            (assoc-ref %outputs "out")
-                                           "/include"))))
+                                           "/include")
+                           ;; libstdc++-v3/src/c++20/tzdb.cc won't compile
+                           ;; ("error: ‘mutex’ does not name a type"). Work
+                           ;; around it by disabling the experimental
+                           ;; C++20 time zone feature.
+                           ,,@(if (version>=? (package-version gcc) "13")
+                                  '("--with-libstdcxx-zoneinfo=no") '()))))
     (outputs '("out" "debug"))
     (inputs '())
     (native-inputs
