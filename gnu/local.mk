@@ -1743,6 +1743,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/llvm-9-fix-bitcast-miscompilation.patch	\
   %D%/packages/patches/llvm-9-fix-lpad-miscompilation.patch	\
   %D%/packages/patches/llvm-9-fix-scev-miscompilation.patch	\
+  %D%/packages/patches/llvm-10-fix-build-with-gcc-13.patch	\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lsh-fix-x11-forwarding.patch		\
   %D%/packages/patches/lsof-compat-linux-6.9.patch		\
