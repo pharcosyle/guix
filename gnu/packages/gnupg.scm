@@ -104,58 +104,63 @@
          "1nwvpg5inpjzbq7r6wqsgmwcnfqyahcw9hi8discqvmrcq4nfg4y"))))
     (build-system gnu-build-system)
     (arguments
-     (cond
-      ((%current-target-system)
-       (list
-        #:modules '((guix build gnu-build-system)
-                    (guix build utils))
-        #:phases
-        #~(modify-phases %standard-phases
-            ;; If this is left out, some generated header
-            ;; files will be sprinkled with ‘\c’, which
-            ;; the compiler won't like.
-            (add-after 'unpack 'fix-gen-lock-obj.sh
-              (lambda _
-                (substitute* "src/gen-lock-obj.sh"
-                  (("if test -n `echo -n`") "if ! test -n `echo -n`"))))
-            ;; When cross-compiling, some platform specific properties cannot
-            ;; be detected. Create a symlink to the appropriate platform
-            ;; file if required. Note that these platform files depend on
-            ;; both the operating system and architecture!
-            ;;
-            ;; See Cross-Compiling section at:
-            ;; https://github.com/gpg/libgpg-error/blob/master/README
-            (add-after 'unpack 'cross-symlinks
-              (lambda _
-                (define (link triplet source)
-                  (symlink (string-append "lock-obj-pub." triplet ".h")
-                           (string-append "src/syscfg/lock-obj-pub."
-                                          source ".h")))
-                #$(let ((target (%current-target-system)))
-                    (cond ((target-linux? target)
-                           (match (string-take target
-                                               (string-index target #\-))
-                             ("armhf"
-                              `(link "arm-unknown-linux-gnueabi" "linux-gnu"))
-                             ("mips64el"
-                              `(link "mips-unknown-linux-gnu" "linux-gnu"))
-                             ;; Don't always link to the "linux-gnu"
-                             ;; configuration, as this is not correct for
-                             ;; all architectures.
-                             (_ #t)))
-                          (#t #t))))))))
-      ((system-hurd?)
-       (list
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'skip-tests
-              (lambda _
-                (substitute*
-                    "tests/t-syserror.c"
-                  (("(^| )main *\\(.*" all)
-                   (string-append all "{\n  exit (77);//"))))))))
-      (else
-       '())))
+     (append
+      ;; Workaround for packages that check for `gpg-error-confg' and fail
+      ;; to build if it's not found (at the time of this writing,
+      ;; libassuan and libbdplus). See https://dev.gnupg.org/T6257#164567.
+      '(#:configure-flags '("--enable-install-gpg-error-config"))
+      (cond
+       ((%current-target-system)
+        (list
+         #:modules '((guix build gnu-build-system)
+                     (guix build utils))
+         #:phases
+         #~(modify-phases %standard-phases
+             ;; If this is left out, some generated header
+             ;; files will be sprinkled with ‘\c’, which
+             ;; the compiler won't like.
+             (add-after 'unpack 'fix-gen-lock-obj.sh
+               (lambda _
+                 (substitute* "src/gen-lock-obj.sh"
+                   (("if test -n `echo -n`") "if ! test -n `echo -n`"))))
+             ;; When cross-compiling, some platform specific properties cannot
+             ;; be detected. Create a symlink to the appropriate platform
+             ;; file if required. Note that these platform files depend on
+             ;; both the operating system and architecture!
+             ;;
+             ;; See Cross-Compiling section at:
+             ;; https://github.com/gpg/libgpg-error/blob/master/README
+             (add-after 'unpack 'cross-symlinks
+               (lambda _
+                 (define (link triplet source)
+                   (symlink (string-append "lock-obj-pub." triplet ".h")
+                            (string-append "src/syscfg/lock-obj-pub."
+                                           source ".h")))
+                 #$(let ((target (%current-target-system)))
+                     (cond ((target-linux? target)
+                            (match (string-take target
+                                                (string-index target #\-))
+                              ("armhf"
+                               `(link "arm-unknown-linux-gnueabi" "linux-gnu"))
+                              ("mips64el"
+                               `(link "mips-unknown-linux-gnu" "linux-gnu"))
+                              ;; Don't always link to the "linux-gnu"
+                              ;; configuration, as this is not correct for
+                              ;; all architectures.
+                              (_ #t)))
+                           (#t #t))))))))
+       ((system-hurd?)
+        (list
+         #:phases
+         #~(modify-phases %standard-phases
+             (add-after 'unpack 'skip-tests
+               (lambda _
+                 (substitute*
+                     "tests/t-syserror.c"
+                   (("(^| )main *\\(.*" all)
+                    (string-append all "{\n  exit (77);//"))))))))
+       (else
+        '()))))
     (native-inputs (list gettext-minimal))
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -167,19 +172,6 @@ Daemon and possibly more in the future.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgpg-error")))))
-
-(define-public libgpg-error-1.45
-  (package
-    (inherit libgpg-error)
-    (version "1.45")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
-                           version ".tar.bz2"))
-       (sha256
-        (base32
-         "09haz1kk48b8q0hd58g98whylah0fp121yfgjms7pzsbzgj8w3sp"))))))
 
 (define-public libgcrypt
   (package
@@ -252,8 +244,7 @@ generation.")
         "1r1lvcp67gn5lfrj1g388sd77ca6qwnmxndirdysd71gk362z34f"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     (list libgpg-error-1.45 ; Currently won't build with version 1.47.
-           pth))
+     (list libgpg-error pth))
     (home-page "https://gnupg.org")
     (synopsis
      "IPC library used by GnuPG and related software")
