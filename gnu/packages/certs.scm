@@ -131,7 +131,7 @@ that was originally contributed to Debian.")
     ;; XXX We used to refer to the nss package here, but that eventually caused
     ;; module cycles.  The below is a quick copy-paste job that must be kept in
     ;; sync manually.  Surely there's a better way…?
-    (version "3.88.1")
+    (version "3.89")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -142,7 +142,7 @@ that was originally contributed to Debian.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "15il9fsmixa1r4446zq1wl627sg0hz9h67w6kjxz273xz3nl7li7"))
+                "1mdy03p437yggqf4r5f2wvllqyqyrdj95cxq9xbx04509lzpmhsm"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-3.56-pkgconfig.patch"
                                        "nss-getcwd-nonnull.patch"
