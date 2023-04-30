@@ -1,0 +1,13 @@
+Add an explicit include for compatibility with GCC 13 (see "Header dependency
+changes" of https://gcc.gnu.org/gcc-13/porting_to.html).
+
+--- a/include/llvm/Support/Signals.h
++++ b/include/llvm/Support/Signals.h
+@@ -15,6 +15,7 @@
+ #define LLVM_SUPPORT_SIGNALS_H
+
++#include <cstdint>
+ #include <string>
+
+ namespace llvm {
+ class StringRef;
