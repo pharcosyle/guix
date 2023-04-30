@@ -153,6 +153,7 @@
       (sha256
        (base32
         "09rvm3zgx1d86gippl8qzh13m641ynbw9q0zsc90g0h1khd3z3b6"))
+      (patches (search-patches "mrustc-fix-for-gcc-13.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
