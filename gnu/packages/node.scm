@@ -292,16 +292,20 @@
                    (format #t "nodedir=~a\n" out)))))))))
     (native-inputs
      ;; Runtime dependencies for binaries used as a bootstrap.
-     (list gcc-11 ; Build fails with newer versions of GCC.
-           c-ares
+     (list c-ares
            http-parser
-           ;; XXX: Hideous workaround to avoid a build error when GCC 11 is
-           ;; specified as a native input to Node.
+
+           ;; FIXME: Node fails to build with newer versions of GCC and
+           ;; additionally fails to build against icu4c (as a native input)
+           ;; when it's built with a different version of GCC. The better
+           ;; answer is probably to patch Node.
+           gcc-11
            (package
              (inherit icu4c)
              (native-inputs
               (modify-inputs (package-native-inputs icu4c)
                 (prepend gcc-11))))
+
            libuv-for-node
            `(,nghttp2-for-node "lib")
            openssl-1.1
