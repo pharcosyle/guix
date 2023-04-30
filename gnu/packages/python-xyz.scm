@@ -23257,15 +23257,19 @@ builds partial trees by inspecting living objects.")
 (define-public python-iniconfig
   (package
     (name "python-iniconfig")
-    (version "1.1.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "iniconfig" version))
        (sha256
         (base32
-         "0ckzngs3scaa1mcfmsi1w40a1l8cxxnncscrxzjjwjyisx8z0fmw"))))
-    (build-system python-build-system)
+         "1cxqanj28jqk0alx2xq4ddgvab5822k6vh8p1d0imlvjpwsy349d"))))
+    (build-system pyproject-build-system)
+    (arguments `(#:tests? #f))  ; Avoid a circular dependency with pytest.
+    (native-inputs
+     (list python-hatchling
+           python-hatch-vcs))
     (home-page "https://github.com/RonnyPfannschmidt/iniconfig")
     (synopsis "Simple INI-file parser")
     (description "The @code{iniconfig} package provides a small and simple
