@@ -782,7 +782,8 @@ Library.")
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "0d681xiixmx9inwvz14vi3xsznrcryk06a8rvk9cljiq5kc80szc"))))
+        "0d681xiixmx9inwvz14vi3xsznrcryk06a8rvk9cljiq5kc80szc"))
+      (patches (search-patches "llvm-10-fix-build-with-gcc-13.patch"))))
     (arguments
      (substitute-keyword-arguments (package-arguments llvm-14)
        ((#:phases phases '%standard-phases)
@@ -849,7 +850,8 @@ Library.")
       (uri (llvm-uri "llvm" version))
       (sha256
        (base32
-        "1pzx9zrmd7r3481sbhwvkms68fwhffpp4mmz45dgrkjpyl2q96kx"))))
+        "1pzx9zrmd7r3481sbhwvkms68fwhffpp4mmz45dgrkjpyl2q96kx"))
+      (patches (search-patches "llvm-10-fix-build-with-gcc-13.patch"))))
     (arguments
      (substitute-keyword-arguments (package-arguments llvm-13)
        ((#:phases phases)
@@ -923,7 +925,8 @@ Library.")
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
-      (patches (search-patches "llvm-8-missing-include.patch"))
+      (patches (search-patches "llvm-8-missing-include.patch"
+                               "llvm-10-fix-build-with-gcc-13.patch"))
       (sha256
        (base32
         "199yq3a214avcbi4kk2q0ajriifkvsr0l2dkx3a666m033ihi1ff"))))))
@@ -975,7 +978,8 @@ Library.")
      (origin
       (method url-fetch)
       (uri (llvm-uri "llvm" version))
-      (patches (search-patches "llvm-8-missing-include.patch"))
+      (patches (search-patches "llvm-8-missing-include.patch"
+                               "llvm-10-fix-build-with-gcc-13.patch"))
       (sha256
        (base32
         "1wydhbp9kyjp5y0rc627imxgkgqiv3dfirbqil9dgpnbaw5y7n65"))))
