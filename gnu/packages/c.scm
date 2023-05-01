@@ -391,7 +391,7 @@ Python.")
 (define-public libbytesize
   (package
     (name "libbytesize")
-    (version "2.6")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -399,7 +399,7 @@ Python.")
                     "download/" version "/libbytesize-" version ".tar.gz"))
               (sha256
                (base32
-                "0h87ryi0mp8msq43h1cna453cqaw5knx1xaggfzm4fxvn8sjpapg"))))
+                "1871jpndh6m063rsnamyzhqr6lm6mzzf0c3mhb6b32g16xdfyynq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))
