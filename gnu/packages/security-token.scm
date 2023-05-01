@@ -999,7 +999,7 @@ phone is required.")
 (define-public libfido2
   (package
     (name "libfido2")
-    (version "1.12.0")
+    (version "1.13.0")
     (source
      (origin
        (method git-fetch)
@@ -1007,7 +1007,7 @@ phone is required.")
              (url "https://github.com/Yubico/libfido2")
              (commit version)))
        (file-name (git-file-name name version))
-       (sha256 (base32 "123rysl21bmgk6rmpgg5s21a5ksmxnn1hc32ws88h7z0q4icvj87"))))
+       (sha256 (base32 "18wfrgf9ijakmmdjfqw4jll5jpmydpg2mw7xh663ly04mkm8zfpj"))))
     (native-inputs (list pkg-config))
     (inputs (list eudev libcbor openssl zlib))
     (build-system cmake-build-system)
