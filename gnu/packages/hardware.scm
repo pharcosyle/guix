@@ -1391,52 +1391,50 @@ management, attestation, encryption, and signing.")
   ;; We need to remove blobs from the source, first we have to isolate the blob
   ;; source in build system.
   ;; See https://github.com/anrieff/libcpuid/pull/159.
-  (let ((commit "2e61160983f32ba840b2246d3c3850c44626ab0d")
-        (revision "1"))
-    (package
-      (name "libcpuid")
-      (version (git-version "0.5.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/anrieff/libcpuid")
-               (commit commit)))
-         (sha256
-          (base32 "1mphvkiqq6z33sq6i490fq27sbyylacwrf8bg7ccvpcjms208sww"))
-         (modules '((guix build utils)))
-         (snippet
-          ;; Now remove blobs.
-          #~(begin
-              (delete-file "libcpuid/msrdriver.c")
-              (delete-file-recursively "contrib/MSR Driver")))
-         (file-name (git-file-name name version))))
-      (build-system cmake-build-system)
-      (arguments
-       (list
-        #:configure-flags #~(list "-DLIBCPUID_TESTS=ON")
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'absolutize
-              (lambda* (#:key inputs #:allow-other-keys)
-                ;; Linux specific
-                (when #$(target-linux?)
-                  (substitute* "libcpuid/rdmsr.c"
-                    (("modprobe") (which "modprobe")))))))))
-      (inputs
-       (if (target-linux?)
-           (list kmod)
-           '()))
-      (native-inputs (list python-3))   ;required by tests
-      (supported-systems
-       (filter (lambda (t) (or (target-x86-64? t) (target-x86-32? t)))
-               %supported-systems))
-      (home-page "https://libcpuid.sourceforge.net/")
-      (synopsis "Small library for x86 CPU detection and feature extraction")
-      (description "Libcpuid is a small C library to get vendor, model, branding
+  (package
+    (name "libcpuid")
+    (version "0.6.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/anrieff/libcpuid")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0h5xyaisfix2wj9zi0n0d1b66i1x7qc3jbk8xfw4gdmrsjlhf6ln"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Now remove blobs.
+        #~(begin
+            (delete-file "libcpuid/msrdriver.c")
+            (delete-file-recursively "contrib/MSR Driver")))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags #~(list "-DLIBCPUID_TESTS=ON")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'absolutize
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Linux specific
+              (when #$(target-linux?)
+                (substitute* "libcpuid/rdmsr.c"
+                  (("modprobe") (which "modprobe")))))))))
+    (inputs
+     (if (target-linux?)
+         (list kmod)
+         '()))
+    (native-inputs (list python-3))   ;required by tests
+    (supported-systems
+     (filter (lambda (t) (or (target-x86-64? t) (target-x86-32? t)))
+             %supported-systems))
+    (home-page "https://libcpuid.sourceforge.net/")
+    (synopsis "Small library for x86 CPU detection and feature extraction")
+    (description "Libcpuid is a small C library to get vendor, model, branding
 string, code name and other information from x86 CPU. This library is not to be
 confused with the @code{cpuid} command line utility from package @code{cpuid}.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public liblxi
   (package
