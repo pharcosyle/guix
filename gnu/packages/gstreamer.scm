@@ -550,7 +550,8 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1ww9xx6c4mwvgn9k56d1xfnd3i1jm4v8rfiy4f07686ll24n4n8w"))))
+        "1ww9xx6c4mwvgn9k56d1xfnd3i1jm4v8rfiy4f07686ll24n4n8w"))
+      (patches (search-patches "gst-plugins-base-glib-2.76.1-fix.patch"))))
     (build-system meson-build-system)
     (propagated-inputs
      (list glib                     ;required by gstreamer-sdp-1.0.pc
@@ -589,7 +590,6 @@ This package provides the core library and elements.")
            xorg-server-for-tests))
     (arguments
      (list
-      #:tests? #f ; FIXME: Figure out why libs_allocators fails and re-enable.
       #:phases
       #~(modify-phases %standard-phases
           #$@%common-gstreamer-phases
