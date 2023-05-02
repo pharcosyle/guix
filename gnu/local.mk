@@ -1735,6 +1735,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
   %D%/packages/patches/nhc98-c-update.patch			\
   %D%/packages/patches/nix-dont-build-html-doc.diff		\
+  %D%/packages/patches/nix-fix-build-with-gcc-13.patch	\
   %D%/packages/patches/nfs4-acl-tools-0.3.7-fixpaths.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/network-manager-plugin-path.patch	\
