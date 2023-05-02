@@ -8669,7 +8669,7 @@ to virtual private networks (VPNs) via Fortinet SSLVPN.")
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
-    (version "20220725")
+    (version "20230416")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8678,7 +8678,7 @@ to virtual private networks (VPNs) via Fortinet SSLVPN.")
                     "mobile-broadband-provider-info-" version ".tar.xz"))
               (sha256
                (base32
-                "1k9acdnl4mr6aqh11xbklv2gyww82jddaqmw4aqdzwl7q80swia8"))))
+                "1v4aavwbf7rd8ln30cc8sga9kas8x68ai1nzs6cv4sdp5nm41qg3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
