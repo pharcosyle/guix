@@ -766,7 +766,19 @@ high-performance computing} clusters.")
                    bzip2
                    curl
                    editline
-                   libarchive
+                   ;; libarchive
+                   (package
+                     (inherit libarchive)
+                     (version "3.6.1")
+                     (source
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://github.com/libarchive/libarchive"
+                                            "/releases/download/v" version "/libarchive-"
+                                            version ".tar.xz"))
+                        (sha256
+                         (base32
+                          "1rj8q5v26lxxr8x4b4nqbrj7p06qvl91hb8cdxi3xx3qp771lhas")))))
                    libgc
                    libseccomp
                    libsodium
