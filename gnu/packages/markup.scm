@@ -143,9 +143,11 @@ convert it to structurally valid XHTML (or HTML).")
       #~(modify-phases %standard-phases
           (replace 'configure
             (lambda _
-              (invoke "./configure"
-                      (string-append "PREFIX=" #$output)
-                      (string-append "MANDIR=" #$output "/share/man")))))
+              (invoke "./configure" (string-append "PREFIX=" #$output))))
+          (replace 'install
+            (lambda _
+              (invoke "make" "install")
+              (invoke "make" "install_shared"))))
       #:make-flags #~(list "CFLAGS=-fPIC")))
     (native-inputs
      (list which))
