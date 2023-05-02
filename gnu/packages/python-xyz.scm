@@ -17015,13 +17015,13 @@ tutorial.")
 (define-public python-pythondialog
   (package
     (name "python-pythondialog")
-    (version "3.4.0")
+    (version "3.5.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pythondialog" version))
               (sha256
                (base32
-                "1728ghsran47jczn9bhlnkvk5bvqmmbihabgif5h705b84r1272c"))))
+                "08v3flvbhpc0p20drniiaalc3ijghlxk9ka5vz5mqqm6y254m8xj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
