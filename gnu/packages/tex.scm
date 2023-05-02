@@ -264,6 +264,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
        (sha256
         (base32
          "0jsq1p66l46k2qq0gbqmx25flj2nprsz4wrd1ybn286p11kdkvvs"))
+       (patches (search-patches "texlive-bin-fix-build-with-gcc-13.patch"))
        (modules '((guix build utils)
                   (ice-9 ftw)))
        (snippet
