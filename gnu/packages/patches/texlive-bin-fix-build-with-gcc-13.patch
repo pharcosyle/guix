@@ -1,0 +1,112 @@
+Add an explicit include for compatibility with GCC 13 (see "Header dependency
+changes" of https://gcc.gnu.org/gcc-13/porting_to.html).
+
+--- a/texk/dvisvgm/dvisvgm-src/src/Bitmap.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/Bitmap.hpp
+@@ -23,6 +23,7 @@
+ 
+ #include <ostream>
+ #include <vector>
++#include <cstdint>
+ 
+ 
+ class Bitmap {
+
+--- a/texk/dvisvgm/dvisvgm-src/src/StreamReader.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/StreamReader.hpp
+@@ -24,6 +24,7 @@
+ #include <istream>
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ #include "MessageException.hpp"
+ 
+ class HashFunction;
+
+--- a/texk/dvisvgm/dvisvgm-src/src/BasicDVIReader.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/BasicDVIReader.hpp
+@@ -21,6 +21,7 @@
+ #ifndef BASICDVIREADER_HPP
+ #define BASICDVIREADER_HPP
+ 
++#include <cstdint>
+ #include "Matrix.hpp"
+ #include "MessageException.hpp"
+ #include "StreamReader.hpp"
+
+--- a/texk/dvisvgm/dvisvgm-src/src/Color.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/Color.hpp
+@@ -24,6 +24,7 @@
+ #include <string>
+ #include <valarray>
+ #include <vector>
++#include <cstdint>
+ #include "VectorIterator.hpp"
+ 
+ #ifdef TRANSPARENT
+
+--- a/texk/dvisvgm/dvisvgm-src/src/Character.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/Character.hpp
+@@ -21,6 +21,7 @@
+ #ifndef CHARACTER_HPP
+ #define CHARACTER_HPP
+ 
++#include <cstdint>
+ 
+ class Character {
+ 	public:
+
+--- a/texk/dvisvgm/dvisvgm-src/src/RangeMap.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/RangeMap.hpp
+@@ -24,6 +24,7 @@
+ #include <algorithm>
+ #include <ostream>
+ #include <vector>
++#include <cstdint>
+ 
+ 
+ class RangeMap {
+
+--- a/texk/dvisvgm/dvisvgm-src/src/CMap.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/CMap.hpp
+@@ -24,6 +24,7 @@
+ #include <algorithm>
+ #include <ostream>
+ #include <vector>
++#include <cstdint>
+ #include "FontEncoding.hpp"
+ #include "RangeMap.hpp"
+ 
+
+--- a/texk/dvisvgm/dvisvgm-src/src/InputBuffer.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/InputBuffer.hpp
+@@ -23,6 +23,7 @@
+ 
+ #include <algorithm>
+ #include <cstring>
++#include <cstdint>
+ #include <istream>
+ #include <string>
+ #include <ostream>
+
+--- a/texk/dvisvgm/dvisvgm-src/src/FileSystem.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/FileSystem.hpp
+@@ -23,6 +23,7 @@
+ 
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ 
+ class FileSystem {
+ 	class TemporaryDirectory {
+
+--- a/texk/dvisvgm/dvisvgm-src/src/Unicode.hpp
++++ b/texk/dvisvgm/dvisvgm-src/src/Unicode.hpp
+@@ -21,6 +21,7 @@
+ #ifndef UNICODE_HPP
+ #define UNICODE_HPP
+ 
++#include <cstdint>
+ #include <string>
+ 
+ struct Unicode {
