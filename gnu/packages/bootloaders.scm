@@ -127,7 +127,10 @@
        ;; Counterintuitively, this *disables* a spurious Python dependency by
        ;; calling the ‘true’ binary instead.  Python is only needed during
        ;; bootstrapping (for genptl.py), not when building from a release.
-       (list "PYTHON=true")
+       (list "PYTHON=true"
+             ;; With GCC 12 there are danging pointer warnings that become
+             ;; errors and fail the build.
+             "--disable-werror")
        ;; Grub fails to load modules stripped with --strip-unneeded.
        #:strip-flags '("--strip-debug" "--enable-deterministic-archives")
        #:phases
@@ -226,8 +229,7 @@
        ;; ("libusb" ,libusb)
        ("ncurses" ,ncurses)))
     (native-inputs
-     `(("gcc@11" ,gcc-11) ; Currently fails to build on newer versions of GCC.
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("unifont" ,unifont)
        ("bison" ,bison)
        ("flex" ,flex)
