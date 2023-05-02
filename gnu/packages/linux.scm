@@ -7445,6 +7445,12 @@ under OpenGL graphics workloads.")
                            ;; Don't use -march=native.
                            (("-march=native")
                             ""))))
+                     ;; With GCC 13 there are enum/integer mismatch warnings
+                     ;; that become errors and fail the build.
+                     (add-after 'unpack 'remove-werror
+                       (lambda _
+                         (substitute* "src/include/defaults.mk"
+                           (("-Werror") ""))))
                      (delete 'configure))))
       (native-inputs (list mandoc pkg-config))
       (inputs (list popt))
