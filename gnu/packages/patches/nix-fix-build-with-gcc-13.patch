@@ -1,0 +1,13 @@
+Add an explicit include for compatibility with GCC 13 (see "Header dependency
+changes" of https://gcc.gnu.org/gcc-13/porting_to.html).
+
+--- a/src/libutil/json.cc
++++ b/src/libutil/json.cc
+@@ -2,6 +2,7 @@
+ 
+ #include <iomanip>
+ #include <cstring>
++#include <cstdint>
+ 
+ namespace nix {
+ 
