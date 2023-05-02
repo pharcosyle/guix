@@ -1239,40 +1239,32 @@ For information about libevdev, see:
 (define-public python-pyxdg
   (package
     (name "python-pyxdg")
-    (version "0.27")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyxdg" version))
        (sha256
         (base32
-         "19f5j5mxp7ff0vp33s32qbpdi65iiwha0bj641gl70pdwnm97gc0"))))
+         "1d48bqwkbnpid80cpwz6h62i112laxl0ivpj58hdyd79fhqbnrrj"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "XDG_DATA_DIRS"
-                     (string-append (assoc-ref inputs "shared-mime-info")
-                                    "/share/"))
-             (substitute* "test/test-icon.py"
-               (("/usr/share/icons/hicolor/index.theme")
-                (string-append (assoc-ref inputs "hicolor-icon-theme")
-                               "/share/icons/hicolor/index.theme")))
-
-             ;; These two tests are known to fail in strange ways.
-             (substitute* "test/test-mime.py"
-               (("def test_get_type\\(self") "def _test_get_type(self")
-               (("def test_get_type2\\(self") "def _test_get_type2(self"))
-
-             ;; There are test files not shipped in the release tarball
-             (substitute* "test/test-icon.py"
-               (("def test_validate_icon_theme") "def _test_validate_icon_theme"))
-             (invoke "nosetests" "-v"))))))
+           (lambda* (#:key tests? inputs #:allow-other-keys)
+             (when tests?
+               (setenv "XDG_DATA_DIRS"
+                       (string-append (assoc-ref inputs "shared-mime-info")
+                                      "/share/"))
+               ;; These two tests are known to fail in strange ways.
+               (substitute* "test/test_mime.py"
+                 (("def test_get_type\\(self") "def _test_get_type(self")
+                 (("def test_get_type2\\(self") "def _test_get_type2(self"))
+               (invoke "pytest" "-vv" "test")))))))
     (native-inputs
      ;; For tests.
-     (list shared-mime-info hicolor-icon-theme python-nose))
+     (list shared-mime-info python-pytest))
     (home-page "https://www.freedesktop.org/wiki/Software/pyxdg")
     (synopsis "Implementations of freedesktop.org standards in Python")
     (description
