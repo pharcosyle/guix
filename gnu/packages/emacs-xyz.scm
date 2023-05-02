@@ -27051,7 +27051,7 @@ files are easily readable and they work nicely with version control systems.")
     (native-inputs
      (list emacs-f emacs-ert-runner))
     (propagated-inputs
-     (list emacs-f emacs-memoize font-awesome font-google-material-design-icons))
+     (list emacs-f emacs-memoize))
     (home-page "https://github.com/domtronn/all-the-icons.el")
     (synopsis "Collect icon fonts and propertize them within Emacs")
     (description
