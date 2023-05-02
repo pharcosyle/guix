@@ -13448,9 +13448,7 @@ for OER and UPER.")
        (sha256
         (base32
          "1d1cs1in0lmm61sjmlach9qvyq3xm3xcb49vhclx7mzain754kw1"))))
-    (build-system pyproject-build-system)
-    (native-inputs
-     (list python-flit-core))
+    (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
     (description
@@ -13462,6 +13460,13 @@ suitable drop-in replacement for the “encodings.idna” module that comes with
 the Python standard library but currently only supports the older 2003
 specification.")
     (license license:bsd-4)))
+
+(define-public python-idna-pyproject
+  (package
+    (inherit python-idna)
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-flit-core))))
 
 (define-public python-libsass
   (package

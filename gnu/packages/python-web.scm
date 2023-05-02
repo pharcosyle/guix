@@ -3018,7 +3018,7 @@ APIs.")
     (propagated-inputs
      (list python-certifi
            python-charset-normalizer
-           python-idna
+           python-idna-pyproject
            python-urllib3))
     (arguments
      ;; FIXME: Some tests require network access.
