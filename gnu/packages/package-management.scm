@@ -735,7 +735,8 @@ high-performance computing} clusters.")
        (sha256
         (base32 "1m8rmv8i6lg83pmalvjlq1fn8mcghn3ngjv3kw1kqsa45ymj5sqq"))
        (patches
-        (search-patches "nix-dont-build-html-doc.diff"))))
+        (search-patches "nix-dont-build-html-doc.diff"
+                        "nix-fix-build-with-gcc-13.patch"))))
     (build-system gnu-build-system)
     (arguments
      (list
