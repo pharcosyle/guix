@@ -227,14 +227,14 @@ Python 3.3 and later, rather than on Python 2.")
 (define-public git
   (package
    (name "git")
-   (version "2.40.0")
+   (version "2.40.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0vgl7digyi2hidq8nl812bgq9m5jjgmnax2p7gqrwwjqpy7mjymi"))
+              "1li1xwgiwccy88bkshsah2kzl1006jg29jp7n32gvjggiswvi4s8"))
             (patches (search-patches "git-header-cmd.patch"))))
    (build-system gnu-build-system)
    (native-inputs
@@ -679,14 +679,14 @@ everything from small to very large projects with speed and efficiency.")
 (define-public git-minimal/pinned
   ;; Version that rarely changes, depended on by Graphene/GTK+.
   (package/inherit git-minimal
-    (version "2.40.0")
+    (version "2.40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vgl7digyi2hidq8nl812bgq9m5jjgmnax2p7gqrwwjqpy7mjymi"))))))
+                "1li1xwgiwccy88bkshsah2kzl1006jg29jp7n32gvjggiswvi4s8"))))))
 
 (define-public git2cl
   (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
