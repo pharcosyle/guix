@@ -942,6 +942,7 @@ Language.")
               (sha256
                (base32
                 "1p3ivh43zfn03w7yxxkrl7k50c8jiawkw80x5ay6h3zdrbhdx28w"))
+              (patches (search-patches "mariadb-fix-build-with-gcc-13.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
