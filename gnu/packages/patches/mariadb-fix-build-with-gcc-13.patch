@@ -1,0 +1,68 @@
+Add an explicit include for compatibility with GCC 13 (see "Header dependency
+changes" of https://gcc.gnu.org/gcc-13/porting_to.html).
+
+--- a/tpool/aio_linux.cc
++++ b/tpool/aio_linux.cc
+@@ -18,6 +18,7 @@
+ 
+ # include <thread>
+ # include <atomic>
++# include <cstdio>
+ # include <libaio.h>
+ # include <sys/syscall.h>
+ 
+
+--- a/tpool/aio_liburing.cc
++++ b/tpool/aio_liburing.cc
+@@ -24,6 +24,7 @@
+ #include <vector>
+ #include <thread>
+ #include <mutex>
++#include <stdexcept>
+ 
+ namespace
+ {
+
+--- a/storage/rocksdb/rocksdb/db/compaction/compaction_iteration_stats.h
++++ b/storage/rocksdb/rocksdb/db/compaction/compaction_iteration_stats.h
+@@ -5,6 +5,7 @@
+ 
+ #pragma once
+ 
++#include <cstdint>
+ #include "rocksdb/rocksdb_namespace.h"
+ 
+ struct CompactionIterationStats {
+
+--- a/storage/rocksdb/rocksdb/table/block_based/data_block_hash_index.h
++++ b/storage/rocksdb/rocksdb/table/block_based/data_block_hash_index.h
+@@ -7,6 +7,7 @@
+ 
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ 
+ #include "rocksdb/slice.h"
+ 
+
+--- a/storage/rocksdb/rocksdb/util/string_util.h
++++ b/storage/rocksdb/rocksdb/util/string_util.h
+@@ -10,6 +10,7 @@
+ #include <string>
+ #include <unordered_map>
+ #include <vector>
++#include <cstdint>
+ 
+ #include "rocksdb/rocksdb_namespace.h"
+ 
+
+--- a/storage/rocksdb/rocksdb/include/rocksdb/utilities/checkpoint.h
++++ b/storage/rocksdb/rocksdb/include/rocksdb/utilities/checkpoint.h
+@@ -10,6 +10,7 @@
+ 
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ #include "rocksdb/status.h"
+ 
+ namespace ROCKSDB_NAMESPACE {
