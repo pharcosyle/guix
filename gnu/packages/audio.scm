@@ -412,7 +412,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.6.9")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
@@ -420,7 +420,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "0nkfgg7kyg4d0l464m160wzd8y2x4lgx7ga1mnfgmh3xpdd9g7j7"))))
+        (base32 "1lf6vkg3hlfyr1mxxnn2gzpg8yqx7z9navkskjqclwzgbasrc5s1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
