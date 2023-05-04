@@ -255,7 +255,7 @@ Python 3.3 and later, rather than on Python 2.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0vimqd168d29c1a44jp15smc4gf7hddkabnp7xg02w3k2g7swrjp"))))
+            "04yy5za8963q6xzrirflvxbi1216jzqj8ssvgd9nkld3ifa9q1gy"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook2x" ,docbook2x)
