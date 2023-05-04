@@ -4220,7 +4220,7 @@ portions of LAME.")
     ;; Autoreconf is necessary because the audacity-compat patch modifies .in
     ;; files.
     (native-inputs
-     (list autoconf automake libtool pkg-config))
+     (list autoconf-2.69 automake libtool pkg-config))
     (arguments
      '(#:tests? #f                      ;no 'check' target
        #:parallel-build? #f             ;fails on some systems
