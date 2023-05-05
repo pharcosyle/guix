@@ -436,7 +436,18 @@ the Core 2 Duo.")
          (commit (string-append "intel-" name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18mrqringyv1drswm4m8ppw7sks6x4jzp6s0ag0h9hrpd15kn5rx"))))
+        (base32 "18mrqringyv1drswm4m8ppw7sks6x4jzp6s0ag0h9hrpd15kn5rx"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/Intel-Media-SDK/MediaSDK/commit/"
+                 "a4f37707c1bfdd5612d3de4623ffb2d21e8c1356.patch"))
+           (file-name (string-append name "-gcc-13-fix.patch"))
+           (sha256
+            (base32
+             "0qdcdrsyc9rdwr4d67xhihna5hi4h4lw4v2c5a3h87bdh50ii1hd")))))))
     (build-system cmake-build-system)
     (arguments
      (list
