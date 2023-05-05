@@ -19739,15 +19739,15 @@ from the header, as well as section details and data available.")
 (define-public python-imagesize
   (package
     (name "python-imagesize")
-    (version "1.2.0")
+    (version "1.4.1")
     (source
       (origin
       (method url-fetch)
       (uri (pypi-uri "imagesize" version))
       (sha256
        (base32
-        "1cd24x0vqbd6c8ym1n21qc0aj54mfb7rzdqglmwk9xxixajbbxmi"))))
-    (build-system python-build-system)
+        "0jndjx26p8qibrx997p3kb6vfbqbdxkv74jsrkav177vmx2085b9"))))
+    (build-system pyproject-build-system)
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in various formats in Python")
     (description
