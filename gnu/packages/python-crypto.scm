@@ -467,14 +467,14 @@ for example, for recording or replaying web content.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2022.6.15")
+    (version "2022.12.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "03c2l11lgljx0kz17cvdc4hlc3p1594ajdih9zq0a4dig285mj44"))))
-    (build-system python-build-system)
+                "1qx9a09rssb1fa6jwmpn332irnqlm9j4v108nij5j4cp7964p0im"))))
+    (build-system pyproject-build-system)
     (arguments '(#:tests? #f))          ;no tests
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
