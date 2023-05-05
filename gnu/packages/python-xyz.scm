@@ -15515,14 +15515,14 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 (define-public python-pyasn1-modules
   (package
     (name "python-pyasn1-modules")
-    (version "0.2.8")
+    (version "0.3.0")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "pyasn1-modules" version))
+        (uri (pypi-uri "pyasn1_modules" version))
         (sha256
          (base32
-          "0pp6dcagd8c2c9qx3lahc1rdwlnmm0y0siqr5icjq2r32b3q8pwh"))))
+          "07334nclpd9yq2jayg3gdikmsff339nd8c1aa4qrvsrnnx319l2v"))))
     (build-system python-build-system)
     (propagated-inputs
      (list python-pyasn1))
