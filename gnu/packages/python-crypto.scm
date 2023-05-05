@@ -1452,13 +1452,13 @@ items and collections, editing items, locking and unlocking collections
 (define-public python-trustme
   (package
     (name "python-trustme")
-    (version "0.9.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trustme" version))
        (sha256
-        (base32 "0v2qzszmyazfgc1snicdr4b4qdajpjd4pbinpgrn9vfff0yv41sy"))))
+        (base32 "0mbzh19wqyxscv5c6dnlmm37cf6a1kcrmh99vip514c0w87hnkqx"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list python-more-itertools
