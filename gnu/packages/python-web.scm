@@ -2502,15 +2502,15 @@ connection to each user.")
 (define-public python-tornado-6
   (package
     (name "python-tornado")
-    (version "6.2")
+    (version "6.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado" version))
        (sha256
         (base32
-         "04rwzjfqa31ajz8vvkfcsp1539m8n960msnppxkcckp8plch8qwv"))))
-    (build-system python-build-system)
+         "1bqqb4dnsw4wnr977wiw7a2acr2dq7jxfbg4a1y9b58m6ynljbsy"))))
+    (build-system pyproject-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2518,7 +2518,7 @@ connection to each user.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (setenv "ASYNC_TEST_TIMEOUT" "25")   ; Like in tox.ini.
-               (invoke "python" "-m" "tornado.test.runtests")))))))
+               (invoke "python" "-m" "tornado.test")))))))
     (native-inputs
      (list python-certifi))
     (home-page "https://www.tornadoweb.org/")
