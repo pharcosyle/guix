@@ -63,28 +63,36 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "5.1.1")
+    (version "5.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "12cdy3m5c09lpf2bbxzbhm5v5y9fk7jgm94qrzggpq86waj28cms"))))
-    (build-system python-build-system)
+         "1dclwwz5rsvlw5rzyad1ar7i0zh4csni6jfp0lyc37zzm7h6s0ji"))))
+    (build-system pyproject-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               ;; Requires Internet access.
-               (delete-file "tests/test_build_linkcheck.py")
-               (substitute* "tests/test_build_latex.py"
-                 (("@pytest.mark.sphinx\\('latex', testroot='images'\\)")
-                  "@pytest.mark.skip()"))
-               (setenv "HOME" "/tmp")   ;for test_cython
-               (invoke "make" "test")))))))
+         (add-after 'unpack 'disable-tests
+           (lambda _
+             ;; Requires Internet access.
+             (delete-file "tests/test_build_linkcheck.py")
+             (substitute* "tests/test_build_latex.py"
+               (("@pytest.mark.sphinx\\('latex', testroot='images'\\)")
+                "@pytest.mark.skip()"))
+
+             ;; Fail with Pygments >= 2.14. Apparently they should succeed
+             ;; again in Sphinx 6 to try removing this when updating.
+             (substitute* "tests/test_ext_viewcode.py"
+               (("def test_viewcode\\(" all)
+                (string-append "@pytest.mark.skip()" "\n" all)))
+             (substitute* "tests/test_intl.py"
+               (("def test_additional_targets_should_be_translated" all)
+                (string-append "@pytest.mark.skip()" "\n" all))
+               (("def test_additional_targets_should_not_be_translated" all)
+                (string-append "@pytest.mark.skip()" "\n" all))))))))
     (propagated-inputs
      (list python-babel
            python-docutils
@@ -137,7 +145,8 @@
      (list imagemagick                  ;for "convert"
            python-cython
            python-html5lib
-           python-pytest))
+           python-pytest
+           python-flit-core))
     (home-page "https://www.sphinx-doc.org")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
