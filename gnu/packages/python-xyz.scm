@@ -13448,7 +13448,9 @@ for OER and UPER.")
        (sha256
         (base32
          "1d1cs1in0lmm61sjmlach9qvyq3xm3xcb49vhclx7mzain754kw1"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-flit-core))
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
     (description
