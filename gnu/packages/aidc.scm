@@ -46,29 +46,29 @@
   #:use-module (guix build-system gnu))
 
 (define-public zxing-cpp
-  ;; Use the master branch as it includes unreleased build system improvements
-  ;; allowing to use system libraries (instead of attempting to fetch them
-  ;; from the Internet).
-  (let ((revision "0")
-        (commit "00783db7aa3bcf8620a301854ac71c0ceaaca0c1"))
-    (package
-      (name "zxing-cpp")
-      (version (git-version "1.2.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/nu-book/zxing-cpp")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1yl2cpaqiv1g4nq9v0xfj1vd5faz55k4541vz6hsffvcxgn9nmc5"))))
-      (build-system cmake-build-system)
-      (native-inputs (list fmt-8 googletest))
-      (synopsis "C++ port of ZXing")
-      (description "ZXing-CPP is a barcode scanning library.")
-      (home-page "https://github.com/nu-book/zxing-cpp")
-      (license license:asl2.0))))
+  (package
+    (name "zxing-cpp")
+    (version "2.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nu-book/zxing-cpp")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ndyv2s7ldlz15xiww6kpg9rmys3v8lx9w3a78by6gscv0wx20v7"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags #~'("-DBUILD_EXAMPLES=off"
+                            "-DBUILD_UNIT_TESTS=on")))
+    (native-inputs
+     (list googletest))
+    (synopsis "C++ port of ZXing")
+    (description "ZXing-CPP is a barcode scanning library.")
+    (home-page "https://github.com/nu-book/zxing-cpp")
+    (license license:asl2.0)))
 
 ;;; This older variant is kept for gst-plugins-bad (see:
 ;;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1684).
