@@ -1608,7 +1608,7 @@ message bus.")
 (define-public accountsservice
   (package
     (name "accountsservice")
-    (version "22.08.8")
+    (version "23.13.9")
     (source
      (origin
        (method url-fetch)
@@ -1616,7 +1616,7 @@ message bus.")
                            "accountsservice/accountsservice-"
                            version ".tar.xz"))
        (sha256
-        (base32 "14d3lwik048h62qrzg1djdd2sqmxf3m1r859730pvzhrd6krg6ch"))
+        (base32 "0kwjkff5m7gnzpns6cy27az90w7sxzwzygyzwy90kyi4mvg4rnmd"))
        (patches (search-patches "accountsservice-extensions.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -1645,6 +1645,11 @@ message bus.")
                 (search-input-file inputs "bin/passwd"))
                (("/usr/bin/chage")
                 (search-input-file inputs "bin/chage")))))
+         (add-before 'check 'set-locales
+           ;; tests/test-daemon.py fails without this.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "GUIX_LOCPATH"
+                     (search-input-directory inputs "lib/locale"))))
          (add-after 'install 'wrap-with-xdg-data-dirs
            ;; This is to allow accountsservice finding extensions, which
            ;; should be installed to the system profile.
@@ -1668,7 +1673,8 @@ message bus.")
            ;; For the tests.
            python
            python-dbusmock
-           python-pygobject))
+           python-pygobject
+           glibc-locales))
     (inputs
      (list bash-minimal
            coreutils-minimal
