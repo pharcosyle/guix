@@ -1235,7 +1235,7 @@ Powerline support.")
 (define-public font-adobe-source-code-pro
   (package
     (name "font-adobe-source-code-pro")
-    (version "2.038R-ro-1.058R-it-1.018R-VAR")
+    (version "2.042R-u-1.062R-i-1.026R-vf")
     (source
      (origin
        (method git-fetch)
@@ -1244,12 +1244,12 @@ Powerline support.")
              (commit (regexp-substitute/global
                       ;; The upstream tag uses "/" between the roman and italic
                       ;; versions, so substitute our "-" separator here.
-                      #f "((R-ro)|(R-it))(-)" version
+                      #f "((R-u)|(R-i))(-)" version
                       'pre 1 "/" 'post
                       ))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00h4v3rmxyyaxni6nywacxvjnji2g2pi0b4js1yx0g67fvrv2gag"))))
+        (base32 "0mir6yi5i0h1kk6fr8dsqmv4m8cwrbldadpy7rnlyvkd26wdqpiy"))))
     (build-system font-build-system)
     (home-page "https://github.com/adobe-fonts/source-code-pro")
     (synopsis
