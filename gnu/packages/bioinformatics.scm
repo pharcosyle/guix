@@ -8627,8 +8627,7 @@ selection, etc.).")
                (("^rm -f mafft-distance mafft-distance.exe") ")#")
                ;; do not install MAN pages in libexec folder
                (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
-\\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))
-             #t))
+\\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))))
          (add-after 'enter-dir 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("pairash.c"
@@ -8636,8 +8635,7 @@ selection, etc.).")
                (("perl") (which "perl"))
                (("([\"`| ])awk" _ prefix)
                 (string-append prefix (which "awk")))
-               (("grep") (which "grep")))
-             #t))
+               (("grep") (which "grep")))))
          (delete 'configure)
          (add-after 'install 'wrap-programs
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -8650,7 +8648,7 @@ selection, etc.).")
                              `("PATH" ":" prefix (,path))))
                          (find-files bin))))))))
     (inputs
-     (list perl ruby gawk grep coreutils))
+     (list bash-minimal perl ruby gawk grep coreutils))
     (home-page "https://mafft.cbrc.jp/alignment/software/")
     (synopsis "Multiple sequence alignment program")
     (description
