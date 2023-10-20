@@ -19564,7 +19564,8 @@ includes a command line tool and an analysis pipeline.")
                 (wrap-program (string-append bin "/draw_fusions.R")
                   `("R_LIBS_SITE" ":" prefix (,(getenv "R_LIBS_SITE"))))))))))
     (inputs
-     (list htslib
+     (list bash-minimal
+           htslib
            r-minimal
            r-circlize
            r-genomicalignments
