@@ -22,6 +22,7 @@
 
 (define-module (gnu packages skarnet)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -42,14 +43,17 @@
     (arguments
      '(#:tests? #f                      ; no tests exist
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'reproducible
+                  (add-after 'unpack 'patch
                     (lambda _
+                      ;; This umask makes the symlinks in lib readable on
+                      ;; i586-gnu
+                      (substitute* "tools/install.sh"
+                        (("umask 077") "umask 033"))
                       ;; Sort source files deterministically so that the *.a
                       ;; and *.so files are reproducible.
                       (substitute* "Makefile"
                         (("\\$\\(wildcard src/lib\\*/\\*.c\\)")
                          "$(sort $(wildcard src/lib*/*.c))")))))))
-    (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://skarnet.org/software/skalibs/")
     (synopsis "Platform abstraction libraries for skarnet.org software")
     (description
@@ -71,7 +75,7 @@ and file system operations.  It is used by all skarnet.org software.")
       (sha256
        (base32 "1393xka069n3rvc3dlg6c3ckzl1qgqkhvhlcxv6igl9216kpy0n8"))))
     (build-system gnu-build-system)
-    (inputs (list skalibs))
+    (inputs (list bash-minimal skalibs))
     (arguments
      '(#:configure-flags (list
                           (string-append "--with-lib="

@@ -257,7 +257,8 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list glib-networking
+     (list bash-minimal
+           glib-networking
            gsettings-desktop-schemas
            gtk+
            lua-5.1
@@ -368,14 +369,13 @@ systems intended primarily for local access.")
              ;; Contains executable of 7z and pscp
              (delete-file-recursively "ci/tools")
              ;; Remove bundled fonts
-             (delete-file-recursively "src/fonts")
-             #t))))
+             (delete-file-recursively "src/fonts")))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
                     (guix build qt-utils)
                     (guix build utils))
-         #:imported-modules (,@%gnu-build-system-modules
+         #:imported-modules (,@%default-gnu-imported-modules
                              (guix build qt-utils))
          #:make-flags
          (list (string-append "PREFIX=" %output))
@@ -389,22 +389,21 @@ systems intended primarily for local access.")
                ;; Patch it to just return the real version number directly.
                (substitute* "src/kristall.pro"
                  (("(KRISTALL_VERSION=).*" _ match)
-                  (string-append match ,version "\n")))
-               #t))
+                  (string-append match ,version "\n")))))
            (add-before 'build 'dont-use-bundled-cmark
              (lambda _
                (substitute* "src/kristall.pro"
                  (("(^include\\(.*cmark.*)" _ match)
                   (string-append
-                   "LIBS += -I" (assoc-ref %build-inputs "cmark") " -lcmark")))
-               #t))
+                   "LIBS += -I" (assoc-ref %build-inputs "cmark")
+                   " -lcmark")))))
            (add-before 'build 'dont-use-bundled-breeze-stylesheet
              (lambda _
                (substitute* "src/kristall.pro"
                  (("../lib/BreezeStyleSheets/breeze.qrc")
                   (string-append
-                   (assoc-ref %build-inputs "breeze-stylesheet") "/breeze.qrc")))
-               #t))
+                   (assoc-ref %build-inputs "breeze-stylesheet")
+                   "/breeze.qrc")))))
            (add-before 'build 'dont-use-bundled-fonts
              (lambda _
                (substitute* "src/kristall.pro"
@@ -417,8 +416,7 @@ systems intended primarily for local access.")
                  (("/fonts/NotoColorEmoji")
                   (string-append
                    (assoc-ref %build-inputs "font-google-noto")
-                   "/share/fonts/truetype/NotoColorEmoji")))
-               #t))
+                   "/share/fonts/truetype/NotoColorEmoji")))))
            (add-after 'install 'wrap-program
              (lambda* (#:key outputs inputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -440,7 +438,8 @@ systems intended primarily for local access.")
                 (base32
                  "1kvkxkisi3czldnb43ig60l55pi4a3m2a4ixp7krhpf9fc5wp294")))))))
       (inputs
-       (list cmark
+       (list bash-minimal
+             cmark
              font-google-noto
              font-openmoji
              openssl
@@ -609,13 +608,11 @@ driven and does not detract you from your daily work.")
          (delete 'configure)
          (add-before 'build 'fix-common-lisp-cache-folder
            (lambda _
-             (setenv "HOME" "/tmp")
-             #t))
+             (setenv "HOME" "/tmp")))
          (add-before 'check 'configure-tests
            (lambda _
              (setenv "NYXT_TESTS_NO_NETWORK" "1")
-             (setenv "NYXT_TESTS_ERROR_ON_FAIL" "1")
-             #t))
+             (setenv "NYXT_TESTS_ERROR_ON_FAIL" "1")))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin/nyxt"))
@@ -637,10 +634,10 @@ driven and does not detract you from your daily work.")
                    (,(string-append glib-networking "/lib/gio/modules")))
                  `("GI_TYPELIB_PATH" prefix (,gi-path))
                  `("LD_LIBRARY_PATH" ":" prefix (,path))
-                 `("XDG_DATA_DIRS" ":" prefix (,xdg-path)))
-               #t))))))
+                 `("XDG_DATA_DIRS" ":" prefix (,xdg-path)))))))))
     (native-inputs (list cl-lisp-unit2 sbcl))
-    (inputs (list sbcl-alexandria
+    (inputs (list bash-minimal
+                  sbcl-alexandria
                   sbcl-bordeaux-threads
                   sbcl-calispel
                   sbcl-cl-base64

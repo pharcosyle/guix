@@ -407,7 +407,7 @@ interface and is based on GNU Guile.")
 (define-public swineherd
   (package
     (name "swineherd")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -416,7 +416,7 @@ interface and is based on GNU Guile.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0il1ikaj478n7xs4vqgawbshvmwq3nd0gp235mwqvmf4knra6j3g"))))
+                "0iij1pl0y410k1dk1ifa56dxmjb1blv0y3k5rxy794gwg6w6c480"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")
@@ -512,9 +512,10 @@ inspired by @command{vi}.")
                               (list "bin/readlink"
                                     "sbin/sfdisk")))))))))))
     (inputs
-     (list coreutils                    ; for readlink
+     (list bash-minimal                 ;for wrap-program
+           coreutils                    ;for readlink
            python
-           util-linux))                 ; sfdisk for growpart
+           util-linux))                 ;sfdisk for growpart
     (home-page "https://launchpad.net/cloud-utils")
     (synopsis "Set of utilities for cloud computing environments")
     (description
@@ -1777,8 +1778,7 @@ by bandwidth they use.")
              (substitute* (list "lib/App/ClusterSSH/Config.pm"
                                 "t/15config.t")
                (("xterm")
-                (which "xterm")))
-             #t))
+                (which "xterm")))))
          (add-before 'check 'delete-failing-tests
            (lambda _
              ;; This checks whether all code is nicely formatted.  The above
@@ -1786,8 +1786,7 @@ by bandwidth they use.")
              (delete-file "t/perltidy.t")
              ;; Update the manifest so t/manifest.t happily passes.
              (substitute* "MANIFEST"
-               (("t/perltidy.t\n") ""))
-             #t))
+               (("t/perltidy.t\n") ""))))
          (add-after 'install 'augment-library-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1812,8 +1811,7 @@ by bandwidth they use.")
                                                "perl-try-tiny"
                                                "perl-x11-protocol"
                                                "perl-x11-protocol-other")))))))
-                  (find-files "." ".*")))
-               #t))))))
+                  (find-files "." ".*")))))))))
     (native-inputs
      (list perl-cpan-changes
            perl-file-slurp
@@ -1828,7 +1826,8 @@ by bandwidth they use.")
            perl-test-trap
            perltidy))
     (inputs
-     (list perl-exception-class
+     (list bash-minimal                 ;for wrap-program
+           perl-exception-class
            perl-sort-naturally
            perl-tk
            perl-try-tiny
@@ -1917,10 +1916,10 @@ realms/domains like Active Directory or IPA.")
                     (wrap-program program
                       `("PERL5LIB" ":" prefix
                         (,(string-append out "/lib/perl5/site_perl")))))
-                  (find-files "." ".*")))
-               #t))))))
+                  (find-files "." ".*")))))))))
     (native-inputs
      (list perl-module-build perl-test-pod perl-test-pod-coverage))
+    (inputs (list bash-minimal))        ;for wrap-program
     (home-page "https://metacpan.org/pod/distribution/File-Rename/rename.PL")
     (synopsis "Perl extension for renaming multiple files")
     (description
@@ -3429,7 +3428,8 @@ rules is done with the @code{auditctl} utility.")
        ;; Nmap can't cope with out-of-source building.
        #:out-of-source? #f))
     (inputs
-     (list libpcap
+     (list bash-minimal                 ;for wrap-program
+           libpcap
            lua
            openssl-3.0
            pcre
@@ -3465,26 +3465,26 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
                                 "dstat-skip-devices-without-io.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no make check
-       #:make-flags
-       (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-python3-DeprecationWarning
-           (lambda _
-             (substitute* "dstat"
-               (("collections") "collections.abc"))
-             #t))
-         (delete 'configure)            ; no configure script
-         (add-after 'install 'wrap
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/dstat")
-                 `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH"))))
-               #t))))))
+     (list
+      #:tests? #f                       ; no make check
+      #:make-flags
+      #~(list (string-append "prefix=" #$output))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-python3-DeprecationWarning
+            (lambda _
+              (substitute* "dstat"
+                (("collections") "collections.abc"))))
+          (delete 'configure)           ; no configure script
+          (add-after 'install 'wrap
+            (lambda _
+              (wrap-program (string-append #$output "/bin/dstat")
+                `("GUIX_PYTHONPATH" ":" prefix
+                  (,(getenv "GUIX_PYTHONPATH")))))))))
     (inputs
-     `(("python" ,python-wrapper)
-       ("python-six" ,python-six)))
+     (list bash-minimal                 ;for wrap-program
+           python-wrapper
+           python-six))
     (synopsis "Versatile resource statistics tool")
     (description "Dstat is a versatile replacement for @command{vmstat},
 @command{iostat}, @command{netstat}, and @command{ifstat}.  Dstat overcomes

@@ -139,6 +139,7 @@ program to exhibit a bug.")
     (native-inputs (list flex))
     (inputs
      `(("astyle"          ,astyle)
+       ("bash"            ,bash-minimal) ; for wrap-program
        ("llvm"            ,llvm-9)
        ("clang"           ,clang-9)
        ("indent"          ,indent)
@@ -585,7 +586,8 @@ input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
            automake
            autoconf))
     (inputs
-     (list readline))
+     (list bash-minimal
+           readline))
     (propagated-inputs
      (list python-pygobject))
     (home-page "https://github.com/scanmem/scanmem")
@@ -627,7 +629,7 @@ error reporting, better tracing, profiling, and a debugger.")
 (define-public rr
   (package
     (name "rr")
-    (version "5.6.0")
+    (version "5.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -635,7 +637,7 @@ error reporting, better tracing, profiling, and a debugger.")
                     (commit version)))
               (sha256
                (base32
-                "0sdpsd7bcbmx9gmp7lv71znzxz708wm8qxq5apbyc6hh80z4fzqz"))
+                "0y50gynh3bb28vsxspn0g71b0m1mmqdgs63pbq08sv7vps35nllz"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments

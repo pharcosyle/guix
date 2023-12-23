@@ -13,6 +13,8 @@
 ;;; Copyright © 2021 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2022 Greg Hogan <code@greghogan.com>
+;;; Copyright © 2023 Bruno Victal <mirai@makinata.eu>
+;;; Copyright © 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +51,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
+  #:use-module (guix search-paths)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
@@ -127,7 +130,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
             (list 'quasiquote
                   (append
                    '("--enable-plugin"
-                     "--enable-languages=c,c++"
+                     "--enable-languages=c,c++,objc,obj-c++"
                      "--disable-multilib"
                      "--with-system-zlib"
 
@@ -362,25 +365,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (substitute* "Makefile"
                   (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
                    "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))))))
-
-       (native-search-paths
-        ;; Use the language-specific variables rather than 'CPATH' because they
-        ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
-        ;; The intent is to allow headers that are in the search path to be
-        ;; treated as "system headers" (headers exempt from warnings) just like
-        ;; the typical /usr/include headers on an FHS system.
-        (list (search-path-specification
-               (variable "C_INCLUDE_PATH")
-               (files '("include")))
-              (search-path-specification
-               (variable "CPLUS_INCLUDE_PATH")
-               ;; Add 'include/c++' here so that <cstdlib>'s "#include_next
-               ;; <stdlib.h>" finds GCC's <stdlib.h>, not libc's.
-               (files '("include/c++" "include")))
-              (search-path-specification
-               (variable "LIBRARY_PATH")
-               (files '("lib" "lib64")))))
-
+       (native-search-paths %gcc-search-paths)
        (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
        (synopsis "GNU Compiler Collection")
        (description
@@ -464,7 +449,7 @@ Go.  It also includes runtime support libraries for these languages.")
            ;; For native builds of GCC 4.9 and GCC 5, the C++ include path needs
            ;; to be adjusted so it does not interfere with GCC's own build processes.
            (substitute-keyword-arguments (package-arguments parent)
-             ((#:modules modules %gnu-build-system-modules)
+             ((#:modules modules %default-gnu-modules)
               `((srfi srfi-1)
                 ,@modules))
              ((#:phases phases)
@@ -513,6 +498,9 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"
+                                       "gcc-5.5.0-libstdc++-xmlcatalog.patch"
+                                       "gcc-13.2.0-libstdc++-docbook-xsl-uri.patch"
+                                       "gcc-13.2.0-libstdc++-info-install-fix.patch"
                                        "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-fix-texi2pod.patch"
                                        "gcc-5-hurd.patch"
@@ -697,7 +685,9 @@ It also includes runtime support libraries for these languages.")
             (sha256
              (base32
               "13ygjmd938m0wmy946pxdhz9i1wq7z4w10l6pvidak0xxxj9yxi7"))
-            (patches (search-patches "gcc-9-strmov-store-file-names.patch"
+            (patches (search-patches "gcc-13.2.0-libstdc++-docbook-xsl-uri.patch"
+                                     "gcc-13.2.0-libstdc++-info-install-fix.patch"
+                                     "gcc-9-strmov-store-file-names.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))
             (modules '((guix build utils)))
@@ -728,17 +718,16 @@ It also includes runtime support libraries for these languages.")
 (define-public gcc-11
   (package
    (inherit gcc-8)
-   (version "11.3.0")
+   (version "11.4.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gcc/gcc-"
                                 version "/gcc-" version ".tar.xz"))
             (sha256
              (base32
-              "0fdclcwf728wbq52vphfcjywzhpsjp3kifzj3pib3xcihs0z4z5l"))
+              "1ncd7akww0hl5kkmw1dj3qgqp3phdrr5dfnm7jia9s07n0ib4b9z"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"
-                                     "gcc-10-tree-sra-union-handling.patch"))
+                                     "gcc-5.0-libvtv-runpath.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))
    (arguments
@@ -901,12 +890,8 @@ It also includes runtime support libraries for these languages.")
                         "MAKEINFOFLAGS = --force\n"))))))))
     (native-search-paths
      ;; This package supports nothing but the C language.
-     (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "LIBRARY_PATH")
-            (files '("lib")))))))
+     (list $C_INCLUDE_PATH
+           $LIBRARY_PATH))))
 
 
 (define-public (make-libstdc++ gcc)
@@ -920,7 +905,7 @@ using compilers other than GCC."
       #:out-of-source? #t
       #:modules `((srfi srfi-1)
                   (srfi srfi-26)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
           #$@(if (version>=? (package-version gcc) "11")
@@ -963,7 +948,7 @@ using compilers other than GCC."
                                   (assoc-ref inputs "powerpc64le-patch")))))
                    '()))
           ;; Force rs6000 (i.e., powerpc) libdir to be /lib and not /lib64.
-          (add-before 'chdir 'fix-rs6000-libdir
+          (add-after 'unpack 'fix-rs6000-libdir
             (lambda _
               (when (file-exists? "gcc/config/rs6000")
                 (substitute* (find-files "gcc/config/rs6000")
@@ -1060,7 +1045,7 @@ as the 'native-search-paths' field."
     (native-search-paths search-paths)
     (arguments
      (substitute-keyword-arguments (package-arguments gcc)
-       ((#:modules modules %gnu-build-system-modules)
+       ((#:modules modules %default-gnu-modules)
         `(,@modules
           (srfi srfi-1)
           (srfi srfi-26)
@@ -1167,7 +1152,8 @@ misnomer.")))
 (define-public libgccjit-11 (make-libgccjit gcc-11))
 (define-public libgccjit-12 (make-libgccjit gcc-12))
 
-(define-public libgccjit libgccjit-10)
+;; Use the 'gcc' variable from above to track the same version.
+(define-public libgccjit (make-libgccjit gcc))
 
 (define (make-gccgo gcc)
   "Return a gccgo package based on GCC."
@@ -1240,106 +1226,6 @@ provides the GNU compiler for the Go programming language."))
 (define-public gccgo-13
   (make-gccgo gcc-13))
 
-(define %objc-search-paths
-  (list (search-path-specification
-         (variable "OBJC_INCLUDE_PATH")
-         (files '("include")))
-        (search-path-specification
-         (variable "LIBRARY_PATH")
-         (files '("lib" "lib64")))))
-
-(define-public gcc-objc-4.8
-  (custom-gcc gcc-4.8 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-4.9
-  (custom-gcc gcc-4.9 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-5
-  (custom-gcc gcc-5 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-6
-  (custom-gcc gcc-6 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-7
-  (custom-gcc gcc-7 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-8
-  (custom-gcc gcc-8 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-9
-  (custom-gcc gcc-9 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-10
-  (custom-gcc gcc-10 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-11
-  (custom-gcc gcc-11 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc-12
-  (custom-gcc gcc-12 "gcc-objc" '("objc")
-              %objc-search-paths))
-
-(define-public gcc-objc gcc-objc-11)
-
-(define %objc++-search-paths
-  (list (search-path-specification
-         (variable "OBJCPLUS_INCLUDE_PATH")
-         (files '("include")))
-        (search-path-specification
-         (variable "LIBRARY_PATH")
-         (files '("lib" "lib64")))))
-
-(define-public gcc-objc++-4.8
-  (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-4.9
-  (custom-gcc gcc-4.9 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-5
-  (custom-gcc gcc-5 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-6
-  (custom-gcc gcc-6 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-7
-  (custom-gcc gcc-7 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-8
-  (custom-gcc gcc-8 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-9
-  (custom-gcc gcc-9 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-10
-  (custom-gcc gcc-10 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-11
-  (custom-gcc gcc-11 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++-12
-  (custom-gcc gcc-12 "gcc-objc++" '("obj-c++")
-              %objc++-search-paths))
-
-(define-public gcc-objc++ gcc-objc++-11)
-
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
   (package
@@ -1354,40 +1240,31 @@ provides the GNU compiler for the Go programming language."))
                          libxslt
                          docbook-xml
                          docbook-xsl
+                         docbook2x
                          graphviz)) ;for 'dot', invoked by 'doxygen'
     (inputs '())
     (propagated-inputs '())
     (arguments
-     '(#:out-of-source? #t
-       #:tests? #f                                ;it's just documentation
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'chdir
-                              (lambda _
-                                (chdir "libstdc++-v3")))
-                  (add-before 'configure 'set-xsl-directory
-                              (lambda* (#:key inputs #:allow-other-keys)
-                                (let ((docbook (assoc-ref inputs "docbook-xsl")))
-                                  (substitute* (find-files "doc"
-                                                           "^Makefile\\.in$")
-                                    (("@XSL_STYLE_DIR@")
-                                     (string-append
-                                      docbook "/xml/xsl/"
-                                      (strip-store-file-name docbook)))))))
-                  (replace 'build
-                           (lambda _
-                             ;; XXX: There's also a 'doc-info' target, but it
-                             ;; relies on docbook2X, which itself relies on
-                             ;; DocBook 4.1.2, which is not really usable
-                             ;; (lacks a catalog.xml.)
-                             (invoke "make"
-                                     "doc-html"
-                                     "doc-man")))
-                  (replace 'install
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             (let ((out (assoc-ref outputs "out")))
-                               (invoke "make"
-                                       "doc-install-html"
-                                       "doc-install-man")))))))
+     (list
+      #:out-of-source? #t
+      #:tests? #f                                ;it's just documentation
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'chdir
+            (lambda _
+              (chdir "libstdc++-v3")))
+          (replace 'build
+            (lambda* (#:key make-flags #:allow-other-keys)
+              (apply invoke `("make" ,@make-flags
+                              "doc-info"
+                              "doc-html"
+                              "doc-man"))))
+          (replace 'install
+            (lambda* (#:key make-flags #:allow-other-keys)
+              (apply invoke `("make" ,@make-flags
+                              "doc-install-info"
+                              "doc-install-html"
+                              "doc-install-man")))))))
     (properties (alist-delete 'hidden? (package-properties gcc)))))
 
 (define-public libstdc++-doc-5

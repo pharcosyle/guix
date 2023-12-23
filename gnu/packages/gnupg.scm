@@ -21,7 +21,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 Nikita Domnitskii <nikita@domnitskii.me>
 ;;; Copyright © 2021 Aleksandr Vityazev <avityazev@posteo.org>
-;;; Copyright © 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,6 +44,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
@@ -720,16 +721,16 @@ parties.")
     (native-inputs
      ;; autoconf-wrapper is required due to the non-standard
      ;; 'configure phase.
-     `(("autoconf" ,autoconf-wrapper)
-       ("automake" ,automake)))
-    (inputs (list perl
+     (list autoconf-wrapper automake))
+    (inputs (list bash-minimal
+                  perl
                   perl-text-template
                   perl-mime-tools
                   perl-gnupg-interface
                   perl-net-idn-encode
                   libmd))
     (arguments
-     `(#:tests? #f ; no test suite
+     `(#:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -747,8 +748,7 @@ parties.")
                               "keylookup/Makefile" "sig2dot/Makefile"
                               "springgraph/Makefile")
                  (("/usr") out))
-               (setenv "CONFIG_SHELL" (which "sh")))
-             #t))
+               (setenv "CONFIG_SHELL" (which "sh")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys #:rest args)
              (let ((out (assoc-ref outputs "out"))
@@ -773,15 +773,13 @@ parties.")
                 '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
                   "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
                   "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
-                  "process_keys.1" "pgpring.1" "keyanalyze.1")))
-             #t))
+                  "process_keys.1" "pgpring.1" "keyanalyze.1")))))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
                (wrap-program
                    (string-append out "/bin/caff")
-                 `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))
-             #t)))))
+                 `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))))))))
     (synopsis "Collection of scripts for simplifying gnupg key signing")
     (description
      "Signing-party is a collection for all kinds of PGP/GnuPG related things,
@@ -929,7 +927,7 @@ passphrase when @code{gpg} is run and needs it.")))
      `(#:modules
        ((ice-9 match)
         (ice-9 ftw)
-        ,@%gnu-build-system-modules)
+        ,@%default-gnu-modules)
        #:phases
        (modify-phases
            %standard-phases
@@ -943,14 +941,13 @@ passphrase when @code{gpg} is run and needs it.")))
                  (("." ".." version)
                   (wrap-program
                       (string-append bin "pinentry-rofi")
-                    (list "PATH" ":" 'prefix `(,rofi-bin)))
-                  #t)))))
+                    (list "PATH" ":" 'prefix `(,rofi-bin))))))))
          (add-after 'compress-documentation 'installcheck
            (lambda* rest
              (invoke "make" "installcheck"))))))
     (native-inputs
      (list autoconf autoconf-archive automake pkg-config texinfo))
-    (inputs (list guile-3.0 rofi))
+    (inputs (list bash-minimal guile-3.0 rofi))
     (synopsis "Rofi GUI for GnuPG's passphrase input")
     (description "Pinentry-rofi is a simple graphical user interface for
 passphrase or PIN when required by @code{gpg} or other software.  It is using
@@ -1066,16 +1063,15 @@ however, pgpdump produces more detailed and easier to understand output.")
              (let ((out (assoc-ref outputs "out"))
                    (gnupg (assoc-ref inputs "gnupg")))
                (wrap-program (string-append out "/bin/gpa")
-                 `("PATH" ":" prefix (,(string-append gnupg "/bin"))))
-               #t))))))
-    (native-inputs
-     (list pkg-config))
+                 `("PATH" ":" prefix (,(string-append gnupg "/bin"))))))))))
+    (native-inputs (list pkg-config))
     (inputs
-     `(("gnupg" ,gnupg)
-       ("gpgme" ,gpgme)
-       ("libassuan" ,libassuan)
-       ("libgpg-error" ,libgpg-error)
-       ("gtk+-2" ,gtk+-2)))
+     (list bash-minimal
+           gnupg
+           gpgme
+           libassuan
+           libgpg-error
+           gtk+-2))
     (home-page "https://gnupg.org/software/gpa/")
     (synopsis "Graphical user interface for GnuPG")
     (description
@@ -1100,7 +1096,8 @@ files, to verify signatures, and to manage the private and public keys.")
                 "10gal2h8ihg7nnzy3adw942axd2ia1rcn1fw3a3v07n5mm8kqrx9"))))
     (build-system perl-build-system)
     (inputs
-     (list gnupg
+     (list bash-minimal
+           gnupg
            perl-clone
            perl-config-general
            perl-file-homedir

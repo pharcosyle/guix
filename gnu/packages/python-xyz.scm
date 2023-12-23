@@ -17483,28 +17483,47 @@ designed to work across multiple versions of Python.")
 (define-public python-cookiecutter
   (package
     (name "python-cookiecutter")
-    (version "1.7.3")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cookiecutter" version))
        (sha256
-        (base32 "0mx49whhwcxmvcak27zr7p7ndzkn3w7psfd7fzh3n91fi1r4v6kb"))))
+        (base32 "1v1iafk8j2f5cciw9mf4263v91070c6z049cpnw42gwffhs907p6"))))
     (build-system python-build-system)
-    (native-inputs
-     (list python-freezegun python-pytest python-pytest-catchlog
-           python-pytest-cov python-pytest-mock))
-    (propagated-inputs
-     (list python-binaryornot
-           python-click
-           python-future
-           python-jinja2
-           python-jinja2-time
-           python-poyo
-           python-requests
-           python-slugify
-           python-text-unidecode
-           python-whichcraft))
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (add-before 'check 'pre-check
+                     (lambda _
+                       ;; test_get_user_config.py requires a writable home
+                       ;; directory.
+                       (setenv "HOME"
+                               (getcwd))
+                       ;; test_hooks.py dynamically creates shell scripts
+                       ;; with a /bin/bash shebang. We have to patch these.
+                       (substitute* "tests/test_hooks.py"
+                         (("/bin/bash")
+                          (string-append #$(this-package-native-input
+                                            "bash-minimal") "/bin/bash")))))
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (invoke "pytest")))))))
+    (native-inputs (list bash-minimal
+                         git
+                         python-freezegun
+                         python-pytest
+                         python-pytest-cov
+                         python-pytest-mock))
+    (propagated-inputs (list python-arrow
+                             python-binaryornot
+                             python-click
+                             python-jinja2
+                             python-pyyaml
+                             python-requests
+                             python-rich
+                             python-slugify))
     (home-page "https://github.com/cookiecutter/cookiecutter")
     (synopsis
      "Command-line utility that creates projects from project templates")
@@ -30853,8 +30872,7 @@ CMake.")
                             (string-append x11 "/lib/libX11.so.6")))
               (substitute* "Screenkey/xlib.py"
                            (("libXtst.so.6")
-                            (string-append xtst "/lib/libXtst.so.6")))
-              #t)))
+                            (string-append xtst "/lib/libXtst.so.6"))))))
           (add-after 'install 'wrap-screenkey
             (lambda* (#:key outputs #:allow-other-keys)
               (wrap-program
@@ -30863,7 +30881,8 @@ CMake.")
                 `("GI_TYPELIB_PATH"
                   ":" prefix (,(getenv "GI_TYPELIB_PATH")))))))))
     (inputs
-     (list python-distutils-extra
+     (list bash-minimal
+           python-distutils-extra
            python-tokenize-rt
            libx11
            libxtst
@@ -34353,6 +34372,29 @@ interfaces.")
 of Icelandic Morphology and offers various lookups and queries of the data.
 The database contains over 6.5 million entries, over 3.1 million unique word
 forms, and about 300,000 distinct lemmas.")
+    (license license:expat)))
+
+(define-public python-icegrams
+  (package
+    (name "python-icegrams")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "icegrams" version))
+       (sha256
+        (base32 "1ajcjngvr4rlgb0q6p6vjz2sncwhvq3msjy6qaiz5g37vgvw2ij8"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list python-cffi))
+    (home-page "https://github.com/mideind/Icegrams")
+    (synopsis "Trigram statistics for Icelandic")
+    (description
+     "Icegrams is a Python package that encapsulates a large trigram
+library for Icelandic.  You can use Icegrams to obtain probabilities (relative
+frequencies) of over a million different unigrams (single words or tokens), or of
+bigrams (pairs of two words or tokens), or of trigrams.  Icegrams is useful for
+instance in spelling correction, predictive typing, to help disabled people
+write text fast, and for various text generation, statistics, and modeling tasks.")
     (license license:expat)))
 
 (define-public python-zeroc-ice-3.6
