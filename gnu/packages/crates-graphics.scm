@@ -199,6 +199,32 @@ text or blue underlined text, on ANSI terminals.")
          "1xif1bh938qpfc3d0f9xgidibpm65xix11w9gszwqnia00q7rb13"))))
     (arguments `())))
 
+(define-public rust-ansi-to-tui-2
+  (package
+    (name "rust-ansi-to-tui")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ansi-to-tui" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0l43nyj2difngwjbiy6vd5p8bw96w06swgw5hx6vi9zvqzs8wyqm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-nom" ,rust-nom-7)
+                       ("rust-simdutf8" ,rust-simdutf8-0.1)
+                       ("rust-thiserror" ,rust-thiserror-1)
+                       ("rust-tui" ,rust-tui-0.16))
+       #:cargo-development-inputs (("rust-anyhow" ,rust-anyhow-1))))
+    (home-page "https://github.com/uttarayan21/ansi-to-tui")
+    (synopsis
+     "Library to convert ansi color coded text into @code{ratatui::text::Text}")
+    (description
+     "This package provides a library to convert ansi color coded text into
+@code{ratatui::text::Text} type from the ratatui library.")
+    (license license:expat)))
+
 (define-public rust-ansiterm-0.12
   (package
     (name "rust-ansiterm")
@@ -496,6 +522,30 @@ for computer graphics.")
        #:cargo-development-inputs
        (;("rust-glium" ,rust-glium-0.19)
         ("rust-serde-json" ,rust-serde-json-1))))))
+
+(define-public rust-color-to-tui-0.2
+  (package
+    (name "rust-color-to-tui")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "color-to-tui" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1k3vyp2fl0lcqs8iwssv56562kag6ljqaixirrci77ydmcq3zi0s"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-serde" ,rust-serde-1)
+                       ("rust-tui" ,rust-tui-0.16))
+       #:cargo-development-inputs (("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://git.uttarayan.me/uttarayan/color-to-tui")
+    (synopsis
+     "Parse colors and convert them to @code{ratatui::style::Colors}")
+    (description
+     "This package provides parsing colors and converting them to
+@code{ratatui::style::Colors}.")
+    (license license:expat)))
 
 (define-public rust-core-graphics-0.22
   (package

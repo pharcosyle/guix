@@ -1482,6 +1482,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/isync-openssl3-fix.patch			\
   %D%/packages/patches/itk-snap-alt-glibc-compat.patch		\
   %D%/packages/patches/jami-disable-integration-tests.patch	\
+  %D%/packages/patches/jami-qml-tests-discovery.patch		\
   %D%/packages/patches/jami-libjami-headers-search.patch	\
   %D%/packages/patches/jamvm-1.5.1-aarch64-support.patch	\
   %D%/packages/patches/jamvm-1.5.1-armv7-support.patch	\

@@ -47,7 +47,6 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gdb)
-  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -64,6 +63,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix platform)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix utils)
   #:use-module (guix gexp)
@@ -99,21 +99,6 @@
 ;; to substitute the hash.
 (define %cargo-reference-hash
   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
-
-(define* (nix-system->gnu-triplet-for-rust
-          #:optional (system (%current-system)))
-  (match system
-    ("x86_64-linux"   "x86_64-unknown-linux-gnu")
-    ("i686-linux"     "i686-unknown-linux-gnu")
-    ("armhf-linux"    "armv7-unknown-linux-gnueabihf")
-    ("aarch64-linux"  "aarch64-unknown-linux-gnu")
-    ("mips64el-linux" "mips64el-unknown-linux-gnuabi64")
-    ("riscv64-linux"  "riscv64gc-unknown-linux-gnu")
-    ("i586-gnu" "i686-unknown-hurd-gnu")
-    ("i686-gnu" "i686-unknown-hurd-gnu")
-    ("i686-mingw" "i686-pc-windows-gnu")
-    ("x86_64-mingw" "x86_64-pc-windows-gnu")
-    (_                (nix-system->gnu-triplet system))))
 
 (define* (rust-uri version #:key (dist "static"))
   (string-append "https://" dist ".rust-lang.org/dist/"
@@ -215,8 +200,10 @@
        #:parallel-build? ,(target-x86-64?)
        #:make-flags
        (list ,(string-append "RUSTC_TARGET="
-                             (or (%current-target-system)
-                                 (nix-system->gnu-triplet-for-rust)))
+                             (platform-rust-target
+                               (lookup-platform-by-target-or-system
+                                 (or (%current-target-system)
+                                     (%current-system)))))
              ,(string-append "RUSTC_VERSION=" version)
              ,(string-append "MRUSTC_TARGET_VER="
                              (version-major+minor version))
@@ -353,10 +340,12 @@
                     (rustc (string-append bin "/rustc"))
                     (cargo-bin (string-append cargo "/bin"))
                     (lib (string-append out "/lib"))
-                    (gnu-triplet ,(or (%current-target-system)
-                                      (nix-system->gnu-triplet-for-rust)))
-                    (system-lib-prefix (string-append lib "/rustlib/"
-                                                      gnu-triplet "/lib")))
+                    (system-lib-prefix
+                      (string-append lib "/rustlib/"
+                                     ,(platform-rust-target
+                                        (lookup-platform-by-target-or-system
+                                          (or (%current-target-system)
+                                              (%current-system)))) "/lib")))
                (mkdir-p (dirname rustc))
                (copy-file "run_rustc/output/prefix/bin/rustc_binary" rustc)
                (wrap-program rustc
@@ -449,16 +438,7 @@ safety and thread safety guarantees.")
                     (binutils (assoc-ref inputs "binutils"))
                     (rustc (assoc-ref inputs "rustc-bootstrap"))
                     (cargo (assoc-ref inputs "cargo-bootstrap"))
-                    (llvm (assoc-ref inputs "llvm"))
-                    (jemalloc (assoc-ref inputs "jemalloc")))
-               ;; The compiler is no longer directly built against jemalloc, but
-               ;; rather via the jemalloc-sys crate (which vendors the jemalloc
-               ;; source). To use jemalloc we must enable linking to it (otherwise
-               ;; it would use the system allocator), and set an environment
-               ;; variable pointing to the compiled jemalloc.
-               (setenv "JEMALLOC_OVERRIDE"
-                       (search-input-file inputs
-                                          "/lib/libjemalloc_pic.a"))
+                    (llvm (assoc-ref inputs "llvm")))
                (call-with-output-file "config.toml"
                  (lambda (port)
                    (display (string-append "
@@ -475,11 +455,11 @@ prefix = \"" out "\"
 sysconfdir = \"etc\"
 [rust]
 debug=false
-jemalloc=true
+jemalloc=false
 default-linker = \"" gcc "/bin/gcc" "\"
 channel = \"stable\"
 rpath = true
-[target." ,(nix-system->gnu-triplet-for-rust) "]
+[target." ,(platform-rust-target (lookup-platform-by-system (%current-system))) "]
 llvm-config = \"" llvm "/bin/llvm-config" "\"
 cc = \"" gcc "/bin/gcc" "\"
 cxx = \"" gcc "/bin/g++" "\"
@@ -500,9 +480,11 @@ ar = \"" binutils "/bin/ar" "\"
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (cargo-out (assoc-ref outputs "cargo"))
-                    (gnu-triplet ,(or (%current-target-system)
-                                      (nix-system->gnu-triplet-for-rust)))
-                    (build (string-append "build/" gnu-triplet)))
+                    (build (string-append "build/"
+                                          ,(platform-rust-target
+                                             (lookup-platform-by-target-or-system
+                                               (or (%current-target-system)
+                                                   (%current-system)))))))
                ;; Manually do the installation instead of calling './x.py
                ;; install', as that is slow and needlessly rebuilds some
                ;; things.
@@ -540,7 +522,6 @@ ar = \"" binutils "/bin/ar" "\"
        ("which" ,which)))
     (inputs
      `(("bash" ,bash-minimal)           ; For wrap-program
-       ("jemalloc" ,jemalloc)
        ("llvm" ,llvm-13)
        ("openssl" ,openssl)
        ("libssh2" ,libssh2)             ; For "cargo"
@@ -823,6 +804,29 @@ safety and thread safety guarantees.")
                (("features = \\[\"fs\"" all)
                 (string-append all ", \"use-libc\""))))))))))
 
+(define rust-1.74
+  (let ((base-rust (rust-bootstrapped-package rust-1.73 "1.74.1"
+                    "07930r17dkj3dnsrmilywb6p9i2g2jx56ndfpa2wh8crzhi3xnv7")))
+    (package
+      (inherit base-rust)
+      (source
+       (origin
+         (inherit (package-source base-rust))
+         (snippet
+          '(begin
+             (for-each delete-file-recursively
+                       '("src/llvm-project"
+                         "vendor/tikv-jemalloc-sys/jemalloc"))
+             ;; Remove vendored dynamically linked libraries.
+             ;; find . -not -type d -executable -exec file {} \+ | grep ELF
+             ;; Also remove the bundled (mostly Windows) libraries.
+             (for-each delete-file
+                       (find-files "vendor" "\\.(a|dll|exe|lib)$"))
+             ;; Adjust vendored dependency to explicitly use rustix with libc backend.
+             (substitute* "vendor/tempfile/Cargo.toml"
+               (("features = \\[\"fs\"" all)
+                (string-append all ", \"use-libc\""))))))))))
+
 (define (make-ignore-test-list strs)
   "Function to make creating a list to ignore tests a bit easier."
   (map (lambda (str)
@@ -837,14 +841,14 @@ safety and thread safety guarantees.")
 ;;; Here we take the latest included Rust, make it public, and re-enable tests
 ;;; and extra components such as rustfmt.
 (define-public rust
-  (let ((base-rust rust-1.73))
+  (let ((base-rust rust-1.74))
     (package
       (inherit base-rust)
       (outputs (cons* "rust-src" "tools" (package-outputs base-rust)))
       (arguments
-       (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:tests? _ #f)
-          (not (%current-target-system)))
+       (substitute-keyword-arguments
+         (strip-keyword-arguments '(#:tests?)
+           (package-arguments base-rust))
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'unpack 'relax-gdb-auto-load-safe-path
@@ -1039,6 +1043,12 @@ safety and thread safety guarantees.")
                    (mkdir-p (string-append out dest))
                    (copy-recursively "library" (string-append out dest "/library"))
                    (copy-recursively "src" (string-append out dest "/src")))))
+             (add-after 'install 'remove-uninstall-script
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; This script has no use on Guix
+                 ;; and it retains a reference to the host's bash.
+                 (delete-file (string-append (assoc-ref outputs "out")
+                                             "/lib/rustlib/uninstall.sh"))))
              (add-after 'install-rust-src 'wrap-rust-analyzer
                (lambda* (#:key outputs #:allow-other-keys)
                  (let ((bin (string-append (assoc-ref outputs "tools") "/bin")))
@@ -1153,7 +1163,7 @@ docs = false
 python = \"" (which "python") "\"
 vendor = true
 submodules = false
-target = [\"" ,(nix-system->gnu-triplet-for-rust (gnu-triplet->nix-system target)) "\"]
+target = [\"" ,(platform-rust-target (lookup-platform-by-target target)) "\"]
 [install]
 prefix = \"" out "\"
 sysconfdir = \"etc\"
@@ -1162,14 +1172,14 @@ debug = false
 jemalloc = false
 default-linker = \"" target-cc "\"
 channel = \"stable\"
-[target." ,(nix-system->gnu-triplet-for-rust) "]
+[target." ,(platform-rust-target (lookup-platform-by-system (%current-system))) "]
 # These are all native tools
 llvm-config = \"" (search-input-file inputs "/bin/llvm-config") "\"
 linker = \"" (which "gcc") "\"
 cc = \"" (which "gcc") "\"
 cxx = \"" (which "g++") "\"
 ar = \"" (which "ar") "\"
-[target." ,(nix-system->gnu-triplet-for-rust (gnu-triplet->nix-system target)) "]
+[target." ,(platform-rust-target (lookup-platform-by-target target)) "]
 llvm-config = \"" (search-input-file inputs "/bin/llvm-config") "\"
 linker = \"" target-cc "\"
 cc = \"" target-cc "\"
@@ -1190,12 +1200,6 @@ ar = \"" (search-input-file inputs (string-append "/bin/" ,(ar-for-target target
              (replace 'install
                (lambda _
                  (invoke "./x.py" "install" "library/std")))
-             (add-after 'install 'remove-uninstall-script
-               (lambda* (#:key outputs #:allow-other-keys)
-                 ;; This script has no use on Guix
-                 ;; and it retains a reference to the host's bash.
-                 (delete-file (string-append (assoc-ref outputs "out")
-                                             "/lib/rustlib/uninstall.sh"))))
              (delete 'install-rust-src)
              (delete 'wrap-rust-analyzer)
              (delete 'wrap-rustc)))))

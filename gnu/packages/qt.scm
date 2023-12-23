@@ -649,6 +649,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (build-system cmake-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments qtbase-5)
+       ((#:disallowed-references _ #f)
+        (list python))
        ((#:configure-flags _ ''())
         `(let ((out (assoc-ref %outputs "out")))
            (list "-DQT_BUILD_TESTS=ON"

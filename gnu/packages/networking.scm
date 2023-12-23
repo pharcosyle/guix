@@ -1414,39 +1414,50 @@ files contain direct mappings of the abstractions provided by the ØMQ C API.")
     (license license:expat)))
 
 (define-public libnatpmp
-  (package
-    (name "libnatpmp")
-    (version "20230423")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://miniupnp.free.fr/files/"
-                    name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0w7wvf4yi8qv659dg9d3ndqvh3bqhgm21gd135spwhq6hhnfv106"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check)) ; no tests
-       #:make-flags
-       (let* ((target ,(%current-target-system))
-              (gcc (if target
-                       (string-append target "-gcc")
-                       "gcc")))
-         (list
-          (string-append "CC=" gcc)
-          (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
-          (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")))))
-    (home-page "http://miniupnp.free.fr/libnatpmp.html")
-    (synopsis "C library implementing NAT-PMP")
-    (description
-     "@code{libnatpmp} is a portable and asynchronous implementation of
+  ;; Install the latest commit as it provides a pkg-config (.pc) file.
+  (let ((base-version "20230423")
+        (commit "6a850fd2bd9b08e6edc886382a1dbae2a7df55ec")
+        (revision "0"))
+    (package
+      (name "libnatpmp")
+      (version (git-version base-version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/miniupnp/libnatpmp")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "18hf9a3i3mncl3w80nzi1684iac3by86bv0hgmbm1v2w8gbfjyw0"))))
+      (build-system cmake-build-system)
+      (arguments
+       (list
+        #:tests? #f                     ;no test suite
+        #:configure-flags #~(list "-DBUILD_SHARED_LIBS=ON")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-build-system
+              ;; Have CMake install the natpmp_declspec.h missing header file
+              ;; that is referenced by natpmp.h (see:
+              ;; https://github.com/miniupnp/libnatpmp/issues/41).
+              (lambda _
+                (substitute* "CMakeLists.txt"
+                  (("install\\(FILES natpmp.h")
+                   "install(FILES natpmp.h natpmp_declspec.h"))))
+            (add-after 'unpack 'fix-version
+              (lambda _
+                (with-output-to-file "VERSION"
+                  (lambda ()
+                    (display #$base-version))))))))
+      (native-inputs (list which))
+      (home-page "https://miniupnp.tuxfamily.org/libnatpmp.html")
+      (synopsis "C library implementing NAT-PMP")
+      (description
+       "@code{libnatpmp} is a portable and asynchronous implementation of
 the Network Address Translation - Port Mapping Protocol (NAT-PMP)
 written in the C programming language.")
-    (license license:bsd-3)))
+      (license license:bsd-3))))
 
 (define-public librdkafka
   (package
@@ -3761,7 +3772,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.4.12")
+    (version "2.5.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3770,7 +3781,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yji5pziqxfvyfizk3fn9j59bqlfdwfa1a0y9jjfknb2mmlwwb9w"))))
+                "0i2x0h38h52aynm89n6cjxk0z7nngc1w1zf71zaqx5n54fxxawir"))))
     (outputs '("out" "python" "tools" "debug"))
     (build-system gnu-build-system)
     (arguments
@@ -3798,6 +3809,14 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (substitute* "tests/Makefile.am"
                 (("\\bdhtrunnertester\\.(h|cpp)\\b")
                  ""))))
+          (add-after 'unupack 'relax-test-timeouts
+            (lambda _
+              ;; At least the 'test_send_json' has been seen to fail
+              ;; non-deterministically, but it seems hard to reproducible that
+              ;; failure.
+              (substitute* "tests/httptester.cpp"
+                (("std::chrono::seconds\\(10)")
+                 "std::chrono::seconds(30)"))))
           (add-after 'unpack 'fix-python-installation-prefix
             ;; Specify the installation prefix for the compiled Python module
             ;; that would otherwise attempt to installs itself to Python's own
@@ -3841,7 +3860,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
            fmt
            readline))
     (propagated-inputs
-     (list msgpack                      ;included in several installed headers
+     (list msgpack-cxx                  ;included in several installed headers
            restinio                     ;included in opendht/http.h
            ;; The following are listed in the 'Requires.private' field of
            ;; opendht.pc:

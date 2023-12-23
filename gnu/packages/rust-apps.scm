@@ -983,6 +983,57 @@ editor in less than 1024 lines of code with syntax higlighting, search and
 more.")
     (license (list license:expat license:asl2.0))))
 
+(define-public macchina
+  (package
+    (name "macchina")
+    (version "6.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "macchina" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "044bygdazv8l1d5sf7pxn2xp26pmnx2b65122qzb37m1ylb1ksg6"))))
+    (build-system cargo-build-system)
+    (arguments
+     (list
+      #:install-source? #f
+      #:cargo-inputs `(("rust-ansi-to-tui" ,rust-ansi-to-tui-2)
+                       ("rust-atty" ,rust-atty-0.2)
+                       ("rust-bytesize" ,rust-bytesize-1)
+                       ("rust-clap" ,rust-clap-4)
+                       ("rust-color-to-tui" ,rust-color-to-tui-0.2)
+                       ("rust-colored" ,rust-colored-2)
+                       ("rust-dirs" ,rust-dirs-4)
+                       ("rust-lazy-static" ,rust-lazy-static-1)
+                       ("rust-libmacchina" ,rust-libmacchina-6)
+                       ("rust-rand" ,rust-rand-0.8)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-json" ,rust-serde-json-1)
+                       ("rust-shellexpand" ,rust-shellexpand-3)
+                       ("rust-thiserror" ,rust-thiserror-1)
+                       ("rust-toml" ,rust-toml-0.5)
+                       ("rust-tui" ,rust-tui-0.19)
+                       ("rust-unicode-width" ,rust-unicode-width-0.1)
+                       ("rust-vergen" ,rust-vergen-7))
+      #:phases #~(modify-phases %standard-phases
+                   (add-after 'install 'install-extras
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let* ((out (assoc-ref outputs "out"))
+                              (share (string-append out "/share"))
+                              (contrib (string-append share "/contrib")))
+                         (mkdir-p contrib)
+                         (copy-recursively "contrib" contrib)))))))
+    (native-inputs (list pkg-config))
+    (inputs (list libgit2 sqlite zlib))
+    (home-page "https://github.com/Macchina-CLI/macchina")
+    (synopsis "System information fetcher with an emphasis on performance")
+    (description
+     "This package provides a system information fetcher with an emphasis on
+performance.  Similar to neofetch, this package prints out system information
+on the terminal in a visually appealing way.")
+    (license license:expat)))
+
 (define-public maturin
   (package
     (name "maturin")
@@ -1149,61 +1200,78 @@ more.")
 (define-public ripgrep
   (package
     (name "ripgrep")
-    (version "13.0.0")
+    (version "14.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "ripgrep" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1gv4imhjgxmyxaa996yshcjlakmrjw9pf4rycp90pq675cn9sz7k"))))
+        (base32 "192n1lih9vzhf7r2ak985fap23x608qjdq9pqjcf43h3g9mjzjh0"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-bstr" ,rust-bstr-0.2)
-        ("rust-clap" ,rust-clap-2)
-        ("rust-grep" ,rust-grep-0.2)
-        ("rust-ignore" ,rust-ignore-0.4)
-        ("rust-jemallocator" ,rust-jemallocator-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-num-cpus" ,rust-num-cpus-1)
-        ("rust-regex" ,rust-regex-1)
-        ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-termcolor" ,rust-termcolor-1))
-       #:cargo-development-inputs
-       (("rust-serde" ,rust-serde-1)
-        ("rust-serde-derive" ,rust-serde-derive-1)
-        ("rust-walkdir" ,rust-walkdir-2))
-       #:modules ((ice-9 match)
-                  (guix build cargo-build-system)
-                  (guix build utils))
-       #:install-source? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'install-manpage
-           ;; NOTE: This is done before 'check so that there's only one output
-           ;; directory with the man page.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (match (find-files "target" "^rg\\.1$")
-               ((manpage)
-                (install-file manpage (string-append
-                                       (assoc-ref outputs "out")
-                                       "/share/man/man1"))))
-             #t)))
-       #:features '("pcre2")))
-    (inputs
-     (list pcre2))
-    (native-inputs
-     (list asciidoc pkg-config))
+     (list
+      #:cargo-inputs `(("rust-anyhow" ,rust-anyhow-1)
+                       ("rust-bstr" ,rust-bstr-1)
+                       ("rust-grep" ,rust-grep-0.3)
+                       ("rust-ignore" ,rust-ignore-0.4)
+                       ("rust-jemallocator" ,rust-jemallocator-0.5)
+                       ("rust-lexopt" ,rust-lexopt-0.3)
+                       ("rust-log" ,rust-log-0.4)
+                       ("rust-serde-json" ,rust-serde-json-1)
+                       ("rust-termcolor" ,rust-termcolor-1)
+                       ("rust-textwrap" ,rust-textwrap-0.16))
+      #:cargo-development-inputs `(("rust-serde" ,rust-serde-1)
+                                   ("rust-serde-derive" ,rust-serde-derive-1)
+                                   ("rust-walkdir" ,rust-walkdir-2))
+      #:install-source? #f
+      ;; Note: the built target 'rg' binary is required for 'install-extras
+      #:phases #~(modify-phases %standard-phases
+                   (add-after 'install 'install-extras
+                     (lambda* (#:key native-inputs outputs #:allow-other-keys)
+                       (let* ((out (assoc-ref outputs "out"))
+                              (share (string-append out "/share"))
+                              (bash-completions-dir
+                                (string-append share "/bash-completion/completions"))
+                              (zsh-completions-dir
+                                (string-append share "/zsh/site-functions"))
+                              (fish-completions-dir
+                                (string-append share "/fish/vendor_completions.d"))
+                              (man1 (string-append share "/man/man1"))
+                              (rg (if #$(%current-target-system)
+                                    (search-input-file native-inputs "/bin/rg")
+                                    (string-append out "/bin/rg"))))
+                           (mkdir-p man1)
+                           (with-output-to-file (string-append man1 "/rg.1")
+                             (lambda _
+                               (invoke rg "--generate" "man")))
+                           (mkdir-p bash-completions-dir)
+                           (with-output-to-file (string-append
+                                                  bash-completions-dir "/rg")
+                             (lambda _
+                               (invoke rg "--generate" "complete-bash")))
+                           (mkdir-p zsh-completions-dir)
+                           (with-output-to-file (string-append
+                                                  zsh-completions-dir "/_rg")
+                             (lambda _
+                               (invoke rg "--generate" "complete-zsh")))
+                           (mkdir-p fish-completions-dir)
+                           (with-output-to-file
+                             (string-append fish-completions-dir "/rg.fish")
+                             (lambda _
+                               (invoke rg "--generate" "complete-fish")))))))
+      #:features '(list "pcre2")))
+    (inputs (list pcre2))
+    (native-inputs (cons* pkg-config (if (%current-target-system)
+                                         (list this-package)
+                                         '())))
     (home-page "https://github.com/BurntSushi/ripgrep")
-    (synopsis "Line-oriented search tool")
+    (synopsis "Line-oriented search tool and Rust successor to @command{grep}")
     (description
-     "ripgrep is a line-oriented search tool that recursively searches
-your current directory for a regex pattern while respecting your
-gitignore rules.")
+     "@code{ripgrep} (@command{rg}) is a line-oriented search tool that
+recursively searches your current directory for a regex pattern while
+respecting your gitignore rules. @code{ripgrep} is similar to other popular
+search tools like The Silver Searcher, @command{ack} and @command{grep}.")
     (license (list license:unlicense license:expat))))
 
 (define-public rot8
@@ -1930,72 +1998,118 @@ runs a command whenever it detects modifications.")
 (define-public rbw
   (package
     (name "rbw")
-    (version "1.4.1")
+    (version "1.8.3")
+    (outputs '("out" "scripts"))
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rbw" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0zszp9hvilpikbd66b5zbvspks0spv8dh0yry0sxnc5yqvl2ixnf"))))
+        (base32 "1p8bzpqgdc20l2vbb80gsb2ri5j16af958bixpnnp73mfvwzxvg1"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'relax-requirements
-           (lambda _
-             (substitute*
-                 "guix-vendor/rust-password-hash-0.3.2.tar.gz/Cargo.toml"
-               (("version = \">=1, <1.1.0\"") "version = \">=1\""))
-             (substitute*
-                 "guix-vendor/rust-rsa-0.5.0.tar.gz/Cargo.toml"
-               (("version = \">=1, <1.5\"") "version = \"^1\""))
-             (substitute*
-                 "Cargo.toml"
-               (("version = \"1.4\"") "version = \"^1\"")))))
+     `(#:install-source? #f
        #:cargo-inputs
-       (("rust-aes" ,rust-aes-0.7)
+       (("rust-aes" ,rust-aes-0.8)
         ("rust-anyhow" ,rust-anyhow-1)
+        ("rust-argon2" ,rust-argon2-0.5)
         ("rust-arrayvec" ,rust-arrayvec-0.7)
         ("rust-async-trait" ,rust-async-trait-0.1)
         ("rust-base32" ,rust-base32-0.4)
-        ("rust-base64" ,rust-base64-0.13)
-        ("rust-block-modes" ,rust-block-modes-0.8)
-        ("rust-block-padding" ,rust-block-padding-0.2)
-        ("rust-daemonize" ,rust-daemonize-0.4)
-        ("rust-directories" ,rust-directories-4)
-        ("rust-env-logger" ,rust-env-logger-0.9)
-        ("rust-hkdf" ,rust-hkdf-0.11)
-        ("rust-hmac" ,rust-hmac-0.11)
+        ("rust-base64" ,rust-base64-0.21)
+        ("rust-block-padding" ,rust-block-padding-0.3)
+        ("rust-cbc" ,rust-cbc-0.1)
+        ("rust-clap" ,rust-clap-4)
+        ("rust-clap-complete" ,rust-clap-complete-4)
+        ("rust-copypasta" ,rust-copypasta-0.8)
+        ("rust-daemonize" ,rust-daemonize-0.5)
+        ("rust-directories" ,rust-directories-5)
+        ("rust-env-logger" ,rust-env-logger-0.10)
+        ("rust-futures" ,rust-futures-0.3)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-hkdf" ,rust-hkdf-0.12)
+        ("rust-hmac" ,rust-hmac-0.12)
         ("rust-humantime" ,rust-humantime-2)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
-        ("rust-nix" ,rust-nix-0.23)
-        ("rust-paw" ,rust-paw-1)
-        ("rust-pbkdf2" ,rust-pbkdf2-0.9)
+        ("rust-nix" ,rust-nix-0.24)
+        ("rust-pbkdf2" ,rust-pbkdf2-0.12)
         ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-pkcs8" ,rust-pkcs8-0.10)
         ("rust-rand" ,rust-rand-0.8)
         ("rust-region" ,rust-region-3)
         ("rust-reqwest" ,rust-reqwest-0.11)
-        ("rust-rsa" ,rust-rsa-0.5)
+        ("rust-rmpv" ,rust-rmpv-1)
+        ("rust-rsa" ,rust-rsa-0.9)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-serde-path-to-error" ,rust-serde-path-to-error-0.1)
         ("rust-serde-repr" ,rust-serde-repr-0.1)
-        ("rust-sha-1" ,rust-sha-1-0.9)
-        ("rust-sha2" ,rust-sha2-0.9)
-        ("rust-structopt" ,rust-structopt-0.3)
+        ("rust-sha1" ,rust-sha1-0.10)
+        ("rust-sha2" ,rust-sha2-0.10)
         ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-term-size" ,rust-term-size-0.3)
-        ("rust-textwrap" ,rust-textwrap-0.11)
+        ("rust-terminal-size" ,rust-terminal-size-0.2)
+        ("rust-textwrap" ,rust-textwrap-0.16)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-tokio" ,rust-tokio-1)
-        ("rust-totp-lite" ,rust-totp-lite-1)
+        ("rust-tokio-stream" ,rust-tokio-stream-0.1)
+        ("rust-tokio-tungstenite" ,rust-tokio-tungstenite-0.19)
+        ("rust-totp-lite" ,rust-totp-lite-2)
         ("rust-url" ,rust-url-2)
-        ("rust-uuid" ,rust-uuid-0.8)
-        ("rust-zeroize" ,rust-zeroize-1))))
+        ("rust-uuid" ,rust-uuid-1)
+        ("rust-zeroize" ,rust-zeroize-1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-completions
+           (lambda* (#:key native-inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (rbw (if ,(%current-target-system)
+                          (search-input-file native-inputs "/bin/rbw")
+                          (string-append out "/bin/rbw"))))
+               (mkdir-p (string-append share "/bash-completion/completions"))
+               (with-output-to-file
+                 (string-append share "/bash-completion/completions/rbw")
+                 (lambda _ (invoke rbw "gen-completions" "bash")))
+               (mkdir-p (string-append share "/fish/vendor_completions.d"))
+               (with-output-to-file
+                 (string-append share "/fish/vendor_completions.d/rbw.fish")
+                 (lambda _ (invoke rbw "gen-completions" "fish")))
+               (mkdir-p (string-append share "/zsh/site-functions"))
+               (with-output-to-file
+                 (string-append share "/zsh/site-functions/_rbw")
+                 (lambda _ (invoke rbw "gen-completions" "zsh")))
+               (mkdir-p (string-append share "/elvish/lib"))
+               (with-output-to-file
+                 (string-append share "/elvish/lib/rbw")
+                 (lambda _ (invoke rbw "gen-completions" "elvish"))))))
+         (add-after 'install 'install-scripts
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (scripts (assoc-ref outputs "scripts")))
+               (for-each (lambda (file)
+                           (install-file file (string-append scripts "/bin")))
+                         (find-files "bin"))
+               (for-each (lambda (file)
+                           (wrap-script file
+                             ;; TODO: Do we want to wrap these with more programs?
+                             ;; pass git fzf libsecret xclip rofi
+                             `("PATH" prefix
+                                (,(string-append out "/bin")
+                                 ,(dirname (search-input-file inputs "/bin/grep"))
+                                 ,(dirname (search-input-file inputs "/bin/sed"))
+                                 ,(dirname (search-input-file inputs "/bin/perl"))
+                                 ,(dirname (search-input-file inputs "/bin/xargs"))
+                                 ,(dirname (search-input-file inputs "/bin/sort"))))))
+                         (find-files (string-append scripts "/bin")))))))))
     (native-inputs
-     (list perl))
+     (cons* perl (if (%current-target-system)
+                   (list this-package)
+                   '())))
+    (inputs
+     (list coreutils-minimal findutils grep perl sed))
     (home-page "https://git.tozt.net/rbw")
     (synopsis "Unofficial Bitwarden CLI")
     (description "This package is an unofficial command line client for

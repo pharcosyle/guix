@@ -68,7 +68,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
-(define %jami-version "20230323.0")
+(define %jami-version "20230619.1")
 
 (define %jami-sources
   ;; Return an origin object of the tarball release sources archive of the
@@ -85,9 +85,10 @@
      '(delete-file-recursively "daemon/contrib/tarballs"))
     (sha256
      (base32
-      "0vjsjr37cb87j9hqbmipyxn4877k1wn3l0vzca3l3ldgknglz7v2"))
+      "0qb8jvgsqak1hbhkksxj2cxkcy6mb46zl904lwhxfgr5992pl33z"))
     (patches (search-patches "jami-disable-integration-tests.patch"
-                             "jami-libjami-headers-search.patch"))))
+                             "jami-libjami-headers-search.patch"
+                             "jami-qml-tests-discovery.patch"))))
 
 ;; Jami maintains a set of patches for some key dependencies (currently
 ;; pjproject and ffmpeg) of Jami that haven't yet been integrated upstream.
@@ -409,7 +410,6 @@
     (inputs
      (list alsa-lib
            asio
-           dbus-c++
            eudev
            ffmpeg-jami
            guile-3.0
@@ -424,6 +424,7 @@
            openssl
            pjproject-jami
            pulseaudio
+           sdbus-c++
            speex
            speexdsp
            webrtc-audio-processing
@@ -467,11 +468,7 @@ service definitions.")
               "-DENABLE_LIBWRAP=ON")
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'change-directory/maybe
-            (lambda _
-              ;; Allow building from the tarball or a git checkout.
-              (false-if-exception (chdir "client-qt"))))
-          (add-after 'change-directory/maybe 'fix-version-string
+          (add-after 'unpack 'fix-version-string
             (lambda _
               (substitute* "src/app/version.h"
                 (("VERSION_STRING")
@@ -488,22 +485,13 @@ service definitions.")
                 ;; The tests require a writable HOME.
                 (setenv "HOME" "/tmp")
 
-                (display "Running unittests...\n")
-                (invoke "tests/unittests" "-mutejamid")
+                (display "Running unit tests...\n")
+                (invoke "tests/unit_tests")
 
-                ;; XXX: There are currently multiple failures with the
-                ;; functional tests (see:
-                ;; https://git.jami.net/savoirfairelinux/jami-client-qt/-/issues/883),
-                ;; so the code below is disabled for now.
-                ;;
+                ;; XXX: The QML test suite fails, exiting with status code 1 (see:
+                ;; https://git.jami.net/savoirfairelinux/jami-client-qt/-/issues/883).
                 ;; (display "Running functional tests...\n")
-                ;; ;; This is to allow building from the source tarball or
-                ;; ;; directly from the git repository.
-                ;; (let  ((tests-qml (if (file-exists? "../client-qt/tests")
-                ;;                       "../client-qt/tests/qml"
-                ;;                       "../tests/qml")))
-                ;;   (invoke "tests/qml_tests" "-mutejamid"
-                ;;           "-input" tests-qml))
+                ;; (invoke "tests/qml_tests")
                 ))))))
     (native-inputs
      (list googletest
