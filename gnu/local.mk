@@ -62,6 +62,7 @@
 # Copyright © 2023 B. Wilson <elaexuotee@wilsonb.com>
 # Copyright © 2023 Bruno Victal <mirai@makinata.eu>
 # Copyright © 2023 gemmaro <gemmaro.dev@gmail.com>
+# Copyright © 2023 Herman Rimm <herman@rimm.ee>
 #
 # This file is part of GNU Guix.
 #
@@ -753,6 +754,7 @@ GNU_SYSTEM_MODULES =				\
 						\
   %D%/system/images/hurd.scm			\
   %D%/system/images/novena.scm			\
+  %D%/system/images/orangepi-r1-plus-lts-rk3328.scm	\
   %D%/system/images/pine64.scm			\
   %D%/system/images/pinebook-pro.scm		\
   %D%/system/images/rock64.scm			\
@@ -1071,10 +1073,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
   %D%/packages/patches/d-feet-drop-unused-meson-argument.patch	\
+  %D%/packages/patches/dante-non-darwin.patch			\
   %D%/packages/patches/date-output-pkg-config-files.patch	\
   %D%/packages/patches/datefudge-gettimeofday.patch		\
   %D%/packages/patches/dbacl-include-locale.h.patch		\
-  %D%/packages/patches/dbacl-icheck-multiple-definitions.patch		\
+  %D%/packages/patches/dbacl-icheck-multiple-definitions.patch	\
+  %D%/packages/patches/dblatex-inkscape-1.0.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
@@ -1086,8 +1090,17 @@ dist_patch_DATA =						\
   %D%/packages/patches/diffutils-fix-signal-processing.patch	\
   %D%/packages/patches/directfb-davinci-glibc-228-compat.patch	\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
-  %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
-  %D%/packages/patches/docbook-xsl-support-old-url.patch	\
+  %D%/packages/patches/docbook-utils-documentation-edits.patch	\
+  %D%/packages/patches/docbook-utils-escape-characters.patch	\
+  %D%/packages/patches/docbook-utils-remove-jade-sp.patch	\
+  %D%/packages/patches/docbook-utils-respect-refentry-for-name.patch	\
+  %D%/packages/patches/docbook-utils-source-date-epoch.patch	\
+  %D%/packages/patches/docbook-utils-use-date-element.patch	\
+  %D%/packages/patches/docbook2x-filename-handling.patch	\
+  %D%/packages/patches/docbook2x-fix-synopsis.patch		\
+  %D%/packages/patches/docbook2x-manpage-typo.patch		\
+  %D%/packages/patches/docbook2x-preprocessor-declaration.patch	\
+  %D%/packages/patches/docbook2x-static-datadir-evaluation.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/dovecot-opensslv3.patch			\
@@ -1175,6 +1188,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fifengine-swig-compat.patch		\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
+  %D%/packages/patches/file-32bit-time.patch			\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/firebird-riscv64-support-pt1.patch	\
   %D%/packages/patches/firebird-riscv64-support-pt2.patch	\
@@ -1246,6 +1260,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-5-fix-powerpc64le-build.patch	\
   %D%/packages/patches/gcc-5-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-5-source-date-epoch-2.patch		\
+  %D%/packages/patches/gcc-5.5.0-libstdc++-xmlcatalog.patch	\
   %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
@@ -1264,6 +1279,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-12-cross-environment-variables.patch \
   %D%/packages/patches/gcc-10-tree-sra-union-handling.patch	\
   %D%/packages/patches/gcc-11-libstdc++-powerpc.patch           \
+  %D%/packages/patches/gcc-13.2.0-libstdc++-docbook-xsl-uri.patch	\
+  %D%/packages/patches/gcc-13.2.0-libstdc++-info-install-fix.patch	\
   %D%/packages/patches/gcolor3-update-libportal-usage.patch	\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-brect-bounds.patch			\
@@ -1318,6 +1335,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-2.37-hurd-clock_t_centiseconds.patch	\
   %D%/packages/patches/glibc-2.37-hurd-local-clock_gettime_MONOTONIC.patch	\
   %D%/packages/patches/glibc-2.37-versioned-locpath.patch	\
+  %D%/packages/patches/glibc-2.38-hurd-ucontext.patch		\
+  %D%/packages/patches/glibc-2.38-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-hurd-clock_t_centiseconds.patch	\
   %D%/packages/patches/glibc-hurd-getauxval.patch		\
   %D%/packages/patches/glibc-hurd-gettyent.patch		\
@@ -1350,7 +1369,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnupg-1-build-with-gcc10.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
-  %D%/packages/patches/gnutls-cross.patch			\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-absolute-shlib-path-1.72.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
@@ -1579,6 +1597,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libqalculate-3.8.0-libcurl-ssl-fix.patch	\
   %D%/packages/patches/libquicktime-ffmpeg.patch 		\
   %D%/packages/patches/librecad-support-for-boost-1.76.patch	\
+  %D%/packages/patches/libsepol-versioned-docbook.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtgvoip-disable-sse2.patch 		\
   %D%/packages/patches/libtgvoip-disable-webrtc.patch 		\
@@ -2009,10 +2028,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/shakespeare-spl-fix-grammar.patch		\
   %D%/packages/patches/shared-mime-info-xdgmime-path.patch	\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
-  %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
-  %D%/packages/patches/slim-sigusr1.patch			\
-  %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/slim-display.patch			\
   %D%/packages/patches/stex-copy-from-immutable-store.patch	\
@@ -2078,13 +2094,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-bcg729.patch			\
   %D%/packages/patches/u-boot-allow-disabling-openssl.patch	\
-  %D%/packages/patches/u-boot-fix-build-python-3.10.patch	\
-  %D%/packages/patches/u-boot-fix-u-boot-lib-build.patch	\
   %D%/packages/patches/u-boot-nintendo-nes-serial.patch		\
   %D%/packages/patches/u-boot-patman-change-id.patch	\
   %D%/packages/patches/u-boot-rockchip-inno-usb.patch		\
-  %D%/packages/patches/u-boot-sifive-prevent-reloc-initrd-fdt.patch	\
-  %D%/packages/patches/u-boot-rk3399-enable-emmc-phy.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/ultrastar-deluxe-no-freesans.patch		\
   %D%/packages/patches/ungoogled-chromium-extension-search-path.patch	\

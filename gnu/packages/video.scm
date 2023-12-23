@@ -67,6 +67,7 @@
 ;;; Copyright © 2023 Dominik Delgado Steuter <dds@disroot.org>
 ;;; Copyright © 2023 Saku Laesvuori <saku@laesvuori.fi>
 ;;; Copyright © 2023 Jaeme Sifat <jaeme@runbox.com>
+;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1243,7 +1244,8 @@ H.264 (MPEG-4 AVC) video streams.")
     (native-inputs
      (list perl-module-build perl-test-pod perl-test-simple))
     (inputs
-     (list perl-data-dump
+     (list bash-minimal
+           perl-data-dump
            perl-digest-md5
            perl-encode
            ffmpeg
@@ -1533,7 +1535,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libplacebo
   (package
     (name "libplacebo")
-    (version "4.208.0")
+    (version "6.338.1")
     (source
      (origin
        (method git-fetch)
@@ -1542,16 +1544,16 @@ libebml is a C++ library to read and write EBML files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "161dp5781s74ca3gglaxlmchx7glyshf0wg43w98pl22n1jcm5qk"))))
+        (base32 "1miqk3gfwah01xkf4a6grwq29im0lfh94gp92y7js855gx3v169m"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       `("-Dopengl=enabled"
-         ,(string-append "-Dvulkan-registry="
-                         (assoc-ref %build-inputs "vulkan-headers")
-                         "/share/vulkan/registry/vk.xml"))))
+     (list #:configure-flags
+           #~(list "-Dopengl=enabled"
+                   (string-append "-Dvulkan-registry="
+                                  #$(this-package-input "vulkan-headers")
+                                  "/share/vulkan/registry/vk.xml"))))
     (native-inputs
-     (list python python-mako pkg-config))
+     (list glad python python-mako pkg-config))
     (inputs
      (list lcms
            libepoxy
@@ -1898,7 +1900,7 @@ audio/video codec library.")
                "0np0yalqdrm7rn7iykgfzz3ly4vbgigrajg48c1l6n7qrzqvfszv"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg-4)
-       ((#:modules modules %gnu-build-system-modules)
+       ((#:modules modules %default-gnu-modules)
         `((srfi srfi-1)
           ,@modules))
        ((#:configure-flags flags)
@@ -2202,8 +2204,7 @@ input files is possible, including video files.")
                ;; Some of the tests require using the display to test out VLC,
                ;; which fails in our sandboxed build system
                (substitute* "test/run_vlc.sh"
-                 (("./vlc --ignore-config") "echo"))
-               #t)))
+                 (("./vlc --ignore-config") "echo")))))
          (add-after 'strip 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The 'install-exec-hook' rule in the top-level Makefile.am
@@ -2229,8 +2230,7 @@ input files is possible, including video files.")
              (let ((out (assoc-ref outputs "out"))
                    (plugin-path (getenv "QT_PLUGIN_PATH")))
                (wrap-program (string-append out "/bin/vlc")
-                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
-             #t)))))
+                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path)))))))))
     (home-page "https://www.videolan.org/")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
@@ -2338,7 +2338,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.36.0")
+    (version "0.37.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2346,8 +2346,8 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1ri06h7pv6hrxmxxc618n9hymlgr0gfx38bqq5dcszdgnlashsgk"))))
-    (build-system waf-build-system)
+               (base32 "1xcyfpd543lbmg587wi0mahrz8vhyrlr4432054vp6wsi3s36c4b"))))
+    (build-system meson-build-system)
     (arguments
      (list
       #:phases
@@ -2364,21 +2364,15 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               ;; and passed as linker flags, but the order in which they are added
               ;; varies.  See <https://github.com/mpv-player/mpv/issues/7855>.
               ;; Set PYTHONHASHSEED as a workaround for deterministic results.
-              (setenv "PYTHONHASHSEED" "1")))
-          (add-before 'configure 'set-up-waf
-            (lambda* (#:key inputs #:allow-other-keys)
-              (copy-file (search-input-file inputs "bin/waf") "waf")
-              (setenv "CC" #$(cc-for-target)))))
+              (setenv "PYTHONHASHSEED" "1"))))
       #:configure-flags
-      #~(list "--enable-libmpv-shared"
-              "--enable-cdda"
-              "--enable-dvdnav"
-              "--disable-build-date")
-      ;; No check function defined.
-      #:tests? #f))
+      #~(list "-Dlibmpv=true"
+              "-Dcdda=enabled"
+              "-Ddvdnav=enabled"
+              "-Dbuild-date=false")))
     (native-inputs
      (list perl ; for zsh completion file
-           pkg-config python-docutils))
+           pkg-config python-docutils python-wrapper))
     ;; Missing features: libguess, V4L2.
     (inputs
      (list alsa-lib
@@ -2395,6 +2389,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
            libdvdread
            libdvdnav
            libjpeg-turbo
+           libplacebo
            libva
            libvdpau
            libx11
@@ -2405,13 +2400,11 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
            libxrandr
            libxscrnsaver
            libxv
-           ;; XXX: lua > 5.2 is not currently supported; see
-           ;; waftools/checks/custom.py
+           ;; XXX: lua > 5.2 is not currently supported; see meson.build
            lua-5.2
            mesa
            mpg123
            pulseaudio
-           python-waf
            rsound
            shaderc
            vulkan-headers
@@ -2419,6 +2412,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
            wayland
            wayland-protocols
            yt-dlp
+           zimg
            zlib))
     (home-page "https://mpv.io/")
     (synopsis "Audio and video player")
@@ -2882,7 +2876,8 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
     (native-inputs
      (list perl-module-build))
     (inputs
-     (list perl-data-dump
+     (list bash-minimal
+           perl-data-dump
            perl-file-sharedir
            perl-gtk2
            perl-json
@@ -2916,8 +2911,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                             "bin/gtk3-youtube-viewer")
                (("'xdg-open'")
                 (format #f "'~a/bin/xdg-open'"
-                        (assoc-ref inputs "xdg-utils"))))
-             #t))
+                        (assoc-ref inputs "xdg-utils"))))))
          (add-after 'install 'install-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2925,8 +2919,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                (install-file "share/gtk-youtube-viewer.desktop"
                              (string-append sharedir "/applications"))
                (install-file "share/icons/gtk-youtube-viewer.png"
-                             (string-append sharedir "/pixmaps"))
-               #t)))
+                             (string-append sharedir "/pixmaps")))))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2935,8 +2928,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
                     (lib-path (getenv "PERL5LIB")))
                (for-each (cut wrap-program <>
                               `("PERL5LIB" ":" prefix (,lib-path ,site-dir)))
-                         (find-files bin-dir))
-               #t))))))
+                         (find-files bin-dir))))))))
     (synopsis
      "Lightweight application for searching and streaming videos from YouTube")
     (description
@@ -3760,6 +3752,35 @@ Window Capture source.
 
 This may help improve your viewers watching experience, and allows you to use
 your host privately.")
+    (license license:gpl2+)))
+
+(define-public obs-pipewire-audio-capture
+  (package
+    (name "obs-pipewire-audio-capture")
+    (version "1.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dimtpap/obs-pipewire-audio-capture")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qjl8xlaf54zgz34f1dfybdg2inc2ir42659kh15ncihpgbx0wzl"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f ; no test target
+      #:configure-flags
+      #~(list (string-append "-DLIBOBS_INCLUDE_DIR="
+                             #$(this-package-input "obs") "/lib")
+              "-Wno-dev")))
+    (native-inputs (list libconfig pkg-config))
+    (inputs (list obs pipewire))
+    (home-page "https://obsproject.com/forum/resources/pipewire-audio-capture.1458/")
+    (synopsis "Audio device and application capture for OBS Studio using PipeWire")
+    (description "This plugin adds 3 sources for capturing audio outputs,
+inputs and applications using PipeWire.")
     (license license:gpl2+)))
 
 (define-public obs-websocket
@@ -5097,7 +5118,8 @@ API.  It includes bindings for Python, Ruby, and other languages.")
            (delete-file-recursively "src/images/fonts") #t))))
     (build-system python-build-system)
     (inputs
-     (list ffmpeg
+     (list bash-minimal
+           ffmpeg
            font-dejavu
            libopenshot
            python
@@ -5126,14 +5148,12 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                         (substitute* "src/classes/app.py"
                           (("info.IMAGES_PATH") (string-append "\"" font "\""))
                           (("fonts") "share/fonts/truetype")
-                          (("[A-Za-z_-]+.ttf") "DejaVuSans.ttf")))
-                      #t))
+                          (("[A-Za-z_-]+.ttf") "DejaVuSans.ttf")))))
                   (add-before 'install 'set-tmp-home
                     (lambda _
                       ;; src/classes/info.py "needs" to create several
                       ;; directories in $HOME when loaded during build
-                      (setenv "HOME" "/tmp")
-                      #t))
+                      (setenv "HOME" "/tmp")))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key outputs inputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
@@ -5285,7 +5305,8 @@ video from a Wayland session.")
     (native-inputs
      (list gettext-minimal pkg-config))
     (inputs
-     (list python-pygobject
+     (list bash-minimal
+           python-pygobject
            gtk+
            python-pycairo ; Required or else clicking on a subtitle line fails.
            python-chardet ; Optional: Character encoding detection.
@@ -5743,7 +5764,10 @@ brightness, contrast, and frame rate.")
                  `("PERL5LIB" ":"
                    prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))))))))
     (inputs
-     (list perl-mojolicious perl-lwp-protocol-https perl-xml-libxml))
+     (list bash-minimal
+           perl-mojolicious
+           perl-lwp-protocol-https
+           perl-xml-libxml))
     (home-page "https://github.com/get-iplayer/get_iplayer")
     (synopsis "Download or stream available BBC iPlayer TV and radio programmes")
     (description "@code{get_iplayer} lists, searches and records BBC iPlayer

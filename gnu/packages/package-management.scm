@@ -491,7 +491,8 @@ $(prefix)/etc/openrc\n")))
                        ("help2man" ,help2man)
                        ("po4a" ,po4a)))
       (inputs
-       `(("bzip2" ,bzip2)
+       `(("bash-minimal", bash-minimal)
+         ("bzip2" ,bzip2)
          ("gzip" ,gzip)
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
@@ -1510,8 +1511,8 @@ environments.")
                   "0k9zkdyyzir3fvlbcfcqy17k28b51i20rpbjwlx2i1mwd2pw9cxc")))))))
 
 (define-public guix-build-coordinator
-  (let ((commit "78df0b3a9f4f27df8341da36d4dfa8e49dfad900")
-        (revision "92"))
+  (let ((commit "e4af682452580298b34681d37818a16771a17c66")
+        (revision "93"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1522,16 +1523,16 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "06xp38k6yfvsvl20hrqvmarpysd07nkbj53an729lqr50qdd4jcq"))
+                  "1i8x9nfpvg832lxwbpjl1kadldpkcnjlxdxl4c5jqx2hz680ylf3"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
        (list
         #:modules `(((guix build guile-build-system)
                      #:select (target-guile-effective-version))
-                    ,@%gnu-build-system-modules)
+                    ,@%default-gnu-modules)
         #:imported-modules `((guix build guile-build-system)
-                             ,@%gnu-build-system-modules)
+                             ,@%default-gnu-imported-modules)
         #:phases
         #~(modify-phases %standard-phases
             (add-before 'build 'set-GUILE_AUTO_COMPILE
@@ -1570,6 +1571,9 @@ environments.")
                             ,@(or (and=> (assoc-ref inputs "sqitch")
                                          list)
                                   '())))
+                         `("GUIX_LOCPATH" ":" prefix
+                           (,(string-append (assoc-ref inputs "glibc-utf8-locales")
+                                            "/lib/locale")))
                          `("GUILE_LOAD_PATH" ":" prefix
                            (,scm ,(string-join
                                    (map (lambda (input)
@@ -1608,6 +1612,7 @@ environments.")
        (list (first (assoc-ref (package-native-inputs guix) "guile"))
              sqlite
              bash-minimal
+             (libc-utf8-locales-for-target)
              sqitch))
       (propagated-inputs
        (list guile-prometheus
@@ -1647,7 +1652,8 @@ outputs of those builds.")
            (first (assoc-ref (package-native-inputs guix) "guile"))))
     (inputs
      (list (first (assoc-ref (package-native-inputs guix) "guile"))
-           bash-minimal))
+           bash-minimal
+           (libc-utf8-locales-for-target)))
     (propagated-inputs
      (list guile-prometheus
            guile-gcrypt
@@ -1773,9 +1779,9 @@ in an isolated environment, in separate namespaces.")
        (list
         #:modules `(((guix build guile-build-system)
                      #:select (target-guile-effective-version))
-                    ,@%gnu-build-system-modules)
+                    ,@%default-gnu-modules)
         #:imported-modules `((guix build guile-build-system)
-                             ,@%gnu-build-system-modules)
+                             ,@%default-gnu-imported-modules)
         #:phases
         #~(modify-phases %standard-phases
             (add-before 'build 'set-GUILE_AUTO_COMPILE
@@ -2193,19 +2199,18 @@ Python eggs, Ruby gems, and more to RPMs, debs, Solaris packages and more.")
                         (mkdir-p datadir)
                         (invoke "touch" (string-append datadir "index.db"))
                         (setenv "HOME" home))
-                      (invoke "./bootstrap")
-                      #t))
+                      (invoke "./bootstrap")))
                   (add-after 'install 'wrap-executables
                     (lambda* (#:key outputs inputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
                             (curl (assoc-ref inputs "curl")))
                         (wrap-program (string-append out "/bin/akku")
-                          `("LD_LIBRARY_PATH" ":" prefix (,(string-append curl "/lib"))))
-                        #t))))))
+                          `("LD_LIBRARY_PATH" ":" prefix
+                            (,(string-append curl "/lib"))))))))))
     (native-inputs
      (list which autoconf automake pkg-config))
     (inputs
-     (list guile-3.0 curl))
+     (list bash-minimal guile-3.0 curl))
     (home-page "https://akkuscm.org/")
     (synopsis "Language package manager for Scheme")
     (description

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020, 2021, 2023 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
@@ -299,6 +299,10 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                 (substitute* '("portal-support-snap.c")
                   (("g_test_init .*")
                    "return EXIT_SUCCESS;")))
+              (substitute* "glib/tests/error.c"
+                ;; This test segfaults with glibc 2.38.
+                (("g_test_add_func.*new-valist/invalid.*" all)
+                 (string-append "//" all "\n")))
 
               #$@(if (target-x86-32?)
                      ;; Comment out parts of timer.c that fail on i686 due to
@@ -752,7 +756,7 @@ The intltool collection can be used to do these things:
                "1jl7gsr7aclb9nvqazr039m86y7f7ivfhl2pixcrbfqjkb97r6kb"))))
     (build-system gnu-build-system)
     (inputs
-     (list libxml2 python-libxml2 python))
+     (list bash-minimal libxml2 python-libxml2 python))
     (arguments
      (list
       #:phases

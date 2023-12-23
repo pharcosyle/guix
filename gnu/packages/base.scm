@@ -69,6 +69,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix search-paths)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 optargs)
@@ -122,9 +123,11 @@ command-line arguments, multiple languages, and so on.")
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs (list perl))                   ;some of the tests require it
-   (inputs (list pcre))
+   (inputs (list pcre2))
    (arguments
-    `(#:phases
+    `(#:configure-flags
+      (list "--enable-perl-regexp")
+      #:phases
       (modify-phases %standard-phases
         (add-after 'install 'fix-egrep-and-fgrep
           ;; Patch 'egrep' and 'fgrep' to execute 'grep' via its
@@ -794,27 +797,26 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.35")
-   (replacement glibc/fixed)
+   (version "2.38")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "0bpm1kfi09dxl4c6aanc5c9951fmf6ckkzay60cx7k37dcpp68si"))
+              "1lizxxqbfma5zgmcj0gk5iyk171f2nfvdhbv8rjrkcmjk24rk0pv"))
             (patches (search-patches "glibc-ldd-powerpc.patch"
-                                     "glibc-ldd-x86_64.patch"
+                                     "glibc-2.38-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
-                                     "glibc-versioned-locpath.patch"
-                                     "glibc-allow-kernel-2.6.32.patch"
+                                     "glibc-2.37-versioned-locpath.patch"
+                                     ;; "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
                                      "glibc-supported-locales.patch"
-                                     "glibc-cross-objdump.patch"
-                                     "glibc-cross-objcopy.patch" ;must come 2nd
-                                     "glibc-hurd-clock_t_centiseconds.patch"
-                                     "glibc-hurd-clock_gettime_monotonic.patch"
+                                     "glibc-2.37-hurd-clock_t_centiseconds.patch"
+                                     "glibc-2.37-hurd-local-clock_gettime_MONOTONIC.patch"
+                                     "glibc-2.38-hurd-ucontext.patch"
                                      "glibc-hurd-mach-print.patch"
-                                     "glibc-hurd-gettyent.patch"))))
+                                     "glibc-hurd-gettyent.patch"
+                                     "glibc-hurd-getauxval.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -875,6 +877,10 @@ the store.")
                                            '%build-inputs)
                                       "kernel-headers")
                            "/include")
+
+            ;; Libcrypt and <crypt.h> are deprecated in glibc 2.38 and not
+            ;; built by default.  Build it to reduce application breakage.
+            "--enable-crypt"
 
             ;; This is the default for most architectures as of GNU libc 2.26,
             ;; but we specify it explicitly for clarity and consistency.  See
@@ -965,19 +971,13 @@ the store.")
                      ;; and as such, it is useful to have these ".a" files in
                      ;; OUT in addition to STATIC.
 
-                     ;; XXX: It might be better to determine whether a static
-                     ;; library is empty by some criterion (such as their file
-                     ;; size equaling eight bytes) rather than hardcoding them
-                     ;; by name.
-
-                     ;; XXX: We forgot librt.a for the current version!  In
-                     ;; the meantime, gcc-toolchain provides it, but remove
-                     ;; that fix once librt.a is added here.
-                     (define empty-static-libraries
-                       '("libpthread.a" "libdl.a" "libutil.a" "libanl.a"))
                      (define (empty-static-library? file)
-                       (any (lambda (s)
-                              (string=? file s)) empty-static-libraries))
+                       ;; Return true if FILE is an 'ar' archive with nothing
+                       ;; beyond the header.
+                       (let ((file (string-append (assoc-ref outputs "out")
+                                                  "/lib/" file)))
+                         (and (ar-file? file)
+                              (= (stat:size (stat file)) 8))))
 
                      (define (static-library? file)
                        ;; Return true if FILE is a static library.  The
@@ -1020,6 +1020,26 @@ the store.")
                                          (map (cut string-append slib "/" <>)
                                               files))))))
 
+                 (add-after 'install 'install-utf8-c-locale
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Install the C.UTF-8 locale so there's always a UTF-8
+                     ;; locale around.
+                     (let* ((out (assoc-ref outputs "out"))
+                            (bin (string-append out "/bin"))
+                            (locale (string-append out "/lib/locale/"
+                                                   ,(package-version
+                                                     this-package))))
+                       (mkdir-p locale)
+
+                       ;; FIXME: When cross-compiling, attempt to use
+                       ;; 'localedef' from the same libc version.
+                       (invoke ,(if (%current-target-system)
+                                    "true"
+                                    '(string-append bin "/localedef"))
+                               "--no-archive" "--prefix" locale
+                               "-i" "C" "-f" "UTF-8"
+                               (string-append locale "/C.UTF-8")))))
+
                  ,@(if (target-hurd?)
                        '((add-after 'install 'augment-libc.so
                            (lambda* (#:key outputs #:allow-other-keys)
@@ -1052,7 +1072,8 @@ the store.")
     ;; distros.
     (list (search-path-specification
            (variable "GUIX_LOCPATH")
-           (files '("lib/locale")))))
+           (files '("lib/locale")))
+          $TZDIR))
 
    (synopsis "The GNU C Library")
    (description
@@ -1064,15 +1085,6 @@ The GNU C library is used as the C library in the GNU system and most systems
 with the Linux kernel.")
    (license lgpl2.0+)
    (home-page "https://www.gnu.org/software/libc/")))
-
-(define glibc/fixed
-  (package
-    (inherit glibc)
-    (source
-     (origin (inherit (package-source glibc))
-             (patches
-              (append (search-patches "glibc-2.35-CVE-2023-4911.patch")
-                      (origin-patches (package-source glibc))))))))
 
 ;; Define a variation of glibc which uses the default /etc/ld.so.cache, useful
 ;; in FHS containers.
@@ -1091,9 +1103,42 @@ with the Linux kernel.")
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
-(define-public glibc-2.33
+(define-public glibc-2.35
   (package
     (inherit glibc)
+    (version "2.35")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0bpm1kfi09dxl4c6aanc5c9951fmf6ckkzay60cx7k37dcpp68si"))
+              (patches (search-patches "glibc-2.35-CVE-2023-4911.patch"
+                                       "glibc-ldd-powerpc.patch"
+                                       "glibc-ldd-x86_64.patch"
+                                       "glibc-dl-cache.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-allow-kernel-2.6.32.patch"
+                                       "glibc-reinstate-prlimit64-fallback.patch"
+                                       "glibc-supported-locales.patch"
+                                       "glibc-cross-objdump.patch"
+                                       "glibc-cross-objcopy.patch" ;must come 2nd
+                                       "glibc-hurd-clock_t_centiseconds.patch"
+                                       "glibc-hurd-clock_gettime_monotonic.patch"
+                                       "glibc-hurd-mach-print.patch"
+                                       "glibc-hurd-gettyent.patch"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments glibc)
+       ((#:phases phases)
+        ;; The C.UTF-8 fails to build in glibc 2.35:
+        ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=28861>.
+        ;; It is missing altogether in versions earlier than 2.35.
+        `(modify-phases ,phases
+           (delete 'install-utf8-c-locale)))))))
+
+(define-public glibc-2.33
+  (package
+    (inherit glibc-2.35)
     (name "glibc")
     (version "2.33")
     (source (origin
@@ -1120,7 +1165,7 @@ with the Linux kernel.")
 
 (define-public glibc-2.32
   (package
-    (inherit glibc)
+    (inherit glibc-2.35)
     (version "2.32")
     (source (origin
               (inherit (package-source glibc))
@@ -1175,7 +1220,7 @@ with the Linux kernel.")
 
 (define-public glibc-2.31
   (package
-    (inherit glibc)
+    (inherit glibc-2.35)
     (version "2.31")
     (source (origin
               (inherit (package-source glibc))
@@ -1304,7 +1349,7 @@ to the @code{share/locale} sub-directory of this package.")
             ,@modules))
          ((#:imported-modules modules '())
           `((gnu build locale)
-            ,@%gnu-build-system-modules))
+            ,@%default-gnu-imported-modules))
          ((#:phases phases)
           `(modify-phases ,phases
              (replace 'build
@@ -1352,51 +1397,64 @@ to the @code{share/locale} sub-directory of this package.")
 (define %default-utf8-locales
   ;; These are the locales commonly used for tests---e.g., in Guile's i18n
   ;; tests.
-  '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))
+  '("C" "de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))
+
 (define*-public (make-glibc-utf8-locales glibc #:key
                                          (locales %default-utf8-locales)
                                          (name "glibc-utf8-locales"))
-  (define default-locales? (equal? locales %default-utf8-locales))
+  (define default-locales?
+    (equal? locales %default-utf8-locales))
+
   (package
     (name name)
     (version (package-version glibc))
     (source #f)
     (build-system trivial-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
+     (list #:modules '((guix build utils))
+           #:builder
+           #~(begin
+               (use-modules (guix build utils))
 
-                   (let* ((libc      (assoc-ref %build-inputs "glibc"))
-                          (gzip      (assoc-ref %build-inputs "gzip"))
-                          (out       (assoc-ref %outputs "out"))
-                          (localedir (string-append out "/lib/locale/"
-                                                    ,(version-major+minor version))))
-                     ;; 'localedef' needs 'gzip'.
-                     (setenv "PATH" (string-append libc "/bin:" gzip "/bin"))
+               (let* ((libc      (dirname
+                                  (search-input-file %build-inputs
+                                                     "/bin/localedef")))
+                      (gzip      (dirname
+                                  (search-input-file %build-inputs
+                                                     "/bin/gzip")))
+                      (out       #$output)
+                      (localedir (string-append out "/lib/locale/"
+                                                #$(version-major+minor
+                                                   (package-version this-package)))))
+                 ;; 'localedef' needs 'gzip'.
+                 (setenv "PATH" (string-append libc ":" gzip ""))
 
-                     (mkdir-p localedir)
-                     (for-each (lambda (locale)
-                                 (define file
-                                   ;; Use the "normalized codeset" by
-                                   ;; default--e.g., "en_US.utf8".
-                                   (string-append localedir "/" locale ".utf8"))
+                 (mkdir-p localedir)
+                 (for-each (lambda (locale)
+                             (define file
+                               ;; Use the "normalized codeset" by
+                               ;; default--e.g., "en_US.utf8".
+                               (string-append localedir "/" locale ".utf8"))
 
-                                 (invoke "localedef" "--no-archive"
-                                         "--prefix" localedir
-                                         "-i" locale
-                                         "-f" "UTF-8" file)
+                             (invoke "localedef" "--no-archive"
+                                     "--prefix" localedir
+                                     "-i" locale
+                                     "-f" "UTF-8" file)
 
-                                 ;; For backward compatibility with Guix
-                                 ;; <= 0.8.3, add "xx_YY.UTF-8".
-                                 (symlink (string-append locale ".utf8")
-                                          (string-append localedir "/"
-                                                         locale ".UTF-8")))
-                               ',locales)
-                     #t))))
-    (native-inputs
-     `(("glibc" ,glibc)
-       ("gzip" ,gzip)))
+                             ;; For backward compatibility with Guix
+                             ;; <= 0.8.3, add "xx_YY.UTF-8".
+                             (symlink (string-append locale ".utf8")
+                                      (string-append localedir "/"
+                                                     locale ".UTF-8")))
+
+                           ;; The C.UTF-8 locale was introduced in 2.35 but it
+                           ;; fails to build there:
+                           ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=28861>.
+                           '#$(if (version>? (package-version this-package)
+                                             "2.35")
+                                  locales
+                                  (delete "C" locales)))))))
+    (native-inputs (list glibc gzip))
     (synopsis (if default-locales?
                   (P_ "Small sample of UTF-8 locales")
                   (P_ "Customized sample of UTF-8 locales")))
@@ -1544,9 +1602,14 @@ command.")
 (define* (libc-utf8-locales-for-target #:optional
                                        (target (or (%current-target-system)
                                                    (%current-system))))
-  (if (target-hurd? target)
-      glibc-utf8-locales/hurd
-      glibc-utf8-locales))
+  "Return the glibc UTF-8 locale package for TARGET."
+  ;; Note: To avoid circular dependencies (such as: texinfo ->
+  ;; glibc-utf8-locales -> glibc -> texinfo), refer to
+  ;; 'glibc-utf8-locales-final' via 'canonical-package'.
+  (canonical-package
+   (if (target-hurd? target)
+       glibc-utf8-locales/hurd
+       glibc-utf8-locales)))
 
 (define-public tzdata
   (package

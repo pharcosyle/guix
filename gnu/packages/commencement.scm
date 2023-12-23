@@ -145,7 +145,7 @@ the checkout from TARBALL, a tarball containing said checkout.
        #:tests? #f
        #:guile ,%bootstrap-guile
        #:imported-modules ((guix build gnu-bootstrap)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases
        (begin
          (use-modules (guix build gnu-bootstrap))
@@ -185,7 +185,7 @@ pure Scheme to Tar and decompression in one easy step.")
        #:tests? #f
        #:guile ,%bootstrap-guile
        #:imported-modules ((guix build gnu-bootstrap)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases
        (begin
          (use-modules (guix build gnu-bootstrap))
@@ -214,7 +214,7 @@ pure Scheme to Tar and decompression in one easy step.")
        #:tests? #f
        #:guile ,%bootstrap-guile
        #:imported-modules ((guix build gnu-bootstrap)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases
        (begin
          (use-modules (guix build gnu-bootstrap))
@@ -1926,6 +1926,11 @@ exec " gcc "/bin/" program
   (let ((pkg (mesboot-package "grep-mesboot" grep)))
     (package
       (inherit pkg)
+      (arguments
+       (substitute-keyword-arguments
+         (strip-keyword-arguments
+           '(#:configure-flags)
+           (package-arguments pkg))))
       (native-inputs
        `(("sed" ,sed-mesboot)
          ,@(package-native-inputs pkg))))))
@@ -3236,7 +3241,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
       ;; Additional modules for the libstdc++ phase below.
       #:modules `((srfi srfi-1)
                   (srfi srfi-26)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
 
       (substitute-keyword-arguments (package-arguments gcc)
         ((#:make-flags flags)
@@ -3389,17 +3394,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    #:guile guile-final
                    #:bash bash-final))
 
-(define (%boot5-inputs)
-  ;; Now with UTF-8 locales.  Remember that the bootstrap binaries were built
-  ;; with an older libc, which cannot load the new locale format.  See
-  ;; <https://lists.gnu.org/archive/html/guix-devel/2015-08/msg00737.html>.
-  `(("locales" ,(if (target-hurd?)
-                    glibc-utf8-locales-final/hurd
-                    glibc-utf8-locales-final))
-    ,@(%boot4-inputs)))
-
-(define with-boot5
-  (package-with-explicit-inputs %boot5-inputs))
+;; There used to be a "stage 5" including a variant of the
+;; 'glibc-utf8-locales' package.  This is no longer necessary since 'glibc'
+;; embeds the "C.UTF-8" locale, but these aliases are kept for convenience.
+(define %boot5-inputs %boot4-inputs)
+(define with-boot5 with-boot4)
 
 (define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
@@ -3438,7 +3437,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; built before gzip.
   (let ((grep (with-boot5 (package-with-bootstrap-guile grep))))
     (package/inherit grep
-                     (inputs (alist-delete "pcre" (package-inputs grep)))
+                     (arguments (substitute-keyword-arguments
+                                  (strip-keyword-arguments
+                                    '(#:configure-flags)
+                                    (package-arguments grep))))
+                     (inputs (alist-delete "pcre2" (package-inputs grep)))
                      (native-inputs `(("perl" ,perl-boot0))))))
 
 (define xz-final
@@ -3484,7 +3487,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    ("diffutils" ,diffutils)
                    ("patch" ,patch)
                    ("findutils" ,findutils)
-                   ("gawk" ,gawk)))
+                   ("gawk" ,(package/inherit gawk
+                              (native-inputs
+                               (list (if (target-hurd?)
+                                         glibc-utf8-locales-final/hurd
+                                         glibc-utf8-locales-final)))))))
           ("sed" ,sed-final)
           ("grep" ,grep-final)
           ("xz" ,xz-final)
@@ -3495,10 +3502,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
           ("binutils" ,binutils-final)
           ("gcc" ,gcc-final)
           ("libc" ,glibc-final)
-          ("libc:static" ,glibc-final "static")
-          ("locales" ,(if (target-hurd? (%current-system))
-                          glibc-utf8-locales-final/hurd
-                          glibc-utf8-locales-final)))))))
+          ("libc:static" ,glibc-final "static"))))))
 
 (define-public canonical-package
   (let ((name->package (mlambda (system)
@@ -3509,6 +3513,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                                 package result))))
                                vlist-null
                                `(("guile" ,guile-final)
+                                 ("glibc-utf8-locales"
+                                  ,(if (target-hurd? system)
+                                       glibc-utf8-locales-final/hurd
+                                       glibc-utf8-locales-final))
                                  ,@(%final-inputs system))))))
     (lambda (package)
       "Return the 'canonical' variant of PACKAGE---i.e., if PACKAGE is one of
@@ -3574,15 +3582,7 @@ COREUTILS-FINAL vs. COREUTILS, etc."
                                                      "libc-debug")))
                        (union-build (assoc-ref %outputs "static")
                                     (list (assoc-ref %build-inputs
-                                                     "libc-static")))
-                       ;; XXX Remove once an empty librt.a is added to
-                       ;; libc:out.
-                       (copy-file
-                        (string-append (assoc-ref %outputs "out")
-                                       "/lib/libpthread.a")
-                        (string-append (assoc-ref %outputs "out")
-                                       "/lib/librt.a"))
-                       #t))))
+                                                     "libc-static")))))))
 
       (native-search-paths
        (append (package-native-search-paths gcc)

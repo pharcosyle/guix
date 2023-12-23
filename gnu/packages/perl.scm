@@ -599,14 +599,7 @@ requires only 10MB of RAM.")
      (list libxslt))
     (propagated-inputs
      (list perl-class-xsaccessor perl-test-trap))
-    (native-search-paths
-     ;; xsltproc's search paths, to avoid propagating libxslt.
-     (list (search-path-specification
-            (variable "XML_CATALOG_FILES")
-            (separator " ")
-            (files '("xml"))
-            (file-pattern "^catalog\\.xml$")
-            (file-type 'regular))))
+    (native-search-paths %libxslt-search-paths)
     (home-page "https://www.shlomifish.org/open-source/projects/docmake/")
     (synopsis "Translate DocBook/XML documentation into other file formats")
     (description
@@ -4384,6 +4377,8 @@ errors are rethrown automatically.")
                             (,(getenv "PERL5LIB")
                              ,(string-append out "/lib/perl5/site_perl"))))
                         #t))))))
+    (inputs
+     `(("bash" ,bash-minimal))) ; for wrap-program
     (propagated-inputs
      (list perl-moo perl-strictures))
     (home-page "https://metacpan.org/release/Eval-WithLexicals")
@@ -12163,6 +12158,8 @@ spirit of both the SDL and Perl.")
                           (wrap-program "bin/sgmlspl"
                             `("PERL5LIB" suffix (,site))))
                         #t))))))
+    (inputs
+     `(("bash" ,bash-minimal))) ; for wrap-program
     (native-inputs
      (list perl-module-build))
     (home-page "https://metacpan.org/release/RAAB/SGMLSpm-1.1")

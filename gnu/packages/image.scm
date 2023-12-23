@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2019, 2021-2022 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2019, 2021-2023 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
@@ -617,7 +617,7 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
 (define-public jpegoptim
   (package
    (name "jpegoptim")
-   (version "1.4.7")
+   (version "1.5.5")
    (source
     (origin
       (method git-fetch)
@@ -626,35 +626,17 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "06f6d08xvmsiki4mc1qs985gsjqmsxx793a93b72y25q84wbg9x9"))))
+       (base32 "18zq7ada7n17vgkkcixpisxsbs7i8xp5qjp78hyyvmmb9dqy97fy"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:tests? #f                       ; no tests
-      ,@(if (and (target-riscv64?)
-                 (%current-target-system))
-          (list #:phases
-                #~(modify-phases %standard-phases
-                    (add-after 'unpack 'update-config-scripts
-                      (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                        (for-each (lambda (file)
-                                    (install-file
-                                      (search-input-file
-                                        (or native-inputs inputs)
-                                        (string-append "/bin/" file)) "./tools"))
-                                  '("config.guess" "config.sub"))))))
-          '())))
+    (list #:tests? #f))
    (inputs (list libjpeg-turbo))
-   (native-inputs
-    (if (and (target-riscv64?)
-             (%current-target-system))
-      (list config)
-      '()))
    (synopsis "Optimize JPEG images")
    (description
     "jpegoptim provides lossless optimization (based on optimizing
 the Huffman tables) and \"lossy\" optimization based on setting
 maximum quality factor.")
-   (license license:gpl2+)
+   (license license:gpl3+)
    (home-page "https://www.kokkonen.net/tjko/projects.html#jpegoptim")))
 
 (define-public libicns
@@ -882,7 +864,7 @@ work.")
     (outputs (list "out" "pbmtools"))
     (arguments
      `(#:modules ((srfi srfi-26)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -1433,8 +1415,7 @@ language bindings to VIGRA.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "1.2.4")
-    (replacement libwebp/fixed)
+    (version "1.3.2")
     (source
      (origin
        ;; No tarballs are provided for >0.6.1.
@@ -1445,7 +1426,7 @@ language bindings to VIGRA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jndbc99dd19a6d7h4ds51xyak7gfddkbi41nxdm8n23w7ks35r8"))))
+         "1x37795gpc63g1ma9kqw4q3dikwhrjklixqzjjsj6viqksa19z41"))))
     (build-system gnu-build-system)
     (inputs
      (list freeglut
@@ -1472,22 +1453,6 @@ with lossy compression and typically provides 3x smaller file sizes compared
 to PNG when lossy compression is acceptable for the red/green/blue color
 channels.")
     (license license:bsd-3)))
-
-(define libwebp/fixed
-  (package
-    (inherit libwebp)
-    (name "libwebp")
-    (version "1.3.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://chromium.googlesource.com/webm/libwebp")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1x37795gpc63g1ma9kqw4q3dikwhrjklixqzjjsj6viqksa19z41"))))))
 
 (define-public libmng
   (package
@@ -2666,20 +2631,19 @@ GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
                     (gtk+ (assoc-ref inputs "gtk+")))
                (wrap-program (string-append out "/bin/mypaint")
                  `("GI_TYPELIB_PATH" ":" prefix
-                   (,(getenv "GI_TYPELIB_PATH"))))
-               #t)))
+                   (,(getenv "GI_TYPELIB_PATH")))))))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests need writing access
-             (setenv "HOME" "/tmp")
-             #t)))))
+             (setenv "HOME" "/tmp"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)
-       ("swig" ,swig)
-       ("gettext" ,gettext-minimal)))
+     (list pkg-config
+           gobject-introspection
+           swig
+           gettext-minimal))
     (inputs
-     (list gtk+
+     (list bash-minimal
+           gtk+
            (librsvg-for-system)
            hicolor-icon-theme
            libmypaint

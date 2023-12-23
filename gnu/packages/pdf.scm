@@ -24,6 +24,7 @@
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2022 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2023 Felix Gruber <felgru@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,6 +108,7 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
@@ -260,10 +262,10 @@ information.")
                  `("QT_PLUGIN_PATH" ":" =
                    (,(string-append qtbase "/lib/qt5/plugins")))
                  `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
-                   (,(string-append qtbase "/lib/qt5/plugins/platforms"))))
-               #t))))))
+                   (,(string-append qtbase "/lib/qt5/plugins/platforms"))))))))))
     (inputs
-     (list python-poppler-qt5
+     (list bash-minimal
+           python-poppler-qt5
            python-pypdf2
            python-pyqt
            qtbase-5))
@@ -976,6 +978,34 @@ configurable toolbars and shortcuts, continuous and multi‐page layouts,
 SyncTeX support, and rudimentary support for annotations and forms.")
     (license license:gpl2+)))
 
+(define-public unpaper
+  (package
+    (name "unpaper")
+    (version "7.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.flameeyes.com/files/unpaper-"
+                            version ".tar.xz"))
+        (sha256
+         (base32 "103awjdl2qrzi0qc32hi8zvwf04r5ih5jaw8rg8ij9y24szznx95"))))
+    (native-inputs
+     (list pkg-config python-sphinx))
+    (inputs
+     (list discount ffmpeg))
+    (build-system meson-build-system)
+    (home-page "https://www.flameeyes.com/projects/unpaper")
+    (synopsis "post-processing tool for scanned pages")
+    (description "@command{unpaper} is a post-processing tool for
+scanned sheets of paper, especially for book pages that have been
+scanned from previously created photocopies.
+
+Its main purpose is to make scanned book pages better readable on screen
+after conversion to PDF.  Additionally, unpaper might be useful to
+enhance the quality of scanned pages before performing
+@acronym{OCR, optical character recognition}.")
+    (license license:gpl2)))
+
 (define-public xournal
   (package
     (name "xournal")
@@ -1173,7 +1203,7 @@ vector formats.")
                     (,(search-input-file inputs "bin/xpdf"))))
                 (install-file "impressive.1" man1)))))))
     ;; TODO: Add dependency on pdftk.
-    (inputs (list python-pygame python-pillow sdl xpdf))
+    (inputs (list bash-minimal python-pygame python-pillow sdl xpdf))
     (home-page "https://impressive.sourceforge.net")
     (synopsis "PDF presentation tool with visual effects")
     (description
@@ -1416,7 +1446,7 @@ manage or manipulate PDFs.")
     (native-inputs
      (list intltool python-distutils-extra))
     (inputs
-     (list gtk+ poppler))
+     (list bash-minimal gtk+ poppler))
     (propagated-inputs
      (list img2pdf
            python-dateutil

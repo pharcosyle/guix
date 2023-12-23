@@ -118,7 +118,7 @@
      (list
       #:imported-modules %cargo-utils-modules ;for `generate-all-checksums'
       #:modules `((guix build cargo-utils)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:test-target "check-jstests"
       #:configure-flags
       #~(list
@@ -547,9 +547,9 @@ variable defined below.  It requires guile-json to be installed."
 ;; XXXX: Workaround 'snippet' limitations.
 (define computed-origin-method (@@ (guix packages) computed-origin-method))
 
-(define %icecat-base-version "115.5.0")
+(define %icecat-base-version "115.6.0")
 (define %icecat-version (string-append %icecat-base-version "-guix0-preview1"))
-(define %icecat-build-id "20231121000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-build-id "20231219000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -569,12 +569,12 @@ variable defined below.  It requires guile-json to be installed."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0a578r4kri7jdw8pkkzp7f1mm9idlk7sjxjghcb08k5p14172gyv"))))
+              "0rmw486yhkb1is1j2fy51djl5p5qggf2fhp2hgzfdj4s2bjydmv6"))))
 
          ;; The upstream-icecat-base-version may be older than the
          ;; %icecat-base-version.
-         (upstream-icecat-base-version "115.5.0")
-         (gnuzilla-commit "bd66797f3bb057c9d051d4276d63843b4d7ee854")
+         (upstream-icecat-base-version "115.6.0")
+         (gnuzilla-commit "6a76a10682b6e63f562e4b9f26f3ef12f88bd839")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -586,7 +586,7 @@ variable defined below.  It requires guile-json to be installed."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "0v3ckm8yv566f2y9a2bfzakbsk529f1ykr7dj69kb9k93dgny3ja"))))
+              "15bvlz7c4d8mk10zc317rai91hd96wnchikcfdfxzl35zdnd315r"))))
 
          ;; 'search-patch' returns either a valid file name or #f, so wrap it
          ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.
@@ -727,6 +727,7 @@ variable defined below.  It requires guile-json to be installed."
     (build-system mozilla-build-system)
     (inputs
      (list alsa-lib
+           bash-minimal
            bzip2
            cups
            dbus-glib
@@ -882,7 +883,7 @@ variable defined below.  It requires guile-json to be installed."
                   (rnrs io ports)
                   (guix elf)
                   (guix build gremlin)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'apply-guix-specific-patches
@@ -1635,7 +1636,7 @@ list of languages supported as well as the currently used changeset."
       #:modules `((guix build utils)          ;find-files
                   (sxml simple)
                   (ice-9 regex)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'patch-source-shebangs 'patch-cargo-checksums
@@ -1819,6 +1820,7 @@ ca495991b7852b855"))
                   `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib ,eudev-lib ,libnotify-lib)))))))))
     (inputs
      (list alsa-lib
+           bash-minimal
            bzip2
            cairo
            cups
