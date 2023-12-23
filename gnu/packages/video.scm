@@ -67,6 +67,7 @@
 ;;; Copyright © 2023 Dominik Delgado Steuter <dds@disroot.org>
 ;;; Copyright © 2023 Saku Laesvuori <saku@laesvuori.fi>
 ;;; Copyright © 2023 Jaeme Sifat <jaeme@runbox.com>
+;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1534,7 +1535,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libplacebo
   (package
     (name "libplacebo")
-    (version "4.208.0")
+    (version "6.338.1")
     (source
      (origin
        (method git-fetch)
@@ -1543,16 +1544,16 @@ libebml is a C++ library to read and write EBML files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "161dp5781s74ca3gglaxlmchx7glyshf0wg43w98pl22n1jcm5qk"))))
+        (base32 "1miqk3gfwah01xkf4a6grwq29im0lfh94gp92y7js855gx3v169m"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       `("-Dopengl=enabled"
-         ,(string-append "-Dvulkan-registry="
-                         (assoc-ref %build-inputs "vulkan-headers")
-                         "/share/vulkan/registry/vk.xml"))))
+     (list #:configure-flags
+           #~(list "-Dopengl=enabled"
+                   (string-append "-Dvulkan-registry="
+                                  #$(this-package-input "vulkan-headers")
+                                  "/share/vulkan/registry/vk.xml"))))
     (native-inputs
-     (list python python-mako pkg-config))
+     (list glad python python-mako pkg-config))
     (inputs
      (list lcms
            libepoxy
@@ -2337,7 +2338,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.36.0")
+    (version "0.37.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2345,8 +2346,8 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1ri06h7pv6hrxmxxc618n9hymlgr0gfx38bqq5dcszdgnlashsgk"))))
-    (build-system waf-build-system)
+               (base32 "1xcyfpd543lbmg587wi0mahrz8vhyrlr4432054vp6wsi3s36c4b"))))
+    (build-system meson-build-system)
     (arguments
      (list
       #:phases
@@ -2363,21 +2364,15 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               ;; and passed as linker flags, but the order in which they are added
               ;; varies.  See <https://github.com/mpv-player/mpv/issues/7855>.
               ;; Set PYTHONHASHSEED as a workaround for deterministic results.
-              (setenv "PYTHONHASHSEED" "1")))
-          (add-before 'configure 'set-up-waf
-            (lambda* (#:key inputs #:allow-other-keys)
-              (copy-file (search-input-file inputs "bin/waf") "waf")
-              (setenv "CC" #$(cc-for-target)))))
+              (setenv "PYTHONHASHSEED" "1"))))
       #:configure-flags
-      #~(list "--enable-libmpv-shared"
-              "--enable-cdda"
-              "--enable-dvdnav"
-              "--disable-build-date")
-      ;; No check function defined.
-      #:tests? #f))
+      #~(list "-Dlibmpv=true"
+              "-Dcdda=enabled"
+              "-Ddvdnav=enabled"
+              "-Dbuild-date=false")))
     (native-inputs
      (list perl ; for zsh completion file
-           pkg-config python-docutils))
+           pkg-config python-docutils python-wrapper))
     ;; Missing features: libguess, V4L2.
     (inputs
      (list alsa-lib
@@ -2394,6 +2389,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
            libdvdread
            libdvdnav
            libjpeg-turbo
+           libplacebo
            libva
            libvdpau
            libx11
@@ -2404,13 +2400,11 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
            libxrandr
            libxscrnsaver
            libxv
-           ;; XXX: lua > 5.2 is not currently supported; see
-           ;; waftools/checks/custom.py
+           ;; XXX: lua > 5.2 is not currently supported; see meson.build
            lua-5.2
            mesa
            mpg123
            pulseaudio
-           python-waf
            rsound
            shaderc
            vulkan-headers
@@ -2418,6 +2412,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
            wayland
            wayland-protocols
            yt-dlp
+           zimg
            zlib))
     (home-page "https://mpv.io/")
     (synopsis "Audio and video player")
@@ -3759,6 +3754,35 @@ This may help improve your viewers watching experience, and allows you to use
 your host privately.")
     (license license:gpl2+)))
 
+(define-public obs-pipewire-audio-capture
+  (package
+    (name "obs-pipewire-audio-capture")
+    (version "1.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dimtpap/obs-pipewire-audio-capture")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qjl8xlaf54zgz34f1dfybdg2inc2ir42659kh15ncihpgbx0wzl"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f ; no test target
+      #:configure-flags
+      #~(list (string-append "-DLIBOBS_INCLUDE_DIR="
+                             #$(this-package-input "obs") "/lib")
+              "-Wno-dev")))
+    (native-inputs (list libconfig pkg-config))
+    (inputs (list obs pipewire))
+    (home-page "https://obsproject.com/forum/resources/pipewire-audio-capture.1458/")
+    (synopsis "Audio device and application capture for OBS Studio using PipeWire")
+    (description "This plugin adds 3 sources for capturing audio outputs,
+inputs and applications using PipeWire.")
+    (license license:gpl2+)))
+
 (define-public obs-websocket
   ;; Functionality was merged into OBS.
   (deprecated-package "obs-websocket" obs))
@@ -4384,7 +4408,7 @@ practically any type of media.")
 (define-public libmediainfo
   (package
     (name "libmediainfo")
-    (version "23.03")
+    (version "23.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
@@ -4392,7 +4416,7 @@ practically any type of media.")
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1660lsilm02324c65sxxi41fn225hg78yxqyxff5dyf6fvyzyypm"))))
+                "0gc5brnwagdgaknkpyhkbpwc52q19vf5i3sayifhsg4yqzy58zhr"))))
     ;; TODO add a Big Buck Bunny webm for tests.
     (native-inputs
      (list autoconf automake libtool pkg-config))
@@ -4447,7 +4471,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "23.03")
+    (version "23.11")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -4458,7 +4482,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1654pal4x753pcha8h939a70q5z3jzaddgb39cinlrv5fljs8qgh"))))
+                "1hy9m2l94ymhpcrhlqqjpgl24lz33qm239pcdlic3z5zs6qb2740"))))
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (inputs
@@ -5585,12 +5609,9 @@ result in several formats:
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (invoke "cargo" "cinstall" "--release"
-                       (string-append "--prefix=" out)))))
-         (add-after 'install 'delete-static-library
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Delete 93 MiB (!) static library.
-             (delete-file (string-append (assoc-ref outputs "out")
-                                         "/lib/librav1e.a")))))))
+                       ;; Only build the dynamic library.
+                       "--library-type" "cdylib"
+                       (string-append "--prefix=" out))))))))
     (native-inputs
      (list nasm pkg-config rust-cargo-c))
     (inputs

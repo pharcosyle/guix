@@ -77,6 +77,7 @@
 ;;; Copyright © 2023 dan <i@dan.games>
 ;;; Copyright © 2023 Foundation Devices, Inc. <hello@foundationdevices.com>
 ;;; Copyright © 2023 Wilko Meyer <w@wmeyer.eu>
+;;; Copyright © 2023 Jaeme Sifat <jaeme@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -493,7 +494,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
 
-(define-public linux-libre-6.6-version "6.6.3")
+(define-public linux-libre-6.6-version "6.6.7")
 (define-public linux-libre-6.6-gnu-revision "gnu")
 (define deblob-scripts-6.6
   (linux-libre-deblob-scripts
@@ -503,30 +504,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1hg3ck1j8288fhlhcvhgs1zzwh3i62nfvphw7x3vsaqr75kiwbjp")))
 (define-public linux-libre-6.6-pristine-source
   (let ((version linux-libre-6.6-version)
-        (hash (base32 "19wmjkyyv5glv1w647qisrv829hhhpba5x905a7p7kch9wyzrv98")))
+        (hash (base32 "0hfqdyxl4nqmm4pspfm1ang8616dbsaj0d968c0186ch0738xrhc")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.6)))
 
-(define-public linux-libre-6.5-version "6.5.13")
-(define-public linux-libre-6.5-gnu-revision "gnu")
-(define deblob-scripts-6.5
-  (linux-libre-deblob-scripts
-   linux-libre-6.5-version
-   linux-libre-6.5-gnu-revision
-   (base32 "01mm6v67bcrhgm97axsw46x0iix9im7hmlb765f3bkjhwklpxdy7")
-   (base32 "066z5lw5vrfayhv23hpfcm6fh6b7zmn2v13kfv1g3z3jl1wblhfh")))
-(define-public linux-libre-6.5-pristine-source
-  (let ((version linux-libre-6.5-version)
-        (hash (base32 "1dfbbydmayfj9npx3z0g38p574pmcx3qgs49dv0npigl48wd9yvq")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-6.5)))
-
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
-(define-public linux-libre-6.1-version "6.1.64")
+(define-public linux-libre-6.1-version "6.1.68")
 (define-public linux-libre-6.1-gnu-revision "gnu")
 (define deblob-scripts-6.1
   (linux-libre-deblob-scripts
@@ -536,12 +522,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1hdibv43xbn1lv83i6qjgfmf1bvqxvq17fryfsq4r4sjgs9212js")))
 (define-public linux-libre-6.1-pristine-source
   (let ((version linux-libre-6.1-version)
-        (hash (base32 "1ry7dp39010hfja1wial6r6q6ilgygwm7gdz22bg4rzaycwam7b2")))
+        (hash (base32 "1qc4cwqlfni9i6mzh6arghdsd842hp9lb7s832dxw1p261mg4prn")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.1)))
 
-(define-public linux-libre-5.15-version "5.15.140")
+(define-public linux-libre-5.15-version "5.15.143")
 (define-public linux-libre-5.15-gnu-revision "gnu")
 (define deblob-scripts-5.15
   (linux-libre-deblob-scripts
@@ -551,12 +537,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1idjrn2w8jrixj8ifkk1awxyyq5042nc4p2mld4rda96azlnp948")))
 (define-public linux-libre-5.15-pristine-source
   (let ((version linux-libre-5.15-version)
-        (hash (base32 "0isa9si9wjn10lw41431wdqsbp9y685ch5lzhwswng3g6j5ywaxy")))
+        (hash (base32 "00lyv7zsj97mkg9i7dkb1a6km22mnr0qr687d9zz4ckjq1pb2sq9")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.15)))
 
-(define-public linux-libre-5.10-version "5.10.202")
+(define-public linux-libre-5.10-version "5.10.204")
 (define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
@@ -566,12 +552,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0xrrnmb5kcc5r21bdm24aq0fnkk1imn367c1cxlj78b6l6gigx4b")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "12zs2bz2plps6xp80sdg36zkyr00rf5l5c85jl4dd7b9klly04ij")))
+        (hash (base32 "1vnamiyr378q52xgkg7kvpx80zck729dim77vp06a3q6n580g5gz")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.262")
+(define-public linux-libre-5.4-version "5.4.264")
 (define-public linux-libre-5.4-gnu-revision "gnu1")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -581,12 +567,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0sw67b2pk3lng4y67diqqnhxaggnp3nbkx8dxc5fs27rinfxr4m1")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1p34x33gkvpv26zcrpx1i6dr7dknyxj8gnp6caqb8sj58h3slgkx")))
+        (hash (base32 "1c5n47dq9khb15hz24a000k3hj913vv1dda6famnm8wpjbfr176k")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.300")
+(define-public linux-libre-4.19-version "4.19.302")
 (define-public linux-libre-4.19-gnu-revision "gnu1")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -596,12 +582,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1425mhkfxn18vxn05bb4h3li7x1jl7l1hf1zi8xhnqv3wa31h9wl")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0ilksl94gjpc4pzc90swfawsl8lvibpq14nkaxzl0831i219ahd8")))
+        (hash (base32 "1kkkpm34p5rq0iijzrzwaq0cb62w543argargw5p1wzg8803rlsk")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.331")
+(define-public linux-libre-4.14-version "4.14.333")
 (define-public linux-libre-4.14-gnu-revision "gnu1")
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
@@ -611,7 +597,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "1faagsj4i31z2bp83hflx3q9vrddjnn37a3ah2b47iaplva7z1nd")))
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "03sk82dgvccv70i3hy8gf2hw0n4m305f7rxjw93p7jnjrbpdrp1r")))
+        (hash (base32 "0j5nrankrhi56qzmyjg1pznqx1zgk5f7cfa154smjbn3zlm7lcv6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
@@ -646,11 +632,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-6.6-source
   (source-with-patches linux-libre-6.6-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-6.5-source
-  (source-with-patches linux-libre-6.5-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -772,11 +753,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (make-linux-libre-headers* linux-libre-6.6-version
                              linux-libre-6.6-gnu-revision
                              linux-libre-6.6-source))
-
-(define-public linux-libre-headers-6.5
-  (make-linux-libre-headers* linux-libre-6.5-version
-                             linux-libre-6.5-gnu-revision
-                             linux-libre-6.5-source))
 
 (define-public linux-libre-headers-6.1
   (make-linux-libre-headers* linux-libre-6.1-version
@@ -1130,14 +1106,6 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-pristine-source linux-libre-6.6-pristine-source)
 (define-public linux-libre-source          linux-libre-6.6-source)
 (define-public linux-libre                 linux-libre-6.6)
-
-(define-public linux-libre-6.5
-  (make-linux-libre* linux-libre-6.5-version
-                     linux-libre-6.5-gnu-revision
-                     linux-libre-6.5-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux"
-                       "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
 
 (define-public linux-libre-6.1
   (make-linux-libre* linux-libre-6.1-version
@@ -3118,6 +3086,40 @@ Both commands are targeted at system administrators.")
     (properties
      '((release-monitoring-url . "https://www.netfilter.org/pub/iptables/")))
     (license license:gpl2+)))
+
+(define-public iptables-nft
+  (package
+    (inherit iptables)
+    (name "iptables-nft")
+    (source #f)
+    (build-system copy-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'unpack)
+          (replace 'install
+            (lambda* (#:key inputs #:allow-other-keys)
+              (for-each
+               (lambda (command-path)
+                 (let ((link-path (string-append #$output command-path)))
+                   (mkdir-p (dirname link-path))
+                   (symlink (search-input-file inputs "sbin/xtables-nft-multi")
+                            link-path)))
+               (apply append
+                      '("/bin/iptables-xml")
+                      (map (lambda (xtables)
+                             (list (string-append "/sbin/" xtables)
+                                   (string-append "/sbin/" xtables "-restore")
+                                   (string-append "/sbin/" xtables "-save")))
+                           '("arptables"
+                             "ebtables"
+                             "iptables"
+                             "ip6tables")))))))))
+    (inputs (list iptables))
+    (native-inputs '())
+    (synopsis
+     "Programs to configure Linux IP packet filtering rules (nftables API)")))
 
 (define-public bolt
   (package
@@ -9343,7 +9345,7 @@ types and interfaces and translates so that the X server can use them.")
 (define-public pipewire
   (package
     (name "pipewire")
-    (version "0.3.77")
+    (version "1.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9352,7 +9354,7 @@ types and interfaces and translates so that the X server can use them.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11jdd9ljm6967cdp97qqf5fa02ad69kdgk3212ap5gfndky2h43m"))))
+                "0a8wvsnbgqanp2vjdpkaxpny0k17hz720rd20zdi00s9xjbcrycr"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -9366,6 +9368,8 @@ types and interfaces and translates so that the X server can use them.")
     (native-inputs
      (list `(,glib "bin")
            pkg-config
+           doxygen
+           python
            python-docutils))
     (inputs (list alsa-lib
                   avahi
@@ -9406,7 +9410,7 @@ of Linux application development.")
 (define-public wireplumber
   (package
     (name "wireplumber")
-    (version "0.4.14")
+    (version "0.4.17")
     (source
      (origin
        (method git-fetch)
@@ -9416,7 +9420,7 @@ of Linux application development.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jmnd6000j4wx68lxgz5b4g4hxkf243ivi9swaaf8rnx99cbx91w"))))
+        (base32 "00jzn0pxy2ws819yg4p8xxhngqai3labd1alaxb8zwzymr7m06my"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dsystemd=disabled"
@@ -9432,6 +9436,19 @@ PipeWire and a GObject-based high-level library that wraps PipeWire's API,
 providing convenience for writing the daemon's modules as well as external
 tools for managing PipeWire.")
     (license license:expat)))
+
+(define-public wireplumber-minimal
+  (let ((base wireplumber))
+    (package
+      (inherit base)
+      (name "wireplumber-minimal")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags flags ''())
+          #~(cons "-Delogind=disabled" #$flags))))
+      (inputs
+       (modify-inputs (package-inputs base)
+         (delete "elogind"))))))
 
 (define-public ell
   (package

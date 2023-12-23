@@ -76,7 +76,7 @@
            gtksourceview-3
            python-pyyaml
            python-pygobject
-           webkitgtk))
+           webkitgtk-for-gtk3))
     ;; TODO: package the following for python3 (if possible), add them as
     ;; dependencies, and remove them from rednotebook source:
     ;; pygtkspellcheck, elib.intl, msgfmt, txt2tags

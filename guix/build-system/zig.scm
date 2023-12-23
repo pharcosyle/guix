@@ -39,7 +39,6 @@
 (define %zig-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build zig-build-system)
-    (guix build syscalls)
     ,@%default-gnu-imported-modules))
 
 (define* (zig-build name inputs

@@ -2684,7 +2684,7 @@ that block port 22.")
 (define-public iperf
   (package
     (name "iperf")
-    (version "3.15")
+    (version "3.16")
     (source
      (origin
        (method git-fetch)
@@ -2693,7 +2693,7 @@ that block port 22.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10fzz3j2kx36yhqd0mvwlawvhdbcm0qc41i3f6jf6a5whm70177q"))))
+        (base32 "0m8zhr050qgmkkaf0jgn2isrr7yyk8majx9c18pf1xsqpr00sxs6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3647,13 +3647,10 @@ and check if the WLAN key or the master key was transmitted unencrypted.")
        (uri (string-append "https://www.inet.no/dante/files/dante-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0pbahkj43rx7rmv2x40mf5p3g3x9d6i2sz7pzglarf54w5ghd2j1"))))
+         (base32 "0pbahkj43rx7rmv2x40mf5p3g3x9d6i2sz7pzglarf54w5ghd2j1"))
+       (patches (search-patches "dante-non-darwin.patch"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; XXX: The dynamic socks library doesn't work with 'libc.so' (GNU ld
-     ;; script).  When preloading is enabled, 'sockd' failed with:
-     ;;    … Failed to open library "libc.so": …: invalid ELF header
-     '(#:configure-flags '("--disable-preload")))
+    (arguments '(#:configure-flags '("--with-libc=libc.so.6")))
     (home-page "https://www.inet.no/dante/")
     (synopsis "SOCKS server and client")
     (description "Dante is a SOCKS client and server implementation.  It can
@@ -4203,7 +4200,7 @@ network.  This must be enabled on the target host, usually in the BIOS.")
 (define-public traceroute
   (package
     (name "traceroute")
-    (version "2.1.2")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
@@ -4211,7 +4208,7 @@ network.  This must be enabled on the target host, usually in the BIOS.")
                            "traceroute-" version "/traceroute-"
                            version ".tar.gz"))
        (sha256
-        (base32 "07svkglyizxirgcmv6d4ih59f3ds8pnyprvkrqcf5d3p567jcz2h"))))
+        (base32 "17l5barragw0mfgsbjfndny3w4l7zs20l6s6rvim3azajq6jcv4w"))))
     (build-system gnu-build-system)
     (arguments
      (list
