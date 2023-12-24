@@ -635,19 +635,6 @@ Go.  It also includes runtime support libraries for these languages.")
   (append %gcc-12-x86_64-micro-architectures
           '("graniterapids")))                    ;Intel
 
-(define %gcc-13-aarch64-micro-architectures
-  (append %gcc-11-aarch64-micro-architectures
-          '("armv9.1-a" "armv9.2-a" "armv9.3-a")))
-
-(define %gcc-13-armhf-micro-architectures
-  %gcc-11-armhf-micro-architectures)
-
-(define %gcc-13-x86_64-micro-architectures
-  (append %gcc-11-x86_64-micro-architectures
-          '("sierraforest" "grandridge" "graniterapids"
-
-            "znver4")))
-
 (define-public gcc-7
   (package
     (inherit gcc-6)
@@ -813,28 +800,6 @@ It also includes runtime support libraries for these languages.")
         ("armhf" ,@%gcc-13-armhf-micro-architectures)
         ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
        ,@(package-properties gcc-11)))))
-
-(define-public gcc-13
-  (package
-    (inherit gcc-12)
-    (version "13.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gcc/gcc-"
-                                  version "/gcc-" version ".tar.xz"))
-              (sha256
-               (base32
-                "11pf2gy4sv18j9agirymksbyibbs8ai9i25dhmjsqxjymbq89mk1"))
-              (patches (search-patches "gcc-12-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))
-              (modules '((guix build utils)))
-              (snippet gcc-canadian-cross-objdump-snippet)))
-    (properties
-     `((compiler-cpu-architectures
-        ("aarch64" ,@%gcc-13-aarch64-micro-architectures)
-        ("armhf" ,@%gcc-13-armhf-micro-architectures)
-        ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
-       ,@(package-properties gcc-8)))))
 
 
 ;; Note: When changing the default gcc version, update
@@ -1003,13 +968,7 @@ using compilers other than GCC."
       #:configure-flags '`("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
                                            (assoc-ref %outputs "out")
-                                           "/include")
-                           ;; FIXME: Why won't libstdc++-v3/src/c++20/tzdb.cc
-                           ;; compile ("error: ‘mutex’ does not name a type")?
-                           ;; Work around it by disabling the experimental
-                           ;; C++20 time zone feature.
-                           ,,@(if (version>=? (package-version gcc) "13")
-                                  '("--with-libstdcxx-zoneinfo=no") '()))))
+                                           "/include"))))
     (outputs '("out" "debug"))
     (inputs '())
     (native-inputs

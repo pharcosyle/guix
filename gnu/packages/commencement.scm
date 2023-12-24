@@ -3651,9 +3651,6 @@ is the GNU Compiler Collection.")
   (make-gcc-toolchain gcc-12))
 
 (define-public gcc-toolchain-13
-  gcc-toolchain)
-
-(define-public gcc-toolchain-13
   (make-gcc-toolchain gcc-13))
 
 (define-public gcc-toolchain-aka-gcc
