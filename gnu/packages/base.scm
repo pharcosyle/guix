@@ -112,14 +112,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "3.10")
+   (version "3.11")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0nw5ys5bhcr6c162rl43q5qpmf0bia3bhlcvhw072npvjnssbvr4"))
+              "1avf4x8skxbqrjp5j2qr9sp5vlf8jkw2i5bdn51fl3cxx3fsxchx"))
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs (list perl))                   ;some of the tests require it
@@ -184,27 +184,6 @@ is often used for substituting text patterns in a stream.  The GNU
 implementation offers several extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/sed/")))
-
-(define-public sed-4.8
-  (package
-    (inherit sed)
-    (version "4.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/sed/sed-" version
-                                  ".tar.gz"))
-              (sha256
-               (base32
-                "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
-              (patches (search-patches "coreutils-gnulib-tests.patch"))
-              (snippet
-               '(begin
-                  (substitute* "Makefile.in"
-                    (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
-                     (string-append
-                      previous-line
-                      "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
-              (modules '((guix build utils)))))))
 
 (define-public tar
   (package
@@ -304,15 +283,14 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.9")
+   (version "3.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1w93y3dj0z5gkvmkdk1vql61d25d2csav3fphgg6h6101blkn3fq"))
-            (patches (search-patches "diffutils-fix-signal-processing.patch"))))
+              "17nhkdn5a2z6pwcmjs4jas2plg066hbdz06y5vhypr14qwyfkrch"))))
    (build-system gnu-build-system)
    (arguments
     (list
@@ -334,19 +312,6 @@ differ, while \"cmp\" shows the offsets and line numbers where they differ.
 interactive means to merge two files.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/diffutils/")))
-
-(define-public diffutils-3.8
-  (package
-    (inherit diffutils)
-    (version "3.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/diffutils/diffutils-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1v4g8gi0lgakqa7iix8s4fq7lq6l92vw3rjd9wfd2rhjng8xggd6"))
-              (patches (search-patches "diffutils-3.8-fix-signal-processing.patch"))))))
 
 (define-public findutils
   (package
@@ -582,18 +547,19 @@ change.  GNU make offers many powerful extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/make/")))
 
-(define-public gnu-make-4.3
-  (package
-    (inherit gnu-make)
-    (version "4.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/make/make-" version
-                                  ".tar.gz"))
-              (sha256
-               (base32
-                "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
-              (patches (search-patches "make-impure-dirs.patch"))))))
+;; FIXME hopefully I don't need this any more
+;; (define-public gnu-make-4.3
+;;   (package
+;;     (inherit gnu-make)
+;;     (version "4.3")
+;;     (source (origin
+;;               (method url-fetch)
+;;               (uri (string-append "mirror://gnu/make/make-" version
+;;                                   ".tar.gz"))
+;;               (sha256
+;;                (base32
+;;                 "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
+;;               (patches (search-patches "make-impure-dirs.patch"))))))
 
 (define-public gnu-make-4.2
   (package
