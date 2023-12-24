@@ -1768,11 +1768,6 @@ queues header library based on circular buffer with @code{std::atomic}.")
                (base32
                 "138j5axc6cpygcl85rpz0crh3vgnd47cgn0hsvldzl2f1h8w534k"))))
     (build-system cmake-build-system)
-    ;; Disable tests until upstream fixes build issues with GCC 12.
-    ;; See https://github.com/Neargye/magic_enum/issues/235.
-    (arguments
-     '(#:tests? #f
-       #:configure-flags '("-DMAGIC_ENUM_OPT_BUILD_TESTS=OFF")))
     (synopsis "C++17 header only library for compile time reflection of enums")
     (description "Magic Enum offers static reflection of enums, with
 conversions to and from strings, iteration and related functionality.")
