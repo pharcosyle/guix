@@ -34,7 +34,6 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages bison)
@@ -64,8 +63,7 @@
    ;; own HTML doc, nor does it change its capabilities, so we removed netpbm
    ;; from 'inputs'.
 
-   (inputs (list ghostscript
-                 diffutils-3.8)) ; `gdiffmk' is broken on newer diffutils.
+   (inputs (list ghostscript))
 
    ;; When cross-compiling, this package depends upon a native install of
    ;; itself.
@@ -78,20 +76,16 @@
                     ("texinfo" ,texinfo)))
    (arguments
     `(#:parallel-build? #f   ; parallel build fails
-      #:make-flags
-      (append
-       (list
-        (string-append "DIFF_PROG="
-                       (assoc-ref %build-inputs "diffutils") "/bin/diff"))
-       ,(if (%current-target-system)
-            ;; In groff-minimal package, that inherits from this package,
-            ;; we'll need to locate "groff" instead of "self".
-            `(let ((groff (or (assoc-ref %build-host-inputs "groff")
-                              (assoc-ref %build-host-inputs "self"))))
-               (list
-                (string-append "GROFF_BIN_PATH=" groff)
-                (string-append "GROFFBIN=" groff "/bin/groff")))
-            ''()))
+      ,@(if (%current-target-system)
+            `(#:make-flags
+              ;; In groff-minimal package, that inherits from this package,
+              ;; we'll need to locate "groff" instead of "self".
+              (let ((groff (or (assoc-ref %build-host-inputs "groff")
+                               (assoc-ref %build-host-inputs "self"))))
+                (list
+                 (string-append "GROFF_BIN_PATH=" groff)
+                 (string-append "GROFFBIN=" groff "/bin/groff"))))
+            '())
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'disable-relocatability
@@ -143,7 +137,7 @@ is usually the formatter of \"man\" documentation pages.")
     (outputs '("out"))
 
     ;; Omit the DVI, PS, PDF, and HTML backends.
-    (inputs (list diffutils-3.8)) ; `gdiffmk' is broken on newer diffutils.
+    (inputs '())
     (native-inputs `(("bison" ,bison)
                      ("perl" ,perl)
                      ("groff" ,groff)))
