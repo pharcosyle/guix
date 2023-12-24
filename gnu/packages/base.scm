@@ -210,14 +210,14 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.34")
+   (version "1.35")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0a0x87anh9chbi2cgcyy7pmnm5hzk4yd1w2j8gm1wplwhwkbvgk3"))
+              "05nw7q7sazkana11hnf3f77lmybw1j9j6lsk93bsxirf6hvzyqjd"))
             (patches (search-patches "tar-skip-unreliable-tests.patch"
                                      "tar-remove-wholesparse-check.patch"))))
    (build-system gnu-build-system)
@@ -335,19 +335,6 @@ interactive means to merge two files.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/diffutils/")))
 
-(define-public diffutils-3.8
-  (package
-    (inherit diffutils)
-    (version "3.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/diffutils/diffutils-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1v4g8gi0lgakqa7iix8s4fq7lq6l92vw3rjd9wfd2rhjng8xggd6"))
-              (patches (search-patches "diffutils-3.8-fix-signal-processing.patch"))))))
-
 (define-public findutils
   (package
    (name "findutils")
@@ -395,14 +382,14 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "9.1")
+   (version "9.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "08q4b0w7mwfxbqjs712l6wrwl2ijs7k50kssgbryg9wbsw8g98b1"))))
+              "0ljy4w5h8zn0wnv5jfzw3zi1sc5xvyybn0bjj5p344j6yi63lqga"))))
    (build-system gnu-build-system)
    (inputs `(,acl                                 ;TODO: add SELinux
              ,attr                                ;for xattrs in ls, mv, etc
@@ -462,21 +449,21 @@ used to apply commands with arbitrarily long arguments.")
                                    "tests/cp/special-f.sh"
                                    "tests/dd/bytes.sh"
                                    "tests/dd/stats.sh"
+                                   "tests/env/env-S.pl"
+                                   "tests/factor/factor-parallel.sh"
                                    "tests/ls/dangle.sh"
                                    "tests/ls/follow-slink.sh"
                                    "tests/ls/hyperlink.sh"
                                    "tests/ls/infloop.sh"
                                    "tests/ls/inode.sh"
+                                   "tests/ls/ls-misc.pl"
                                    "tests/ls/selinux-segfault.sh"
-                                   "tests/misc/env-S.pl"
-                                   "tests/misc/factor-parallel.sh"
-                                   "tests/misc/ls-misc.pl"
-                                   "tests/misc/nice.sh"
-                                   "tests/misc/pwd-long.sh"
-                                   "tests/misc/shred-passes.sh"
-                                   "tests/misc/stat-slash.sh"
+                                   "tests/nice/nice.sh"
+                                   "tests/pwd/pwd-long.sh"
                                    "tests/rm/fail-eperm.xpl"
-                                   "tests/split/filter.sh")
+                                   "tests/shred/shred-passes.sh"
+                                   "tests/split/filter.sh"
+                                   "tests/stat/stat-slash.sh")
                                (("^#!.*" all)
                                 (string-append all "exit 77;\n")))
                              (substitute* "gnulib-tests/Makefile.in"
@@ -489,7 +476,7 @@ used to apply commands with arbitrarily long arguments.")
                      (substitute* "Makefile.in"
                        ;; fails on filesystems where inotify cannot be used,
                        ;; more info in #47935
-                       (("^ *tests/tail-2/inotify-dir-recreate.sh.*") "")))))))
+                       (("^ *tests/tail/inotify-dir-recreate.sh.*") "")))))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils package includes all of the basic command-line tools that

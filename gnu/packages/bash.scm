@@ -91,7 +91,13 @@
    (12 "0b6lcwzm7v5bzjiwaz2c8n5aj77w8ckhp2vwk4v3zsdq3z70gc9g")
    (13 "1rkwpibd6j2ghppfhqsva2jm4kdni6b7jpdsxdps52643gc4yjq9")
    (14 "09766vqqw4ffnmysm725v35qkhp1g9j4qgqag941xvq655pj9y9y")
-   (15 "12im449abnq5gaqjmdxr5i38kmp02fa8l8wffad3jryvd58r0wzg")))
+   (15 "12im449abnq5gaqjmdxr5i38kmp02fa8l8wffad3jryvd58r0wzg")
+   (16 "05arb0hzmng03cr357lf6p8af0x2a1pznsd3psll03nibfy56n0m")
+   (17 "129cvx4gfz8n23iw1lhbknbw86fyw6vh60jqj1wj3d5pr75wwj0w")
+   (18 "105am94qxjc27gga4a8asvsi01090xwjfim3s16lafwjvm4xsha6")
+   (19 "10njgv5mrc5rhsp5lvxcbm0pnzn59a8spi2nhdasifyl1a32cp1j")
+   (20 "07f0wlmqjdfarp44w3gj9gdqbqm5x20rvlhpn34ngklmxcm2bz5n")
+   (21 "1kahfqqalcwi4m73pg3ssz6lh0kcqsqax09myac7a15d2y0vhd43")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
