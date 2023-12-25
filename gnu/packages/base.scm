@@ -188,14 +188,14 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.34")
+   (version "1.35")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0a0x87anh9chbi2cgcyy7pmnm5hzk4yd1w2j8gm1wplwhwkbvgk3"))
+              "05nw7q7sazkana11hnf3f77lmybw1j9j6lsk93bsxirf6hvzyqjd"))
             (patches (search-patches "tar-skip-unreliable-tests.patch"
                                      "tar-remove-wholesparse-check.patch"))))
    (build-system gnu-build-system)
@@ -360,14 +360,14 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "9.2")
+   (version "9.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1cxh0k62kphhvznalj5ik2pxl1pladwc2s6k8zg13cndp53zz1b8"))))
+              "0ljy4w5h8zn0wnv5jfzw3zi1sc5xvyybn0bjj5p344j6yi63lqga"))))
    (build-system gnu-build-system)
    (inputs `(,acl                                 ;TODO: add SELinux
              ,attr                                ;for xattrs in ls, mv, etc
@@ -431,21 +431,21 @@ used to apply commands with arbitrarily long arguments.")
                                    "tests/cp/special-f.sh"
                                    "tests/dd/bytes.sh"
                                    "tests/dd/stats.sh"
+                                   "tests/env/env-S.pl"
+                                   "tests/factor/factor-parallel.sh"
                                    "tests/ls/dangle.sh"
                                    "tests/ls/follow-slink.sh"
                                    "tests/ls/hyperlink.sh"
                                    "tests/ls/infloop.sh"
                                    "tests/ls/inode.sh"
+                                   "tests/ls/ls-misc.pl"
                                    "tests/ls/selinux-segfault.sh"
-                                   "tests/misc/env-S.pl"
-                                   "tests/misc/factor-parallel.sh"
-                                   "tests/misc/ls-misc.pl"
-                                   "tests/misc/nice.sh"
-                                   "tests/misc/pwd-long.sh"
-                                   "tests/misc/shred-passes.sh"
-                                   "tests/misc/stat-slash.sh"
+                                   "tests/nice/nice.sh"
+                                   "tests/pwd/pwd-long.sh"
                                    "tests/rm/fail-eperm.xpl"
-                                   "tests/split/filter.sh")
+                                   "tests/shred/shred-passes.sh"
+                                   "tests/split/filter.sh"
+                                   "tests/stat/stat-slash.sh")
                                (("^#!.*" all)
                                 (string-append all "exit 77;\n")))
                              (substitute* "gnulib-tests/Makefile.in"
@@ -458,7 +458,7 @@ used to apply commands with arbitrarily long arguments.")
                      (substitute* "Makefile.in"
                        ;; fails on filesystems where inotify cannot be used,
                        ;; more info in #47935
-                       (("^ *tests/tail-2/inotify-dir-recreate.sh.*") "")))))))
+                       (("^ *tests/tail/inotify-dir-recreate.sh.*") "")))))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils package includes all of the basic command-line tools that
@@ -588,14 +588,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.40")
+   (version "2.41")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/binutils/binutils-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "12p40pz3mj0mlysnbsm34v7hn12h535sanll5q8pvcx4afqqwagq"))
+       (base32 "02xkm9xgcrqhln742636nm43yzrpjkhqj0z64h03gf7pab0bxi54"))
       (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
    (arguments
@@ -1618,7 +1618,7 @@ command.")
     (name "tzdata")
     ;; This package should be kept in sync with python-pytz in (gnu packages
     ;; time).
-    (version "2023b")
+    (version "2023c")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1626,7 +1626,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0v0frv3pp6d2ki5bw5b9bvswkanmdi2j2mx9hzliyqcm9wkgsy4v"))))
+               "0p4nvp5bdxxdqh269nvvcfrpycbbfwm31al5whwbpsaa3dfhnl9z"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f
@@ -1694,7 +1694,7 @@ command.")
                           version ".tar.gz"))
                     (sha256
                      (base32
-                      "1lhkpv9jqi50srw331v3kg7nl0viqmwxlb4gr18vdp36pbiq4m0i")))))
+                      "1rqln88ki0jagi372nqyn7bs03rf2l33081sy2835mwsn4mpzla6")))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)

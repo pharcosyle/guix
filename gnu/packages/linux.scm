@@ -786,11 +786,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The following package is used in the early bootstrap, and thus must be kept
 ;; stable and with minimal build requirements.
-(define-public linux-libre-headers-6.1.23
-  (make-linux-libre-headers "6.1.23" "gnu"
-                            "1v8kd6h3gz58jgg50w4h66bnfn5h7lainnmhgqxfxa0mpz2371sm"))
+(define-public linux-libre-headers-6.6.8
+  (make-linux-libre-headers "6.6.8" "gnu"
+                            "08n1yngalxxqzc0338igsr88qyh53gr1hnnidan99zcf25kxcs3l"))
 
-(define-public linux-libre-headers linux-libre-headers-6.1.23)
+(define-public linux-libre-headers linux-libre-headers-6.6.8)
 
 
 ;;;
