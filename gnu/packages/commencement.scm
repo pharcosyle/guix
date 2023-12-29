@@ -1837,12 +1837,13 @@ exec " gcc "/bin/" program
 ;; Won't build with Sed 4.9 because of missing 'w' command.
 (define sed-mesboot (mesboot-package "sed-mesboot" sed-4.8))
 
-;; "sed" from Gash-Utils lacks the 'w' command as of 0.2.0.
 (define coreutils-mesboot
-  (let ((pkg (mesboot-package "coreutils-mesboot" coreutils)))
+  ;; Gash can't seem to handle coreutils newer than 9.2 yet.
+  (let ((pkg (mesboot-package "coreutils-mesboot" coreutils-9.2)))
     (package
       (inherit pkg)
       (native-inputs
+       ;; "sed" from Gash-Utils lacks the 'w' command as of 0.2.0.
        `(("sed" ,sed-mesboot)
          ,@(package-native-inputs pkg))))))
 
@@ -1873,7 +1874,8 @@ exec " gcc "/bin/" program
 ;; We don't strictly need Tar here, but it allows us to get rid of
 ;; Bootar and Gash-Utils and continue with the standard GNU tools.
 (define tar-mesboot
-  (let ((pkg (mesboot-package "tar-mesboot" tar)))
+  ;; Gash can't seem to handle tar newer than 1.34 yet.
+  (let ((pkg (mesboot-package "tar-mesboot" tar-1.34)))
     (package
       (inherit pkg)
       (native-inputs
@@ -1952,10 +1954,11 @@ exec " gcc "/bin/" program
        ,@(package-arguments bzip2)))))
 
 (define coreutils-boot0
+  ;; Gash can't seem to handle coreutils newer than 9.2 yet.
   (package
-    (inherit coreutils)
-    (outputs (delete "debug" (package-outputs coreutils)))
-    (source (bootstrap-origin (package-source coreutils)))
+    (inherit coreutils-9.2)
+    (outputs (delete "debug" (package-outputs coreutils-9.2)))
+    (source (bootstrap-origin (package-source coreutils-9.2)))
     (name "coreutils-boot0")
     (native-inputs `())
     (inputs
@@ -1965,7 +1968,7 @@ exec " gcc "/bin/" program
      `(#:tests? #f
        #:implicit-inputs? #f
        #:guile ,%bootstrap-guile
-       ,@(package-arguments coreutils)
+       ,@(package-arguments coreutils-9.2)
        ;; The %bootstrap-glibc for aarch64 and armhf doesn't have
        ;; $output/include/linux/prctl.h which causes some binaries
        ;; to fail to build with coreutils-9.0+.
@@ -2131,9 +2134,9 @@ exec " gcc "/bin/" program
 
 (define tar-boot0
   (package
-    (inherit tar)
+    (inherit tar-1.34)
     (name "tar-boot0")
-    (source (bootstrap-origin (package-source tar)))
+    (source (bootstrap-origin (package-source tar-1.34)))
     (native-inputs '())
     (inputs
      `(("make" ,gnu-make-boot0)
@@ -2142,7 +2145,7 @@ exec " gcc "/bin/" program
      `(#:implicit-inputs? #f
        #:tests? #f
        #:guile ,%bootstrap-guile
-       ,@(package-arguments tar)))))
+       ,@(package-arguments tar-1.34)))))
 
 (define (%boot0-inputs)
   `(,@(match (%current-system)
@@ -2565,7 +2568,7 @@ memoized as a function of '%current-system'."
                    (substitute* "scripts/min-tool-version.sh"
                      (("echo 5\\.1\\.0")  ;GCC
                       "echo 4.8.4")
-                     (("echo 2\\.23\\.0") ;binutils
+                     (("echo 2\\.25\\.0") ;binutils
                       "echo 2.20.1")))))))))
     (native-inputs
      `(("perl" ,perl-boot0)

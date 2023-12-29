@@ -115,12 +115,12 @@ is in the public domain.")
 (define-public sqlite
   (package
     (inherit sqlite-prev)
-    (version "3.42.0")
+    (version "3.44.2")
     (source (origin
               (method url-fetch)
               (uri (sqlite-uri version 2023))
               (sha256
                (base32
-                "19lc11fwl7jfv94hnjih0gr41jakz38ra23cbk5449vf3hbgvg3s"))))))
+                "01xlbcbpnxi0ripj9wbqv04wmxg3ginr5qxv5c7wyhdw92hijrqw"))))))
 
 (define-public sqlite-next sqlite)

@@ -186,7 +186,7 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.10.4")
+    (version "2.12.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libxml2/"
@@ -194,7 +194,7 @@ hierarchical form with variable field lengths.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0icdjj2xhrpf8hgm9ij28z4w2cam0gifxr1rcy9z222hhk2r237d"))))
+               "1alsmhamsvk676r1n5iyga5brydgjfb5rba4phrgz28a6j9113wc"))))
     (build-system gnu-build-system)
     (outputs '("out" "static" "doc"))
     (arguments
@@ -334,7 +334,7 @@ formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
 (define-public libxslt
   (package
     (name "libxslt")
-    (version "1.1.37")
+    (version "1.1.39")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources"
@@ -342,25 +342,17 @@ formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.")
                                  "/libxslt-" version ".tar.xz"))
              (sha256
               (base32
-               "1d1s2bk0m6d7bzml9w90ycl0jlpcy4v07595cwaddk17h3f2fjrs"))
-             (patches (search-patches "libxslt-generated-ids.patch"))))
+               "1w29cf25782vcaxdp5m0r5jfwb9n35kykm64b43rncs825ias81a"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
-               (add-before 'check 'disable-fuzz-tests
+               (add-before 'check 'disable-python-tests
                  (lambda _
-                   ;; Disable libFuzzer tests, because they require
-                   ;; instrumentation builds of libxml2 and libxslt.
-                   (substitute* "tests/Makefile"
-                     (("exslt plugins fuzz")
-                      "exslt plugins"))
-                   ;; Also disable Python tests since they require
-                   ;; python-libxml2 which would introduce a
-                   ;; circular dependency.
+                   ;; Disable Python tests since they require python-libxml2
+                   ;; which would introduce a circular dependency.
                    (substitute* "python/Makefile"
-                     (("cd tests && \\$\\(MAKE\\) tests")
-                      "$(info Python tests are disabled by Guix.)")))))
+                     (("SUBDIRS = \\. tests") "")))))
            #:configure-flags
            (if (%current-target-system)
                ;; 'configure.ac' uses 'AM_PATH_PYTHON', which looks for

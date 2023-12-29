@@ -165,14 +165,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.10.2")
+    (version "1.10.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "00qcrr66d2c2qpbf0xviyg6cqfiq1gh1sw4rvmm2b35n0jh0571v"))))
+               "1akj68mdrsm9y85dc3zbdf5gm74n8pgzmp38spg6gb65ga4p024b"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
