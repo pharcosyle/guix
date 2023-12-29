@@ -352,10 +352,10 @@ diff --git a/Lib/test/test_tools/test_freeze.py b/Lib/test/test_tools/test_freez
 index 2ba36ca208..33c9017d84 100644
 --- a/Lib/test/test_tools/test_freeze.py
 +++ b/Lib/test/test_tools/test_freeze.py
-@@ -17,6 +17,7 @@
- @support.skip_if_buildbot('not all buildbots have enough space')
+@@ -22,6 +22,7 @@
  class TestFreeze(unittest.TestCase):
  
+     @support.requires_resource('cpu') # Building Python is slow
 +    @unittest.skipIf(True, 'Does not work in the Guix build environment')
      def test_freeze_simple_script(self):
          script = textwrap.dedent("""
