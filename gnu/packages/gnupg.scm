@@ -106,8 +106,8 @@
     (arguments
      (append
       ;; Workaround for packages that check for `gpg-error-confg' and fail
-      ;; to build if it's not found (at the time of this writing,
-      ;; libassuan and libbdplus). See https://dev.gnupg.org/T6257#164567.
+      ;; to build if it's not found (at the time of this writing, libbdplus).
+      ;; See https://dev.gnupg.org/T6257#164567.
       '(#:configure-flags '("--enable-install-gpg-error-config"))
       (cond
        ((%current-target-system)
@@ -233,7 +233,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.5")
+    (version "2.5.6")
     (source
      (origin
       (method url-fetch)
@@ -241,7 +241,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1r1lvcp67gn5lfrj1g388sd77ca6qwnmxndirdysd71gk362z34f"))))
+        "09pllidbv01km8qrls21dcz1qwa22ydqyy1r9r79152kilhjgzg9"))))
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error pth))
@@ -260,7 +260,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.6.3")
+    (version "1.6.5")
     (source
      (origin
       (method url-fetch)
@@ -269,7 +269,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0p6y82j9y6n0l7scjgqhz3as9w13jiqjfx9n2jzynw89nf6wcwiz"))))
+        "05kd5bpnc10lmm31yifvx6j93gdsa3brhgvmk1wji6acay664r55"))))
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error))
@@ -317,7 +317,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.4.1")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -325,7 +325,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "1s4xnmr7k1smwjx6gyvsd10q6z313clcijz91j8zsfs4xdd1xdvn"))))
+                "1791plkc3my4519y9hrkvj7lrjfripl9xbaqqa04svrgfdnswwd2"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -373,16 +373,7 @@ compatible to GNU Pth.")
               (substitute* "common/t-exectool.c"
                 (("/bin/cat") (which "cat"))
                 (("/bin/true") (which "true"))
-                (("/bin/false") (which "false")))))
-          ;; Backport for a fix (https://github.com/gpg/gnupg/commit/e89d57a2).
-          ;; Remove this on the next update.
-          (add-before 'build 'fix-gpgme-for-source-build
-            (lambda _
-              (substitute* "tests/gpgme/Makefile"
-                (("setup.scm/tests") "")
-                (("-rm -rf") "-rm -rf tests lang"))
-              (substitute* "tests/gpgme/all-tests.scm"
-                (("\"setup.scm\"") "")))))))
+                (("/bin/false") (which "false"))))))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
@@ -421,13 +412,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.20.0")
+    (version "1.23.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32 "0l17whiczw2ywd1pgss97khh4zcn9swjc2a40686hmm3bmd7i995"))))
+       (base32 "092jrqdmdggjhl0swpvci8cscdcx0hbbr897an0vdk1wyfqyi6cl"))))
     (build-system gnu-build-system)
     (native-inputs
      (list gnupg))
