@@ -55,14 +55,14 @@
 (define-public gettext-minimal
   (package
     (name "gettext-minimal")
-    (version "0.21.1")
+    (version "0.22.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gettext/gettext-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ibdcinjgky0an2yw4aspmc31y0x5hw44mim9xf8gvlc3l76bhz8"))))
+                "1shsgbdmy4abwpalwi7zp0v4nk365m9wsqn6j11h5a978hmbpq61"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;9 MiB of HTML
@@ -92,10 +92,9 @@
                    #t))
                (add-before 'check 'patch-tests
                  (lambda* (#:key inputs #:allow-other-keys)
-                   ;; FIXME: Ignore inexplicably failing test (by hacking it
-                   ;; in an arbitrary fashion to make it pass):
                    ;; test-execute-main.c:164: assertion 'ret == 127' failed
                    ;; test-execute.sh: test case 5 failed
+                   ;; Why does this happen? Work around it:
                    (substitute* "gettext-tools/gnulib-tests/test-execute-main.c"
                      (("ASSERT \\(termsig == SIGINT\\);")
                       "ASSERT (termsig == SIGPIPE);"))
@@ -183,14 +182,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
 (define-public libtextstyle
   (package
     (name "libtextstyle")
-    (version "0.21.1")
+    (version "0.22.4")
     (source (origin
               (inherit (package-source gnu-gettext))
               (uri (string-append "mirror://gnu/gettext/gettext-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ibdcinjgky0an2yw4aspmc31y0x5hw44mim9xf8gvlc3l76bhz8"))))
+                "1shsgbdmy4abwpalwi7zp0v4nk365m9wsqn6j11h5a978hmbpq61"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")

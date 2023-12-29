@@ -92,14 +92,14 @@
 (define-public freetype
   (package
     (name "freetype")
-    (version "2.13.0")
+    (version "2.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/freetype/freetype-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0k32jaaz4pfhw34xwr6a38fncrpwr9fn5ij35m5w4dkn0jykmqjy"))))
+        (base32 "0ka8pgqy8cm1a1wmsl11sh32xgnj5zk36nbnkdzxs1n5am71r68j"))))
     (build-system gnu-build-system)
     (arguments
      ;; The use of "freetype-config" is deprecated, but other packages still
@@ -1239,14 +1239,14 @@ Font Format (WOFF).")
   (hidden-package
    (package
      (name "fontconfig-minimal")
-     (version "2.14.2")
+     (version "2.15.0")
      (source (origin
                (method url-fetch)
                (uri (string-append
                      "https://www.freedesktop.org/software/"
                      "fontconfig/release/fontconfig-" version ".tar.xz"))
                (sha256 (base32
-                        "12s61bv17krnyypc8k2x3zjjbff2c8hgippf5hyh45ffgfsrb9nv"))
+                        "03kwblrx7q4xqfa2m81f41c1zwh4xxc2ni86c64gmq061s6nb833"))
                (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
      (build-system gnu-build-system)
      ;; In Requires or Requires.private of fontconfig.pc.

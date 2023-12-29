@@ -51,14 +51,14 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.187")
+    (version "0.190")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/elfutils/ftp/"
                                   version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1j2lsicm3dkj5n6spszr9qy5rqm48bqimmz03x6hry8hwvxhs2z7"))
+                "14nn641g361iqby1yf8b089d8vnjsa0n5s1s4zfc2jzhnnls604f"))
               (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 
@@ -276,7 +276,7 @@ static analysis of the ELF binaries at hand.")
 (define-public patchelf
   (package
     (name "patchelf")
-    (version "0.17.2")
+    (version "0.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -285,7 +285,7 @@ static analysis of the ELF binaries at hand.")
                    "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "1qnql97ghbb7nhv9zpm4ip0cqj05xyyxk391jv0j5r3jc0vymqms"))))
+               "02s7ap86rx6yagfh9xwp96sgsj0p6hp99vhiq9wn4mxshakv4lhr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
