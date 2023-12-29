@@ -67,22 +67,15 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.82.0")
+    (version "1.84.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://boostorg.jfrog.io/artifactory/main/release/"
                                   version "/source/boost_"
                                   (version-with-underscores version) ".tar.bz2"))
-              (patches
-               (list (boost-patch
-                      "0001-filesystem-fix-openbsd-build.patch" version
-                      "1h13yli2qav76gsl6kc2sxsqg59l0cvy1glbnjbyc3mjff37r8sk")
-                     (boost-patch
-                      "0002-filesystem-fix-win-smbv1-dir-iterator.patch" version
-                      "192cf44icm910w5243dvw6ypnmsi1d2zk629mrgwzkdmszhai2vk")))
               (sha256
                (base32
-                "1rkyb4l54d3azi58ffisygjrb81pyzlizcnp3n4a5rk012dspqd6"))))
+                "0m4l20j9r577qca5q9v8difslil8r840z6lfd55rsp34rwx8jjyc"))))
     (build-system gnu-build-system)
     (inputs
      (append

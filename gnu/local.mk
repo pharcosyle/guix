@@ -1075,7 +1075,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/d-feet-drop-unused-meson-argument.patch	\
   %D%/packages/patches/dante-non-darwin.patch			\
   %D%/packages/patches/date-output-pkg-config-files.patch	\
-  %D%/packages/patches/datefudge-gettimeofday.patch		\
   %D%/packages/patches/dbacl-include-locale.h.patch		\
   %D%/packages/patches/dbacl-icheck-multiple-definitions.patch	\
   %D%/packages/patches/dblatex-inkscape-1.0.patch		\
@@ -1787,7 +1786,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pocketfft-cpp-prefer-preprocessor-if.patch			\
   %D%/packages/patches/pokerth-boost.patch			\
   %D%/packages/patches/ppsspp-disable-upgrade-and-gold.patch		\
-  %D%/packages/patches/procps-strtod-test.patch                 \
   %D%/packages/patches/prusa-slicer-boost-fixes.patch		\
   %D%/packages/patches/prusa-slicer-fix-tests.patch		\
   %D%/packages/patches/prusa-slicer-with-cereal-1.3.1.patch	\

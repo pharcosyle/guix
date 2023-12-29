@@ -51,14 +51,14 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.189")
+    (version "0.190")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/elfutils/ftp/"
                                   version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1j08hwab8yc1im3mg2jpd47njvnwxnh13zy3mga7qawf6cd8zg9r"))
+                "14nn641g361iqby1yf8b089d8vnjsa0n5s1s4zfc2jzhnnls604f"))
               (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 
@@ -307,7 +307,7 @@ static analysis of the ELF binaries at hand.")
                 (string-append all " | grep -v 'libgcc_s\\.so'"))
                (("oldLibc=.*big-dynstr" all)
                 (string-append all " | grep -v 'libgcc_s\\.so'")))
-             ;; FIXME: Fix this test rather than completely remove it.
+             ;; Not sure why this test fails, disabling it.
              (substitute* "tests/Makefile.in"
                (("shared-rpath.sh \\\\") "\\"))
              #t)))))

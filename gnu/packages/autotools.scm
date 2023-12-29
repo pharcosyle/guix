@@ -115,7 +115,7 @@ know anything about Autoconf or M4.")
 (define-public autoconf-2.71
   (package
     (inherit autoconf-2.69)
-    (version "2.71")
+    (version "2.72")
     (source
      (origin
        (method url-fetch)
@@ -123,18 +123,7 @@ know anything about Autoconf or M4.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "197sl23irn6s9pd54rxj5vcp5y8dv65jb9yfqgr2g56cxg7q6k7i"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://git.savannah.gnu.org/cgit/autoconf.git/patch/"
-                 "?id=3a9802d60156809c139e9b4620bf04917e143ee2"))
-           (file-name (string-append "autoconf-2.71-race-fix.patch"))
-           (sha256
-            (base32
-             "02xyzbqw1hj5ghi20lsqgfs43hzwjbdby7nsi2pi5a4cprmyzrwc")))))))
+         "0niz4852fgyavfh3gr4h4kzalk01nk70v6vfsja6r3ap349mr25s"))))
     (arguments
      (substitute-keyword-arguments (package-arguments autoconf-2.69)
        ((#:tests? _ #f)
@@ -511,7 +500,7 @@ complexity of working with shared libraries across platforms.")
 
 (define-public config
   (let ((revision "2")
-        (commit "63acb96f92473ceb5e21d873d7c0aee266b3d6d3"))
+        (commit "28ea239c53a2d5d8800c472bc2452eaa16e37af2"))
     (package
       (name "config")
       (version (git-version "0.0.0" revision commit)) ;no release tag
@@ -523,7 +512,7 @@ complexity of working with shared libraries across platforms.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0rbm3z350rxw7vpfs9lxbz07lwplbqs57cdrvrlms856ivbh274x"))))
+                  "1fh3ar2bp5qzzl8l3yr05y81n2v4qicax8aciibm3j4g36cv32mf"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
