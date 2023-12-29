@@ -141,14 +141,14 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.24.1")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                            "download/" version "/p11-kit-" version ".tar.xz"))
        (sha256
-        (base32 "1y5fm9gwhkh902r26p90qf1g2h1ziqrk4hgf9i9sxm2wzlz7ignq"))))
+        (base32 "01j76py4ixrzfg7cl8qxy3z7b1k3ybvsiqxbkibqcgg8vny86mfm"))))
     (build-system gnu-build-system)
     (native-inputs
      (append (list pkg-config)
@@ -439,7 +439,7 @@ OpenSSL for TARGET."
 (define-public openssl-1.1
   (package
     (name "openssl")
-    (version "1.1.1u")
+    (version "1.1.1w")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -452,7 +452,7 @@ OpenSSL for TARGET."
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "1ipbcdlqyxbj5lagasrq2p6gn0036wq6hqp7gdnd1v1ya95xiy72"))))
+                "1j3anw4554lk3m9cvjngvh1c2gbdkhgiz160jnnm7n5l1jarhc6g"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"        ;6.8 MiB of man3 pages and full HTML documentation
@@ -565,7 +565,7 @@ OpenSSL for TARGET."
 (define-public openssl-3.0
   (package
     (inherit openssl-1.1)
-    (version "3.1.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -578,7 +578,7 @@ OpenSSL for TARGET."
               (patches (search-patches "openssl-3.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "1d4pqjvi44kwgnnc7wnw5h7q5jnyffrgx7lxmm65qx18k2njbada"))))
+                "03k9nhz1igzi5hm9ck2bhj25dffs4ngglsawzc33fhvygkq2dj0l"))))
     (arguments
      (substitute-keyword-arguments (package-arguments openssl-1.1)
        ((#:phases phases '%standard-phases)

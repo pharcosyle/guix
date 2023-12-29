@@ -76,7 +76,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
 (define-public libpaper
   (package
     (name "libpaper")
-    (version "2.1.0")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rrthomas/libpaper/releases"
@@ -84,7 +84,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ks0sqwwr8lqyrr3fdi323mbdflk07g75w316s70sni3w5srakj7"))))
+                "07q0x9ibyr604a9421a84n1wri468ggigk2c99lbjips9vv0rnhz"))))
     (build-system gnu-build-system)
     (native-inputs
      (list help2man))
