@@ -2145,7 +2145,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.38.1")
+    (version "2.39.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -2153,7 +2153,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                                   "util-linux-" version ".tar.xz"))
               (sha256
                (base32
-                "0kz82x8lrapcl3bfpqwwqnv552rv6ddk4s7zvnizjv2fnhcjljb0"))
+                "03zdvxky2wnm1f0rc2x45x0da39x66gwbkxlqhyg8j8sipj0arkv"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -2396,15 +2396,14 @@ parameters.")
 (define-public procps
   (package
     (name "procps")
-    (version "4.0.3")
+    (version "4.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/procps-ng/Production/"
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "14ms9mkqr1mgl3h5yl6w8m57cf39k382nv7qms78vqbaz728wg1h"))
-              (patches (search-patches "procps-strtod-test.patch"))))
+                "0bp4qmiak2fq2xxsma65c39g5nmdhykhjkyf2yvasy14xdphv1r2"))))
     (build-system gnu-build-system)
     (arguments
      (list #:modules '((guix build utils)
@@ -3044,14 +3043,14 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.8.9")
+    (version "1.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (list (string-append "mirror://netfilter.org/iptables/iptables-"
                                  version ".tar.xz")))
        (sha256
-        (base32 "0zy812qay1l19sv031f7x2bbcv13mkzj70d6ir7mlcp87fj3jrpg"))))
+        (base32 "174wqly4y9ihikxrhi63hfvs2qzbf69wwm870xyk2vimi70mbhjw"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config flex bison))
@@ -3235,7 +3234,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "6.4.0")
+    (version "6.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3243,7 +3242,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0wm2g70vfhnf8wb6py3zmzwxp4zv1icny1pvkwaxmr67rggbhlac"))))
+                "1khksrf01xbc718bzjyqk0m865riw8yhqzwkavvhp7yhmw2chf47"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -3373,7 +3372,7 @@ configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.68")
+    (version "2.69")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3381,7 +3380,7 @@ configuration (iptunnel, ipmaddr).")
                     "libcap2/libcap-" version ".tar.xz"))
               (sha256
                (base32
-                "1ci4wz6gkmb5bg0gd11n54lwh9qd5c0pdv039fp82pxy85nkpglh"))))
+                "1sypj9sdbprir7iwl57p525jkaa3r5z6y7bdav89jinqvbrzh4gk"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
@@ -7964,14 +7963,14 @@ used by nftables.")
 ;; variant to avoid accidental rebuilds of rust.
 (define-public libnftnl/pinned
   (package (inherit libnftnl)
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.xz"))
        (sha256
-        (base32 "09hjbz2cqki61niw3d7hqjhcpcmzd29p92cqhpdm72hc2alf0vcn"))))
+        (base32 "1x3pqxclpxcw8x5qx0vyi7znf9xwlkqsfd9sy4cxlir1v4nfmsnf"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))

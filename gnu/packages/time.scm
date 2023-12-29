@@ -525,30 +525,19 @@ datetime type.")
 (define-public datefudge
   (package
     (name "datefudge")
-    ;; XXX When updating this package, make sure to do something about the
-    ;; archive.org backup URI.
-    (version "1.23")
+    (version "1.24")
     (source (origin
               ;; Source code is available from
               ;; <https://salsa.debian.org/debian/datefudge.git>.  However,
               ;; for bootstrapping reasons, we do not rely on 'git-fetch' here
               ;; (since Git -> GnuTLS -> datefudge).
               (method url-fetch)
-              (uri (list
-                     ;; For some reason this tarball was removed from Debian's
-                     ;; servers. Remove this archive.org URL when updating
-                     ;; datefudge, or add the new tarball to archive.org and
-                     ;; update the URL.
-                     (string-append
-                       "https://archive.org/download/datefudge_" version
-                       ".tar_202112/" "datefudge_" version ".tar.xz")
-                     (string-append
-                      "mirror://debian/pool/main/d/datefudge/datefudge_"
-                      version ".tar.xz")))
+              (uri (string-append
+                    "mirror://debian/pool/main/d/datefudge/datefudge_"
+                    version ".tar.xz"))
               (sha256
                (base32
-                "0ifnlb0mc8qc2kb5042pbz0ns6rwcb7201di8wyrsphl0yhnhxiv"))
-              (patches (search-patches "datefudge-gettimeofday.patch"))))
+                "1183mj8d5gdmycldskqfar2nqnfgy9kfr87q5cafppijj8japvw0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
