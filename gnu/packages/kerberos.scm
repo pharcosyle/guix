@@ -62,7 +62,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.20.1")
+    (version "1.21.2")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -75,7 +75,7 @@
               (patches (search-patches "mit-krb5-hurd.patch"))
               (sha256
                (base32
-                "0lc8mdwiim4m9xbsimjjhyq9sagc40v8gcilicbsgdcyn54ysjkh"))))
+                "1484hmzawllynwyriqxwnpmpq773dynaf5qvlx1h4g44kld98q4m"))))
     (build-system gnu-build-system)
     (native-inputs
      (list bison perl tcl))                   ;required for some tests
