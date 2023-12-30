@@ -2264,7 +2264,7 @@ users and in some situations.")
 (define-public guile-udev
   (package
     (name "guile-udev")
-    (version "0.2.4")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2273,7 +2273,7 @@ users and in some situations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q1snj8gz2bvqw2v2jvwlzn5xfh7f7wlp922isnzismrp4adc918"))))
+                "0zvn7ph6sbz5q8jnbkrxxlbxlyf0j8q34hr4a2yxklvg29ya7sd3"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -2286,7 +2286,10 @@ users and in some situations.")
               (substitute* (find-files "." "\\.scm")
                 (("load-extension \"libguile-udev\"")
                  (format #f "load-extension \"~a/lib/libguile-udev.so\""
-                         #$output))))))))
+                         #$output)))))
+          (delete 'check)               ;moved after install
+          (add-after 'install 'check
+            (assoc-ref %standard-phases 'check)))))
     (native-inputs (list autoconf
                          automake
                          gettext-minimal

@@ -241,7 +241,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dvtm.scm				\
   %D%/packages/easyrpg.scm			\
   %D%/packages/ebook.scm			\
-  %D%/packages/ed.scm				\
   %D%/packages/education.scm			\
   %D%/packages/efi.scm				\
   %D%/packages/electronics.scm			\
@@ -457,7 +456,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/musl.scm				\
   %D%/packages/mtools.scm			\
   %D%/packages/myrddin.scm			\
-  %D%/packages/nano.scm				\
   %D%/packages/ncdu.scm				\
   %D%/packages/ncurses.scm			\
   %D%/packages/netpbm.scm			\
@@ -2086,6 +2084,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tofi-32bit-compat.patch			\
   %D%/packages/patches/tpetra-remove-duplicate-using.patch	\
   %D%/packages/patches/transcode-ffmpeg.patch	\
+  %D%/packages/patches/transmission-4.0.5-fix-build.patch	\
   %D%/packages/patches/trytond-add-egg-modules-to-path.patch	\
   %D%/packages/patches/trytond-add-guix_trytond_path.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
