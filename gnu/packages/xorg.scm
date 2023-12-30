@@ -6444,7 +6444,7 @@ user set the transparency on a window.")
 (define-public bdfresize
   (package
     (name "bdfresize")
-    (version "1.5-11")
+    (version "1.5-12")
     (source (origin
               ;; Former upstream at
               ;; <http://openlab.ring.gr.jp/efont/dist/tools/bdfresize/>
@@ -6456,7 +6456,7 @@ user set the transparency on a window.")
                     (commit (string-append "debian/" version))))
               (sha256
                (base32
-                "0n3i29wicak8n10vkkippym8yw4ir8f7a263a8rwb8q16wqrxx85"))
+                "01n2a1i79fl3s1rvx95phknhjklhcsnl5k95d3fvaqa7i6c4g75f"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -6488,7 +6488,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.212")
+    (version "1.215")
     (source
      (origin
        (method git-fetch)
@@ -6496,7 +6496,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "1g1riswqalhk95i81xmy4dzwp1wwfiapjjiv0x06cp8bnc2rdxbq"))
+        (base32 "0nw0qqgpph2b8vdmx1raybzydkmxqj965yp4jld8a5z7mp7y2s02"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
