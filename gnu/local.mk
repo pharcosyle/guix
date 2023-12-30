@@ -1743,6 +1743,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/online-judge-tools.patch		\
   %D%/packages/patches/onnx-optimizer-system-library.patch	\
   %D%/packages/patches/onnx-use-system-googletest.patch	\
+  %D%/packages/patches/onnx-1.13.1-use-system-googletest.patch	\
   %D%/packages/patches/onnx-shared-libraries.patch	\
   %D%/packages/patches/onnx-skip-model-downloads.patch		\
   %D%/packages/patches/openbios-aarch64-riscv64-support.patch	\
@@ -1799,6 +1800,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-random2-getrandbits-test.patch		\
   %D%/packages/patches/python-poppler-qt5-fix-build.patch	\
   %D%/packages/patches/python-pypdf-annotate-tests-appropriately.patch	\
+  %D%/packages/patches/python-pytorch2-system-libraries.patch	\
   %D%/packages/patches/python-sip-include-dirs.patch	\
   %D%/packages/patches/python-sgmllib3k-assertions.patch	\
   %D%/packages/patches/python-sphinx-prompt-docutils-0.19.patch	\
@@ -2185,6 +2187,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xgboost-use-system-dmlc-core.patch       \
   %D%/packages/patches/xmonad-dynamic-linking.patch		\
   %D%/packages/patches/xnnpack-system-libraries.patch		\
+  %D%/packages/patches/xnnpack-for-torch2-system-libraries.patch	\
   %D%/packages/patches/xplanet-1.3.1-cxx11-eof.patch		\
   %D%/packages/patches/xplanet-1.3.1-libdisplay_DisplayOutput.cpp.patch	\
   %D%/packages/patches/xplanet-1.3.1-libimage_gif.c.patch	\

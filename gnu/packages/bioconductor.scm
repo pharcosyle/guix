@@ -7611,13 +7611,13 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.38.2")
+    (version "1.38.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "07xncxak8yjy04m7zh779jfjbsdmdbk8a5xs4rbajx4zp3hm4wb7"))))
+                "1vb0s8pharfbm72j33ya4d4kc3qan2kaqyz2lrmlp7vkrq7zrb9m"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
@@ -13085,14 +13085,14 @@ samples.")
 (define-public r-biocneighbors
   (package
     (name "r-biocneighbors")
-    (version "1.20.0")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocNeighbors" version))
        (sha256
         (base32
-         "0a5wg099fgwjbzd6r3mr4l02rcmjqlkdcz1w97qzwx1mir41fmas"))))
+         "0w7hd6w0lmj1jaaq9zd5gwnnpkzcr0byqm5q584wjg4xgvsb981j"))))
     (properties `((upstream-name . "BiocNeighbors")))
     (build-system r-build-system)
     (propagated-inputs
@@ -13242,14 +13242,14 @@ data.")
 (define-public r-metapod
   (package
     (name "r-metapod")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "metapod" version))
        (sha256
         (base32
-         "1nhxwj6gwc3hqji7icp1q6n0hj1gnvv1y5zhd2myhm7kj3sic2qc"))))
+         "05cy3xvj78n2p9l2pxfys7aczr51gm2ywprn4qmzr7ppb6rq5f66"))))
     (properties `((upstream-name . "metapod")))
     (build-system r-build-system)
     (propagated-inputs
@@ -15821,14 +15821,14 @@ type and symbol colors.")
 (define-public r-genomicscores
   (package
     (name "r-genomicscores")
-    (version "2.14.2")
+    (version "2.14.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicScores" version))
        (sha256
         (base32
-         "1wjq6lb2x7vazlr838hlh1ar5pis2bgzya9lm8ki30d1m0hpk66k"))))
+         "0rhyfbm5whz4jygar9cqcrfy92h1lyam5wd8d9svhh80f15v53m9"))))
     (properties `((upstream-name . "GenomicScores")))
     (build-system r-build-system)
     (propagated-inputs
@@ -21332,13 +21332,13 @@ variable and significantly correlated genes.")
 (define-public r-sparsearray
   (package
     (name "r-sparsearray")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "SparseArray" version))
        (sha256
-        (base32 "1kjs3v2ycpcc0plr88af1661ngmclmalkiy6am7i4m75cpa3889p"))))
+        (base32 "19cy1nmmi65fxh012ymgp1kg112yl1m0khcs4y034p5iwlfv7fp6"))))
     (properties `((upstream-name . "SparseArray")))
     (build-system r-build-system)
     (propagated-inputs (list r-biocgenerics
