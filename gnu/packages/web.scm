@@ -118,8 +118,9 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
-  #:use-module (gnu packages crates-gtk)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-gtk)
+  #:use-module (gnu packages crates-tls)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -1481,7 +1482,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
                   "ImportTaxonomy"
                   "ImportText"
                   "ImportXML"))
-               (for-each 
+               (for-each
                 (lambda (directory)
                   (copy-recursively directory
                                     (string-append perl "/../" directory)))
