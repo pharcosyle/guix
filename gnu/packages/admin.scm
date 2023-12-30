@@ -944,14 +944,14 @@ re-executing them as necessary.")
 (define-public inetutils
   (package
     (name "inetutils")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ck81y6x0bk1qaripfsrbfzrrzaxkzp37ddpg8mgwzd5n6qxd28p"))))
+                "1djgfvaw7aiijirw0j6h421ykgn73qg6bw59hv5va40yldh7ssc7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/var"
