@@ -188,6 +188,8 @@
                        '("test/parallel/test-tls-passphrase.js"
                          "test/parallel/test-tls-server-verify.js"))
 
+             ;; This test has started to fail. Seems like it has problems,
+             ;; see https://github.com/nodejs/node/issues/48490
              (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")
 
              ;; Some of these have started failing because (probably) of an icu4c update.
@@ -883,6 +885,8 @@ source files.")
                          '("test/parallel/test-tls-passphrase.js"
                            "test/parallel/test-tls-server-verify.js"))
 
+               ;; This test has started to fail. Seems like it has problems,
+               ;; see https://github.com/nodejs/node/issues/48490
                (delete-file "test/sequential/test-net-bytes-per-incoming-chunk-overhead.js")))
            (add-after 'delete-problematic-tests 'replace-llhttp-sources
              (lambda* (#:key inputs #:allow-other-keys)
