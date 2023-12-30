@@ -60,6 +60,10 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-graphics)
+  #:use-module (gnu packages crates-tls)
+  #:use-module (gnu packages crates-vcs)
+  #:use-module (gnu packages crates-web)
+  #:use-module (gnu packages crates-windows)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -114,8 +118,6 @@
         ("rust-tokio" ,rust-tokio-1)
         ("rust-tokio-rustls" ,rust-tokio-rustls-0.22)
         ("rust-url" ,rust-url-2))))
-    (native-inputs
-     (list perl))
     (home-page "https://github.com/mbrubeck/agate")
     (synopsis "Very simple server for the Gemini hypertext protocol")
     (description
@@ -192,7 +194,7 @@ low-end hardware and serving many concurrent requests.")
        (("rust-serde-bytes" ,rust-serde-bytes-0.11)
         ("rust-serde-derive" ,rust-serde-derive-1))))
     (native-inputs
-     (list perl pkg-config))
+     (list pkg-config))
     (inputs
      (list at-spi2-core
            gtk
@@ -387,103 +389,17 @@ Features include:
 @end enumerate\n")
     (license license:gpl3)))
 
-(define-public exa
-  (package
-    (name "exa")
-    (version "0.10.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "exa" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1dd7waq2bnxc1xwygqphi8k1g2qzykr6fk0q4rgrhhxp2jd09f04"))))
-    (build-system cargo-build-system)
-    (arguments
-     `(#:install-source? #f
-       #:cargo-inputs
-       (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-datetime" ,rust-datetime-0.5)
-        ("rust-env-logger" ,rust-env-logger-0.6)
-        ("rust-git2" ,rust-git2-0.13)
-        ("rust-glob" ,rust-glob-0.3)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-locale" ,rust-locale-0.2)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-natord" ,rust-natord-1)
-        ("rust-num-cpus" ,rust-num-cpus-1)
-        ("rust-number-prefix" ,rust-number-prefix-0.4)
-        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
-        ("rust-term-grid" ,rust-term-grid-0.1)
-        ("rust-term-size" ,rust-term-size-0.3)
-        ("rust-unicode-width" ,rust-unicode-width-0.1)
-        ("rust-users" ,rust-users-0.11)
-        ("rust-zoneinfo-compiled" ,rust-zoneinfo-compiled-0.5))
-       #:cargo-development-inputs
-       (("rust-datetime" ,rust-datetime-0.5))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'build-manual
-           (lambda* (#:key inputs #:allow-other-keys)
-             (when (assoc-ref inputs "pandoc")
-               (map (lambda (page)
-                      (with-output-to-file page
-                        (lambda _
-                          (invoke "pandoc" "--standalone"
-                                  "-f" "markdown"
-                                  "-t" "man"
-                                  (string-append "man/" page ".md")))))
-                    (list "exa.1" "exa_colors.5")))))
-         (add-after 'install 'install-extras
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (share (string-append out "/share"))
-                    (man1  (string-append share "/man/man1"))
-                    (man5  (string-append share "/man/man5")))
-               (when (file-exists? "exa.1")
-                 (install-file "exa.1" man1))
-               (when (file-exists? "exa_colors.5")
-                 (install-file "exa_colors.5" man5))
-               (mkdir-p (string-append out "/etc/bash_completion.d"))
-               (mkdir-p (string-append share "/fish/vendor_completions.d"))
-               (mkdir-p (string-append share "/zsh/site-functions"))
-               (copy-file "completions/completions.bash"
-                          (string-append out "/etc/bash_completion.d/exa"))
-               (copy-file "completions/completions.fish"
-                          (string-append
-                            share "/fish/vendor_completions.d/exa.fish"))
-               (copy-file "completions/completions.zsh"
-                          (string-append
-                            share "/zsh/site-functions/_exa"))))))))
-    (inputs (list libgit2 zlib))
-    (native-inputs
-     (append
-       (list pkg-config)
-       (if (member (%current-system)
-                   (package-transitive-supported-systems pandoc))
-         (list pandoc)
-         '())))
-    (home-page "https://the.exa.website/")
-    (synopsis "Modern replacement for ls")
-    (description "@code{exa} is a modern replacement for the command-line
-program @code{ls}.  It uses colours to distinguish file types and metadata.  It
-also knows about symlinks, extended attributes, and Git.")
-    (license license:expat)))
-
 (define-public eza
   (package
     (name "eza")
-    (version "0.15.2")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "eza" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "14qapnxc1rwqsq6c13b35wgaiypn23niajk39c44i1w3if91rd85"))))
+        (base32 "026xagh42nrdy2yg9197mmb2bhm5mdvbf9vd9fk9iysrj1iay63r"))))
     (build-system cargo-build-system)
     (arguments
      (list
@@ -499,8 +415,10 @@ also knows about symlinks, extended attributes, and Git.")
                        ("rust-num-cpus" ,rust-num-cpus-1)
                        ("rust-number-prefix" ,rust-number-prefix-0.4)
                        ("rust-once-cell" ,rust-once-cell-1)
+                       ("rust-palette" ,rust-palette-0.7)
                        ("rust-percent-encoding" ,rust-percent-encoding-2)
                        ("rust-phf" ,rust-phf-0.11)
+                       ("rust-plist" ,rust-plist-1)
                        ("rust-proc-mounts" ,rust-proc-mounts-0.3)
                        ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1)
                        ("rust-terminal-size" ,rust-terminal-size-0.3)
@@ -508,7 +426,7 @@ also knows about symlinks, extended attributes, and Git.")
                        ("rust-unicode-width" ,rust-unicode-width-0.1)
                        ("rust-uutils-term-grid" ,rust-uutils-term-grid-0.3)
                        ("rust-uzers" ,rust-uzers-0.11)
-                       ("rust-windows-sys" ,rust-windows-sys-0.48)
+                       ("rust-windows-sys" ,rust-windows-sys-0.52)
                        ("rust-zoneinfo-compiled" ,rust-zoneinfo-compiled-0.5))
       #:cargo-development-inputs `(("rust-criterion" ,rust-criterion-0.5)
                                    ("rust-trycmd" ,rust-trycmd-0.14))
@@ -528,31 +446,33 @@ also knows about symlinks, extended attributes, and Git.")
                      (lambda* (#:key outputs #:allow-other-keys)
                        (let* ((out (assoc-ref outputs "out"))
                               (share (string-append out "/share"))
+                              (bash-completions-dir (string-append share
+                                                     "/bash-completion/completions"))
+                              (zsh-completions-dir (string-append share
+                                                    "/zsh/site-functions"))
+                              (fish-completions-dir (string-append share
+                                                     "/fish/vendor_completions.d"))
                               (man1 (string-append share "/man/man1"))
                               (man5 (string-append share "/man/man5")))
                          (when (file-exists? "eza.1")
                            (install-file "eza.1" man1))
                          (when (file-exists? "eza_colors.5")
                            (install-file "eza_colors.5" man5))
-                         (mkdir-p (string-append out "/etc/bash_completion.d"))
-                         (mkdir-p (string-append
-                                    share "/fish/vendor_completions.d"))
-                         (mkdir-p (string-append share "/zsh/site-functions"))
+                         (mkdir-p bash-completions-dir)
+                         (mkdir-p zsh-completions-dir)
+                         (mkdir-p fish-completions-dir)
                          (copy-file "completions/bash/eza"
-                                    (string-append
-                                      out "/etc/bash_completion.d/eza"))
-                         (copy-file "completions/fish/eza.fish"
-                                    (string-append
-                                      share "/fish/vendor_completions.d/eza.fish"))
+                                    (string-append bash-completions-dir "/eza"))
                          (copy-file "completions/zsh/_eza"
-                                    (string-append
-                                      share "/zsh/site-functions/_eza"))))))))
+                                    (string-append zsh-completions-dir "/_eza"))
+                         (copy-file "completions/fish/eza.fish"
+                                    (string-append fish-completions-dir
+                                                   "/eza.fish"))))))))
     (native-inputs
-     (append
-       (list pkg-config)
-       (if (supported-package? pandoc)
-         (list pandoc)
-         '())))
+     (append (list pkg-config)
+             (if (supported-package? pandoc)
+                 (list pandoc)
+                 '())))
     (inputs (list libgit2-1.7 zlib))
     (home-page "https://github.com/eza-community/eza")
     (synopsis "Modern replacement for ls")
@@ -562,6 +482,9 @@ program @code{ls}.  It uses colours to distinguish file types and
 metadata.  It also knows about symlinks, extended attributes, and Git.
 This package is the community maintained fork of @code{exa}.")
     (license license:expat)))
+
+(define-public exa
+  (deprecated-package "exa" eza))
 
 (define-public fd
   (package
@@ -844,13 +767,13 @@ bar.  It is also compatible with sway.")
 (define-public just
   (package
     (name "just")
-    (version "1.14.0")
+    (version "1.17.0")
     (source (origin
               (method url-fetch)
               (uri (crate-uri "just" version))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0kafd87zmjf7wswyiqakqd2r5b8q3a761ipsihmrg9wr57k5zlis"))))
+               (base32 "1nlwrbawgg6sysfydi2334y4pbsinq50axnqm0cz0m29r8n0ljxd"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-test-flags
@@ -872,13 +795,15 @@ bar.  It is also compatible with sway.")
         ("rust-lexiclean" ,rust-lexiclean-0.0.1)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
+        ("rust-num-cpus" ,rust-num-cpus-1)
         ("rust-regex" ,rust-regex-1)
+        ("rust-semver" ,rust-semver-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-sha2" ,rust-sha2-0.10)
         ("rust-similar" ,rust-similar-2)
         ("rust-snafu" ,rust-snafu-0.7)
-        ("rust-strum" ,rust-strum-0.24)
+        ("rust-strum" ,rust-strum-0.25)
         ("rust-target" ,rust-target-2)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-typed-arena" ,rust-typed-arena-2)
@@ -889,7 +814,7 @@ bar.  It is also compatible with sway.")
         ("rust-executable-path" ,rust-executable-path-1)
         ("rust-pretty-assertions" ,rust-pretty-assertions-1)
         ("rust-temptree" ,rust-temptree-0.2)
-        ("rust-which" ,rust-which-4)
+        ("rust-which" ,rust-which-5)
         ("rust-yaml-rust" ,rust-yaml-rust-0.4))
        #:phases
        (modify-phases %standard-phases
@@ -905,32 +830,42 @@ bar.  It is also compatible with sway.")
                 (search-input-file inputs "/bin/env"))
                (("/bin/echo")
                 (search-input-file inputs "/bin/echo")))))
-         (add-after 'install 'install-manpage
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "man/just.1"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/man/man1"))))
-         (add-after 'install 'install-completions
-           (lambda* (#:key outputs #:allow-other-keys)
+         (add-after 'install 'install-extras
+           (lambda* (#:key native-inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (share (string-append out "/share"))
-                    (just (string-append out "/bin/just")))
-               (mkdir-p (string-append share "/bash-completion/completions"))
+                    (man1 (string-append share "/man/man1"))
+                    (bash-completions-dir
+                     (string-append share "/bash-completion/completions"))
+                    (zsh-completions-dir
+                     (string-append share "/zsh/site-functions"))
+                    (fish-completions-dir
+                     (string-append share "/fish/vendor_completions.d"))
+                    (elvish-completions-dir
+                     (string-append share "/elvish/lib"))
+                    (just (if ,(%current-target-system)
+                          (search-input-file native-inputs "/bin/just")
+                          (string-append out "/bin/just"))))
+               (install-file "man/just.1" man1)
+               (mkdir-p bash-completions-dir)
                (with-output-to-file
-                 (string-append share "/bash-completion/completions/just")
+                 (string-append bash-completions-dir "/just")
                  (lambda _ (invoke just "--completions" "bash")))
-               (mkdir-p (string-append share "/fish/vendor_completions.d"))
+               (mkdir-p zsh-completions-dir)
                (with-output-to-file
-                 (string-append share "/fish/vendor_completions.d/just.fish")
-                 (lambda _ (invoke just "--completions" "fish")))
-               (mkdir-p (string-append share "/zsh/site-functions"))
-               (with-output-to-file
-                 (string-append share "/zsh/site-functions/_just")
+                 (string-append zsh-completions-dir "/_just")
                  (lambda _ (invoke just "--completions" "zsh")))
-               (mkdir-p (string-append share "/elvish/lib"))
+               (mkdir-p fish-completions-dir)
                (with-output-to-file
-                 (string-append share "/elvish/lib/just")
+                 (string-append fish-completions-dir "/just.fish")
+                 (lambda _ (invoke just "--completions" "fish")))
+               (mkdir-p elvish-completions-dir)
+               (with-output-to-file
+                 (string-append elvish-completions-dir "/just")
                  (lambda _ (invoke just "--completions" "elvish")))))))))
+    (native-inputs (if (%current-target-system)
+                       (list this-package)
+                       '()))
     (inputs (list bash-minimal coreutils-minimal))
     (home-page "https://github.com/casey/just")
     (synopsis "Just a command runner")
@@ -1037,15 +972,21 @@ on the terminal in a visually appealing way.")
 (define-public maturin
   (package
     (name "maturin")
-    (version "1.1.0")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (crate-uri "maturin" version))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0asdljd396kdsvnx9kbsr5s0x6w73b59kdpx732333dhm13qgn03"))
-              (patches (search-patches "maturin-no-cross-compile.patch"))))
+                "1ia5xziazpcpc1wwg8jlz5nmza87cz7nb039gg38jgw3704p4dls"))
+              (patches (search-patches "maturin-no-cross-compile.patch"))
+              (snippet
+               #~(begin (use-modules (guix build utils))
+                        ;; Remove support for x86_64h-apple-darwin.
+                        ;; This target causes maturin to fail to build.
+                        (substitute* "src/target.rs"
+                          (("\\| Architecture::X86_64h ") ""))))))
     (build-system cargo-build-system)
     (arguments
      `(#:modules ((guix build cargo-build-system)
@@ -1073,44 +1014,44 @@ on the terminal in a visually appealing way.")
         ("rust-base64" ,rust-base64-0.21)
         ("rust-bytesize" ,rust-bytesize-1)
         ("rust-cargo-config2" ,rust-cargo-config2-0.1)
-        ("rust-cargo-options" ,rust-cargo-options-0.6)
-        ;("rust-cargo-xwin" ,rust-cargo-xwin-0.14)
-        ;("rust-cargo-zigbuild" ,rust-cargo-zigbuild-0.16)
-        ("rust-cargo-metadata" ,rust-cargo-metadata-0.15)
-        ("rust-cbindgen" ,rust-cbindgen-0.24)
+        ("rust-cargo-options" ,rust-cargo-options-0.7)
+        ;("rust-cargo-xwin" ,rust-cargo-xwin-0.16)
+        ;("rust-cargo-zigbuild" ,rust-cargo-zigbuild-0.18)
+        ("rust-cargo-metadata" ,rust-cargo-metadata-0.18)
+        ("rust-cbindgen" ,rust-cbindgen-0.26)
         ("rust-cc" ,rust-cc-1)
         ("rust-clap" ,rust-clap-4)
         ("rust-clap-complete-command" ,rust-clap-complete-command-0.5)
         ("rust-configparser" ,rust-configparser-3)
         ("rust-console" ,rust-console-0.15)
-        ("rust-dialoguer" ,rust-dialoguer-0.10)
+        ("rust-dialoguer" ,rust-dialoguer-0.11)
         ("rust-dirs" ,rust-dirs-5)
         ("rust-dunce" ,rust-dunce-1)
         ("rust-fat-macho" ,rust-fat-macho-0.4)
         ("rust-flate2" ,rust-flate2-1)
         ("rust-fs-err" ,rust-fs-err-2)
         ("rust-glob" ,rust-glob-0.3)
-        ("rust-goblin" ,rust-goblin-0.6)
+        ("rust-goblin" ,rust-goblin-0.7)
         ("rust-ignore" ,rust-ignore-0.4)
-        ("rust-indexmap" ,rust-indexmap-1)
-        ("rust-itertools" ,rust-itertools-0.10)
+        ("rust-indexmap" ,rust-indexmap-2)
+        ("rust-itertools" ,rust-itertools-0.12)
         ("rust-keyring" ,rust-keyring-2)
         ("rust-lddtree" ,rust-lddtree-0.3)
-        ("rust-minijinja" ,rust-minijinja-0.34)
+        ("rust-minijinja" ,rust-minijinja-1)
         ("rust-multipart" ,rust-multipart-0.18)
         ("rust-native-tls" ,rust-native-tls-0.2)
         ("rust-normpath" ,rust-normpath-1)
         ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-path-slash" ,rust-path-slash-0.2)
         ("rust-pep440-rs" ,rust-pep440-rs-0.3)
         ("rust-pep508-rs" ,rust-pep508-rs-0.2)
         ("rust-platform-info" ,rust-platform-info-2)
-        ("rust-pyproject-toml" ,rust-pyproject-toml-0.6)
-        ("rust-python-pkginfo" ,rust-python-pkginfo-0.5)
+        ("rust-pyproject-toml" ,rust-pyproject-toml-0.8)
+        ("rust-python-pkginfo" ,rust-python-pkginfo-0.6)
         ("rust-regex" ,rust-regex-1)
         ("rust-rustc-version" ,rust-rustc-version-0.4)
-        ("rust-rustls" ,rust-rustls-0.20)
-        ("rust-rustls-pemfile" ,rust-rustls-pemfile-1)
-        ("rust-same-file" ,rust-same-file-1)
+        ("rust-rustls" ,rust-rustls-0.21)
+        ("rust-rustls-pemfile" ,rust-rustls-pemfile-2)
         ("rust-semver" ,rust-semver-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
@@ -1121,8 +1062,8 @@ on the terminal in a visually appealing way.")
         ("rust-textwrap" ,rust-textwrap-0.16)
         ("rust-thiserror" ,rust-thiserror-1)
         ("rust-time" ,rust-time-0.3)
-        ("rust-toml" ,rust-toml-0.7)
-        ("rust-toml-edit" ,rust-toml-edit-0.19)
+        ("rust-toml" ,rust-toml-0.8)
+        ("rust-toml-edit" ,rust-toml-edit-0.21)
         ("rust-tracing" ,rust-tracing-0.1)
         ("rust-tracing-subscriber" ,rust-tracing-subscriber-0.3)
         ("rust-ureq" ,rust-ureq-2)
@@ -1130,12 +1071,13 @@ on the terminal in a visually appealing way.")
         ("rust-wild" ,rust-wild-2)
         ("rust-zip" ,rust-zip-0.6))
        #:cargo-development-inputs
-       (("rust-indoc" ,rust-indoc-2)
+       (("rust-expect-test" ,rust-expect-test-1)
+        ("rust-indoc" ,rust-indoc-2)
         ("rust-pretty-assertions" ,rust-pretty-assertions-1)
         ("rust-rustversion" ,rust-rustversion-1)
         ("rust-time" ,rust-time-0.3)
         ("rust-trycmd" ,rust-trycmd-0.14)
-        ("rust-which" ,rust-which-4))
+        ("rust-which" ,rust-which-5))
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-python-module
@@ -1186,8 +1128,7 @@ on the terminal in a visually appealing way.")
      (list python-tomli))
     (inputs (list bzip2))
     (native-inputs
-     (list perl
-           python-wheel
+     (list python-wheel
            python-wrapper
            python-setuptools-rust))
     (home-page "https://github.com/pyo3/maturin")
@@ -1446,14 +1387,15 @@ browsers.")
 (define-public rust-cargo-edit
   (package
     (name "rust-cargo-edit")
-    (version "0.10.4")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (crate-uri "cargo-edit" version))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19wfjz7z4kqjfjmnq1bl6dhsvskjy6r656fqmbha9dfdspbsnmd0"))))
+                "03lxi7z1n9xq287lqvqnhzg5r0yv1fi3569ryw3jqcrvv8nqs0c2"))
+              (patches (search-patches "rust-cargo-edit-remove-ureq.patch"))))
     (build-system cargo-build-system)
     (arguments
      `(#:install-source? #f
@@ -1462,14 +1404,15 @@ browsers.")
        #:cargo-inputs
        (("rust-anyhow" ,rust-anyhow-1)
         ("rust-cargo-metadata" ,rust-cargo-metadata-0.15)
-        ("rust-clap" ,rust-clap-3)
+        ("rust-clap" ,rust-clap-4)
+        ("rust-clap-cargo" ,rust-clap-cargo-0.12)
         ("rust-concolor-control" ,rust-concolor-control-0.0.7)
-        ("rust-crates-index" ,rust-crates-index-0.18)
-        ("rust-dirs-next" ,rust-dirs-next-2)
+        ("rust-crates-index" ,rust-crates-index-0.19)
         ("rust-dunce" ,rust-dunce-1)
         ("rust-env-proxy" ,rust-env-proxy-0.4)
-        ("rust-git2" ,rust-git2-0.14)
+        ("rust-git2" ,rust-git2-0.17)
         ("rust-hex" ,rust-hex-0.4)
+        ("rust-home" ,rust-home-0.5)
         ("rust-indexmap" ,rust-indexmap-1)
         ("rust-native-tls" ,rust-native-tls-0.2)
         ("rust-pathdiff" ,rust-pathdiff-0.2)
@@ -1480,15 +1423,15 @@ browsers.")
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-subprocess" ,rust-subprocess-0.2)
         ("rust-termcolor" ,rust-termcolor-1)
-        ("rust-toml-edit" ,rust-toml-edit-0.14)
-        ("rust-ureq" ,rust-ureq-2)
+        ("rust-toml" ,rust-toml-0.7)
+        ("rust-toml-edit" ,rust-toml-edit-0.19)
         ("rust-url" ,rust-url-2))
        #:cargo-development-inputs
        (("rust-assert-cmd" ,rust-assert-cmd-2)
         ("rust-assert-fs" ,rust-assert-fs-1)
-        ("rust-predicates" ,rust-predicates-2)
-        ("rust-snapbox" ,rust-snapbox-0.2)
-        ("rust-trycmd" ,rust-trycmd-0.13)
+        ("rust-predicates" ,rust-predicates-3)
+        ("rust-snapbox" ,rust-snapbox-0.4)
+        ("rust-trycmd" ,rust-trycmd-0.14)
         ("rust-url" ,rust-url-2))
        #:phases
        (modify-phases %standard-phases
@@ -1497,9 +1440,9 @@ browsers.")
              (substitute* "Cargo.toml"
                ((".*\"vendored-libgit2\".*") "")))))))
     (native-inputs
-     (list perl pkg-config))
+     (list pkg-config))
     (inputs
-     (list libgit2-1.4
+     (list libgit2-1.6
            libssh2
            openssl
            zlib))
@@ -1688,8 +1631,6 @@ rebase.")
        (("rust-boxxy" ,rust-boxxy-0.12))))
     (inputs
      (list libpcap libseccomp))
-    (native-inputs
-     (list perl))
     (home-page "https://github.com/kpcyrd/sniffglue")
     (synopsis "Secure multithreaded packet sniffer")
     (description
@@ -2359,7 +2300,7 @@ consecutive lines and since program start.")
                         ;"dbus_mpris"   ; Conflicts with rust-chrono-0.4 version.
                         "pulseaudio_backend"
                         "rodio_backend")))
-    (native-inputs (list perl pkg-config))
+    (native-inputs (list pkg-config))
     (inputs (list alsa-lib dbus pulseaudio))
     (home-page "https://github.com/Spotifyd/spotifyd")
     (synopsis "Spotify streaming daemon with Spotify Connect support")
@@ -2536,7 +2477,7 @@ daemon which executes them.")
         ("rust-predicates" ,rust-predicates-2)
         ("rust-tempfile" ,rust-tempfile-3))))
     (native-inputs
-     (list perl pkg-config))
+     (list pkg-config))
     (inputs
      (list openssl))
     (home-page "https://github.com/dbrgn/tealdeer/")

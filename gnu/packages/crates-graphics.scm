@@ -39,6 +39,7 @@
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-windows)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages llvm)
@@ -787,6 +788,35 @@ and iOS.")
      "This package provides a library to perform image color model conversion.")
     (license license:expat-0)))
 
+(define-public rust-enterpolation-0.2
+  (package
+    (name "rust-enterpolation")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "enterpolation" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ah41msghasm0i97awa67rv3mg6p3j0xijswy1gpdipprg4gbb8z"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Not all files included.
+       #:cargo-inputs
+       (("rust-assert-float-eq" ,rust-assert-float-eq-1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-topology-traits" ,rust-topology-traits-0.1))
+       #:cargo-development-inputs (("rust-criterion" ,rust-criterion-0.5)
+                                   ("rust-image" ,rust-image-0.24)
+                                   ("rust-palette" ,rust-palette-0.7))))
+    (home-page "https://github.com/NicolasKlenert/enterpolation")
+    (synopsis "Library for create and compute interpolations and extrapolations")
+    (description
+     "This package provides a library for creating and computing interpolations,
+extrapolations and smoothing of generic data points.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-euclid-0.22
   (package
     (name "rust-euclid")
@@ -892,6 +922,25 @@ EUI-64, also known as MAC-48 media access control addresses.")
     (synopsis "Read and write OpenEXR files without any unsafe code")
     (description "Read and write OpenEXR files without any unsafe code")
     (license license:bsd-3)))
+
+(define-public rust-fast-srgb8-1
+  (package
+    (name "rust-fast-srgb8")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fast-srgb8" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "18g6xwwh4gnkyx1352hnvwagpv0n4y98yp2llm8vyvwxh487abnx"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/thomcc/fast-srgb8")
+    (synopsis "Conversions between linear float and 8-bit @code{sRGB}")
+    (description
+     "This package provides very fast conversions between linear float and
+8-bit @code{sRGB} (with @code{no_std} support).")
+    (license (list license:expat license:asl2.0 license:cc0))))
 
 (define-public rust-gfx-0.18
   (package
@@ -1021,7 +1070,7 @@ EUI-64, also known as MAC-48 media access control addresses.")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "gl-generator" version))
+       (uri (crate-uri "gl_generator" version))
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
@@ -1047,7 +1096,7 @@ EUI-64, also known as MAC-48 media access control addresses.")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "gl-generator" version))
+       (uri (crate-uri "gl_generator" version))
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
@@ -1062,12 +1111,34 @@ EUI-64, also known as MAC-48 media access control addresses.")
    (source
     (origin
       (method url-fetch)
-      (uri (crate-uri "gl-generator" version))
+      (uri (crate-uri "gl_generator" version))
       (file-name
        (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
         "1gdchvay0k0g931b2ki33mkfixcw4radk5b8sqsm29rahxg3v8ir"))))))
+
+(define-public rust-gl-loader-0.1
+  (package
+    (name "rust-gl-loader")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gl_loader" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1lwr1gd7hrb2nk67zw4pc04vl4h868r5a7846zjr0548bzfrcbg3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ; missing `gl` crate
+       #:cargo-inputs (("rust-cc" ,rust-cc-1)
+                       ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/maeln/gl_loader")
+    (synopsis "Simple OpenGL function pointer loader based on Glad")
+    (description
+     "Simple @code{OpenGL} function pointer loader based on Glad.")
+    (license license:cecill)))
 
 (define-public rust-gleam-0.6
   (package
@@ -1278,7 +1349,7 @@ EUI-64, also known as MAC-48 media access control addresses.")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "glutin-egl-sys" version))
+       (uri (crate-uri "glutin_egl_sys" version))
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
@@ -1302,7 +1373,7 @@ EUI-64, also known as MAC-48 media access control addresses.")
     (source
      (origin
        (method url-fetch)
-       (uri (crate-uri "glutin-egl-sys" version))
+       (uri (crate-uri "glutin_egl_sys" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0g81bz7ppvaksvwcw1jg553g8b2shvmnfm9ms6hixwvinj20z438"))))
@@ -1870,6 +1941,73 @@ graphics and video games.")
     (description "This package provides OSMesa library bindings for Rust.")
     (license license:cc0)))
 
+(define-public rust-palette-0.7
+  (package
+    (name "rust-palette")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "palette" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1p2inf23vsqy06w7vp7rcxmb9vk91asib534m9cafykn8x0z7qmj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Regression tests not included.
+       #:cargo-inputs
+       (("rust-approx" ,rust-approx-0.5)
+        ("rust-bytemuck" ,rust-bytemuck-1)
+        ("rust-fast-srgb8" ,rust-fast-srgb8-1)
+        ("rust-libm" ,rust-libm-0.2)
+        ("rust-palette-derive" ,rust-palette-derive-0.7)
+        ("rust-phf" ,rust-phf-0.11)
+        ("rust-rand" ,rust-rand-0.8)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-wide" ,rust-wide-0.7))
+       #:cargo-development-inputs
+       (("rust-clap" ,rust-clap-3)
+        ("rust-criterion" ,rust-criterion-0.4)
+        ("rust-csv" ,rust-csv-1)
+        ("rust-enterpolation" ,rust-enterpolation-0.2)
+        ("rust-image" ,rust-image-0.23)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand-mt" ,rust-rand-mt-4)
+        ("rust-ron" ,rust-ron-0.8)
+        ("rust-scad" ,rust-scad-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://github.com/Ogeon/palette")
+    (synopsis "Convert and manage colors")
+    (description
+     "This package provides converting and managing colors in Rust with a focus
+on correctness, flexibility and ease of use.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-palette-derive-0.7
+  (package
+    (name "rust-palette-derive")
+    (version "0.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "palette_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "02ps239sxcr5v294qf89d87sv7fdm9pr2cziwj2l6ggzql703nxp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-find-crate" ,rust-find-crate-0.6)
+                       ("rust-proc-macro2" ,rust-proc-macro2-1)
+                       ("rust-quote" ,rust-quote-1)
+                       ("rust-syn" ,rust-syn-2))))
+    (home-page "https://github.com/Ogeon/palette")
+    (synopsis "Automatically implement traits from the @code{palette} crate")
+    (description "This package allows automatically implements traits from the
+@code{palette} crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-piston-float-1
   (package
     (name "rust-piston-float")
@@ -2389,6 +2527,39 @@ high-level interoperability.  It also adds common convenience methods and
 implements standard Rust traits to make `RGB`/`RGBA` pixels and slices
 first-class Rust objects.")
     (license license:expat)))
+
+(define-public rust-scad-1
+  (package
+    (name "rust-scad")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "scad" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1yvy7ckfd7r261iywm75na1ykd9cl8h0q8ajb1iwg1jmnbs6vry6"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "docs")
+           ;; The very next commit in the repository updates nalgebra
+           (substitute* "Cargo.toml"
+             (("0\\.16\\.8") "0.27.1"))))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags
+       '("--release" "--"
+         "--skip=common_objects::tests::cube_center_x"
+         "--skip=common_objects::tests::cube_center_yz")
+       #:cargo-inputs
+       (("rust-nalgebra" ,rust-nalgebra-0.27))))
+    (home-page "https://github.com/thezoq2/Rust-Scad")
+    (synopsis "Crate for generating OpenSCAD models using Rust")
+    (description
+     "This package provides a crate for generating @code{OpenSCAD} models
+using Rust.")
+    (license license:lgpl2.0+)))
 
 (define-public rust-sdl2-0.35
   (package
