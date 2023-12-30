@@ -112,14 +112,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "3.8")
+   (version "3.11")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "10n3mc9n1xmg85hpxyr4wiqzfp27ffxzwhvkv021j27vnk0pr3a9"))
+              "1avf4x8skxbqrjp5j2qr9sp5vlf8jkw2i5bdn51fl3cxx3fsxchx"))
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs (list perl))                   ;some of the tests require it
@@ -297,15 +297,14 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.8")
+   (version "3.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1v4g8gi0lgakqa7iix8s4fq7lq6l92vw3rjd9wfd2rhjng8xggd6"))
-            (patches (search-patches "diffutils-fix-signal-processing.patch"))))
+              "17nhkdn5a2z6pwcmjs4jas2plg066hbdz06y5vhypr14qwyfkrch"))))
    (build-system gnu-build-system)
    (arguments
     (list
@@ -523,14 +522,14 @@ standard.")
 (define-public gnu-make
   (package
    (name "make")
-   (version "4.3")
+   (version "4.4.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/make/make-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
+              "1cwgcmwdn7gqn5da2ia91gkyiqs9birr10sy5ykpkaxzcwfzn5nx"))
             (patches (search-patches "make-impure-dirs.patch"))))
    (build-system gnu-build-system)
    (native-inputs (list pkg-config))              ;to detect Guile
