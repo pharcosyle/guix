@@ -948,7 +948,7 @@ re-executing them as necessary.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/inetutils/inetutils-"
-                                  version ".tar.xz"))
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "0q1257ci22g2jbdiqs00mharc1lqkbibdlkhj23f3si6qjxkn17s"))))
