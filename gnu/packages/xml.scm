@@ -251,11 +251,6 @@ to output XPath results with a null delimiter.")))
 (define-public python-libxml2
   (package/inherit libxml2
     (name "python-libxml2")
-    (source (origin
-              (inherit (package-source libxml2))
-              (patches
-                (append (search-patches "python-libxml2-utf8.patch")
-                        (origin-patches (package-source libxml2))))))
     (build-system python-build-system)
     (outputs '("out"))
     (arguments
