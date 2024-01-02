@@ -1500,11 +1500,11 @@ Library.")
   (make-clang-toolchain clang-17 libomp-17))
 
 ;; Default LLVM and Clang version.
-(define-public libomp libomp-15)
-(define-public llvm llvm-15)
-(define-public clang-runtime clang-runtime-15)
-(define-public clang clang-15)
-(define-public clang-toolchain clang-toolchain-15)
+(define-public libomp libomp-17)
+(define-public llvm llvm-17)
+(define-public clang-runtime clang-runtime-17)
+(define-public clang clang-17)
+(define-public clang-toolchain clang-toolchain-17)
 
 (define-public llvm-for-rocm
   (package
