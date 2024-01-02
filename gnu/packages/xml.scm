@@ -1848,16 +1848,18 @@ because lxml.etree already has its own implementation of XPath 1.0.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "4.9.2")
+    (version "4.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lxml" version))
        (sha256
-         (base32 "0rsvhd03cv7fczd04xqf1idlnkvjy0hixx2p6a5k6w5cnypcym94"))))
+         (base32 "03l86qr5xzvz0jcbk669sj8nbw1fjshmf0b7l83gl5cfnx81wm5i"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  ;; Should be fixed in 5.0, remove this then.
+                  ;; See https://bugs.launchpad.net/lxml/+bug/2016939
                   (add-after 'unpack 'ignore-failing-test
                     (lambda _
                       (substitute* "src/lxml/tests/test_etree.py"
