@@ -982,6 +982,14 @@ safety and thread safety guarantees.")
                   (substitute* "src/tools/cargo/tests/testsuite/death.rs"
                     #$@(make-ignore-test-list
                         '("fn ctrl_c_kills_everyone")))))
+              (add-after 'unpack 'disable-bin-env-test
+               (lambda _
+                 ;; Deals with unicode. Fails possibly because of incorrect
+                 ;; locale?
+                 ;; "setlocale: LC_ALL: cannot change locale (en_US.UTF-8)"
+                 (substitute* "src/tools/cargo/tests/testsuite/test.rs"
+                   #$@(make-ignore-test-list
+                       '("fn bin_env_for_test")))))
               (add-after 'unpack 'adjust-rpath-values
                 ;; This adds %output:out to rpath, allowing us to install utilities in
                 ;; different outputs while reusing the shared libraries.
