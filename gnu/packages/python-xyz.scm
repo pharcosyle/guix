@@ -21891,13 +21891,13 @@ implementation of your Python package and its public API surface.")
 (define-public python-natsort
   (package
     (name "python-natsort")
-    (version "7.1.1")
+    (version "8.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "natsort" version))
               (sha256
                (base32
-                "00y49bfsi7rrsd1s42gc2w95a6arl9ipdsx2493hr0v54fj07ih0"))))
+                "10d53q50zn2s8iiszv01nr9r4imimc2dvplkl4ymj1sm1r52qca5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
