@@ -1212,6 +1212,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fluxbox-1.3.7-no-dynamic-cursor.patch	\
   %D%/packages/patches/fluxbox-1.3.7-gcc.patch			\
   %D%/packages/patches/fontconfig-cache-ignore-mtime.patch	\
+  %D%/packages/patches/fontforge-gettext-0.22-fix.patch	\
   %D%/packages/patches/fontforge-hurd.patch			\
   %D%/packages/patches/foobillard++-pkg-config.patch		\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
