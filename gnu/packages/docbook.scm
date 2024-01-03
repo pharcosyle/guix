@@ -912,21 +912,20 @@ Detect the differences in markup between two SGML files.
               (modules '((guix build utils)))
               (snippet
                ;; Fix a failing test (maybe it worked with old texinfo?)
-               #~(begin
-                   (substitute* "test/complete-manuals/at1.xml"
-                     (("<bridgehead>")
-                      "<bridgehead renderas=\"sect2\">"))
-                   ;; Force a new autoreconf run.
-                   (delete-file "configure")))))
+               #~(substitute* "test/complete-manuals/at1.xml"
+                   (("<bridgehead>")
+                    "<bridgehead renderas=\"sect2\">")))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
      (list
-      #:modules '((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-26))
+      #:modules `((srfi srfi-26)
+                  ,@%default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'autoreconf
+            (lambda _
+              (invoke "autoreconf" "-vif")))
           (add-after 'install 'move-doc
             (lambda _
               (let* ((old (string-append #$output "/share/doc"))
