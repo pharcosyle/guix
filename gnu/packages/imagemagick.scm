@@ -62,16 +62,14 @@
   (hidden-package
    (package
      (name "imagemagick")
-     (version "7.1.1-8")
+     (version "7.1.1-25")
      (source (origin
                (method url-fetch)
                (uri (string-append "mirror://imagemagick/ImageMagick-"
                                    version ".tar.xz"))
                (sha256
                 (base32
-                 "02hnkllk1lzvz4hdlv1kf8csfhj8q9jhvyjma8cc3laarfalk8h5"))
-               (patches
-                (search-patches "imagemagick-CVE-2020-27829.patch"))))
+                 "1cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))
      (build-system gnu-build-system)
      (arguments
       `(#:configure-flags
@@ -149,7 +147,7 @@ text, lines, polygons, ellipses and Bézier curves.")
   (package
     (inherit imagemagick/stable)
     (properties (alist-delete 'hidden? (package-properties imagemagick/stable)))
-    (version "7.1.1-8")
+    (version "7.1.1-25")
     (source (origin
               (inherit (package-source imagemagick/stable))
               (method url-fetch)
@@ -157,12 +155,12 @@ text, lines, polygons, ellipses and Bézier curves.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "02hnkllk1lzvz4hdlv1kf8csfhj8q9jhvyjma8cc3laarfalk8h5"))))))
+                "1cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))))
 
 (define-public imagemagick-6
   (package
     (inherit imagemagick)
-    (version "6.9.12-86")
+    (version "6.9.13-3")
     (source (origin
               (inherit (package-source imagemagick))
               (method url-fetch)
@@ -170,7 +168,7 @@ text, lines, polygons, ellipses and Bézier curves.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0kvjma181gd2n00c51kz9w6fssqf37s2g3q0lsd9v6fppbqrwfsz"))))))
+                "0i0wsr702qlzwaxdb4i50y1p3i0i5nc3c7fl0zkym5a4wpj5akbk"))))))
 
 (define-public perl-image-magick
   (package
