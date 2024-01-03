@@ -73,7 +73,18 @@
                                  "-" version ".tar.gz"))
              (sha256
               (base32
-               "1026whyxpajwijlr4k5c0iliwn09mwxrg7gkvd5kb0n9ga6vg788"))))
+               "1026whyxpajwijlr4k5c0iliwn09mwxrg7gkvd5kb0n9ga6vg788"))
+             (patches
+              (list
+               (origin
+                 (method url-fetch)
+                 (uri (string-append
+                       "https://github.com/dajobe/raptor/commit/"
+                       "4dbc4c1da2a033c497d84a1291c46f416a9cac51.patch"))
+                 (file-name (string-append name "-libxml2-2.11-fix.patch"))
+                 (sha256
+                  (base32
+                   "0i227q1gzl9brkhia2rbz7jbzljw5fh7bgwg5i7mi5263gxxqnah")))))))
     (build-system gnu-build-system)
     (inputs
      (list curl libxml2 libxslt zlib))
