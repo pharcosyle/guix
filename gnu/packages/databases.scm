@@ -933,7 +933,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.10.2")
+    (version "10.10.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -941,8 +941,8 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ciw7y08wms9g3hzhyria49r1b9n5wpbhkndazv95d925c8x1jsp"))
-              (patches (search-patches "mariadb-fix-build-with-gcc-13.patch"))
+                "1c2y46wfg5gcipkpbfki59v1p90gyiv9njb1ycf1hxsv4yzdgcvd"))
+              (patches (search-patches "mariadb-fix-ssl-test.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
