@@ -777,7 +777,7 @@ and should be preferred to it whenever a package would otherwise depend on
            fontforge
            freetype
            gd
-           ghostscript-9.56
+           ghostscript
            gmp
            graphite2
            harfbuzz
