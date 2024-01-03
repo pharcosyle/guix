@@ -1096,14 +1096,14 @@ doctest.")
 (define-public python-mock
   (package
     (name "python-mock")
-    (version "5.0.2")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mock" version))
        (sha256
         (base32
-         "14bq6xj4c7c8mw6dz4mr3q6y0blwx4v9lnhl5ch2hi5lcmyqvw86"))))
+         "0zbnp1kmf7ykc9bvlxamsp15rxsd0ar99v99lbh1hiysrkasm5jy"))))
     (build-system python-build-system)
     (native-inputs
      (list python-pytest))
