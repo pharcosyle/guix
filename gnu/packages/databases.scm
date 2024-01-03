@@ -965,6 +965,7 @@ Language.")
               (sha256
                (base32
                 "08phlqcwcwl753zi2jv702q7b3h25d489289mflnm8c31djp8smh"))
+              (patches (search-patches "mariadb-fix-ssl-test.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
