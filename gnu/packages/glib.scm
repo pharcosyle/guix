@@ -888,7 +888,7 @@ credentials and service-specific settings.")
                              (string-append #$output "/share/doc")
                              (string-append #$output:doc "/share/doc")))))))
     (native-inputs
-     (list docbook-xml
+     (list docbook-xml-4.1.2
            docbook-xsl
            graphviz
            doxygen
