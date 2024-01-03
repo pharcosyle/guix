@@ -997,8 +997,7 @@ Angus Johnson}.")
     (native-inputs
      (list pkg-config))
     (inputs
-     ;; TODO Figure out if this will work with newer Ghostscript. Update: upstream bumped to 4.00 (I had it at 3.78) so even more likely the newer ghostscript works
-     (list ghostscript-9.56
+     (list ghostscript
            imagemagick
            plotutils
            libjpeg-turbo
