@@ -1574,24 +1574,24 @@ Python's @code{random.seed}.")
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
-    (version "3.10.0")
+    (version "3.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-mock" version))
        (sha256
-        (base32 "0kzdwwdjw001qzf1n4qzh7c364rvmb0cmkfqdwr2l9bwxy2v1ggv"))
+        (base32 "1sd6q65jzpvmyskbr57h7xcga7s5ahh96hxvhwid7ji2ih1hz91i"))
        (patches
         (list
          (origin
            (method url-fetch)
            (uri (string-append
                  "https://github.com/pytest-dev/pytest-mock/commit/"
-                 "e2016928db1147a2a46de6ee9fa878ca0e9d8fc8.patch"))
-           (file-name (string-append name "-py-code-fix.patch"))
+                 "6da5b0506d6378a8dbe5ae314d5134e6868aeabd.patch"))
+           (file-name (string-append name "-python-3.11-tests-fix.patch"))
            (sha256
             (base32
-             "1y6n57nyc4bfb5cpkf4hfq584v3r2gf72q437aps4zcg62y205i8")))))))
+             "16cwwsjxamysyd7v6c17nq9yh28a266k00sc7mm69i16dbjk4j9y")))))))
     (build-system pyproject-build-system)
     (native-inputs
      (list python-pytest-asyncio python-setuptools-scm))
