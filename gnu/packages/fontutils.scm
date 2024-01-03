@@ -1621,7 +1621,18 @@ definitions.")
                     "https://github.com/fontforge/fontforge/releases/download/"
                     version "/fontforge-" version ".tar.xz"))
               (sha256
-               (base32 "1y30bk9rdya8bkw4q77y6nq5xfg7nm0qliz5miqdlk8c0r6fr0na"))))
+               (base32 "1y30bk9rdya8bkw4q77y6nq5xfg7nm0qliz5miqdlk8c0r6fr0na"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/fontforge/fontforge/commit"
+                        "/55d58f87ab1440f628f2071a6f6cc7ef9626c641.patch"))
+                  (file-name (string-append name "-gettext-0.22-fix.patch"))
+                  (sha256
+                   (base32
+                    "1crrp345ylqppbl1dm4ln3dlmdhkjg7ngf691jnp59g899mq78li")))))))
     (build-system cmake-build-system)
     (native-inputs
      (list pkg-config))
