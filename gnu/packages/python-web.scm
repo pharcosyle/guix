@@ -388,13 +388,13 @@ API rules.")
 (define-public python-frozenlist
   (package
     (name "python-frozenlist")
-    (version "1.2.0")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "frozenlist" version))
        (sha256
-        (base32 "1pkr23by7pk9lsmsh0wiqirpkq3f1f08b0615nbzysn51bk1n838"))))
+        (base32 "0sispcpras096fxrd0i35qs25fqy4r0x8v1d6f40pag845bwbg2q"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
