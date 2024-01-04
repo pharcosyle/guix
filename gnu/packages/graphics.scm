@@ -894,7 +894,7 @@ exception-handling library.")
 (define-public lib2geom
   (package
     (name "lib2geom")
-    (version "1.2.2")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -903,7 +903,29 @@ exception-handling library.")
               (file-name (git-file-name "lib2geom" version))
               (sha256
                (base32
-                "1riyv6nvqsbfmfzwjl0sizjgw94qw2dyx4fdwc5rja1w15q32if6"))))
+                "1ypcn0yxk9ny7qg8s8h3px2wpimhfgkwk7x1548ky12iqmdjjmcn"))
+              (patches
+               ;; Fix ellipses rendering near page corners.
+               ;; https://gitlab.com/inkscape/lib2geom/-/issues/66
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://gitlab.com/inkscape/lib2geom/-/commit/"
+                        "039ce8d4af23a0a2a9d48eb970b321d9795dcc08.patch"))
+                  (file-name (string-append name "-ellipses-1-fix.patch"))
+                  (sha256
+                   (base32
+                    "15kzk8vqjcvl5bip4rxahh9rjpgx9hqnlziwjlwwabyms23pjfs5")))
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://gitlab.com/inkscape/lib2geom/-/commit/"
+                        "cf523857e48c87f9f6a09217bdf935fff457823d.patch"))
+                  (file-name (string-append name "-ellipses-2-fix.patch"))
+                  (sha256
+                   (base32
+                    "1z35xgz2jyz4i8lj94q0vx64zm8zlgyfpgam27bl3ynr62iq6gj1")))))))
     (build-system cmake-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
