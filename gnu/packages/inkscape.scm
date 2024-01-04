@@ -38,6 +38,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xml)
@@ -65,7 +67,7 @@
   (hidden-package
    (package
      (name "inkscape")
-     (version "1.2.2")
+     (version "1.3.2")
      (source
       (origin
         (method url-fetch)
@@ -73,7 +75,7 @@
                             "resources/file/"
                             "inkscape-" version ".tar.xz"))
         (sha256
-         (base32 "1i55x0zbmwgvcl8fai9m3zy7rpc0rwfk1vs8wqsib8n00c6zvix0"))
+         (base32 "0sq81smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))
         (modules '((guix build utils)
                    (ice-9 format)))
         (snippet
@@ -185,20 +187,6 @@ endif()~%~%"
                (substitute* "testfiles/cli_tests/CMakeLists.txt"
                  (("add_cli_test\\(export-latex")
                   "message(TEST_DISABLED: export-latex"))))
-           (add-after 'unpack 'disable-vertical-glyph-tests
-             (lambda _
-               ;; FIXME: These tests fail with newer Pango and Harfbuzz:
-               ;;   https://gitlab.com/inkscape/inkscape/-/issues/2917
-               ;;   https://gitlab.com/inkscape/inkscape/-/issues/3554
-               ;; Simply providing older versions don't work, as we need
-               ;; the full GTK stack; we could use package-input-rewriting
-               ;; but then have to also downgrade pangomm and disable tests
-               ;; in librsvg and GTK+.  Just ignore for now.
-               (substitute* "testfiles/rendering_tests/CMakeLists.txt"
-                 (("test-glyph-y-pos") "")
-                 (("text-glyphs-combining") "")
-                 (("text-glyphs-vertical") "")
-                 (("test-rtl-vertical") ""))))
            #$@(if (or (target-aarch64?)
                       (target-ppc64le?)
                       (target-riscv64?))
@@ -210,7 +198,8 @@ endif()~%~%"
                         ;; https://gitlab.com/inkscape/inkscape/-/issues/3554#note_1035539888
                         ;; According to upstream, this is a false positive.
                         (substitute* "testfiles/rendering_tests/CMakeLists.txt"
-                          (("test-use") "#test-use"))
+                          (("add_rendering_test\\(test-use" all)
+                           (string-append "#" all)))
                         ;; https://gitlab.com/inkscape/inkscape/-/issues/3554#note_1035539888
                         ;; Allegedly a precision error in the gamma.
                         (substitute* "testfiles/cli_tests/CMakeLists.txt"
@@ -252,6 +241,7 @@ endif()~%~%"
             gsl
             poppler
             lib2geom
+            libepoxy
             libjpeg-turbo
             libpng
             libxml2
@@ -272,7 +262,8 @@ endif()~%~%"
             python-scour
             python-pyserial
             python-numpy
-            python-lxml))
+            python-lxml
+            python-pyparsing))
      (native-inputs
       (list gettext-minimal
             imagemagick/stable          ;for tests
@@ -291,7 +282,7 @@ as the native format.")
   (package
     (inherit inkscape/stable)
     (name "inkscape")
-    (version "1.2.2")
+    (version "1.3.2")
     (source
      (origin
        (inherit (package-source inkscape/stable))
@@ -300,7 +291,7 @@ as the native format.")
                            "resources/file/"
                            "inkscape-" version ".tar.xz"))
        (sha256
-        (base32 "1i55x0zbmwgvcl8fai9m3zy7rpc0rwfk1vs8wqsib8n00c6zvix0"))))
+        (base32 "0sq81smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))))
     (build-system cmake-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments inkscape/stable)
