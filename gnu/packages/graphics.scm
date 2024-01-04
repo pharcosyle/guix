@@ -419,9 +419,7 @@ objects!")
            procps))                     ;for tests
     (inputs
      (list glib
-           ;; Change this to Imagemagick 7 on the next update (support exists
-           ;; in as-yet unreleased code).
-           imagemagick-6
+           imagemagick
            libjpeg-turbo
            libpng
            pstoedit
