@@ -978,14 +978,14 @@ Angus Johnson}.")
 (define-public pstoedit
   (package
     (name "pstoedit")
-    (version "4.00")
+    (version "3.78")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pstoedit/pstoedit/"
                                   version "/pstoedit-" version ".tar.gz"))
               (sha256
                (base32
-                "1sk2mhrjgnlz4a1650p3qxrv6av6qc66ibmy48ckspx7mfp7snh7"))))
+                "00fqj074l05zshv6nsh5q85alnnx2gl7900gg09xk23zphs8xhlc"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
