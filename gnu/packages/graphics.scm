@@ -391,7 +391,20 @@ objects!")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fsg13pg72ac51l3fkzvyf7h9mzbvfxp9vfjfiwkyvx6hbm83apj"))))
+                "0fsg13pg72ac51l3fkzvyf7h9mzbvfxp9vfjfiwkyvx6hbm83apj"))
+              (patches
+               (list
+                ;; https://github.com/autotrace/autotrace/pull/105
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/autotrace/autotrace/compare/"
+                        "170488e1871d50aad7a800b901e33ded7d31773a..."
+                        "c26a2a059926c595a00839c8d9961e9381206579.patch"))
+                  (file-name (string-append name "-imagemagick-7-support.patch"))
+                  (sha256
+                   (base32
+                    "04c31pch9bnsxypq07dv8d17dnckw477ych89wsxl566pd02bw8q")))))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags #~'("--disable-static")
@@ -416,9 +429,7 @@ objects!")
            procps))                     ;for tests
     (inputs
      (list glib
-           ;; Change this to Imagemagick 7 on the next update (support exists
-           ;; in as-yet unreleased code).
-           imagemagick-6
+           imagemagick
            libjpeg-turbo
            libpng
            pstoedit))
