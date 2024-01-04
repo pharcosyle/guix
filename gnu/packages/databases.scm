@@ -1058,6 +1058,18 @@ Language.")
                       ;; substitutable because several encodings are tested.
                       "main.system_mysql_db"
 
+                      ;; These should be fixed upstream but that's not (yet?)
+                      ;; merged into the 10.10 branch (see
+                      ;; https://github.com/MariaDB/server/pull/2883). Try
+                      ;; not disabling them in a future update of MariaDB
+                      ;; in Guix.
+                      "main.subselect"
+                      "main.subselect_no_exists_to_in"
+                      "main.subselect_no_mat"
+                      "main.subselect_no_opts"
+                      "main.subselect_no_scache"
+                      "main.subselect_no_semijoin"
+
                       ;; XXX: This test occasionally fails on i686-linux:
                       ;; <https://jira.mariadb.org/browse/MDEV-24458>
                       ,@(if (string-prefix? "i686" (%current-system))
