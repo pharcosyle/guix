@@ -914,7 +914,7 @@ libraries.")
   (package
     (inherit libsigc++)
     (name "libsigc++")
-    (version "2.12.0")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
@@ -923,7 +923,7 @@ libraries.")
                        (version-major+minor version)
                        "/libsigc++-" version ".tar.xz"))
        (sha256
-        (base32 "1dd3kwynrklh5bgrf57ns0jd2zn372qj3svni48rnkxkchp6sihw"))))))
+        (base32 "0hq8sndkbkzla4cfzvfqib7pngnai75sjx70msvhklai6crfxnx9"))))))
 
 (define-public libsigc++-2
   (package
@@ -938,7 +938,16 @@ libraries.")
                        "/libsigc++-" version ".tar.xz"))
        (sha256
         (base32 "0zq963d0sss82q62fdfjs7l9iwbdch51albck18cb631ml0v7y8b"))))
-    (build-system gnu-build-system)))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'move-doc
+                 (lambda _
+                   (mkdir-p (string-append #$output:doc "/share"))
+                   (rename-file
+                    (string-append #$output "/share/doc")
+                    (string-append #$output:doc "/share/doc")))))))))
 
 (define glibmm
   (package
