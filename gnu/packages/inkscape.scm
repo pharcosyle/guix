@@ -267,7 +267,7 @@ endif()~%~%"
             gsl
             poppler
             lib2geom
-            libepoxy
+            libepoxy ; For experimental GPU-accelerated rendering.
             libjpeg-turbo
             libpng
             libxml2
@@ -289,7 +289,7 @@ endif()~%~%"
             python-pyserial
             python-numpy
             python-lxml
-            python-pyparsing))
+            python-pyparsing)) ; For HPGL support.
      (native-inputs
       (list bc ; for tests
             gettext-minimal
