@@ -2290,7 +2290,8 @@ information.")
                (base32
                 "0746lwxgybc5ss3hzdd0crjjghk0ck0x9jbmz73iig405arp42xj"))
               (patches
-               (search-patches "gtk-doc-respect-xml-catalog.patch"))))
+               (search-patches "gtk-doc-respect-xml-catalog.patch"
+                               "gtk-doc-skip-mkhtml-test.patch"))))
     (build-system meson-build-system)
     (arguments
      (list
