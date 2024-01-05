@@ -303,31 +303,13 @@ as the native format.")
 (define-public inkscape
   (package
     (inherit inkscape/stable)
-    (name "inkscape")
     (version "1.3.2")
     (source
      (origin
        (inherit (package-source inkscape/stable))
-       (method url-fetch)
        (uri (string-append "https://media.inkscape.org/dl/"
                            "resources/file/"
                            "inkscape-" version ".tar.xz"))
        (sha256
         (base32 "0sq81smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))))
-    (build-system cmake-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments inkscape/stable)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'wrap-program
-             ;; Ensure Python is available at runtime.
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (wrap-program (string-append out "/bin/inkscape")
-                   `("GUIX_PYTHONPATH" prefix
-                     (,(getenv "GUIX_PYTHONPATH")))
-                   ;; Wrapping GDK_PIXBUF_MODULE_FILE allows Inkscape to load
-                   ;; its own icons in pure environments.
-                   `("GDK_PIXBUF_MODULE_FILE" =
-                     (,(getenv "GDK_PIXBUF_MODULE_FILE")))))))))))
     (properties (alist-delete 'hidden? (package-properties inkscape/stable)))))
