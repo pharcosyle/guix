@@ -3962,7 +3962,7 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
 (define-public iwd
   (package
     (name "iwd")
-    (version "2.8")
+    (version "2.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3971,7 +3971,18 @@ powerful route filtering syntax and an easy-to-use configuration interface.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bpksqyaqr624bj7zm9hi22rnp6wnjbngx4q08l7lbd0r7r93vcb"))))
+                "199pcs20054xhp5c0dnxf9ny5cf5cynkqpx68dpn46nq8ly76n2y"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://git.kernel.org/pub/scm/network/wireless/iwd.git/"
+                        "patch/?id=e89ba32d30fc7b68657943e02e5c81c727bcfcba"))
+                  (file-name (string-append name "-openssl-3.2-fix.patch"))
+                  (sha256
+                   (base32
+                    "07m41jnabvjwlb9j72frcmh2vbwrfcbqfwkqfxa9dmplj0k2fkzg")))))))
     (build-system gnu-build-system)
     (inputs
      (list dbus ell (package-source ell) readline))
