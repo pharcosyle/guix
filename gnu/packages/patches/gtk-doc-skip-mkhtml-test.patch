@@ -1,0 +1,12 @@
+See https://gitlab.gnome.org/GNOME/gtk-doc/-/issues/150
+
+--- a/tests/gobject/docs/meson.build
++++ b/tests/gobject/docs/meson.build
+@@ -108,6 +108,7 @@
+   python_prg,
+   workdir: gobject_test_output_dir,
+   is_parallel: false,
++  should_fail: true,
+   args: [
+     gtkdoc_mkhtml_runner_script,
+     '--binary-dir=@0@'.format(builddir),
