@@ -4848,7 +4848,7 @@ indicators etc).")
      (list `(,glib "bin") ; for gio-querymodules
            pkg-config gettext-minimal))
     (inputs
-     (list glib `(,glib "bin") gnutls gsettings-desktop-schemas libproxy))
+     (list glib gnutls gsettings-desktop-schemas libproxy))
     (home-page "https://wiki.gnome.org/Projects/GLib")
     (synopsis "Network extensions for GLib")
     (description
