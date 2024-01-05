@@ -1739,7 +1739,18 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y7brfrsjnm9gksijgnr6zxqiqvn06mdiwsk5j87ggmxazxd66av"))))
+        (base32 "1y7brfrsjnm9gksijgnr6zxqiqvn06mdiwsk5j87ggmxazxd66av"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/swaywm/sway/commit/"
+                 "dee032d0a0ecd958c902b88302dc59703d703c7f.patch"))
+           (file-name (string-append name "-libinput-1.23-fix.patch"))
+           (sha256
+            (base32
+             "0a9hpy3wwqwm6vf3h4nb9yq5kzn71hrgq6n7d01skgvpmzpp6rkz")))))))
     (build-system meson-build-system)
     (arguments
      `(;; elogind is propagated by wlroots -> libseat
