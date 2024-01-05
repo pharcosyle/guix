@@ -283,7 +283,8 @@ endif()~%~%"
             python-pyserial
             python-numpy
             python-lxml
-            python-pyparsing)) ; For HPGL support.
+            python-pyparsing ; For HPGL support.
+            python-cssselect)) ; To render qrcode.
      (native-inputs
       (list bc ; for tests
             gettext-minimal
@@ -329,6 +330,4 @@ as the native format.")
                    ;; its own icons in pure environments.
                    `("GDK_PIXBUF_MODULE_FILE" =
                      (,(getenv "GDK_PIXBUF_MODULE_FILE")))))))))))
-    (inputs (modify-inputs (package-inputs inkscape/stable)
-              (append python-cssselect)))        ;to render qrcode
     (properties (alist-delete 'hidden? (package-properties inkscape/stable)))))
