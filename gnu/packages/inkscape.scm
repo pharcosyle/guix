@@ -289,7 +289,8 @@ endif()~%~%"
             python-pyserial
             python-numpy
             python-lxml
-            python-pyparsing)) ; For HPGL support.
+            python-pyparsing ; For HPGL support.
+            python-cssselect)) ; To render qrcode.
      (native-inputs
       (list bc ; for tests
             gettext-minimal
@@ -338,6 +339,5 @@ as the native format.")
                   `("GDK_PIXBUF_MODULE_FILE" =
                     (,(getenv "GDK_PIXBUF_MODULE_FILE"))))))))))
     (inputs (modify-inputs (package-inputs inkscape/stable)
-              (append imagemagick         ;for libMagickCore and libMagickWand
-                      python-cssselect))) ;to render qrcode
+              (append imagemagick)))         ;for libMagickCore and libMagickWand
     (properties (alist-delete 'hidden? (package-properties inkscape/stable)))))
