@@ -1184,13 +1184,21 @@ with the Linux kernel.")
                (base32
                 "1zvp0qdfbdyqrzydz18d9zg3n5ygy8ps7cmny1bvsp8h1q05c99f"))
               (patches
-               (cons (search-patch "glibc-2.33-riscv64-miscompilation.patch")
-                     ;; Remove a patch that's become irrelevant and that does not
-                     ;; apply to this version.
-                     (remove (lambda (patch)
-                               (string=? (basename patch)
-                                         "glibc-hurd-clock_gettime_monotonic.patch"))
-                             (origin-patches (package-source glibc)))))))
+               (append
+                (search-patches "glibc-2.33-riscv64-miscompilation.patch"
+                                "glibc-ldd-powerpc.patch"
+                                "glibc-2.37-ldd-x86_64.patch"
+                                "glibc-dl-cache.patch"
+
+                                "glibc-versioned-locpath.patch"
+
+                                ;; "glibc-2.37-allow-kernel-2.6.32.patch"
+                                "glibc-reinstate-prlimit64-fallback.patch"
+                                "glibc-supported-locales.patch"
+                                "glibc-2.37-hurd-clock_t_centiseconds.patch"
+                                "glibc-hurd-mach-print.patch"
+                                "glibc-hurd-gettyent.patch"
+                                "glibc-hurd-getauxval.patch")))))
     (arguments
      (substitute-keyword-arguments (package-arguments glibc)
        ((#:configure-flags flags ''())
