@@ -2294,7 +2294,7 @@ audio/video codec library.")
                   (origin
                     (method url-fetch)
                     (uri (string-append
-                          "https://github.com/dirkvdb/ffmpegthumbnailer/"
+                          "https://github.com/dirkvdb/ffmpegthumbnailer/commit/"
                           "c5a6e3e7793c5a256b4d232adf6e1ae8082e809f.patch"))
                     (file-name (string-append name "-pc-file-fix.patch"))
                     (sha256
