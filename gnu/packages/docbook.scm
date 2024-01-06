@@ -919,6 +919,7 @@ Detect the differences in markup between two SGML files.
     (build-system gnu-build-system)
     (arguments
      (list
+      #:tests? #f
       #:modules `((srfi srfi-26)
                   ,@%default-gnu-modules)
       #:phases

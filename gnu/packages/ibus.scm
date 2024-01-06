@@ -180,13 +180,14 @@
               (rename-file
                (string-append #$output "/share/gtk-doc")
                (string-append #$output:doc "/share/gtk-doc"))))
-          (add-after 'wrap-program 'wrap-with-additional-paths
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; Make sure 'ibus-setup' runs with the correct GI_TYPELIB_PATH.
-              (wrap-program (search-input-file outputs "bin/ibus-setup")
-                `("GI_TYPELIB_PATH" ":" prefix
-                  (,(getenv "GI_TYPELIB_PATH")
-                   ,(string-append #$output "/lib/girepository-1.0")))))))))
+          ;; (add-after 'wrap-program 'wrap-with-additional-paths
+          ;;   (lambda* (#:key outputs #:allow-other-keys)
+          ;;     ;; Make sure 'ibus-setup' runs with the correct GI_TYPELIB_PATH.
+          ;;     (wrap-program (search-input-file outputs "bin/ibus-setup")
+          ;;       `("GI_TYPELIB_PATH" ":" prefix
+          ;;         (,(getenv "GI_TYPELIB_PATH")
+          ;;          ,(string-append #$output "/lib/girepository-1.0"))))))
+          )))
     (inputs
      (list bash-minimal
            dbus

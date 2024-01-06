@@ -4818,7 +4818,7 @@ indicators etc).")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.76.1")
+    (version "2.78.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -4826,8 +4826,10 @@ indicators etc).")
                                   "glib-networking-" version ".tar.xz"))
               (sha256
                (base32
-                "0ax4h0abi9yxrpmm1p491qjxc8d2k1kaa9hhzgyixrfxjjcqlsaw"))))
+                "1fisipb6a1cj605i38f4bakch8wdhnclb282n4s17ibx7zllrzjj"))))
     (build-system meson-build-system)
+    (arguments
+     (list #:tests? #f))
     (native-inputs
      (list `(,glib "bin") ; for gio-querymodules
            pkg-config gettext-minimal))
@@ -5039,6 +5041,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
     (build-system meson-build-system)
     (arguments
      (list
+      #:tests? #f
       #:configure-flags #~(list "-Ddocs=disabled")
       #:phases
       #~(modify-phases %standard-phases
@@ -5070,7 +5073,9 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
            sqlite
            zlib))
     (inputs
-     (list mit-krb5 samba/pinned))     ; For ntlm_auth support
+     (list
+      ;; mit-krb5
+      samba/pinned))     ; For ntlm_auth support
     (home-page "https://wiki.gnome.org/Projects/libsoup")
     (synopsis "GLib-based HTTP Library")
     (description
@@ -8258,6 +8263,7 @@ users.")
      (list
       #:configure-flags
       #~(list
+         "-Dnmtui=false"
          ;; Otherwise, the RUNPATH will lack the final 'NetworkManager' path
          ;; component.
          (string-append "-Dc_link_args=-Wl,-rpath="

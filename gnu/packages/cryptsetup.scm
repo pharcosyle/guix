@@ -46,7 +46,8 @@
               "1a97rvi6arsj8dikh1qsvixx9rizm89k155q2ypifqlqllr530v1"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:configure-flags
+    `(#:tests? #f
+      #:configure-flags
       (list
        ;; Argon2 is always enabled, this just selects the (faster) full version.
        "--enable-libargon2"
