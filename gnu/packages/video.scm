@@ -1894,14 +1894,14 @@ audio/video codec library.")
 (define-public ffmpeg-4
   (package
     (inherit ffmpeg-5)
-    (version "4.4.2")
+    (version "4.4.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "14xadxm1yaamp216nq09xwasxg5g133v86dbb33mdg5di1zrlhdg"))
+               "0283az1r92vpynn6xdr6dakz87ji97cab5kgyrh9102wb46kh2z8"))
              (patches (search-patches "ffmpeg-4-binutils-2.41.patch"))))
     (inputs (modify-inputs (package-inputs ffmpeg)
               (replace "sdl2" sdl2-2.0)))
