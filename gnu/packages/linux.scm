@@ -6091,6 +6091,7 @@ and copy/paste text in the console and in xterm.")
                          python-sphinx))
                 '()
                 '("--disable-documentation"))
+         "--disable-documentation"
          ;; The ‘Python support’ was never actually installed by previous
          ;; versions of this package, but did prevent cross-compilation.
          "--disable-python")
@@ -6136,9 +6137,9 @@ and copy/paste text in the console and in xterm.")
      (append
       ;; For building documentation.  Since python-sphinx requires Rust, add
       ;; it conditionally depending on such support.
-      (if (supported-package? python-sphinx)
-          (list python-sphinx)
-          '())
+      ;; (if (supported-package? python-sphinx)
+      ;;     '()
+      ;;     (list python-sphinx))
       (list pkg-config
             acl                                   ;for tests
             lvm2                                  ;for dmsetup
