@@ -418,7 +418,7 @@ them in order to efficiently transfer a minimal amount of data.")
            doxygen
            pkg-config
            python-wrapper
-           python-sphinx
+           ;; python-sphinx
            python-pyyaml
            python-packaging)) ; Used in 'v4l_compat_test'.
     (inputs

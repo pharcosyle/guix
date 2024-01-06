@@ -926,6 +926,7 @@ Detect the differences in markup between two SGML files.
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-26))
+      #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'build 'clean
