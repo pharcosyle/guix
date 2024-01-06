@@ -419,7 +419,8 @@ them in order to efficiently transfer a minimal amount of data.")
            pkg-config
            python-wrapper
            python-sphinx
-           python-pyyaml))
+           python-pyyaml
+           python-packaging)) ; Used in 'v4l_compat_test'.
     (inputs
      (list boost
            eudev
