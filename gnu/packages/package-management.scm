@@ -2100,7 +2100,6 @@ cp -r /tmp/locale/*/en_US.*")))
            which))
     (inputs
      (list appstream
-           appstream-glib
            bubblewrap
            curl
            dconf
@@ -2112,7 +2111,6 @@ cp -r /tmp/locale/*/en_US.*")))
            libcap
            libostree
            libseccomp
-           libsoup-minimal-2
            libxau
            libxml2
            p11-kit
