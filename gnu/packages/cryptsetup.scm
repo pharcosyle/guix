@@ -105,7 +105,8 @@ files).  This assumes LIBRARY uses Libtool."
     (inherit cryptsetup)
     (name "cryptsetup-static")
     (arguments
-     '(#:configure-flags '("--disable-shared"
+     '(#:tests? #f
+       #:configure-flags '("--disable-shared"
                            "--enable-static-cryptsetup"
 
                            "--disable-veritysetup"
