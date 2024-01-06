@@ -810,7 +810,15 @@ model to base your own plug-in on, here it is.")
                        '())
 
                   ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
-                  ((".*elements/dtls\\.c.*") "")))))
+                  ((".*elements/dtls\\.c.*") "")
+
+                  ;; https://www.linuxfromscratch.org/blfs/view/svn/multimedia/gst10-plugins-bad.html
+                  ;; mentions "Three tests, elements_vacompositor,
+                  ;; elements_netsim, and elements_dash_mpd, are known to
+                  ;; fail".
+                  ((".*elements/vacompositor\\.c.*") "")
+                  ((".*elements/netsim\\.c.*") "")
+                  ((".*elements/dash_mpd\\.c.*") "")))))
           (add-before 'check 'pre-check
             (lambda _
               ;; Tests require a running X server.
