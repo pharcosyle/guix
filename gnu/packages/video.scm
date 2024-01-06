@@ -2272,32 +2272,47 @@ audio/video codec library.")
                        '())))))))
 
 (define-public ffmpegthumbnailer
-  (package
-    (name "ffmpegthumbnailer")
-    (version "2.2.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/dirkvdb/ffmpegthumbnailer")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1bakbr714j7yxdal1f5iq0gcl4cxggbbgj227ihdh5kvygqlwich"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     (list pkg-config))
-    (inputs
-     (list ffmpeg-4 libjpeg-turbo libpng gvfs))
-    (arguments
-     `(#:configure-flags (list "-DENABLE_GIO=ON" "-DENABLE_THUMBNAILER=ON")))
-    (home-page "https://github.com/dirkvdb/ffmpegthumbnailer")
-    (synopsis "Create thumbnails from video files")
-    (description "FFmpegthumbnailer is a lightweight video thumbnailer that
+  ;; There's been no official release in four years.
+  (let ((commit "1b5a77983240bcf00a4ef7702c07bcd8f4e5f97c")
+        (revision "0"))
+    (package
+      (name "ffmpegthumbnailer")
+      (version (git-version "2.2.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dirkvdb/ffmpegthumbnailer")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "179f9i0lvc23ylcjdg7r866mjz3rfnqpzhki4zxz6xp0qd0d28zd"))
+                (patches
+                 (list
+                  ;; See https://github.com/dirkvdb/ffmpegthumbnailer/issues/215
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://github.com/dirkvdb/ffmpegthumbnailer/"
+                          "c5a6e3e7793c5a256b4d232adf6e1ae8082e809f.patch"))
+                    (file-name (string-append name "-pc-file-fix.patch"))
+                    (sha256
+                     (base32
+                      "0vrrz0dkii6zmycn9q67lrynrxzcqdag7q8s3a37yi17p533s38i")))))))
+      (build-system cmake-build-system)
+      (native-inputs
+       (list pkg-config))
+      (inputs
+       (list ffmpeg libjpeg-turbo libpng gvfs))
+      (arguments
+       `(#:configure-flags (list "-DENABLE_GIO=ON" "-DENABLE_THUMBNAILER=ON")))
+      (home-page "https://github.com/dirkvdb/ffmpegthumbnailer")
+      (synopsis "Create thumbnails from video files")
+      (description "FFmpegthumbnailer is a lightweight video thumbnailer that
 can be used by file managers to create thumbnails for your video files.  The
 thumbnailer uses ffmpeg to decode frames from the video files, so supported
 videoformats depend on the configuration flags of ffmpeg.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public ffmpeg-progress-yield
   (package
