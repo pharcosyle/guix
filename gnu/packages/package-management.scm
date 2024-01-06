@@ -2084,6 +2084,7 @@ cp -r /tmp/locale/*/en_US.*")))
            libsoup-minimal-2
            libxau
            libxml2
+           openssl
            p11-kit
            util-linux
            xdg-dbus-proxy))

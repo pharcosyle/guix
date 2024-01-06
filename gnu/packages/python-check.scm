@@ -1906,7 +1906,7 @@ supported by the MyPy typechecker.")
            python-lxml
            python-psutil
            python-pytest
-           python-pytest-forked
+           ;; python-pytest-forked
            python-pytest-xdist
            python-virtualenv))
     (propagated-inputs

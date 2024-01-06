@@ -10,14 +10,14 @@ index ebc381ed7c..e0d3ed1bc3 100644
 --- a/libio/iopopen.c
 +++ b/libio/iopopen.c
 @@ -85,7 +85,7 @@ spawn_process (posix_spawn_file_actions_t *fa, FILE *fp, const char *command,
- 	return false;
+ 	}
      }
  
--  if (__posix_spawn (&((_IO_proc_file *) fp)->pid, _PATH_BSHELL, fa, 0,
-+  if (__posix_spawnp (&((_IO_proc_file *) fp)->pid, "sh", fa, 0,
- 		     (char *const[]){ (char*) "sh", (char*) "-c",
- 		     (char *) command, NULL }, __environ) != 0)
-     return false;
+-  err = __posix_spawn (&((_IO_proc_file *) fp)->pid, _PATH_BSHELL, fa, 0,
++  err = __posix_spawnp (&((_IO_proc_file *) fp)->pid, "sh", fa, 0,
+ 		       (char *const[]){ (char*) "sh", (char*) "-c", (char*) "--",
+ 		       (char *) command, NULL }, __environ);
+   if (err != 0)
 diff --git a/sysdeps/posix/system.c b/sysdeps/posix/system.c
 index a03f478fc7..94da6facf3 100644
 --- a/sysdeps/posix/system.c
