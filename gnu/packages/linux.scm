@@ -2931,14 +2931,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.8")
+    (version "1.2.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0g1kx4wdwka3ss93kdbamrjbk0cxqrh8hz0nfaykc7rm9ihglh71"))))
+               "0fh6hd7r9d87j4x7h0rmjchwrwbdc4ali7vpr8bcx9q2gzn64jqh"))))
     (build-system gnu-build-system)
     (arguments
      (list
