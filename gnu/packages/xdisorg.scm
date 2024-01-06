@@ -2967,11 +2967,11 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
       #:tests? #f                       ;no test suite
       #:modules `(((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules
+                  ,@%default-gnu-imported-modules
                   (srfi srfi-26))
       #:phases
       (with-imported-modules `((guix build guile-build-system)
-                               ,@%gnu-build-system-modules)
+                               ,@%default-gnu-imported-modules)
         #~(modify-phases %standard-phases
             (add-after 'install 'wrap
               (lambda* (#:key inputs #:allow-other-keys)
