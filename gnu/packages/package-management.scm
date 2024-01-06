@@ -2070,18 +2070,16 @@ cp -r /tmp/locale/*/en_US.*")))
            which))
     (inputs
      (list appstream
-           appstream-glib
            bubblewrap
            curl
            dconf
-           fuse-2
+           fuse
            gdk-pixbuf
            gpgme
            json-glib
            libarchive
            libostree
            libseccomp
-           libsoup-minimal-2
            libxau
            libxml2
            openssl
