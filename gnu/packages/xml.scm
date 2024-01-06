@@ -107,7 +107,7 @@
     (native-inputs
      (list gobject-introspection gtk-doc/stable pkg-config))
     (inputs
-     (list appstream-glib glib))
+     (list glib))
     (propagated-inputs
      (list xz `(,zstd "lib")))             ; in Requires.private of xmlb.pc
     (synopsis "Library to help create and query binary XML blobs")
