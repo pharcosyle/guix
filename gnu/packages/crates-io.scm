@@ -72285,8 +72285,7 @@ traversing a filetype tree.")
     (arguments
      `(#:cargo-inputs (("rust-arc-swap" ,rust-arc-swap-1)
                        ("rust-serde" ,rust-serde-1)
-                       ("rust-stable-deref-trait" ,rust-stable-deref-trait-1)
-                       ("rust-unsize" ,rust-unsize-1))))
+                       ("rust-stable-deref-trait" ,rust-stable-deref-trait-1))))
     (home-page "https://github.com/Manishearth/triomphe")
     (synopsis
      "Fork of std::sync::Arc with some extra functionality")
