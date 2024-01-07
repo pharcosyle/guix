@@ -1192,12 +1192,16 @@ with the Linux kernel.")
                                          "glibc-hurd-clock_gettime_monotonic.patch"))
                              (origin-patches (package-source glibc)))))))
     (arguments
-     (substitute-keyword-arguments (package-arguments glibc)
+     (substitute-keyword-arguments (package-arguments glibc-2.35)
        ((#:configure-flags flags ''())
         ;; There are undefined references to pthread symbols while linking
         ;; 'support/links-dso-program.cc'.  Since this isn't needed here, turn
         ;; off C++ tests.
-        `(cons "libc_cv_cxx_link_ok=no" ,flags))))))
+        `(cons "libc_cv_cxx_link_ok=no" ,flags))))
+    (native-inputs
+     ;; Build errors on GCC 12 and later. Use an older compiler.
+     (modify-inputs (package-native-inputs glibc)
+       (prepend gcc-11)))))
 
 (define-public glibc-2.32
   (package
