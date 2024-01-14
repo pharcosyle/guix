@@ -3576,8 +3576,54 @@ window does not need focus for them to be activated.")
            xcb-util-keysyms))
     (arguments '())))
 
+(define-public kiconthemes-6
+  (package
+    (name "kiconthemes")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "00il1hqwkr64gw8s427j7yh0likij3qhhl155ip7k5213mq7gkkr"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules qttools shared-mime-info))
+    (inputs
+     (list libxkbcommon
+           karchive-6
+           kauth-6
+           kcodecs-6
+           kcolorscheme
+           kcoreaddons-6
+           kconfig-6
+           kconfigwidgets-6
+           ki18n-6
+           kitemviews-6
+           kwidgetsaddons-6
+           qtbase
+           qtdeclarative
+           qtsvg))
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'check 'check-setup
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (setenv "HOME" (getcwd))
+                   ;; make Qt render "offscreen", required for tests
+                   (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Icon GUI utilities")
+    (description "This library contains classes to improve the handling of icons
+in applications using the KDE Frameworks.")
+    (license license:lgpl2.1+)))
+
 (define-public kiconthemes
   (package
+    (inherit kiconthemes-6)
     (name "kiconthemes")
     (version "5.114.0")
     (source (origin
@@ -3616,12 +3662,7 @@ window does not need focus for them to be activated.")
                                           "/share"))
                    (setenv "HOME" (getcwd))
                    ;; make Qt render "offscreen", required for tests
-                   (setenv "QT_QPA_PLATFORM" "offscreen"))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Icon GUI utilities")
-    (description "This library contains classes to improve the handling of icons
-in applications using the KDE Frameworks.")
-    (license license:lgpl2.1+)))
+                   (setenv "QT_QPA_PLATFORM" "offscreen"))))))))
 
 (define-public kinit
   (package
