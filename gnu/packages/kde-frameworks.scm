@@ -3241,8 +3241,59 @@ using the XBEL format.")
 KCModules can be created with the KConfigWidgets framework.")
     (license license:lgpl2.1+)))
 
+(define-public kconfigwidgets-6
+  (package
+    (name "kconfigwidgets")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0wfiz6frwmvbjfz30ci2iilzxr1rww7i74mbjigg1xkgg4p2n98b"))))
+    (build-system qt-build-system)
+    (propagated-inputs
+     (list kcodecs-6 kconfig-6 kcolorscheme kwidgetsaddons-6))
+    (native-inputs
+     (list extra-cmake-modules kdoctools-6 qttools))
+    (inputs
+     (list kcoreaddons-6
+           kguiaddons-6
+           ki18n-6
+           ;; todo: PythonModuleGeneration
+           qtdeclarative))
+    (arguments
+     (list
+      #:qtbase qtbase
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch
+            (lambda _
+              (substitute* "src/khelpclient.cpp"
+                ;; make QDirIterator follow symlinks
+                (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                 (string-append a " | QDirIterator::FollowSymlinks" b)))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (setenv "HOME"
+                        (getcwd))
+                (invoke "ctest" "-E" "(kstandardactiontest|\
+klanguagenametest)")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Widgets for configuration dialogs")
+    (description "KConfigWidgets provides easy-to-use classes to create
+configuration dialogs, as well as a set of widgets which uses KConfig to store
+their settings.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public kconfigwidgets
   (package
+    (inherit kconfigwidgets-6)
     (name "kconfigwidgets")
     (version "5.114.0")
     (source (origin
@@ -3254,7 +3305,6 @@ KCModules can be created with the KConfigWidgets framework.")
               (sha256
                (base32
                 "16layydkcwfbvzxqjzprkq8bbxifn0z0wm7mc9bzwrfxy761rjnj"))))
-    (build-system qt-build-system)
     (propagated-inputs
      (list kauth kcodecs kconfig kwidgetsaddons))
     (native-inputs
@@ -3262,10 +3312,8 @@ KCModules can be created with the KConfigWidgets framework.")
     (inputs
      (list kcoreaddons
            kguiaddons
-           ki18n
            ;; todo: PythonModuleGeneration
-           qtbase-5
-           qttools-5))
+           ki18n))
     (arguments
      (list
       #:phases
@@ -3281,14 +3329,7 @@ KCModules can be created with the KConfigWidgets framework.")
               (when tests?
                 (setenv "HOME"
                         (getcwd))
-                (invoke "ctest" "-E" "kstandardactiontest")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Widgets for configuration dialogs")
-    (description "KConfigWidgets provides easy-to-use classes to create
-configuration dialogs, as well as a set of widgets which uses KConfig to store
-their settings.")
-    ;; dual licensed
-    (license (list license:gpl2+ license:lgpl2.1+))))
+                (invoke "ctest" "-E" "kstandardactiontest")))))))))
 
 (define-public kdeclarative
   (package
