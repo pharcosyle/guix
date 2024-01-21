@@ -3069,31 +3069,35 @@ compositors.")
     (license license:expat)))
 
 (define-public poweralertd
-  (package
-    (name "poweralertd")
-    (version "0.2.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.sr.ht/~kennylevinsen/poweralertd")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "19rw9q4pcqw56nmzjfglfikzx5wwjl4n08awwdhg0jy1k0bm3dvp"))))
-    (build-system meson-build-system)
-    (arguments
-     '(#:configure-flags '("-Dman-pages=enabled")))
-    (native-inputs
-     (list scdoc pkg-config bash-minimal))
-    (inputs
-     (list elogind))
-    (home-page "https://sr.ht/~kennylevinsen/poweralertd")
-    (synopsis "Power alert daemon")
-    (description "poweralertd is a daemon that watches for UPower events and
+  ;; No official release in a while and there are some nice features in newer
+  ;; commits.
+  (let ((commit "29f293d50d708d026abbf37b75c6d72d75b4153b")
+        (revision "1"))
+    (package
+      (name "poweralertd")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.sr.ht/~kennylevinsen/poweralertd")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15kia2s1va14bzvyp3jm3v9wddjsyyh1g03y25c7nb11sn40ypnc"))))
+      (build-system meson-build-system)
+      (arguments
+       '(#:configure-flags '("-Dman-pages=enabled")))
+      (native-inputs
+       (list scdoc pkg-config bash-minimal))
+      (inputs
+       (list elogind))
+      (home-page "https://sr.ht/~kennylevinsen/poweralertd")
+      (synopsis "Power alert daemon")
+      (description "poweralertd is a daemon that watches for UPower events and
 notifies the user using any notification daemon implementing
 @code{org.freedesktop.Notifications}.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public waypipe
   (package
