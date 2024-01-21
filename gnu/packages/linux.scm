@@ -7628,48 +7628,61 @@ set the screen to be pitch black at a value of 0 (or higher).
     (license license:gpl3+)))
 
 (define-public brightnessctl
-  (package
-    (name "brightnessctl")
-    (version "0.5.1")
-    (home-page "https://github.com/Hummer12007/brightnessctl")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page) (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0immxc7almmpg80n3bdn834p3nrrz7bspl2syhb04s3lawa5y2lq"))
-              (patches (search-patches "brightnessctl-elogind-support.patch"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags (list (string-append "CC=" ,(cc-for-target))
-                          (string-append "PREFIX=" %output)
-                          (string-append "UDEVDIR=" %output "/lib/udev/rules.d/")
-                          "ENABLE_SYSTEMD=1")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'adjust-udev-rules
-           (lambda _
-             (substitute* "Makefile"
-               (("INSTALL_UDEV_RULES=0") "INSTALL_UDEV_RULES=1"))
-             (substitute* "90-brightnessctl.rules"
-               (("/bin/") "/run/current-system/profile/bin/"))
-             #t)))))
-    (native-inputs
-     (list pkg-config))
-    (inputs
-     (list elogind))
-    (synopsis "Backlight and LED brightness control")
-    (description
-     "This program allows you read and control device brightness.  Devices
+  ;; No official release in years but there are minor yet worthwhile
+  ;; improvements in recent commits (nicer build, optional basu as the dbus
+  ;; provider for users who want that).
+  (let ((commit "61ea40e088d9c6166e87743ba4d7dd2baae25025")
+        (revision "1"))
+    (package
+      (name "brightnessctl")
+      (version (git-version "0.5.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Hummer12007/brightnessctl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1qzfy3cx6hxwghzs0d67wgn1iqiwmln1xddlv1z9zwkzz7arg2d7"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:configure-flags
+        #~(list (string-append "--udev-dir=" #$output "/lib/udev/rules.d")
+                "--dbus-provider=elogind"
+                "--enable-udev"
+                "--enable-logind")
+        #:make-flags
+        #~(list (string-append "CC=" #$(cc-for-target)))
+        #:tests? #f                      ; no tests
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'adjust-udev-rules
+              (lambda _
+                (substitute* "90-brightnessctl.rules"
+                  (("/bin/") "/run/current-system/profile/bin/"))))
+            (replace 'configure
+              ;; Its custom configure script doesn't understand 'CONFIG_SHELL'.
+              (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+                (apply invoke "./configure"
+                       (string-append "--prefix=" #$output)
+                       configure-flags))))))
+      (native-inputs
+       (list pkg-config))
+      (inputs
+       (list elogind))
+      (home-page "https://github.com/Hummer12007/brightnessctl")
+      (synopsis "Backlight and LED brightness control")
+      (description
+       "This program allows you read and control device brightness.  Devices
 include backlight and LEDs.  It can also preserve current brightness before
 applying the operation, such as on lid close.
 
 The appropriate permissions must be set on the backlight or LED control
 interface in sysfs, which can be accomplished with the included udev rules.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public tlp
   (package
