@@ -754,7 +754,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.117")
+    (version "2.4.120")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -762,7 +762,7 @@ rasterisation.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ar4c4ikcbm1s4sg09ld406izq5s1yk7b2n0mmvql77bwdlqv252"))))
+                "0yijzgg6rdsa68bz03sw0lcfa2nclv9m3as1cja50wkcyxim7x9v"))))
     (build-system meson-build-system)
     (arguments
      (list #:configure-flags
@@ -776,16 +776,6 @@ rasterisation.")
              (_ ''()))
            #:phases
            #~(modify-phases %standard-phases
-               ;; A typo in a previous upstream commit disabled building
-               ;; libdrm_intel by default on supported platforms.  This was
-               ;; fixed by the following change in upstream commit
-               ;; 8a933c778a0eb36526bf3fc8a289e25add9ff8b0.
-               ;; TODO: Remove on next update of libdrm.
-               (add-after 'unpack 'build-intel-by-default
-                 (lambda _
-                   (substitute* "meson.build"
-                     (("system\\(\\)\\.startswith")
-                      "cpu_family().startswith"))))
                (replace 'check
                  (lambda* (#:key tests? #:allow-other-keys)
                    (when tests?
