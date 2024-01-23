@@ -78,6 +78,7 @@
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -3048,3 +3049,25 @@ ordered erase operations.")
 the std::optional for C++11/14/17, with support for monadic operations added in
 C++23.")
     (license license:cc0)))
+
+(define-public tomlplusplus
+  (package
+    (name "tomlplusplus")
+    (version "3.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/marzer/tomlplusplus")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hvbifzcc97r9jwjzpnq31ynqnj5y93cjz4frmgddnkg8hxmp6w7"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list cmake-minimal))
+    (home-page "https://github.com/marzer/tomlplusplus")
+    (synopsis "TOML config file parser and serializer for C++")
+    (description
+     "Header-only TOML config file parser and serializer for C++17.")
+    (license license:expat)))
