@@ -3123,3 +3123,27 @@ notifies the user using any notification daemon implementing
      "Waypipe is a proxy for Wayland clients, with the aim of
 supporting behavior like @samp{ssh -X}.")
     (license license:expat)))
+
+(define-public hyprland-protocols
+  (package
+    (name "hyprland-protocols")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/hyprland-protocols")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1drjznj7fn6m5m6skhzh0p031cb5x0bb4i56jxnxwpwaa71g1z20"))))
+    (build-system meson-build-system)
+    (home-page "https://hyprland.org")
+    (synopsis "Wayland protocol extensions for Hyprland")
+    (description
+     "This package provides Wayland protocol extensions for Hyprland and it
+exists in an effort to bridge the gap between Hyprland and KDE/Gnome's
+functionality.  Since @code{wlr-protocols} is closed for new submissions, and
+@code{wayland-protocols} is very slow with changes, this package will hold
+protocols used by Hyprland to bridge the aforementioned gap.")
+    (license license:bsd-3)))
