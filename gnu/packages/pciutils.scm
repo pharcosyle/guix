@@ -39,7 +39,7 @@
 (define-public hwdata
   (package
     (name "hwdata")
-    (version "0.374")                   ;updated monthly
+    (version "0.378")                   ;updated monthly
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -48,7 +48,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fcmg06lfzqrpq4z4gp12qpk7rd3s0phz4qyhq39ks43r1vxiy26"))))
+                "080mzxv2m65kv414yl6kzndsr4j1ax6smw35k0xw10rbhxpp8b30"))))
     (build-system gnu-build-system)
     (arguments
      ;; Tests require pciutils, python, podman. Disable to avoid recursive dep.
@@ -70,7 +70,7 @@ Each database is contained in a specific package output, such as the
 (define-public pciutils
   (package
     (name "pciutils")
-    (version "3.8.0")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -78,7 +78,7 @@ Each database is contained in a specific package output, such as the
                     version ".tar.xz"))
               (sha256
                (base32
-                "01aglgw9ds9qiswcbi2lx90lswncikrlyv8mmp4haix8542bvvci"))))
+                "1sdhzflyvmxn8icpw48qnqwzl1wy4anvy1zy2wxfac372qkjx2i3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
