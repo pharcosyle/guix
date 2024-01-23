@@ -70,7 +70,7 @@ Each database is contained in a specific package output, such as the
 (define-public pciutils
   (package
     (name "pciutils")
-    (version "3.8.0")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -78,7 +78,7 @@ Each database is contained in a specific package output, such as the
                     version ".tar.xz"))
               (sha256
                (base32
-                "01aglgw9ds9qiswcbi2lx90lswncikrlyv8mmp4haix8542bvvci"))))
+                "1sdhzflyvmxn8icpw48qnqwzl1wy4anvy1zy2wxfac372qkjx2i3"))))
     (build-system gnu-build-system)
     (arguments
      (list
