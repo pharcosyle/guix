@@ -575,7 +575,7 @@ variable defined below.  It requires guile-json to be installed."
          ;; The upstream-icecat-base-version may be older than the
          ;; %icecat-base-version.
          (upstream-icecat-base-version "115.7.0")
-         (gnuzilla-commit "7b664ff3e16d6339e69b1496925bd6a7e66b5553")
+         (gnuzilla-commit "dbe6da400cf4f28e5e893d0acb5022e23cf3afcf")
          (gnuzilla-source
           (origin
             (method git-fetch)
