@@ -79,7 +79,7 @@
      (list
       ;; Make sure it is safe to use 'imagemagick' instead of
       ;; 'imagemagick/stable' (see the comment for the "imagemagick" input).
-      #:disallowed-references (,imagemagick/stable)
+      #:disallowed-references (list imagemagick/stable)
       #:test-flags
       ;; These require Internet access.
       '(list "--ignore=tests/test_build_linkcheck.py"
