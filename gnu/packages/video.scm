@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015, 2018, 2019, 2020, 2021, 2023 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
@@ -914,7 +914,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "3.5.0")
+    (version "3.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -923,10 +923,10 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0arn8a88jz4mj69n8cs4qmrdjwhbvzsqgnx20wr9mq01b06kqich"))))
+                "04zfgvzi4h4ybvjc4zfpfsmldz8w6vasjlrry7j4p6g3g7wk64r7"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list perl pkg-config python)) ; to detect the version
+     (list perl pkg-config python))     ; to detect the version
     (arguments
      `(#:tests? #f                      ; downloads many video clips
        #:configure-flags
@@ -5547,7 +5547,7 @@ and audio capture, network stream playback, and many more.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "1.0.0")
+    (version "1.3.0")
     (source
       (origin
         (method git-fetch)
@@ -5556,9 +5556,12 @@ and audio capture, network stream playback, and many more.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "0jkvb5as7danpalzlwd0w1dc9i2vijvmf39z0j6fwqvialsgnnj5"))))
+         (base32 "17r6qdijdnqfciqa0ia2y4gyhaav6y5gc4d9xj4dg9h7xnpyxc3k"))))
     (build-system meson-build-system)
-    (native-inputs (list nasm))
+    (native-inputs
+     (if (target-x86?)
+         (list nasm)
+         '()))
     (home-page "https://code.videolan.org/videolan/dav1d")
     (synopsis "AV1 decoder")
     (description "dav1d is a new AV1 cross-platform decoder, and focused on
@@ -5915,7 +5918,10 @@ result in several formats:
                        "--library-type" "cdylib"
                        (string-append "--prefix=" out))))))))
     (native-inputs
-     (list nasm pkg-config rust-cargo-c))
+     (append (if (target-x86?)
+                 (list nasm)
+                 '())
+             (list pkg-config rust-cargo-c)))
     (inputs
      (list libgit2 zlib))
     (home-page "https://github.com/xiph/rav1e/")
