@@ -58,6 +58,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -823,7 +824,7 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
                 "1kbxa1irszp2zw8hd5qzqnrrzb4vxfivs1vn64yxnj0lak1jjzvb"))))
     (arguments
      `(#:modules ((ice-9 match) (ice-9 rdelim)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:phases
        ;; This mostly mirrors the steps taken in the install.sh that ships
        ;; with dirvish, but simplified because we aren't prompting interactively
@@ -899,10 +900,9 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
                ;; Write out executables
                (for-each write-pl executables)
                ;; Write out man pages
-               (for-each write-man man-pages)
-               #t))))))
+               (for-each write-man man-pages)))))))
     (inputs
-     (list perl rsync perl-libtime-period perl-libtime-parsedate))
+     (list bash-minimal perl rsync perl-libtime-period perl-libtime-parsedate))
     (home-page "http://dirvish.org/")
     (synopsis "Fast, disk based, rotating network backup system")
     (description

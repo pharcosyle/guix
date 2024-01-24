@@ -239,7 +239,7 @@
                   (srfi srfi-26)
                   (ice-9 ftw)
                   (ice-9 match)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
           ;; Since we removed the bundled firmwares above, many tests
@@ -680,10 +680,10 @@ firmware blobs.  You can
                                        "ganeti-relax-dependencies.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:imported-modules (,@%gnu-build-system-modules
+     `(#:imported-modules (,@%default-gnu-imported-modules
                            (guix build haskell-build-system)
                            (guix build python-build-system))
-       #:modules (,@%gnu-build-system-modules
+       #:modules (,@%default-gnu-modules
                   ((guix build haskell-build-system) #:prefix haskell:)
                   ((guix build python-build-system) #:select (site-packages))
                   (srfi srfi-1)
@@ -953,7 +953,8 @@ firmware blobs.  You can
        ("shelltestrunner" ,shelltestrunner)
        ("tzdata" ,tzdata-for-tests)))
     (inputs
-     (list iputils                      ;for 'arping'
+     (list bash-minimal
+           iputils                      ;for 'arping'
            curl
            fping
            iproute
@@ -1252,8 +1253,7 @@ of one or more RISC-V harts.")
      (list `(,glib "bin")                ;glib-mkenums, etc.
            gobject-introspection
            gtk-doc/stable
-           `(,hwdata "pci")
-           `(,hwdata "usb")
+           hwdata
            vala
            intltool
            pkg-config))
@@ -1639,15 +1639,13 @@ virtualization library.")
          (add-after 'unpack 'fix-setup
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "virtinst/buildconfig.py"
-               (("/usr") (assoc-ref outputs "out")))
-             #t))
+               (("/usr") (assoc-ref outputs "out")))))
          (add-after 'unpack 'fix-default-uri
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Xen is not available for now - so only patch qemu.
              (substitute* "virtManager/createconn.py"
                (("/usr(/bin/qemu-system-[a-zA-Z0-9_-]+)" _ suffix)
-                (search-input-file inputs suffix)))
-             #t))
+                (search-input-file inputs suffix)))))
          (add-before 'wrap 'wrap-with-GI_TYPELIB_PATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin       (string-append (assoc-ref outputs "out") "/bin"))
@@ -1665,8 +1663,7 @@ virtualization library.")
                            (wrap-program file
                              `("GI_TYPELIB_PATH" ":" prefix
                                ,(filter identity paths))))
-                         bin-files))
-             #t))
+                         bin-files))))
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
@@ -1676,14 +1673,14 @@ virtualization library.")
                (setenv "DISPLAY" ":1")
                ;; Dogtail requires that Assistive Technology support be enabled
                (setenv "GTK_MODULES" "gail:atk-bridge")
-               (invoke "dbus-run-session" "--" "pytest" "--uitests"))
-             #t))
+               (invoke "dbus-run-session" "--" "pytest" "--uitests"))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'wrap 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (inputs
-     (list dconf
+     (list bash-minimal
+           dconf
            gtk+
            gtk-vnc
            gtksourceview-4
@@ -1890,7 +1887,7 @@ client desktops.
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:tests? #f ; tests require mounting as root
+       #:tests? #f                      ; tests require mounting as root
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "LIBDIR=$(PREFIX)/lib")
@@ -1905,20 +1902,10 @@ client desktops.
                             (search-input-file %build-inputs
                                                "/bin/xmlto")))
        #:modules ((ice-9 ftw)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
-         (add-after 'unpack 'fix-documentation
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "Documentation/Makefile"
-               (("-m custom.xsl")
-                (string-append
-                 "-m custom.xsl --skip-validation -x "
-                 (assoc-ref inputs "docbook-xsl") "/xml/xsl/"
-                 ,(package-name docbook-xsl) "-"
-                 ,(package-version docbook-xsl)
-                 "/manpages/docbook.xsl")))))
          (add-after 'unpack 'hardcode-variables
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Hardcode arm version detection
@@ -1926,14 +1913,13 @@ client desktops.
                (("ARMV.*:=.*") "ARMV := 7\n"))
              ;; Hard-code the correct PLUGINDIR above.
              (substitute* "criu/include/plugin.h"
-               (("/var") (string-append (assoc-ref outputs "out"))))
-             ))
+               (("/var") (string-append (assoc-ref outputs "out"))))))
          ;; TODO: use
          ;; (@@ (guix build python-build-system) ensure-no-mtimes-pre-1980)
          ;; when it no longer throws due to trying to call UTIME on symlinks.
          (add-after 'unpack 'ensure-no-mtimes-pre-1980
            (lambda _
-             (let ((early-1980 315619200))  ; 1980-01-02 UTC
+             (let ((early-1980 315619200)) ; 1980-01-02 UTC
                (ftw "." (lambda (file stat flag)
                           (unless (or (<= early-1980 (stat:mtime stat))
                                       (eq? (stat:type stat) 'symlink))
@@ -1967,15 +1953,16 @@ client desktops.
              (let ((out (assoc-ref outputs "out")))
                (for-each delete-file (find-files out "\\.a$"))))))))
     (inputs
-     `(("protobuf" ,protobuf)
-       ("python-protobuf" ,python-protobuf)
-       ("iproute" ,iproute)
-       ("libaio" ,libaio)
-       ("libcap" ,libcap)
-       ("libnet" ,libnet)
-       ("libnl" ,libnl)
-       ("libbsd" ,libbsd)
-       ("nftables" ,nftables)))
+     (list bash-minimal
+           protobuf
+           python-protobuf
+           iproute
+           libaio
+           libcap
+           libnet
+           libnl
+           libbsd
+           nftables))
     (native-inputs
      (list pkg-config
            perl

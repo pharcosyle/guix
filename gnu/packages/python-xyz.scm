@@ -5652,14 +5652,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "6.0")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "18imkjacvpxfgg1lbpraqywx3j7hr5dv99d242byqvrh2jf53yv8"))))
+         "0hsa7g6ddynifrwdgadqcx80khhblfy94slzpbr7birn2w5ldpxz"))))
     (build-system python-build-system)
     (inputs
      (list libyaml python-cython))
@@ -8511,7 +8511,8 @@ comparison.
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
-        (base32 "18amhxyxa6yzy1nwky4ggdgvvxnbl3qz2lki05vfx0dqf6w7ia81"))))
+        (base32 "18h78s5ld1i6mz00w258hy29909nfr3ddq6ry9kq18agw468bks8"))
+       (patches (search-patches "python-matplotlib-fix-legend-loc-best-test.patch"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -9383,7 +9384,9 @@ Python list with elements of type @code{PIL.Image} (from the
               (snippet '(begin
                           (delete-file-recursively "src/thirdparty")))
               (patches
-               (search-patches "python-pillow-CVE-2022-45199.patch"))))
+               (search-patches "python-pillow-CVE-2022-45199.patch"
+                               ;; Included in 10.1.0.
+                               "python-pillow-use-zlib-1.3.patch"))))
     (build-system python-build-system)
     (native-inputs (list python-pytest))
     (inputs (list freetype
@@ -31833,8 +31836,7 @@ CMake.")
                             (string-append x11 "/lib/libX11.so.6")))
               (substitute* "Screenkey/xlib.py"
                            (("libXtst.so.6")
-                            (string-append xtst "/lib/libXtst.so.6")))
-              #t)))
+                            (string-append xtst "/lib/libXtst.so.6"))))))
           (add-after 'install 'wrap-screenkey
             (lambda* (#:key outputs #:allow-other-keys)
               (wrap-program
@@ -31843,7 +31845,8 @@ CMake.")
                 `("GI_TYPELIB_PATH"
                   ":" prefix (,(getenv "GI_TYPELIB_PATH")))))))))
     (inputs
-     (list python-distutils-extra
+     (list bash-minimal
+           python-distutils-extra
            python-tokenize-rt
            libx11
            libxtst

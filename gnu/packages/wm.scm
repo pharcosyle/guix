@@ -44,6 +44,7 @@
 ;;; Copyright © 2021, 2023 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2021 lasnesne <lasnesne@lagunposprasihopre.org>
 ;;; Copyright © 2021, 2022 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021, 2023 jgart <jgart@dismail.de>
@@ -326,7 +327,7 @@ or musca).
      (list asciidoc
            perl
            pkg-config
-           docbook-xsl libxml2          ; for XML_CATALOG_FILES
+           docbook-xsl
            xmlto))
     (home-page "https://i3wm.org/i3status/")
     (synopsis "Status bar for i3bar, dzen2, xmobar or similar programs")
@@ -1209,12 +1210,12 @@ for wlroots-based Wayland compositors.")
            doxygen
            gperf
            imagemagick
-           libxml2 ;for XML_CATALOG_FILES
            lua-ldoc
            pkg-config
            xmlto))
     (inputs
-     (list cairo
+     (list bash-minimal
+           cairo
            dbus
            gdk-pixbuf
            glib
@@ -1295,8 +1296,7 @@ for wlroots-based Wayland compositors.")
              (let* ((out (assoc-ref outputs "out"))
                     (awesome (string-append out "/bin/awesome")))
                (substitute* (string-append out "/share/xsessions/awesome.desktop")
-                 (("Exec=awesome") (string-append "Exec=" awesome)))
-               #t)))
+                 (("Exec=awesome") (string-append "Exec=" awesome))))))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((awesome (assoc-ref outputs "out"))
@@ -1309,8 +1309,7 @@ for wlroots-based Wayland compositors.")
                  `("LUA_CPATH" ";" suffix
                    (,(format #f "~a/lib/lua/~a/?.so" lua-lgi lua-version)))
                  `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH")))
-                 `("LD_LIBRARY_PATH" suffix (,cairo)))
-               #t))))))
+                 `("LD_LIBRARY_PATH" suffix (,cairo)))))))))
     (home-page "https://awesomewm.org/")
     (synopsis "Highly configurable window manager")
     (description
@@ -1371,7 +1370,7 @@ all of them.  Currently supported window managers include:
     (inputs
      (list gtk+ gobject-introspection))
     (native-inputs
-     (list gtk-doc pkg-config))
+     (list gtk-doc/stable pkg-config))
     (synopsis "Library for registering global keyboard shortcuts, Gtk3 version")
     (description
      "Keybinder is a library for registering global keyboard shortcuts.
@@ -1717,7 +1716,7 @@ functionality to display information about the most commonly used services.")
            xorg-server-xwayland))
     (native-inputs
      (cons*
-       `(,hwdata "pnp")
+       hwdata
        pkg-config
        wayland
        (if (%current-target-system)
@@ -1742,7 +1741,8 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y7brfrsjnm9gksijgnr6zxqiqvn06mdiwsk5j87ggmxazxd66av"))))
+        (base32 "1y7brfrsjnm9gksijgnr6zxqiqvn06mdiwsk5j87ggmxazxd66av"))
+       (patches (search-patches "sway-add-libinput-config-accel.patch"))))
     (build-system meson-build-system)
     (arguments
      `(;; elogind is propagated by wlroots -> libseat

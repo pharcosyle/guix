@@ -119,7 +119,7 @@
      (list
       #:imported-modules %cargo-utils-modules ;for `generate-all-checksums'
       #:modules `((guix build cargo-utils)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:test-target "check-jstests"
       #:configure-flags
       #~(list
@@ -728,6 +728,7 @@ variable defined below.  It requires guile-json to be installed."
     (build-system mozilla-build-system)
     (inputs
      (list alsa-lib
+           bash-minimal
            bzip2
            cups
            dbus-glib
@@ -883,7 +884,7 @@ variable defined below.  It requires guile-json to be installed."
                   (rnrs io ports)
                   (guix elf)
                   (guix build gremlin)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'apply-guix-specific-patches
@@ -1643,7 +1644,7 @@ list of languages supported as well as the currently used changeset."
       #:modules `((guix build utils)          ;find-files
                   (sxml simple)
                   (ice-9 regex)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'patch-source-shebangs 'patch-cargo-checksums
@@ -1827,6 +1828,7 @@ ca495991b7852b855"))
                   `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib ,eudev-lib ,libnotify-lib)))))))))
     (inputs
      (list alsa-lib
+           bash-minimal
            bzip2
            cairo
            cups

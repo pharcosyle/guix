@@ -146,7 +146,7 @@ programs for plotting scientific data.")
     (build-system gnu-build-system)
     (arguments
      `(#:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
                   (guix build gnu-build-system)
@@ -261,8 +261,7 @@ using the Cairo drawing library.")
                         ;; Allow them to be found.
                         (wrap-program (string-append bin "/pl")
                           `("PLOTICUS_PREFABS" ":" = (,dir)))))))))
-    (inputs
-     (list libpng libx11 zlib))
+    (inputs (list bash-minimal libpng libx11 zlib))
     (home-page "https://ploticus.sourceforge.net/")
     (synopsis "Command-line tool for producing plots and charts")
     (description
@@ -340,7 +339,7 @@ colors, styles, options and details.")
                   (guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-      #:imported-modules `(,@%gnu-build-system-modules
+      #:imported-modules `(,@%default-gnu-imported-modules
                            (guix build emacs-utils))
       #:configure-flags
       #~(list (string-append "--enable-gc=" #$(this-package-input "libgc"))

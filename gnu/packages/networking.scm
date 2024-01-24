@@ -953,7 +953,8 @@ systems with no further dependencies.")
            intltool
            pkg-config))
     (inputs
-     (list bluez
+     (list bash-minimal
+           bluez
            dbus
            (librsvg-for-system)
            glib
@@ -1191,7 +1192,7 @@ and SSH, and it can use both TCP and UDP as transport mechanisms.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.4.3")
+    (version "1.7.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1199,10 +1200,10 @@ and SSH, and it can use both TCP and UDP as transport mechanisms.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "01w0hpqf5xmgn40s1ablfd4y67dlrx5y9zlx24spc1qm8h81hwyl"))))
+                "1b40ccdvxq5kaghsbwg4q3dq5aw4acw1bpqvs3v3ljp5y392pm7v"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))          ; no test suite
-    (inputs (list openssl))
+    (inputs (list openssl readline))
     (home-page "http://www.dest-unreach.org/socat/")
     (synopsis
      "Open bidirectional communication channels from the command line")
@@ -1623,28 +1624,34 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
                 (("if build_ping == true")
                  "if false")))))))
     (native-inputs
-     (list gettext-minimal
-           pkg-config
-           docbook-xsl
-           docbook-xml
-           libxml2                      ;for XML_CATALOG_FILES
-           libxslt))
+     (list docbook-xsl docbook-xml-5.0.1
+           gettext-minimal libxslt pkg-config))
     (inputs
      (list libcap libidn2 openssl))
     (synopsis "Collection of network utilities")
     (description
      "This package contains a variety of tools for dealing with network
 configuration, troubleshooting, or servers.  Utilities included are:
-
-@itemize @bullet
-@item @command{arping}: Ping hosts using the @dfn{Address Resolution Protocol}.
-@item @command{clockdiff}: Compute time difference between network hosts
-using ICMP TSTAMP messages.
-@item @command{ping}: Use ICMP ECHO messages to measure round-trip delays
-and packet loss across network paths.
-@item @command{tracepath}: Trace network path to an IPv4 or IPv6 address and
-discover MTU along the way.
-@end itemize")
+@table @command
+@item arping
+Ping hosts using @acronym{ARP, Address Resolution Protocol}.
+@item clockdiff
+Compute time difference between network hosts using ICMP TSTAMP messages.
+@item ninfod
+Daemon that responds to IPv6 Node Information Queries.
+@item ping
+Use ICMP ECHO messages to measure round-trip delays and packet loss across
+network paths.
+@item rarpd
+Answer RARP requests from clients.
+@item rdisc
+Populate network routing tables with information from the ICMP router
+discovery protocol.
+@item tftpd
+Trivial file transfer protocol server.
+@item tracepath
+Trace network path to an IPv4 or IPv6 address and discover MTU along the way.
+@end table")
     ;; The various utilities are covered by different licenses, see LICENSE
     ;; for details.
     (license (list license:gpl2+        ;arping, tracepath
@@ -3866,7 +3873,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
     (arguments
      (list
       #:imported-modules `((guix build python-build-system) ;for site-packages
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
       #:modules '(((guix build python-build-system) #:prefix python:)
                   (guix build gnu-build-system)
                   (guix build utils))
@@ -4322,7 +4329,8 @@ easy-to-understand binary values.")
            (lambda _
              (setenv "CC" "gcc")
              (invoke "make" "tunctl")))
-         ;; TODO: Requires docbook2x to generate man page from SGML.
+         ;; TODO: Requires docbook-to-man (unrelated to docbook2x and
+         ;; docbook-utils) to generate man page from SGML.
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

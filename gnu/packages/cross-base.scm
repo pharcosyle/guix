@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013-2018, 2020, 2023 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2018, 2020, 2023-2024 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2019, 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -80,9 +80,9 @@
     (name (string-append (package-name p) "-cross-" target))
     (arguments
      (substitute-keyword-arguments (package-arguments p)
-       ((#:configure-flags flags ''())
-        `(cons ,(string-append "--target=" target)
-               ,flags))))))
+       ((#:configure-flags flags #~'())
+        #~(cons #$(string-append "--target=" target)
+                #$flags))))))
 
 (define (contains-keyword? args)
   "Check if ARGS contains a keyword object."
@@ -116,7 +116,7 @@
                         ;; to pick up native libs instead of target ones.  In
                         ;; practice the RUNPATH of target libs only refers to
                         ;; target libs, not native libs, so this is safe.
-                        `(cons "--with-sysroot=/" ,flags)))))))
+                        #~(cons "--with-sysroot=/" #$flags)))))))
 
     ;; For Xtensa, apply Qualcomm's patch.
     (cross (cond ((string-prefix? "xtensa-" target)
@@ -220,8 +220,7 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
 
                    (remove
                      (lambda (flag)
-                       (or (and #$libc
-                                (string-prefix? "--enable-languages" flag))
+                       (or (string-prefix? "--enable-languages" flag)
                            (and #$libc
                                 #$(target-avr? target)
                                 (string-prefix? "--with-native-system-header-dir"
@@ -342,7 +341,7 @@ target that libc."
     (arguments
      `(#:implicit-inputs? #f
        #:imported-modules ((gnu build cross-toolchain)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (gnu build cross-toolchain)
@@ -698,17 +697,45 @@ returned."
                    (for-each (cut setenv <> cpath)
                              ',%gcc-cross-include-paths)
                    (setenv "CROSS_LIBRARY_PATH"
-                              (string-append kernel "/lib")) ; for Hurd's libihash
-                      #t)))
+                           (string-append kernel "/lib")) ; for Hurd's libihash
+                   #t)))
+             (add-before 'configure 'add-cross-binutils-to-PATH
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Add BINUTILS/TARGET/bin to $PATH so that 'gcc
+                 ;; -print-prog-name=objdump' returns the correct name.  See
+                 ;; <https://inbox.sourceware.org/libc-alpha/d72f5f6f-cc3a-bd89-0800-ffb068928e0f@linaro.org/t/>.
+                 (define cross-objdump
+                   (search-input-file
+                    inputs
+                    (string-append ,target "/bin/objdump")))
+
+                 (define cross-binutils
+                   (dirname cross-objdump))
+
+                 (format #t "adding '~a' to the front of 'PATH'~%"
+                         cross-binutils)
+                 (setenv "PATH" (string-append cross-binutils ":"
+                                               (getenv "PATH")))))
+
+             ;; This phase would require running 'localedef' built for
+             ;; TARGET, which is impossible by definition.
+             (delete 'install-utf8-c-locale)
+
              ,@(if (target-hurd? target)
                    '((add-after 'install 'augment-libc.so
                        (lambda* (#:key outputs #:allow-other-keys)
-                         (let* ((out (assoc-ref outputs "out")))
+                         (let ((out (assoc-ref outputs "out")))
                            (substitute* (string-append out "/lib/libc.so")
                              (("/[^ ]+/lib/libc.so.0.3")
                               (string-append out "/lib/libc.so.0.3"
-                                             " libmachuser.so libhurduser.so"))))
-                         #t)))
+                                             " libmachuser.so libhurduser.so"))))))
+                     (add-after 'install 'create-machine-symlink
+                       (lambda* (#:key outputs #:allow-other-keys)
+                         (let ((out (assoc-ref outputs "out"))
+                               (cpu "i386"))
+                           (symlink cpu
+                                    (string-append out
+                                                   "/include/mach/machine"))))))
                    '())))))
 
       ;; Shadow the native "kernel-headers" because glibc's recipe expects the

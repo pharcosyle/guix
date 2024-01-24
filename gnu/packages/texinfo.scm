@@ -38,6 +38,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
@@ -79,10 +80,12 @@
        #:tests? ,(and (not (target-hurd?))
                       (not (%current-target-system)))))
     (inputs (list ncurses perl))
+
     ;; When cross-compiling, texinfo will build some of its own binaries with
     ;; the native compiler. This means ncurses is needed both in both inputs
-    ;; and native-inputs.
-    (native-inputs (list perl ncurses))
+    ;; and native-inputs.  Some of its tests require extra locales such as
+    ;; fr_FR.UTF-8.
+    (native-inputs (list perl ncurses (libc-utf8-locales-for-target)))
 
     (native-search-paths
      ;; This is the variable used by the standalone Info reader.
@@ -104,14 +107,14 @@ is on expressing the content semantically, avoiding physical markup commands.")
 (define-public texinfo-7
   (package
     (inherit texinfo)
-    (version "7.0.3")
+    (version "7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1gq7i01iblgfcwby1977adh8mab9vpq318vsz628wlkzkp821d3l"))))
+                "0lq9nf1as11mfqf2ydyc6b1xl1hqk0qj5llavxph97hmkzqwkvny"))))
     (inputs (modify-inputs (package-inputs texinfo)
               (append perl-archive-zip)))        ;needed for 'tex2any --epub3'
     (arguments
@@ -230,7 +233,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
        #:disallowed-references ,(assoc-ref (package-inputs texinfo)
                                            "perl")
        #:modules ((ice-9 ftw) (srfi srfi-1)
-                  ,@%gnu-build-system-modules)))
+                  ,@%default-gnu-modules)))
     (synopsis "Standalone Info documentation reader")
     (inputs (modify-inputs (package-inputs texinfo)
               (prepend gzip)))))
