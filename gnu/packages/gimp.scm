@@ -215,7 +215,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.42")
+    (version "0.4.46")
     (source
      (origin
        (method url-fetch)
@@ -228,8 +228,10 @@ provided, as well as a framework to add new color models and data types.")
                   (string-append "ftp://ftp.gtk.org/pub/gegl/"
                                  (version-major+minor version)
                                  "/gegl-" version ".tar.xz")))
+       (patches
+        (search-patches "gegl-compatibility-old-librsvg.patch"))
        (sha256
-        (base32 "0bg0vlmj4n9x1291b9fsjqxsal192zlg48pa57f6xid6p863ma5b"))))
+        (base32 "14p8n6vily0yp6gqafl2xy7d2rh1j48pcj0a7mglqxy83d4b5cyh"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -253,23 +255,23 @@ provided, as well as a framework to add new color models and data types.")
      (list babl glib json-glib))
     (inputs
      ;; All inputs except libjpeg and libpng are optional.
-     `(("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gexiv2" ,gexiv2)
-       ("jasper" ,jasper)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libnsgif" ,libnsgif)
-       ("libpng" ,libpng)
-       ("libraw" ,libraw)
-       ("librsvg" ,(librsvg-for-system))
-       ("libspiro" ,libspiro)
-       ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
-       ("maxflow" ,maxflow)
-       ("openexr" ,openexr-2)
-       ("pango" ,pango)
-       ("poppler" ,poppler)
-       ("sdl2" ,sdl2)))
+     (list cairo
+           gdk-pixbuf
+           gexiv2
+           jasper
+           libjpeg-turbo
+           libnsgif
+           libpng
+           libraw
+           (librsvg-for-system)
+           libspiro
+           libtiff
+           libwebp
+           maxflow
+           openexr-2
+           pango
+           poppler
+           sdl2))
     (native-inputs
      (list `(,glib "bin")               ; for gtester
            gobject-introspection
@@ -285,10 +287,31 @@ buffers.")
     ;; application and GUI binary gegl is licensed under GPL.
     (license (list license:lgpl3+ license:gpl3+))))
 
+;; gnome-photos does not build against gegl 0.4.46 yet.
+;; See also <https://gitlab.gnome.org/GNOME/gnome-photos/-/issues/214>.
+(define-public gegl-0.4.44
+  (package
+    (inherit gegl)
+    (version "0.4.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "https://download.gimp.org/pub/gegl/"
+                                 (string-take version 3)
+                                 "/gegl-" version ".tar.xz")
+                  (string-append "https://ftp.gtk.org/pub/gegl/"
+                                 (version-major+minor version)
+                                 "/gegl-" version ".tar.xz")
+                  (string-append "ftp://ftp.gtk.org/pub/gegl/"
+                                 (version-major+minor version)
+                                 "/gegl-" version ".tar.xz")))
+       (sha256
+        (base32 "09k1sn4h0bakgmq2hgd1iamprngpr81ky3fd9446lh2ycd0xnk0a"))))))
+
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.32")
+    (version "2.10.34")
     (source
      (origin
        (method url-fetch)
@@ -296,7 +319,7 @@ buffers.")
                            (version-major+minor version)
                            "/gimp-" version ".tar.bz2"))
        (sha256
-        (base32 "09csp2d8bzf012n7hvbbwngwr9phv3rnip768qdwqpdgah2wf59z"))))
+        (base32 "18vscmy293q6wq78almv0m7r8jh4j8szvmrw56j9icsisd14c044"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ; 9 MiB of gtk-doc HTML

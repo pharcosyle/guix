@@ -2431,7 +2431,7 @@ capabilities.")
               (setenv "DISPLAY" ":1")
               #t)))))
     (inputs
-     (list guile-3.0 guile-lib glib-next))
+     (list guile-3.0 guile-lib glib))
     (native-inputs
      (list autoconf
            automake
