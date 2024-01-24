@@ -562,8 +562,8 @@ through the Display Data Channel Command Interface (@dfn{DDC/CI}) protocol.")
     (license (list license:gpl2+))))
 
 (define-public edid-decode
-  (let ((commit "74b64180d67bb009d8d9ea1b6f18ad41aaa16396") ; 2020-04-22
-        (revision "1"))
+  (let ((commit "915b0ce5329f417d2c3f84ddab3d443dd0e01b61") ; 2023-01-31
+        (revision "2"))
     (package
       (name "edid-decode")
       (version (git-version "0.0.0" revision commit))
@@ -575,7 +575,7 @@ through the Display Data Channel Command Interface (@dfn{DDC/CI}) protocol.")
                (url "git://linuxtv.org/edid-decode.git")
                (commit commit)))
          (sha256
-          (base32 "0nirp5bza08zj5d8bjgcm0p869hdg3qg3mwa7999pjdrzmn7s2ah"))))
+          (base32 "0k6lx25b7nvwqmpfka7fjd4mfcqm1hkf2fk9j6b9mcj572x2bizx"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                     ; No test suite
@@ -1544,3 +1544,50 @@ modern instrumentation and data acquision systems using Ethernet.")
 HID compatible USB relay modules available with different number of
 output relays.")
     (license license:gpl2+)))
+
+(define-public libdisplay-info
+  (package
+    (name "libdisplay-info")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/emersion/libdisplay-info")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ffq7w1ig1y44rrmkv1hvfjylzgq7f9nlnnsdgdv7pmcpfh45pgf"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'fix-hwdata-path
+            (lambda* (#:key native-inputs inputs #:allow-other-keys)
+              (substitute* "meson.build"
+                (("/usr/share/hwdata/pnp.ids")
+                 (search-input-file (or native-inputs inputs)
+                                    "/share/hwdata/pnp.ids"))))))))
+    (native-inputs
+     (append
+      (list pkg-config
+            edid-decode
+            hwdata
+            python-minimal)
+      (if (%current-target-system)
+          (list pkg-config-for-build)
+          '())))
+    (synopsis "EDID and DisplayID library")
+    (description
+     "EDID and DisplayID library. Goals:
+
+@itemize
+@item Provide a set of high-level, easy-to-use, opinionated functions as well
+as low-level functions to access detailed information.
+@item Simplicity and correctness over performance and resource usage.
+@item Well-tested and fuzzed.
+@end itemize")
+    (home-page "https://gitlab.freedesktop.org/emersion/libdisplay-info")
+    (license license:expat)))

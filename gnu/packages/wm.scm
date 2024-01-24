@@ -121,6 +121,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages hardware)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages haskell-xyz)
@@ -153,6 +154,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -1727,6 +1729,37 @@ Wayland compositor")
     (description "wlroots is a set of pluggable, composable, unopinionated
 modules for building a Wayland compositor.")
     (license license:expat)))  ; MIT license
+
+(define-public wlroots-0.17
+  (package
+    (inherit wlroots)
+    (version "0.17.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (inherit (origin-uri (package-source wlroots)))
+             (commit version)))
+       (file-name (git-file-name (package-name wlroots) version))
+       (sha256
+        (base32 "1hj4gq5vx8in65622yvjm8bwqkw2vpc556k9my997a0hn0ricj37"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments wlroots)
+       ((#:phases phases #~%standard-phases)
+        #~(modify-phases #$phases
+            (delete 'fix-meson-file)))))
+    (native-inputs
+     (modify-inputs (package-native-inputs wlroots)
+       (delete hwdata)))
+    (inputs
+     (modify-inputs (package-inputs wlroots)
+       (prepend hwdata
+                libdisplay-info
+                libliftoff
+                vulkan-loader ; TODO check it's used
+                )
+
+       ))))
 
 (define-public sway
   (package
@@ -3542,81 +3575,81 @@ It is inspired by dwm and xmonad.")
      (base32
       "1drjznj3fn6m4m6skhzh0p031cb5x0bb4i56jxnxwpwaa71g1z20"))))
 
-(define-public hyprland
-  (package
-    (name hyprland-name)
-    (version hyprland-version)
-    (source (origin
-              (inherit hyprland-source)
-              (patches
-               (list (file-append hyprland-source
-                                  "/nix/patches/meson-build.patch")))))
-    ;; TODO need this? build --source and check if it's there or whatever
-    ;; (snippet '(delete-file-recursively "subprojects"))
+;; (define-public hyprland
+;;   (package
+;;     (name hyprland-name)
+;;     (version hyprland-version)
+;;     (source (origin
+;;               (inherit hyprland-source)
+;;               (patches
+;;                (list (file-append hyprland-source
+;;                                   "/nix/patches/meson-build.patch")))))
+;;     ;; TODO need this? build --source and check if it's there or whatever
+;;     ;; (snippet '(delete-file-recursively "subprojects"))
 
-    ;; (source (origin
-    ;;           (method url-fetch)
-    ;;           (uri (string-append "https://github.com/hyprwm/Hyprland"
-    ;;                               "/releases/download/v" version
-    ;;                               "/source-v" version ".tar.gz"))
-    ;;           (modules '((guix build utils)))
-    ;;           (snippet '(delete-file-recursively "subprojects"))
-    ;;           (patches (list hyprland-unbundle-wlroots-patch))
-    ;;           (sha256
-    ;;            (base32
-    ;;             "0lwib3a3spdpigzz4333wppljm1if6fa97nnb50y1pd4j353jazy"))))
-    (build-system meson-build-system)
-    (arguments
-     (list
-      #:build-type "release"
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'fix-path
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "src/render/OpenGL.cpp"
-                (("/usr") #$output))
-              ;; TODO probably do this a bit nicer. Maybe I can just make it ALL execAndGet as long as search-input-file fails fast.
-              (substitute* (find-files "src" "\\.cpp")
-                (("(execAndGet\\(\\(?\")\\<(cat|fc-list|lspci|nm)\\>"
-                  _ pre cmd)
-                 (string-append pre
-                                (search-input-file
-                                 inputs (string-append "/bin/" cmd))))))))))
-    (native-inputs
-     (list pkg-config
-           jq
-           ;; wayland-scanner
-           ))
-    (inputs
-     (list hyprland-protocols
-           pango
-           pciutils
-           udis86-for-hyprland
-           wlroots-for-hyprland
+;;     ;; (source (origin
+;;     ;;           (method url-fetch)
+;;     ;;           (uri (string-append "https://github.com/hyprwm/Hyprland"
+;;     ;;                               "/releases/download/v" version
+;;     ;;                               "/source-v" version ".tar.gz"))
+;;     ;;           (modules '((guix build utils)))
+;;     ;;           (snippet '(delete-file-recursively "subprojects"))
+;;     ;;           (patches (list hyprland-unbundle-wlroots-patch))
+;;     ;;           (sha256
+;;     ;;            (base32
+;;     ;;             "0lwib3a3spdpigzz4333wppljm1if6fa97nnb50y1pd4j353jazy"))))
+;;     (build-system meson-build-system)
+;;     (arguments
+;;      (list
+;;       #:build-type "release"
+;;       #:phases
+;;       #~(modify-phases %standard-phases
+;;           (add-after 'unpack 'fix-path
+;;             (lambda* (#:key inputs #:allow-other-keys)
+;;               (substitute* "src/render/OpenGL.cpp"
+;;                 (("/usr") #$output))
+;;               ;; TODO probably do this a bit nicer. Maybe I can just make it ALL execAndGet as long as search-input-file fails fast.
+;;               (substitute* (find-files "src" "\\.cpp")
+;;                 (("(execAndGet\\(\\(?\")\\<(cat|fc-list|lspci|nm)\\>"
+;;                   _ pre cmd)
+;;                  (string-append pre
+;;                                 (search-input-file
+;;                                  inputs (string-append "/bin/" cmd))))))))))
+;;     (native-inputs
+;;      (list pkg-config
+;;            jq
+;;            ;; wayland-scanner
+;;            ))
+;;     (inputs
+;;      (list hyprland-protocols
+;;            pango
+;;            pciutils
+;;            udis86-for-hyprland
+;;            wlroots-for-hyprland
 
-           tomlplusplus
+;;            tomlplusplus
 
-           git ; -minimal?
-           ;; libgl
-           libdrm
-           libinput ; -minimal?
-           libxcbcommon
-           mesa
-           wayland
-           wayland-protocols
+;;            git ; -minimal?
+;;            ;; libgl
+;;            libdrm
+;;            libinput ; -minimal?
+;;            libxcbcommon
+;;            mesa
+;;            wayland
+;;            wayland-protocols
 
-           ;; ;; Optional
-           elogind ;; TODO maybe basu? Might have to patch the build phase or something
+;;            ;; ;; Optional
+;;            elogind ;; TODO maybe basu? Might have to patch the build phase or something
 
-           ;; Optional, for xwayland
-           libxcb
-           xcb-util-wm
-           xorg-server-xwayland))
-    (home-page "https://hyprland.org")
-    (synopsis "Dynamic tiling Wayland compositor based on wlroots")
-    (description
-     "Hyprland is a dynamic tiling Wayland compositor based on @code{wlroots}
-that doesn't sacrifice on its looks.  It supports multiple layouts, fancy
-effects, has a very flexible IPC model allowing for a lot of customization, and
-more.")
-    (license license:bsd-3)))
+;;            ;; Optional, for xwayland
+;;            libxcb
+;;            xcb-util-wm
+;;            xorg-server-xwayland))
+;;     (home-page "https://hyprland.org")
+;;     (synopsis "Dynamic tiling Wayland compositor based on wlroots")
+;;     (description
+;;      "Hyprland is a dynamic tiling Wayland compositor based on @code{wlroots}
+;; that doesn't sacrifice on its looks.  It supports multiple layouts, fancy
+;; effects, has a very flexible IPC model allowing for a lot of customization, and
+;; more.")
+;;     (license license:bsd-3)))
