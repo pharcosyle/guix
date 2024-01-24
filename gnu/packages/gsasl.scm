@@ -77,14 +77,14 @@ the underlying security implementation.")
 (define-public gsasl
   (package
    (name "gsasl")
-   (version "2.2.0")
+   (version "2.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gsasl/gsasl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0nbp62isfdfrsnp34vfkwinfjyw9x05clacvsn2c8vcpp7inif3r"))))
+              "0xg0rqmx7f8irq4nz0wz4zv0qx396asz8wmk43ybj4xx2cp5cnyl"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags '("--with-gssapi-impl=mit"
