@@ -6560,18 +6560,23 @@ text styles of documentation.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.12.0")
+    (version "2.15.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1sr6iqh21xi6p8aba4wa9pqfhjbbpcvn9jcsx0ggy4lniw8idcay"))))
-    (build-system python-build-system)
+         "0p3p28fif7m2w5mkd0z99zk9xwgrs3m61x85415qk0fl3ly4vkla"))))
+    (build-system pyproject-build-system)
     (arguments
-     ;; FIXME: Tests require sphinx, which depends on this.
-     '(#:tests? #f))
+     (list
+      #:test-flags
+      ;; Some tests require sphinx, which depends on this, so we only run
+      ;; basic tests.
+      '(list "--ignore-glob=tests/*/*")))
+    (native-inputs
+     (list python-pytest))
     (home-page "https://pygments.org/")
     (synopsis "Syntax highlighting")
     (description
@@ -22198,20 +22203,20 @@ from the header, as well as section details and data available.")
 (define-public python-imagesize
   (package
     (name "python-imagesize")
-    (version "1.2.0")
+    (version "1.4.1")
     (source
-      (origin
-      (method url-fetch)
-      (uri (pypi-uri "imagesize" version))
-      (sha256
-       (base32
-        "1cd24x0vqbd6c8ym1n21qc0aj54mfb7rzdqglmwk9xxixajbbxmi"))))
-    (build-system python-build-system)
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "imagesize" version))
+       (sha256
+        (base32
+         "0jndjx26p8qibrx997p3kb6vfbqbdxkv74jsrkav177vmx2085b9"))))
+    (build-system pyproject-build-system)
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in various formats in Python")
     (description
-      "This package allows determination of image size from
-     PNG, JPEG, JPEG2000 and GIF files in pure Python.")
+     "This package allows determination of image size from PNG, JPEG,
+JPEG2000 and GIF files in pure Python.")
     (license license:expat)))
 
 (define-public python-termstyle
@@ -22946,29 +22951,19 @@ both as keys and as attributes.")
 (define-public python-attrs
   (package
     (name "python-attrs")
-    (version "21.2.0")
+    (version "23.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "attrs" version))
               (sha256
                (base32
-                "1yzmwi5d197p0qhl7rl4xi9q1w8mk9i3zn6hrl22knbcrb1slspg"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'remove-test-hypothesis-deadlines
-                    (lambda _
-                      (substitute* "tests/test_make.py"
-                        (("assume, given") "assume, given, settings")
-                        (("( +)@given" all spaces)
-                         (string-append spaces "@settings(deadline=None)\n" all)))))
-                  (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
-                      (when tests?
-                        (invoke "pytest")))))))
+                "05g0a3y9hv74zblgf51zd0ar3g1ksfngjdgj3dps44qmb1nq6yb2"))))
+    (build-system pyproject-build-system)
     (native-inputs
-     (list python-coverage python-hypothesis python-pympler python-pytest
-           python-six))
+     (list python-hatchling
+           python-hatch-fancy-pypi-readme
+           python-hatch-vcs
+           python-pytest))
     (home-page "https://github.com/python-attrs/attrs/")
     (synopsis "Attributes without boilerplate")
     (description "@code{attrs} is a Python package with class decorators that
@@ -22980,7 +22975,9 @@ both as keys and as attributes.")
   (package
     (inherit python-attrs)
     (name "python-attrs-bootstrap")
-    (native-inputs `())
+    (native-inputs
+     (modify-inputs (package-native-inputs python-attrs)
+       (delete "python-pytest")))
     (arguments `(#:tests? #f))))
 
 (define-public python-cliapp
