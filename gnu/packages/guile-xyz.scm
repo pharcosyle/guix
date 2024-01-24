@@ -2172,7 +2172,7 @@ allow you to quickly create and publish Guile projects.  It allows you to
 transparently support the GNU build system, manage a project hierarchy &
 provides tight coupling to Guix.")
       (home-page "https://gitlab.com/a-sassmannshausen/guile-hall")
-      (license license:gpl3+))))
+      (license license:gpl3+)))
 
 (define-public guile-ics
   (package
