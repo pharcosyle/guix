@@ -425,8 +425,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-arm-bug-71399.patch"
                                        "gcc-asan-missing-include.patch"
                                        "gcc-libvtv-runpath.patch"
-                                       "gcc-fix-texi2pod.patch"
-                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
+                                       "gcc-fix-texi2pod.patch"))
               (modules '((guix build utils)))
               ;; This is required for building with glibc-2.26.
               ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
@@ -509,8 +508,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-fix-texi2pod.patch"
                                        "gcc-5-hurd.patch"
                                        ;; See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86162
-                                       "gcc-5-fix-powerpc64le-build.patch"
-                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
+                                       "gcc-5-fix-powerpc64le-build.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
     (inputs
@@ -533,8 +531,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"
-                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))))
+                                       "gcc-5.0-libvtv-runpath.patch"))))
 
     ;; GCC 4.9 and 5 has a workaround that is not needed for GCC 6 and later.
     (arguments (package-arguments gcc-4.8))
@@ -652,8 +649,7 @@ Go.  It also includes runtime support libraries for these languages.")
               (patches (search-patches "gcc-strmov-store-file-names.patch"
                                        "gcc-7-libsanitizer-mode-size.patch"
                                        "gcc-7-libsanitizer-fsconfig-command.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"
-                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))))
+                                       "gcc-5.0-libvtv-runpath.patch"))))
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
 for several languages, including C, C++, Objective-C, Fortran, Ada, and Go.
@@ -678,8 +674,7 @@ It also includes runtime support libraries for these languages.")
                 "0l7d4m9jx124xsk6xardchgy2k5j5l2b15q322k31f0va4d8826k"))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
-                                       "gcc-8-sort-libtool-find-output.patch"
-                                       "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
+                                       "gcc-8-sort-libtool-find-output.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))))
 
@@ -698,8 +693,7 @@ It also includes runtime support libraries for these languages.")
                                      "gcc-13.2.0-libstdc++-info-install-fix.patch"
                                      "gcc-9-strmov-store-file-names.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"
-                                     "gcc-4.9-glib-2.36-mount-h-incompat.patch"))
+                                     "gcc-5.0-libvtv-runpath.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))))
 
@@ -715,8 +709,7 @@ It also includes runtime support libraries for these languages.")
              (base32
               "1h87lcfaga0ydsf4pkhwlnjr8mky5ix8npbv6iy3jvzlzm1ra415"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-5.0-libvtv-runpath.patch"
-                                     "gcc-glib-2.36-mount-h-incompat.patch"))
+                                     "gcc-5.0-libvtv-runpath.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))
    (properties
