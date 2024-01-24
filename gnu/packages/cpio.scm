@@ -29,21 +29,14 @@
 (define-public cpio
   (package
     (name "cpio")
-    (version "2.13")
+    (version "2.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/cpio/cpio-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0vbgnhkawdllgnkdn6zn1f56fczwk0518krakz2qbwhxmv2vvdga"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Remove superfluous declaration that trips GCC 10.
-                 (substitute* "src/global.c"
-                   (("char \\*program_name;")
-                    ""))))))
+               "1nvmj2mc3nagpig75sgzvkqgzg1p01wgnlw54v4ix6ijgjwi0xlk"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")
