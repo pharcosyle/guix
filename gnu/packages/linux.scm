@@ -10623,3 +10623,30 @@ System Management Unit for certain AMD Ryzen processors.
 This includes access to the System Management Network.")
     (home-page "https://gitlab.com/leogx9r/ryzen_smu")
     (license license:gpl2)))
+
+(define-public libliftoff
+  (package
+    (name "libliftoff")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/emersion/libliftoff")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ikjp638d655ycaqkdnzhb12d29kkbb3a46lqhbhsfc8vsqj3z1l"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (propagated-inputs
+     (list libdrm))
+    (synopsis "Lightweight KMS plane library")
+    (description
+     "libliftoff eases the use of KMS planes from userspace without standing in
+your way. Users create \"virtual planes\" called layers, set KMS properties on
+them,and libliftoff will pick hardware planes for these layers if possible.")
+    (home-page "https://gitlab.freedesktop.org/emersion/libliftoff")
+    (license license:expat)))
