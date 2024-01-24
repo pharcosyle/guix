@@ -271,6 +271,8 @@ backups (called chunks) to allow easy burning to CD/DVD.")
            xz
            zlib
            `(,zstd "lib")))
+    (propagated-inputs
+     (list openssl)) ; As required by the pkg-config's Requires.private.
     (arguments
      (list
       #:configure-flags #~'("--disable-static")
