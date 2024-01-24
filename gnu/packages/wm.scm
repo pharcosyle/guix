@@ -134,6 +134,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages hardware)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages haskell-xyz)
@@ -166,6 +167,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -1794,6 +1796,39 @@ modules for building a Wayland compositor.")
         (base32 "1m12nv6avgnz626h3giqp6gcx44w1wq6z0jy780mx8z255ic7q15"))))
     (propagated-inputs (modify-inputs (package-propagated-inputs wlroots)
                          (delete libdisplay-info)))))
+
+;; What I had before upstream changed it
+
+;; (define-public wlroots-0.17
+;;   (package
+;;     (inherit wlroots)
+;;     (version "0.17.1")
+;;     (source
+;;      (origin
+;;        (method git-fetch)
+;;        (uri (git-reference
+;;              (inherit (origin-uri (package-source wlroots)))
+;;              (commit version)))
+;;        (file-name (git-file-name (package-name wlroots) version))
+;;        (sha256
+;;         (base32 "1hj4gq5vx8in65622yvjm8bwqkw2vpc556k9my997a0hn0ricj37"))))
+;;     (arguments
+;;      (substitute-keyword-arguments (package-arguments wlroots)
+;;        ((#:phases phases #~%standard-phases)
+;;         #~(modify-phases #$phases
+;;             (delete 'fix-meson-file)))))
+;;     (native-inputs
+;;      (modify-inputs (package-native-inputs wlroots)
+;;        (delete hwdata)))
+;;     (inputs
+;;      (modify-inputs (package-inputs wlroots)
+;;        (prepend hwdata
+;;                 libdisplay-info
+;;                 libliftoff
+;;                 vulkan-loader ; TODO check it's used
+;;                 )
+
+;;        ))))
 
 (define-public wlroots-0.15
   (package

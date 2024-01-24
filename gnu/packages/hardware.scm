@@ -1607,3 +1607,50 @@ modern instrumentation and data acquision systems using Ethernet.")
 HID compatible USB relay modules available with different number of
 output relays.")
     (license license:gpl2+)))
+
+(define-public libdisplay-info
+  (package
+    (name "libdisplay-info")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/emersion/libdisplay-info")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ffq7w1ig1y44rrmkv1hvfjylzgq7f9nlnnsdgdv7pmcpfh45pgf"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'fix-hwdata-path
+            (lambda* (#:key native-inputs inputs #:allow-other-keys)
+              (substitute* "meson.build"
+                (("/usr/share/hwdata/pnp.ids")
+                 (search-input-file (or native-inputs inputs)
+                                    "/share/hwdata/pnp.ids"))))))))
+    (native-inputs
+     (append
+      (list pkg-config
+            edid-decode
+            hwdata
+            python-minimal)
+      (if (%current-target-system)
+          (list pkg-config-for-build)
+          '())))
+    (synopsis "EDID and DisplayID library")
+    (description
+     "EDID and DisplayID library. Goals:
+
+@itemize
+@item Provide a set of high-level, easy-to-use, opinionated functions as well
+as low-level functions to access detailed information.
+@item Simplicity and correctness over performance and resource usage.
+@item Well-tested and fuzzed.
+@end itemize")
+    (home-page "https://gitlab.freedesktop.org/emersion/libdisplay-info")
+    (license license:expat)))
