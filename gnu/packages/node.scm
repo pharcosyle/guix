@@ -77,6 +77,10 @@
                     (("TRUE") "true")
                     (("FALSE") "false"))
 
+                  ;; Fix process.versions.XXXX assumption of always having
+                  ;; a version string of major.minor.patch and not major.minor.
+                  (substitute* "test/parallel/test-process-versions.js"
+                    (("\\\\d\\+\\\\.\\\\d\\+\\\\.") "(\\d+\\.)+"))
                   ;; Remove bundled software.
                   (for-each delete-file-recursively
                             '("deps/cares"
@@ -194,11 +198,7 @@
 
              ;; No longer works on ICU 72.1
              ;; (see https://github.com/nodejs/node/commit/1f9b181c209)
-             (delete-file "test/parallel/test-intl.js")
-
-             ;; No longer works with zlib 1.3
-             ;; (see https://github.com/nodejs/node/commit/5d01042e344)
-             (delete-file "test/parallel/test-process-versions.js")))
+             (delete-file "test/parallel/test-intl.js")))
          (add-before 'configure 'set-bootstrap-host-rpath
            (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (let* ((inputs      (or native-inputs inputs))
