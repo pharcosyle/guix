@@ -285,7 +285,7 @@ a fast alternative to @code{IOStreams}.")
 
 ;; Note: Updating fmt causes some 1000s of rebuilds, so let's have a pinned
 ;; version.
-(define-public fmt fmt-9)
+(define-public fmt fmt-10)
 
 (define-public source-highlight
   (package
