@@ -991,7 +991,7 @@ test coverage and has a web user interface that will refresh automatically.")
 (define-public googletest
   (package
     (name "googletest")
-    (version "1.13.0")
+    (version "1.14.0")
     (source
      (origin
        (method git-fetch)
@@ -1000,7 +1000,7 @@ test coverage and has a web user interface that will refresh automatically.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x5lr1k4kgw3i8d7c12vp759p0w8c8r2y8lwvqswswxvwygw8lid"))))
+        (base32 "19c7f248rkg302yrbl5x7irfyi6a9whbpf45wn4bn9fk0625qi5p"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
