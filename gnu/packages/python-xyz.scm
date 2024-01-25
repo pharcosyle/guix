@@ -7852,110 +7852,128 @@ writing C extensions for Python as easy as Python itself.")
 ;; NOTE: when upgrading numpy please make sure that python-numba,
 ;; python-pandas and python-scipy still build, as these three packages are
 ;; often used together.
+;; (define-public python-numpy
+;;   (package
+;;     (name "python-numpy")
+;;     (version "1.24.3")
+;;     (source
+;;      (origin
+;;        (method url-fetch)
+;;        (uri (string-append
+;;              "https://github.com/numpy/numpy/releases/download/v"
+;;              version "/numpy-" version ".tar.gz"))
+;;        (sha256
+;;         (base32
+;;          "0maipk88s08dl25iyy882k07sissqg3xnzz4p3d0l50zy8dlyd5b"))))
+;;     (build-system python-build-system)
+;;     (arguments
+;;      (list
+;;       #:modules '((guix build utils)
+;;                   (guix build python-build-system)
+;;                   (ice-9 format))
+;;       #:phases
+;;       #~(modify-phases %standard-phases
+;;           (add-before 'build 'parallelize-build
+;;             (lambda _
+;;               (setenv "NPY_NUM_BUILD_JOBS"
+;;                       (number->string (parallel-job-count)))))
+;;           (add-before 'build 'configure-blas
+;;             (lambda* (#:key inputs #:allow-other-keys)
+;;               (call-with-output-file "site.cfg"
+;;                 (lambda (port)
+;;                   (format port
+;;                           "\
+;; [openblas]
+;; libraries = openblas
+;; library_dirs = ~a/lib
+;; include_dirs = ~:*~a/include~%"
+;;                           (dirname (dirname
+;;                                     (search-input-file
+;;                                      inputs "include/openblas_config.h"))))))))
+;;           (add-before 'build 'fix-executable-paths
+;;             (lambda* (#:key inputs #:allow-other-keys)
+;;               ;; Make /gnu/store/...-bash-.../bin/sh the default shell,
+;;               ;; instead of /bin/sh.
+;;               (substitute* "numpy/distutils/exec_command.py"
+;;                 (("'/bin/sh'")
+;;                  (format #f "~s" (search-input-file inputs "bin/bash"))))
+;;               ;; Don't try to call '/bin/true' specifically.
+;;               (substitute* "numpy/core/tests/test_cpu_features.py"
+;;                 (("/bin/true") (search-input-file inputs "bin/true")))))
+;;           (replace 'check
+;;             (lambda* (#:key tests? outputs inputs #:allow-other-keys)
+;;               (when tests?
+;;                 (invoke "./runtests.py" "-vv" "--no-build" "--mode=fast"
+;;                         "-j" (number->string (parallel-job-count))
+;;                         ;; Contrary to scipy, the runtests.py script of numpy
+;;                         ;; does *not* automatically provide -n when -j is used
+;;                         ;; (see: https://github.com/numpy/numpy/issues/21359).
+;;                         "--" "-n" (number->string (parallel-job-count))
+;;                         "-k" (string-append
+;;                               ;; These tests may fail on 32-bit systems (see:
+;;                               ;; https://github.com/numpy/numpy/issues/18387).
+;;                               "not test_float_remainder_overflow "
+;;                               "and not test_pareto "
+;;                               ;; The 'test_rint_big_int' test fails on older
+;;                               ;; x86_64 CPUs such as the Core 2 Duo (see:
+;;                               ;; https://github.com/numpy/numpy/issues/22170).
+;;                               "and not test_rint_big_int "
+;;                               ;; The huge_array test is too large for 32-bit (see:
+;;                               ;; https://bugs.gentoo.org/843599 and
+;;                               ;; https://bugs.gentoo.org/846548).
+;;                               ;; TestKind.test_all is a Fortran type failure
+;;                               ;; that may be toolchain or environment related.
+;;                               #$@(if (or (target-x86?) (target-arm32?))
+;;                                      `(" and not test_identityless_reduction_huge_array"
+;;                                        " and not (TestKind and test_all)")
+;;                                    '())
+;;                               ;; This test fails when building from aarch64-linux.
+;;                               #$@(if (target-arm32?)
+;;                                    `(" and not test_features")
+;;                                    '())
+;;                               ;; These tests seem to fail on machines without
+;;                               ;; an FPU is still under investigation upstream.
+;;                               ;; https://github.com/numpy/numpy/issues/20635
+;;                               #$@(if (target-riscv64?)
+;;                                    `(" and not test_float"
+;;                                      " and not test_fpclass")
+;;                                    '())))))))))
+;;     (native-inputs
+;;      (list python-cython
+;;            python-hypothesis
+;;            python-pytest
+;;            python-pytest-xdist
+;;            python-typing-extensions
+;;            gfortran))
+;;     (inputs (list bash openblas))
+;;     (home-page "https://numpy.org")
+;;     (synopsis "Fundamental package for scientific computing with Python")
+;;     (description "NumPy is the fundamental package for scientific computing
+;; with Python.  It contains among other things: a powerful N-dimensional array
+;; object, sophisticated (broadcasting) functions, tools for integrating C/C++
+;; and Fortran code, useful linear algebra, Fourier transform, and random number
+;; capabilities.")
+;;     (properties
+;;      '((upstream-name . "numpy")))
+;;     (license license:bsd-3)))
+
+(use-modules ((guix build-system trivial) #:select (trivial-build-system)))
 (define-public python-numpy
   (package
     (name "python-numpy")
     (version "1.24.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/numpy/numpy/releases/download/v"
-             version "/numpy-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0maipk88s08dl25iyy882k07sissqg3xnzz4p3d0l50zy8dlyd5b"))))
-    (build-system python-build-system)
+    (source #f)
+    (build-system trivial-build-system)
     (arguments
      (list
-      #:modules '((guix build utils)
-                  (guix build python-build-system)
-                  (ice-9 format))
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-before 'build 'parallelize-build
-            (lambda _
-              (setenv "NPY_NUM_BUILD_JOBS"
-                      (number->string (parallel-job-count)))))
-          (add-before 'build 'configure-blas
-            (lambda* (#:key inputs #:allow-other-keys)
-              (call-with-output-file "site.cfg"
-                (lambda (port)
-                  (format port
-                          "\
-[openblas]
-libraries = openblas
-library_dirs = ~a/lib
-include_dirs = ~:*~a/include~%"
-                          (dirname (dirname
-                                    (search-input-file
-                                     inputs "include/openblas_config.h"))))))))
-          (add-before 'build 'fix-executable-paths
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; Make /gnu/store/...-bash-.../bin/sh the default shell,
-              ;; instead of /bin/sh.
-              (substitute* "numpy/distutils/exec_command.py"
-                (("'/bin/sh'")
-                 (format #f "~s" (search-input-file inputs "bin/bash"))))
-              ;; Don't try to call '/bin/true' specifically.
-              (substitute* "numpy/core/tests/test_cpu_features.py"
-                (("/bin/true") (search-input-file inputs "bin/true")))))
-          (replace 'check
-            (lambda* (#:key tests? outputs inputs #:allow-other-keys)
-              (when tests?
-                (invoke "./runtests.py" "-vv" "--no-build" "--mode=fast"
-                        "-j" (number->string (parallel-job-count))
-                        ;; Contrary to scipy, the runtests.py script of numpy
-                        ;; does *not* automatically provide -n when -j is used
-                        ;; (see: https://github.com/numpy/numpy/issues/21359).
-                        "--" "-n" (number->string (parallel-job-count))
-                        "-k" (string-append
-                              ;; These tests may fail on 32-bit systems (see:
-                              ;; https://github.com/numpy/numpy/issues/18387).
-                              "not test_float_remainder_overflow "
-                              "and not test_pareto "
-                              ;; The 'test_rint_big_int' test fails on older
-                              ;; x86_64 CPUs such as the Core 2 Duo (see:
-                              ;; https://github.com/numpy/numpy/issues/22170).
-                              "and not test_rint_big_int "
-                              ;; The huge_array test is too large for 32-bit (see:
-                              ;; https://bugs.gentoo.org/843599 and
-                              ;; https://bugs.gentoo.org/846548).
-                              ;; TestKind.test_all is a Fortran type failure
-                              ;; that may be toolchain or environment related.
-                              #$@(if (or (target-x86?) (target-arm32?))
-                                     `(" and not test_identityless_reduction_huge_array"
-                                       " and not (TestKind and test_all)")
-                                   '())
-                              ;; This test fails when building from aarch64-linux.
-                              #$@(if (target-arm32?)
-                                   `(" and not test_features")
-                                   '())
-                              ;; These tests seem to fail on machines without
-                              ;; an FPU is still under investigation upstream.
-                              ;; https://github.com/numpy/numpy/issues/20635
-                              #$@(if (target-riscv64?)
-                                   `(" and not test_float"
-                                     " and not test_fpclass")
-                                   '())))))))))
-    (native-inputs
-     (list python-cython
-           python-hypothesis
-           python-pytest
-           python-pytest-xdist
-           python-typing-extensions
-           gfortran))
-    (inputs (list bash openblas))
-    (home-page "https://numpy.org")
-    (synopsis "Fundamental package for scientific computing with Python")
-    (description "NumPy is the fundamental package for scientific computing
-with Python.  It contains among other things: a powerful N-dimensional array
-object, sophisticated (broadcasting) functions, tools for integrating C/C++
-and Fortran code, useful linear algebra, Fourier transform, and random number
-capabilities.")
-    (properties
-     '((upstream-name . "numpy")))
-    (license license:bsd-3)))
+      #:builder
+      #~(begin
+          (symlink "/gnu/store/lyvzycfk8jp1z60cxmhxbvry337wfpvm-python-numpy-1.24.3"
+                   #$output))))
+    (synopsis #f)
+    (description #f)
+    (home-page #f)
+    (license #f)))
 
 (define-public python-numpy-documentation
   (package

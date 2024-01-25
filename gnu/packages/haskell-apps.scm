@@ -614,74 +614,93 @@ with CSS and mouseover annotations, XHTML 1.0 with inline CSS styling, LaTeX,
 and mIRC chat codes.")
     (license license:bsd-3)))
 
+;; (define-public kmonad
+;;   ;; Project is active, but no new releases exist. Pick current master
+;;   ;; HEAD as of 2023-01-08.
+;;   (let ((commit "a0af5b8b3f085adb2c09ca52374a53566c25194c")
+;;         (revision "1"))
+;;     (package
+;;       (name "kmonad")
+;;       (version (git-version "0.4.1" revision commit))
+;;       (source
+;;        (origin
+;;          (method git-fetch)
+;;          (uri (git-reference
+;;                (url "https://github.com/david-janssen/kmonad")
+;;                (commit commit)))
+;;          (file-name (git-file-name name version))
+;;          (sha256
+;;           (base32 "00qmmk1lgadhh32dqi530xm18v79ndcm7rrxvdsf827vicv2nhw1"))))
+;;       (build-system haskell-build-system)
+;;       (arguments
+;;        `(#:haddock? #f ; Haddock fails to generate docs
+;;          #:phases
+;;          (modify-phases %standard-phases
+;;            (add-after 'unpack 'patch-git-path
+;;              (lambda* (#:key inputs #:allow-other-keys)
+;;                (substitute* "src/KMonad/Args/TH.hs"
+;;                  (("\"git\"")
+;;                   (string-append "\"" (search-input-file inputs "/bin/git") "\"")))))
+;;            (add-after 'install 'install-udev-rules
+;;              (lambda* (#:key outputs #:allow-other-keys)
+;;                (let* ((out (assoc-ref outputs "out"))
+;;                       (rules (string-append out "/lib/udev/rules.d")))
+;;                  (mkdir-p rules)
+;;                  (call-with-output-file (string-append rules "/70-kmonad.rules")
+;;                    (lambda (port)
+;;                      (display
+;;                       (string-append
+;;                        "KERNEL==\"uinput\", MODE=\"0660\", "
+;;                        "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"\n")
+;;                       port)))
+;;                  #t)))
+;;            (add-after 'install-udev-rules 'install-documentation
+;;              (lambda* (#:key outputs #:allow-other-keys)
+;;                (let* ((out (assoc-ref outputs "out"))
+;;                       (doc (string-append out "/share/doc/kmonad-" ,version)))
+;;                  (install-file "README.md" doc)
+;;                  (copy-recursively "doc" doc)
+;;                  (copy-recursively "keymap" (string-append doc "/keymap"))
+;;                  #t))))))
+;;       (inputs
+;;        (list ghc-cereal
+;;              ghc-exceptions
+;;              ghc-lens
+;;              ghc-megaparsec
+;;              ghc-optparse-applicative
+;;              ghc-resourcet
+;;              ghc-rio
+;;              ghc-unliftio
+;;              ghc-unordered-containers
+;;              ghc-template-haskell))
+;;       (native-inputs (list ghc-hspec hspec-discover git))
+;;       (home-page "https://github.com/david-janssen/kmonad")
+;;       (synopsis "Advanced keyboard manager")
+;;       (description "KMonad is a keyboard remapping utility that supports
+;; advanced functionality, such as custom keymap layers and modifiers, macros,
+;; and conditional mappings that send a different keycode when tapped or held.
+;; By operating at a lower level than most similar tools, it supports X11,
+;; Wayland, and Linux console environments alike.")
+;;       (license license:expat))))
+
+(use-modules ((guix build-system trivial) #:select (trivial-build-system))
+             (guix gexp))
 (define-public kmonad
-  ;; Project is active, but no new releases exist. Pick current master
-  ;; HEAD as of 2023-01-08.
-  (let ((commit "a0af5b8b3f085adb2c09ca52374a53566c25194c")
-        (revision "1"))
-    (package
-      (name "kmonad")
-      (version (git-version "0.4.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/david-janssen/kmonad")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "00qmmk1lgadhh32dqi530xm18v79ndcm7rrxvdsf827vicv2nhw1"))))
-      (build-system haskell-build-system)
-      (arguments
-       `(#:haddock? #f ; Haddock fails to generate docs
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-git-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "src/KMonad/Args/TH.hs"
-                 (("\"git\"")
-                  (string-append "\"" (search-input-file inputs "/bin/git") "\"")))))
-           (add-after 'install 'install-udev-rules
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (rules (string-append out "/lib/udev/rules.d")))
-                 (mkdir-p rules)
-                 (call-with-output-file (string-append rules "/70-kmonad.rules")
-                   (lambda (port)
-                     (display
-                      (string-append
-                       "KERNEL==\"uinput\", MODE=\"0660\", "
-                       "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"\n")
-                      port)))
-                 #t)))
-           (add-after 'install-udev-rules 'install-documentation
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (doc (string-append out "/share/doc/kmonad-" ,version)))
-                 (install-file "README.md" doc)
-                 (copy-recursively "doc" doc)
-                 (copy-recursively "keymap" (string-append doc "/keymap"))
-                 #t))))))
-      (inputs
-       (list ghc-cereal
-             ghc-exceptions
-             ghc-lens
-             ghc-megaparsec
-             ghc-optparse-applicative
-             ghc-resourcet
-             ghc-rio
-             ghc-unliftio
-             ghc-unordered-containers
-             ghc-template-haskell))
-      (native-inputs (list ghc-hspec hspec-discover git))
-      (home-page "https://github.com/david-janssen/kmonad")
-      (synopsis "Advanced keyboard manager")
-      (description "KMonad is a keyboard remapping utility that supports
-advanced functionality, such as custom keymap layers and modifiers, macros,
-and conditional mappings that send a different keycode when tapped or held.
-By operating at a lower level than most similar tools, it supports X11,
-Wayland, and Linux console environments alike.")
-      (license license:expat))))
+  (package
+    (name "kmonad")
+    (version "0.4.1")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     (list
+      #:builder
+      #~(begin
+          (symlink "/gnu/store/1rgj3vz33zlx06vx4q9nkrk6r92qf3ff-kmonad-0.4.1-1.a0af5b8"
+                   #$output))))
+    (synopsis #f)
+    (description #f)
+    (home-page #f)
+    (license #f)))
 
 (define-public nixfmt
   (package

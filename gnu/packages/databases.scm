@@ -930,258 +930,281 @@ management system that supports the standardized Structured Query
 Language.")
     (license license:gpl2)))
 
+;; (define-public mariadb
+;;   (package
+;;     (name "mariadb")
+;;     (version "10.10.7")
+;;     (source (origin
+;;               (method url-fetch)
+;;               (uri (string-append "https://downloads.mariadb.com/MariaDB"
+;;                                   "/mariadb-" version "/source/mariadb-"
+;;                                   version ".tar.gz"))
+;;               (sha256
+;;                (base32
+;;                 "1c2y46wfg5gcipkpbfki59v1p90gyiv9njb1ycf1hxsv4yzdgcvd"))
+;;               (patches (search-patches "mariadb-fix-ssl-test.patch"))
+;;               (modules '((guix build utils)))
+;;               (snippet
+;;                '(begin
+;;                   ;; Delete bundled libraries, but preserve CMakeLists.txt.
+;;                   (for-each (lambda (file)
+;;                               (unless (string-suffix? "CMakeLists.txt" file)
+;;                                 (delete-file file)))
+;;                             (append (find-files "extra/wolfssl")
+;;                                     (find-files "zlib")))))))
+;;     (build-system cmake-build-system)
+;;     (outputs '("out" "lib" "dev"))
+;;     (arguments
+;;      `(#:configure-flags
+;;        (list
+;;          "-DBUILD_CONFIG=mysql_release"
+
+;;          ;; Ensure the system libraries are used.
+;;          "-DWITH_JEMALLOC=yes"
+;;          "-DWITH_LIBFMT=system"
+;;          "-DWITH_PCRE=system"
+;;          "-DWITH_SSL=system"
+;;          "-DWITH_ZLIB=system"
+
+;;          "-DDEFAULT_CHARSET=utf8"
+;;          "-DDEFAULT_COLLATION=utf8_general_ci"
+;;          "-DMYSQL_DATADIR=/var/lib/mysql"
+;;          "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
+
+;;          ;; Do not install the benchmark suite.
+;;          "-DINSTALL_SQLBENCHDIR=false"
+
+;;          (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref %outputs "lib"))
+;;          (string-append "-DCMAKE_INSTALL_RPATH=" (assoc-ref %outputs "lib")
+;;                         "/lib")
+;;          (string-append "-DINSTALL_INFODIR=" (assoc-ref %outputs "out")
+;;                         "/share/mysql/docs")
+;;          (string-append "-DINSTALL_MANDIR=" (assoc-ref %outputs "out")
+;;                         "/share/man")
+;;          (string-append "-DINSTALL_SCRIPTDIR=" (assoc-ref %outputs "out") "/bin")
+;;          (string-append "-DINSTALL_BINDIR=" (assoc-ref %outputs "out") "/bin")
+;;          "-DCMAKE_INSTALL_LIBDIR=lib"
+;;          "-DINSTALL_PLUGINDIR=lib/mysql/plugin"
+;;          (string-append "-DINSTALL_INCLUDEDIR=" (assoc-ref %outputs "dev")
+;;                         "/include/mysql")
+;;          (string-append "-DINSTALL_DOCREADMEDIR=" (assoc-ref %outputs "out")
+;;                         "/share/mysql/docs")
+;;          (string-append "-DINSTALL_DOCDIR=" (assoc-ref %outputs "out")
+;;                         "/share/mysql/docs")
+;;          (string-append "-DINSTALL_SUPPORTFILESDIR=" (assoc-ref %outputs "out")
+;;                         "/share/mysql/support-files")
+;;          "-DINSTALL_MYSQLSHAREDIR=share/mysql"
+;;          "-DINSTALL_SHAREDIR=share")
+;;        ;; The test suite has spurious failures (mostly timeouts) if run in
+;;        ;; parallel on various machines.  Only enable parallel tests on
+;;        ;; architectures which are likely to not have this issue.
+;;        #:parallel-tests? ,(target-x86-64?)
+;;        #:phases
+;;        (modify-phases %standard-phases
+;;          ;; TODO: Move this patch to the source field.
+;;          ,@(if (target-riscv64?)
+;;              `((add-after 'unpack 'patch-source
+;;                  (lambda* (#:key inputs native-inputs #:allow-other-keys)
+;;                    (invoke "patch" "-p1" "--force" "--input"
+;;                            (assoc-ref (or native-inputs inputs)
+;;                                       "patch-file")))))
+;;              '())
+;;          (add-after 'unpack 'adjust-output-references
+;;            (lambda _
+;;              ;; The build system invariably prepends $CMAKE_INSTALL_PREFIX
+;;              ;; to other variables such as $INSTALL_INCLUDEDIR, which does
+;;              ;; not work when the latter uses an absolute file name.
+;;              (substitute* "libmariadb/mariadb_config/mariadb_config.c.in"
+;;                (("%s/@INSTALL_INCLUDEDIR@")
+;;                 (string-append "@INSTALL_INCLUDEDIR@"))
+;;                ;; As of 10.5.8, the mariadb_config program tries to be
+;;                ;; clever and computes the installation directory relative
+;;                ;; to /proc/self/exe when running on Linux.  Make it fall
+;;                ;; back to the old behaviour.
+;;                (("defined\\(__linux__\\)")
+;;                 "0"))
+;;              (substitute* "libmariadb/mariadb_config/libmariadb.pc.in"
+;;                (("\\$\\{prefix\\}/@INSTALL_INCLUDEDIR@")
+;;                 "@INSTALL_INCLUDEDIR@"))
+;;              (substitute* "support-files/mariadb.pc.in"
+;;                (("^(include|bin|script|doc|man)dir=\\$\\{prefix\\}/" _ dir)
+;;                 (string-append dir "dir=")))
+;;              (substitute* "include/CMakeLists.txt"
+;;                (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_INCLUDEDIR\\}")
+;;                 "${INSTALL_INCLUDEDIR}"))
+;;              (substitute* "cmake/mariadb_connector_c.cmake"
+;;                (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_BINDIR\\}")
+;;                 "${INSTALL_BINDIR}"))))
+;;          (add-after 'unpack 'adjust-tests
+;;            (lambda _
+;;              (let ((disabled-tests
+;;                     '(;; These fail because root@hostname == root@localhost in
+;;                       ;; the build environment, causing a user count mismatch.
+;;                       ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
+;;                       "main.explain_non_select"
+;;                       "main.upgrade_MDEV-19650"
+;;                       "roles.acl_statistics"
+;;                       "main.stat_tables_innodb"
+;;                       "main.stat_tables"
+;;                       "main.mysql_upgrade"
+
+;;                       ;; Probably same as above, test failure reported upstream:
+;;                       ;; <https://jira.mariadb.org/browse/MDEV-26320>.
+;;                       "main.selectivity_no_engine"
+
+;;                       ;; FIXME: This test checks various table encodings and
+;;                       ;; fails because Guix defaults to UTF8 instead of the
+;;                       ;; upstream default latin1_swedish_ci.  It's not easily
+;;                       ;; substitutable because several encodings are tested.
+;;                       "main.system_mysql_db"
+
+;;                       ;; These should be fixed upstream but that's not (yet?)
+;;                       ;; merged into the 10.10 branch (see
+;;                       ;; https://github.com/MariaDB/server/pull/2883). Try
+;;                       ;; not disabling them in a future update of MariaDB
+;;                       ;; in Guix.
+;;                       "main.subselect"
+;;                       "main.subselect_no_exists_to_in"
+;;                       "main.subselect_no_mat"
+;;                       "main.subselect_no_opts"
+;;                       "main.subselect_no_scache"
+;;                       "main.subselect_no_semijoin"
+
+;;                       ;; XXX: This test occasionally fails on i686-linux:
+;;                       ;; <https://jira.mariadb.org/browse/MDEV-24458>
+;;                       ,@(if (string-prefix? "i686" (%current-system))
+;;                             '("main.myisampack")
+;;                             '())))
+
+;;                    ;; This file contains a list of known-flaky tests for this
+;;                    ;; release.  Append our own items.
+;;                    (unstable-tests (open-file "mysql-test/unstable-tests" "a")))
+;;                (for-each (lambda (test)
+;;                            (format unstable-tests "~a : ~a\n"
+;;                                    test "Disabled in Guix"))
+;;                          disabled-tests)
+;;                (close-port unstable-tests)
+
+;;                (substitute* "mysql-test/suite/binlog/t/binlog_mysqlbinlog_stop_never.test"
+;;                  (("/bin/bash")
+;;                   (which "bash")))
+
+;;                (substitute* "mysql-test/mariadb-test-run.pl"
+;;                  (("/bin/ls") (which "ls"))
+;;                  (("/bin/sh") (which "sh"))))))
+;;          (replace 'check
+;;            (lambda* (#:key (tests? #t) parallel-tests? #:allow-other-keys)
+;;              (if tests?
+;;                  (with-directory-excursion "mysql-test"
+;;                    (invoke "./mariadb-test-run"
+;;                            "--verbose"
+;;                            "--retry=3"
+;;                            "--suite=main"
+;;                            "--testcase-timeout=40"
+;;                            "--suite-timeout=600"
+;;                            "--parallel" (number->string (if parallel-tests?
+;;                                                           (parallel-job-count)
+;;                                                           1))
+;;                            ;; Skip the replication tests: they are very I/O
+;;                            ;; intensive and frequently causes indeterministic
+;;                            ;; failures even on powerful hardware.
+;;                            "--skip-rpl"
+;;                            "--skip-test-list=unstable-tests"))
+;;                  (format #t "test suite not run~%"))))
+;;          (add-after 'install 'post-install
+;;            (lambda* (#:key inputs outputs #:allow-other-keys)
+;;              (let ((out     (assoc-ref outputs "out"))
+;;                    (dev     (assoc-ref outputs "dev"))
+;;                    (lib     (assoc-ref outputs "lib"))
+;;                    (openssl (dirname (search-input-file inputs "lib/libssl.so"))))
+;;               (substitute* (list (string-append out "/bin/mariadb-install-db")
+;;                                  (string-append out "/bin/mysql_install_db"))
+;;                 (("basedir=\"\"")
+;;                  (string-append "basedir=\"" out "\""))
+;;                 (("\\$basedir/share/mysql")
+;;                  (string-append lib "/share/mysql")))
+
+;;               (with-directory-excursion lib
+;;                 ;; Remove tests.
+;;                 (delete-file-recursively "mysql-test")
+;;                 ;; Remove static libraries.
+;;                 (for-each delete-file (find-files "lib" "\\.a$")))
+
+;;               (with-directory-excursion out
+;;                 (delete-file "share/man/man1/mysql-test-run.pl.1")
+;;                 ;; Delete huge and unnecessary executables.
+;;                 (for-each delete-file (find-files "bin" "test$")))
+;;               (mkdir-p (string-append dev "/share"))
+;;               (mkdir-p (string-append dev "/bin"))
+;;               (rename-file (string-append lib "/bin/mariadbd")
+;;                            (string-append out "/bin/mariadbd"))
+;;               (rename-file (string-append lib "/bin/mysqld")
+;;                            (string-append out "/bin/mysqld"))
+;;               (mkdir-p (string-append dev "/lib"))
+;;               (rename-file (string-append lib "/lib/pkgconfig")
+;;                            (string-append dev "/lib/pkgconfig"))
+;;               (rename-file (string-append out "/bin/mariadb_config")
+;;                            (string-append dev "/bin/mariadb_config"))
+;;               (rename-file (string-append out "/bin/mysql_config")
+;;                            (string-append dev "/bin/mysql_config"))
+
+;;               ;; Embed an absolute reference to OpenSSL in mysql_config
+;;               ;; and the pkg-config file to avoid propagation.
+;;               ;; XXX: how to do this for mariadb_config.c.in?
+;;               (substitute* (list (string-append dev "/bin/mysql_config")
+;;                                  (string-append dev "/lib/pkgconfig/mariadb.pc"))
+;;                 (("-lssl -lcrypto" all)
+;;                  (string-append "-L" openssl " " all)))))))))
+;;     (native-inputs
+;;      `(,@(if (target-riscv64?)
+;;            `(("patch" ,patch)
+;;              ("patch-file" ,(search-patch "mariadb-rocksdb-atomic-linking.patch")))
+;;            `())
+;;         ("bison" ,bison)
+;;         ("perl" ,perl)))
+;;     (inputs
+;;      (list fmt
+;;            jemalloc
+;;            libaio
+;;            libxml2
+;;            ncurses
+;;            openssl
+;;            linux-pam
+;;            pcre2
+;;            xz
+;;            zlib))
+;;     ;; The test suite is very resource intensive and can take more than three
+;;     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
+;;     (properties '((timeout . 64800)))        ;18 hours
+;;     (home-page "https://mariadb.org/")
+;;     (synopsis "SQL database server")
+;;     (description
+;;      "MariaDB is a multi-user and multi-threaded SQL database server, designed
+;; as a drop-in replacement of MySQL.")
+;;     (license license:gpl2)))
+
+(use-modules ((guix build-system trivial) #:select (trivial-build-system)))
 (define-public mariadb
   (package
     (name "mariadb")
     (version "10.10.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://downloads.mariadb.com/MariaDB"
-                                  "/mariadb-" version "/source/mariadb-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1c2y46wfg5gcipkpbfki59v1p90gyiv9njb1ycf1hxsv4yzdgcvd"))
-              (patches (search-patches "mariadb-fix-ssl-test.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete bundled libraries, but preserve CMakeLists.txt.
-                  (for-each (lambda (file)
-                              (unless (string-suffix? "CMakeLists.txt" file)
-                                (delete-file file)))
-                            (append (find-files "extra/wolfssl")
-                                    (find-files "zlib")))))))
-    (build-system cmake-build-system)
+    (source #f)
+    (build-system trivial-build-system)
     (outputs '("out" "lib" "dev"))
     (arguments
-     `(#:configure-flags
-       (list
-         "-DBUILD_CONFIG=mysql_release"
-
-         ;; Ensure the system libraries are used.
-         "-DWITH_JEMALLOC=yes"
-         "-DWITH_LIBFMT=system"
-         "-DWITH_PCRE=system"
-         "-DWITH_SSL=system"
-         "-DWITH_ZLIB=system"
-
-         "-DDEFAULT_CHARSET=utf8"
-         "-DDEFAULT_COLLATION=utf8_general_ci"
-         "-DMYSQL_DATADIR=/var/lib/mysql"
-         "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
-
-         ;; Do not install the benchmark suite.
-         "-DINSTALL_SQLBENCHDIR=false"
-
-         (string-append "-DCMAKE_INSTALL_PREFIX=" (assoc-ref %outputs "lib"))
-         (string-append "-DCMAKE_INSTALL_RPATH=" (assoc-ref %outputs "lib")
-                        "/lib")
-         (string-append "-DINSTALL_INFODIR=" (assoc-ref %outputs "out")
-                        "/share/mysql/docs")
-         (string-append "-DINSTALL_MANDIR=" (assoc-ref %outputs "out")
-                        "/share/man")
-         (string-append "-DINSTALL_SCRIPTDIR=" (assoc-ref %outputs "out") "/bin")
-         (string-append "-DINSTALL_BINDIR=" (assoc-ref %outputs "out") "/bin")
-         "-DCMAKE_INSTALL_LIBDIR=lib"
-         "-DINSTALL_PLUGINDIR=lib/mysql/plugin"
-         (string-append "-DINSTALL_INCLUDEDIR=" (assoc-ref %outputs "dev")
-                        "/include/mysql")
-         (string-append "-DINSTALL_DOCREADMEDIR=" (assoc-ref %outputs "out")
-                        "/share/mysql/docs")
-         (string-append "-DINSTALL_DOCDIR=" (assoc-ref %outputs "out")
-                        "/share/mysql/docs")
-         (string-append "-DINSTALL_SUPPORTFILESDIR=" (assoc-ref %outputs "out")
-                        "/share/mysql/support-files")
-         "-DINSTALL_MYSQLSHAREDIR=share/mysql"
-         "-DINSTALL_SHAREDIR=share")
-       ;; The test suite has spurious failures (mostly timeouts) if run in
-       ;; parallel on various machines.  Only enable parallel tests on
-       ;; architectures which are likely to not have this issue.
-       #:parallel-tests? ,(target-x86-64?)
-       #:phases
-       (modify-phases %standard-phases
-         ;; TODO: Move this patch to the source field.
-         ,@(if (target-riscv64?)
-             `((add-after 'unpack 'patch-source
-                 (lambda* (#:key inputs native-inputs #:allow-other-keys)
-                   (invoke "patch" "-p1" "--force" "--input"
-                           (assoc-ref (or native-inputs inputs)
-                                      "patch-file")))))
-             '())
-         (add-after 'unpack 'adjust-output-references
-           (lambda _
-             ;; The build system invariably prepends $CMAKE_INSTALL_PREFIX
-             ;; to other variables such as $INSTALL_INCLUDEDIR, which does
-             ;; not work when the latter uses an absolute file name.
-             (substitute* "libmariadb/mariadb_config/mariadb_config.c.in"
-               (("%s/@INSTALL_INCLUDEDIR@")
-                (string-append "@INSTALL_INCLUDEDIR@"))
-               ;; As of 10.5.8, the mariadb_config program tries to be
-               ;; clever and computes the installation directory relative
-               ;; to /proc/self/exe when running on Linux.  Make it fall
-               ;; back to the old behaviour.
-               (("defined\\(__linux__\\)")
-                "0"))
-             (substitute* "libmariadb/mariadb_config/libmariadb.pc.in"
-               (("\\$\\{prefix\\}/@INSTALL_INCLUDEDIR@")
-                "@INSTALL_INCLUDEDIR@"))
-             (substitute* "support-files/mariadb.pc.in"
-               (("^(include|bin|script|doc|man)dir=\\$\\{prefix\\}/" _ dir)
-                (string-append dir "dir=")))
-             (substitute* "include/CMakeLists.txt"
-               (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_INCLUDEDIR\\}")
-                "${INSTALL_INCLUDEDIR}"))
-             (substitute* "cmake/mariadb_connector_c.cmake"
-               (("\\\\\\$\\{CMAKE_INSTALL_PREFIX\\}/\\$\\{INSTALL_BINDIR\\}")
-                "${INSTALL_BINDIR}"))))
-         (add-after 'unpack 'adjust-tests
-           (lambda _
-             (let ((disabled-tests
-                    '(;; These fail because root@hostname == root@localhost in
-                      ;; the build environment, causing a user count mismatch.
-                      ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
-                      "main.explain_non_select"
-                      "main.upgrade_MDEV-19650"
-                      "roles.acl_statistics"
-                      "main.stat_tables_innodb"
-                      "main.stat_tables"
-                      "main.mysql_upgrade"
-
-                      ;; Probably same as above, test failure reported upstream:
-                      ;; <https://jira.mariadb.org/browse/MDEV-26320>.
-                      "main.selectivity_no_engine"
-
-                      ;; FIXME: This test checks various table encodings and
-                      ;; fails because Guix defaults to UTF8 instead of the
-                      ;; upstream default latin1_swedish_ci.  It's not easily
-                      ;; substitutable because several encodings are tested.
-                      "main.system_mysql_db"
-
-                      ;; These should be fixed upstream but that's not (yet?)
-                      ;; merged into the 10.10 branch (see
-                      ;; https://github.com/MariaDB/server/pull/2883). Try
-                      ;; not disabling them in a future update of MariaDB
-                      ;; in Guix.
-                      "main.subselect"
-                      "main.subselect_no_exists_to_in"
-                      "main.subselect_no_mat"
-                      "main.subselect_no_opts"
-                      "main.subselect_no_scache"
-                      "main.subselect_no_semijoin"
-
-                      ;; XXX: This test occasionally fails on i686-linux:
-                      ;; <https://jira.mariadb.org/browse/MDEV-24458>
-                      ,@(if (string-prefix? "i686" (%current-system))
-                            '("main.myisampack")
-                            '())))
-
-                   ;; This file contains a list of known-flaky tests for this
-                   ;; release.  Append our own items.
-                   (unstable-tests (open-file "mysql-test/unstable-tests" "a")))
-               (for-each (lambda (test)
-                           (format unstable-tests "~a : ~a\n"
-                                   test "Disabled in Guix"))
-                         disabled-tests)
-               (close-port unstable-tests)
-
-               (substitute* "mysql-test/suite/binlog/t/binlog_mysqlbinlog_stop_never.test"
-                 (("/bin/bash")
-                  (which "bash")))
-
-               (substitute* "mysql-test/mariadb-test-run.pl"
-                 (("/bin/ls") (which "ls"))
-                 (("/bin/sh") (which "sh"))))))
-         (replace 'check
-           (lambda* (#:key (tests? #t) parallel-tests? #:allow-other-keys)
-             (if tests?
-                 (with-directory-excursion "mysql-test"
-                   (invoke "./mariadb-test-run"
-                           "--verbose"
-                           "--retry=3"
-                           "--suite=main"
-                           "--testcase-timeout=40"
-                           "--suite-timeout=600"
-                           "--parallel" (number->string (if parallel-tests?
-                                                          (parallel-job-count)
-                                                          1))
-                           ;; Skip the replication tests: they are very I/O
-                           ;; intensive and frequently causes indeterministic
-                           ;; failures even on powerful hardware.
-                           "--skip-rpl"
-                           "--skip-test-list=unstable-tests"))
-                 (format #t "test suite not run~%"))))
-         (add-after 'install 'post-install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out     (assoc-ref outputs "out"))
-                   (dev     (assoc-ref outputs "dev"))
-                   (lib     (assoc-ref outputs "lib"))
-                   (openssl (dirname (search-input-file inputs "lib/libssl.so"))))
-              (substitute* (list (string-append out "/bin/mariadb-install-db")
-                                 (string-append out "/bin/mysql_install_db"))
-                (("basedir=\"\"")
-                 (string-append "basedir=\"" out "\""))
-                (("\\$basedir/share/mysql")
-                 (string-append lib "/share/mysql")))
-
-              (with-directory-excursion lib
-                ;; Remove tests.
-                (delete-file-recursively "mysql-test")
-                ;; Remove static libraries.
-                (for-each delete-file (find-files "lib" "\\.a$")))
-
-              (with-directory-excursion out
-                (delete-file "share/man/man1/mysql-test-run.pl.1")
-                ;; Delete huge and unnecessary executables.
-                (for-each delete-file (find-files "bin" "test$")))
-              (mkdir-p (string-append dev "/share"))
-              (mkdir-p (string-append dev "/bin"))
-              (rename-file (string-append lib "/bin/mariadbd")
-                           (string-append out "/bin/mariadbd"))
-              (rename-file (string-append lib "/bin/mysqld")
-                           (string-append out "/bin/mysqld"))
-              (mkdir-p (string-append dev "/lib"))
-              (rename-file (string-append lib "/lib/pkgconfig")
-                           (string-append dev "/lib/pkgconfig"))
-              (rename-file (string-append out "/bin/mariadb_config")
-                           (string-append dev "/bin/mariadb_config"))
-              (rename-file (string-append out "/bin/mysql_config")
-                           (string-append dev "/bin/mysql_config"))
-
-              ;; Embed an absolute reference to OpenSSL in mysql_config
-              ;; and the pkg-config file to avoid propagation.
-              ;; XXX: how to do this for mariadb_config.c.in?
-              (substitute* (list (string-append dev "/bin/mysql_config")
-                                 (string-append dev "/lib/pkgconfig/mariadb.pc"))
-                (("-lssl -lcrypto" all)
-                 (string-append "-L" openssl " " all)))))))))
-    (native-inputs
-     `(,@(if (target-riscv64?)
-           `(("patch" ,patch)
-             ("patch-file" ,(search-patch "mariadb-rocksdb-atomic-linking.patch")))
-           `())
-        ("bison" ,bison)
-        ("perl" ,perl)))
-    (inputs
-     (list fmt
-           jemalloc
-           libaio
-           libxml2
-           ncurses
-           openssl
-           linux-pam
-           pcre2
-           xz
-           zlib))
-    ;; The test suite is very resource intensive and can take more than three
-    ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
-    (properties '((timeout . 64800)))        ;18 hours
-    (home-page "https://mariadb.org/")
-    (synopsis "SQL database server")
-    (description
-     "MariaDB is a multi-user and multi-threaded SQL database server, designed
-as a drop-in replacement of MySQL.")
-    (license license:gpl2)))
+     (list
+      #:builder
+      #~(begin
+          (symlink "/gnu/store/v1bng1laxg69i8xdf3jg6bcp3dvxmgk4-mariadb-10.10.7"
+                   #$output)
+          (symlink "/gnu/store/zds00wab66799sc33bmdxqfqgk296nfj-mariadb-10.10.7-lib"
+                   #$output:lib)
+          (symlink "/gnu/store/l2rzz7l0hm45nwqxa6giv8l86dmnyry5-mariadb-10.10.7-dev"
+                   #$output:dev))))
+    (synopsis #f)
+    (description #f)
+    (home-page #f)
+    (license #f)))
 
 (define-public mariadb-connector-c
   (package
