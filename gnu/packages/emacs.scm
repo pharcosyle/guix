@@ -448,6 +448,7 @@ editor (console only)")
                libpng
                (librsvg-for-system)
                libtiff
+               libwebp
                libx11
                libxft
                libxpm
