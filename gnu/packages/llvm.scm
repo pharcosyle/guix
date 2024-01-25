@@ -542,7 +542,8 @@ output), and Binutils.")
     ("18.1.6" . "14p7f82x5qp1dv0y4d6pz42z0dsmpxz393prhi2acbzk5hksz9mb")))
 
 (define %llvm-patches
-  '(("14.0.6" . ("clang-14.0-libc-search-path.patch"))
+  '(("14.0.6" . ("clang-14.0-libc-search-path.patch"
+                 "clang-runtime-14-glibc-2.36-compat.patch"))
     ("15.0.7" . ("clang-15.0-libc-search-path.patch"))
     ("16.0.6" . ("clang-16.0-libc-search-path.patch"))
     ("17.0.6" . ("clang-17.0-libc-search-path.patch"
