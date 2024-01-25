@@ -40,7 +40,7 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
@@ -48,7 +48,7 @@
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1wqj1vka4gnnk1dbp6pflpcdkp2gf7lxwzcmf4wg7xnra64fjx34"))))
+                "0q3q6h5k9rk3kchvi8yvn1ld0r1nf9v9lq600qp15yn565r0q2qy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")
@@ -129,7 +129,7 @@ universal addresses.")
 (define-public rpcsvc-proto
   (package
     (name "rpcsvc-proto")
-    (version "1.4")
+    (version "1.4.4")
     (home-page "https://github.com/thkukuk/rpcsvc-proto")
     (source (origin
               (method url-fetch)
@@ -137,7 +137,7 @@ universal addresses.")
                                   "/rpcsvc-proto-" version ".tar.xz"))
               (sha256
                (base32
-                "0i93wbpw5dk2gf5v4a5hq6frh814wzgjydh7saj28wlgbpqdaja1"))))
+                "12smb8a073xcsjcvsr8chssxad22k2xiw217y27a3n5mxlksmhw1"))))
     (build-system gnu-build-system)
     (synopsis "RPCSVC protocol definitions")
     (description
@@ -150,7 +150,7 @@ from the protocol files.")
 (define-public libnsl
   (package
     (name "libnsl")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -159,7 +159,7 @@ from the protocol files.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0p4bq572qwlpnhsqfr9rj12w3yivrbk8faxqk3wsfvbw6k7hvnbz"))))
+                "0h4q3ybkj0n4na0988mjalmb6z2lbkb4r7lxl5f1dqa4fnlyh93c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
