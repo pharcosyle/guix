@@ -117,9 +117,6 @@
               (mkdir-p (string-append #$output:doc "/share/man"))
               (rename-file (string-append #$output "/share/man/man3")
                            (string-append #$output:doc "/share/man/man3"))))
-          (add-before 'check 'test-setup
-            (lambda _
-              (setenv "USER" "guix"))) ; Tests rely on $USER being set.
           (replace 'check
             (lambda* (#:key tests? parallel-tests? make-flags #:allow-other-keys)
               (substitute* "tests/runtests.pl"
