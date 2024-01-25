@@ -738,14 +738,14 @@ everything from small to very large projects with speed and efficiency.")
 (define-public git-minimal/pinned
   ;; Version that rarely changes, depended on by Graphene/GTK+.
   (package/inherit git-minimal
-    (version "2.41.0")
+    (version "2.45.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0h40arw08xbpi2cbf7pvc947v963rjxz3inb2ar81zjc8byvlj77"))))))
+                "1gqj5xrlmzs4amrj7xgxx7qpqj8br8f6bk4bzcnf4yk2iq538kg6"))))))
 
 (define-public git2cl
   (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
