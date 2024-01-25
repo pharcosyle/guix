@@ -717,7 +717,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.5.0")
+   (version "4.6.0")
    (source
      (origin
        (method url-fetch)
@@ -725,7 +725,7 @@ extracting icontainer icon files.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0z16pqkj9wfifri7xhbvy6jmp690wyjcasam098cddp7qmwwkyns"))))
+         "1ll7mzmn5z0qybrb3ypf4bq49wjk6w5d479nrx8jpqni0yb68y71"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.8 MiB of HTML documentation
@@ -748,6 +748,19 @@ collection of tools for doing simple manipulations of TIFF images.")
    (properties
     '((upstream-name . "tiff")))
    (home-page "http://www.simplesystems.org/libtiff/")))
+
+(define-public libtiff-4.5
+  (package
+    (inherit libtiff)
+   (version "4.5.0")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.osgeo.org/libtiff/tiff-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0z16pqkj9wfifri7xhbvy6jmp690wyjcasam098cddp7qmwwkyns"))))))
 
 (define-public leptonica
   (package
@@ -1855,14 +1868,16 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.1.5.1")
+    (version "3.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
+              (uri (string-append
+                    "https://github.com/libjpeg-turbo/libjpeg-turbo"
+                    "/releases/download/" version
+                    "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "1gq74ai4r146hjzsgpp5ykw1kahr2hra7bwvxjnigswxdvmkzp1g"))))
+                "0pc6g12y8q4fldwy0l2il6cglnplpdyvmns4zv6znypwd687hgil"))))
     (build-system cmake-build-system)
     (native-inputs
      (list nasm))
