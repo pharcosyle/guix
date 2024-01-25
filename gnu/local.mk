@@ -936,7 +936,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ark-skip-xar-test.patch			\
   %D%/packages/patches/arpack-ng-propagate-rng-state.patch	\
   %D%/packages/patches/asli-use-system-libs.patch		\
-  %D%/packages/patches/aspell-CVE-2019-25051.patch		\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
@@ -1354,7 +1353,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-2.37-hurd-local-clock_gettime_MONOTONIC.patch	\
   %D%/packages/patches/glibc-2.37-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-2.37-versioned-locpath.patch	\
-  %D%/packages/patches/glibc-2.38-hurd-ucontext.patch		\
   %D%/packages/patches/glibc-hurd-clock_t_centiseconds.patch	\
   %D%/packages/patches/glibc-hurd-getauxval.patch		\
   %D%/packages/patches/glibc-hurd-gettyent.patch		\

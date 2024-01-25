@@ -1655,14 +1655,13 @@ checksum tool based on the BLAKE3 cryptographic hash function.")
        (sha256
         (base32 "1yhpjjjv38y14nrj15bkndq824v42plndgi3k8mmc04grj1fbnjf"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "doc"))
     (native-inputs
      (list autoconf
            automake
            libtool
            perl
-           pkg-config
-           python-3
-           python-passlib))
+           pkg-config))
     (synopsis
      "Extended crypt library for descrypt, md5crypt, bcrypt, and others")
     (description
