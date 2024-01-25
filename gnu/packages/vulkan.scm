@@ -286,10 +286,11 @@ interpretation of the specifications for these languages.")
            (add-after 'unpack 'use-system-googletest
              (lambda _
                ;; Inform the build system that googletest is already built.
-               (substitute* "CMakeLists.txt"
-                 ((".*if\\(TARGET gtest\\)")
-                  (string-append "    find_package(GTest REQUIRED)\n"
-                                 "    if(true)")))
+               (substitute* "tests/CMakeLists.txt"
+                 (("if.*IS_DIRECTORY.*googletest.*")
+                  (string-append "if(true)\n"
+                                 "    find_package(GTest REQUIRED)\n"
+                                 "elseif(false)\n")))
                ;; Use the namespaced variable.
                (substitute* "tests/framework/CMakeLists.txt"
                  (("PUBLIC gtest ")
@@ -429,7 +430,7 @@ shader compilation.")
              (commit commit)))
        (sha256
         (base32
-         "0zss91917pkml1sxfgjpgdwkdhisky0n20frsqj8cnm3w01hv5mk")) ; TODO bogus hash
+         "03acrv4z8na0nfqsffxfscy95386bznz1vvp8v2id99am3qmr6zz"))
        (file-name (string-append name "-" version "-checkout"))))
      (build-system gnu-build-system)
      (arguments
