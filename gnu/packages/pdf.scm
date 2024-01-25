@@ -312,19 +312,20 @@ please install the @code{flyer-composer-gui} package.")))
 (define-public poppler
   (package
    (name "poppler")
-   (version "23.04.0")
+   (version "24.01.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18ai75lp0ik7w37cmhn51pl50pk9b4ya2nfzx6wkhhfdgpf97n5n"))))
+              "025fkjvm6lb15lnvxs8mgfsmrj5rqq6ai5yl947q74m4ly9zdpn7"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
    (inputs (list fontconfig
                  freetype
+                 gpgme   ; Optional alternative to NSS for signature handling.
                  libjpeg-turbo
                  libpng
                  libtiff
@@ -361,7 +362,10 @@ please install the @code{flyer-composer-gui} package.")))
              "-DENABLE_ZLIB=ON"
              "-DENABLE_BOOST=OFF"      ;disable Boost to save size
              (string-append "-DCMAKE_INSTALL_LIBDIR=" #$output "/lib")
-             (string-append "-DCMAKE_INSTALL_RPATH=" #$output "/lib"))
+             (string-append "-DCMAKE_INSTALL_RPATH=" #$output "/lib")
+             "-DENABLE_LIBCURL=OFF"
+             "-DENABLE_QT5=OFF"
+             "-DENABLE_QT6=OFF")
      #:phases
      (if (%current-target-system) #~%standard-phases
          #~(modify-phases %standard-phases
