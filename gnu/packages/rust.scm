@@ -748,7 +748,7 @@ safety and thread safety guarantees.")
              (for-each delete-file
                        (find-files "vendor" "\\.(a|dll|exe|lib)$"))))))
       (inputs (modify-inputs (package-inputs base-rust)
-                             (replace "llvm" llvm-15))))))
+                             (replace "llvm" llvm-17))))))
 
 (define-public rust-1.68
   (rust-bootstrapped-package
