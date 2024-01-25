@@ -2459,7 +2459,12 @@ exec " gcc "/bin/" program
               ,@(alist-delete "libc" (%boot0-inputs))))
 
     ;; No need for the native-inputs to build the documentation at this stage.
-    (native-inputs '())))
+    (native-inputs '())
+
+    ;; TODO had this for some reason, remove it if everything builds okay
+    ;; ;; Temporary while using GCC 14 snapshot.
+    ;; (native-inputs (list flex-boot0))
+    ))
 
 (define perl-boot0
   (package
@@ -3008,7 +3013,27 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
   (package
     (inherit static-bash)
-    (source (bootstrap-origin (package-source static-bash)))
+    (source (bootstrap-origin (package-source static-bash))
+     ;; (bootstrap-origin
+     ;;  (origin
+     ;;    (inherit (package-source static-bash))
+     ;;    (patches
+     ;;     (append (origin-patches (package-source bash))
+     ;;             (list
+     ;;              (origin
+     ;;                (method url-fetch)
+     ;;                (uri (string-append
+     ;;                      "https://src.fedoraproject.org/rpms/bash/raw/"
+     ;;                      "08f64cbc4e6631776d593cc122010dbe73dfba23/f/"
+     ;;                      "bash-configure-c99.patch"))
+     ;;                (file-name (string-append
+     ;;                            "bash"
+     ;;                            ;; name
+     ;;                            "-gcc-14-fix.patch"))
+     ;;                (sha256
+     ;;                 (base32
+     ;;                  "0x5symy5qids4yrz26hlqn646k5d3pq58srdnq8rfflfrx95sgr7"))))))))
+     )
     (inputs `(("gcc" ,gcc-boot0-intermediate-wrapped)
               ("libc" ,glibc-final-with-bootstrap-bash)
               ("libc:static" ,glibc-final-with-bootstrap-bash "static")
@@ -3026,7 +3051,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                       (list (string-append "LDFLAGS=-static -L"
                                            (assoc-ref %build-inputs
                                                       "libc:static")
-                                           "/lib")))))))))
+                                           "/lib")
+                            ;; "CFLAGS=-Wno-implicit-function-declaration"
+                            ))))))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
@@ -3639,7 +3666,7 @@ is the GNU Compiler Collection.")
 
 ;; The default GCC
 (define-public gcc-toolchain
-  gcc-toolchain-11)
+  gcc-toolchain-14)
 
 (define-public gcc-toolchain-aka-gcc
   ;; It's natural for users to try "guix install gcc".  This package

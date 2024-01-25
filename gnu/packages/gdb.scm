@@ -50,14 +50,14 @@
   ;; enough to avoid massive rebuilds.
   (package
     (name "gdb")
-    (version "13.2")
+    (version "14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "02izi7msnnwiv0imbl7r3ll9hi1mi94jyg02dvdsncqqpsvynnzx"))))
+                "106v7rj72km56mb2ssjsyjfix3yn4f3wqr7lpzy52d0lfq9gavfn"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -170,6 +170,18 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
                (base32
                 "02izi7msnnwiv0imbl7r3ll9hi1mi94jyg02dvdsncqqpsvynnzx"))))))
 
+(define-public gdb-14
+  (package
+    (inherit gdb-13)
+    (version "14.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdb/gdb-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "106v7rj72km56mb2ssjsyjfix3yn4f3wqr7lpzy52d0lfq9gavfn"))))))
+
 (define-public gdb
   ;; The "default" version.
   gdb-14)
@@ -190,7 +202,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
 (define-public gdb-minimal
   (package/inherit gdb-14
     (name "gdb-minimal")
-    (inputs (fold alist-delete (package-inputs gdb-13)
+    (inputs (fold alist-delete (package-inputs gdb-14)
                   '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
 
 (define-public avr-gdb
