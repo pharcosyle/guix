@@ -312,7 +312,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -320,7 +320,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "1791plkc3my4519y9hrkvj7lrjfripl9xbaqqa04svrgfdnswwd2"))))
+                "1ijvx1dk7zr4vwippnwpb3ln2qicv3mqg8v7rs47dylhr8bf1sv7"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
