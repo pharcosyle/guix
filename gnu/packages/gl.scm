@@ -590,7 +590,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
        (prepend libclc)))
     (native-inputs
      (modify-inputs (package-native-inputs mesa)
-       (prepend clang-15)))))
+       (prepend clang-17)))))
 
 (define-public mesa-opencl-icd
   (package/inherit mesa-opencl
