@@ -46,8 +46,7 @@
   #:use-module (gnu packages wine)
   #:use-module (gnu packages xorg))
 
-(define %vulkan-sdk-version "sdk-1.3.243.0")
-(define %vulkan-version "v1.3.248")
+(define %vulkan-sdk-version "vulkan-sdk-1.3.275.0")
 
 (define-public spirv-headers
   (package
@@ -61,7 +60,7 @@
              (commit version)))
        (sha256
         (base32
-         "1yf9bly4fp6wnc0gal0ga2gvjq1h1y5f10isqs332v2wlspvgsjl"))
+         "18gr715ap9w1rjvzd6l9pl9lwfqiikm2la5apv2lplj4a0k5v3zw"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -92,7 +91,7 @@ and for the GLSL.std.450 extended instruction set.
             (url "https://github.com/KhronosGroup/SPIRV-Tools")
             (commit version)))
       (sha256
-       (base32 "0z8r8k7bl5zvfl8qpxjg6swbbn0s162djgym1h2f8i538nxi33lp"))
+       (base32 "1hmfhvswg66x7x2ww5gj3mhgh59kgp7pwv36xagwyhbm7fhayca7"))
       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -124,7 +123,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
              (url "https://github.com/KhronosGroup/SPIRV-Cross")
              (commit version)))
        (sha256
-        (base32 "1r0dqbksyvsipgi551k74bv7khvjwhyl0k9yy4m89l9air65nz5j"))
+        (base32 "0zdpgj0lv8kqzcna7y44qdjvxjifaxmmmcar835y4cdr35izf6ij"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -157,7 +156,7 @@ SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
 (define-public spirv-llvm-translator
   (package
     (name "spirv-llvm-translator")
-    (version "15.0.0")
+    (version "17.0.0")
     (source
      (origin
        (method git-fetch)
@@ -166,7 +165,7 @@ SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lix3bpli7i9csz26bq0d9g1v7c0gim498m5bm2gp8kifj2yih1s"))))
+        (base32 "0wvw1d75lnby5wjs6ny60g97y1jbmr7k1r3fyi95ng285wzvjfa7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -177,8 +176,8 @@ SPIR-V, aiming to emit GLSL or MSL that looks like human-written code.")
                             (assoc-ref %build-inputs "python-lit")
                             "/bin/lit")
              "-DLLVM_SPIRV_INCLUDE_TESTS=ON")))
-    (inputs (list llvm-15))
-    (native-inputs (list clang-15 llvm-15 python-lit spirv-headers))
+    (inputs (list llvm-17))
+    (native-inputs (list clang-17 llvm-17 python-lit spirv-headers))
     (home-page "https://github.com/KhronosGroup/SPIRV-LLVM-Translator")
     (synopsis "Bi-directional translation between SPIR-V and LLVM IR")
     (description
@@ -198,14 +197,17 @@ translation between LLVM IR and SPIR-V.")
              (commit version)))
        (sha256
         (base32
-         "06g5m0y94a021zqvn1xmqfg44id3hqnyxqcc7y2cv8rndpn7z3jk"))
+         "15xf1p9wwyvcps2kbyfiqnch3x2a1a9bd9aixq2y4yv9ir9hhhpf"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f                      ;FIXME: requires bundled SPIRV-Tools
-       #:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DALLOW_EXTERNAL_SPIRV_TOOLS=ON"
+                           "-DGLSLANG_TESTS=ON")))
     (native-inputs
      (list pkg-config python))
+    (inputs
+     (list spirv-tools))
     (home-page "https://github.com/KhronosGroup/glslang")
     (synopsis "OpenGL and OpenGL ES shader front end and validator")
     (description
@@ -221,7 +223,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version %vulkan-version)
+    (version %vulkan-sdk-version)
     (source
      (origin
        (method git-fetch)
@@ -231,7 +233,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ra4n5vbrpdsvwiwpbmzf3gjkja8a6d3j835wljkh133kxzl8abf"))))
+         "1ihzbn6aw20i40mlqv2ys3xw1g9ld79890a0bm7wpqmbp67s84wh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -245,7 +247,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version %vulkan-version)
+    (version %vulkan-sdk-version)
     (source
      (origin
        (method git-fetch)
@@ -255,7 +257,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0frjyi4hkkm3i547ym3b9cdf6520g6svdqbyjq0pk2x7hzbbn371"))))
+         "0kcq6xsm151mk08vvqjlhj5mfxv4zgq35a2yi4f7yax20mfd8wz7"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -284,10 +286,11 @@ interpretation of the specifications for these languages.")
            (add-after 'unpack 'use-system-googletest
              (lambda _
                ;; Inform the build system that googletest is already built.
-               (substitute* "CMakeLists.txt"
-                 ((".*if\\(TARGET gtest\\)")
-                  (string-append "    find_package(GTest REQUIRED)\n"
-                                 "    if(true)")))
+               (substitute* "tests/CMakeLists.txt"
+                 (("if.*IS_DIRECTORY.*googletest.*")
+                  (string-append "if(true)\n"
+                                 "    find_package(GTest REQUIRED)\n"
+                                 "elseif(false)\n")))
                ;; Use the namespaced variable.
                (substitute* "tests/framework/CMakeLists.txt"
                  (("PUBLIC gtest ")
@@ -318,7 +321,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version %vulkan-version)
+    (version %vulkan-sdk-version)
     (source
      (origin
        (method git-fetch)
@@ -328,7 +331,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0kmcn4g3v9midw008c8rf3sh2k1kcd7bv6zpxwii4cizkahlzdhd"))))
+         "0g604gzzlqibnkjd18iss6iwn852nnsfrrgfnwn97khpr0xk1h6j"))))
     (build-system cmake-build-system)
     (inputs
      (list glslang libxrandr vulkan-loader wayland wayland-protocols))
@@ -351,7 +354,7 @@ API.")
   (package
     (name "shaderc")
     ;; shaderc doesn't follow the versioning scheme of vulkan sdk
-    (version "2023.3")
+    (version "2023.8")
     (source
      (origin
        (method git-fetch)
@@ -361,7 +364,8 @@ API.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sa0nmcxklx6yy67wvkc46mqzpj1x44r7w0fcif4x8zvzzh5hrwz"))))
+         ;; "0cs36p1y2269gjfv75fvs43ymsapmc8gsy2n91jnaqs3mpgqkjbk"
+         "0cs26p1y2269gjfv75fvs43ymsapmc8gsy2n91jnaqs3mpgqkjbk")))) ; TODO Doesn't build, bogus hash to see if I end up needing it anywhere. Maybe wine?
     (build-system cmake-build-system)
     (arguments
      `(;; FIXME: Skip most of the tests, because enabling system gtest breaks
@@ -414,10 +418,10 @@ shader compilation.")
     (license license:asl2.0)))
 
 (define-public vkd3d
-  (let ((commit "57d92a15cf93d9448f2deb91a8614f9c4c085216")) ; Release 1.7.
+  (let ((commit "0c33f82f72c800f5925a55910e06a35de8197473")) ; Release 1.10. ; TODO There are tags, why aren't we using them?
     (package
      (name "vkd3d")
-     (version "1.7")
+     (version "1.10")
      (source
       (origin
        (method git-fetch)
@@ -426,7 +430,7 @@ shader compilation.")
              (commit commit)))
        (sha256
         (base32
-         "0zss91918pkml1sxfgjpgdwkdhisky0n20frsqj8cnm3w01hv5mk"))
+         "03acrv4z8na0nfqsffxfscy95386bznz1vvp8v2id99am3qmr6zz"))
        (file-name (string-append name "-" version "-checkout"))))
      (build-system gnu-build-system)
      (arguments
@@ -465,7 +469,7 @@ shader compilation.")
 (define-public vulkan-validationlayers
   (package
     (name "vulkan-validationlayers")
-    (version %vulkan-version)
+    (version %vulkan-sdk-version)
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -475,7 +479,7 @@ shader compilation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c1z2884z5xqxkh2mc29q33bqmai9zqm9p4qvm0rv22agj1ykm26"))))
+                "0j39j43siz6jwqai8miy0hgcz5b4lln9xfhk1vzds21kgn17r744"))))
     (build-system cmake-build-system)
     (inputs (list glslang
                   libxrandr
@@ -540,7 +544,7 @@ use the Vulkan API.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sysw8z066l2vqryp3x28fxx4nwxxdz5zvsmzf5s967wqc6jbj9j"))))
+                "1zmr3wy0hc1hpwyifvjyxxfs7vc4ipqrfj0mav7cjdq6jf0cnf5r"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ;no test
