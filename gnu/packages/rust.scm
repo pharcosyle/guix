@@ -749,6 +749,7 @@ safety and thread safety guarantees.")
              (for-each delete-file
                        (find-files "vendor" "\\.(a|dll|exe|lib)$"))))))
       (inputs (modify-inputs (package-inputs base-rust)
+                             ;; TODO I'm dumb and did this in a merge commit, bumping to llvm-17 should be in *this* commit. ALso update any other "-15" (clang versions)
                              (replace "llvm" llvm-17))))))
 
 (define-public rust-1.68
