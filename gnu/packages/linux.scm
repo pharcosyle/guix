@@ -5951,7 +5951,9 @@ Bluetooth audio output devices like headphones or loudspeakers.")
     (native-inputs
      (list gettext-minimal
            pkg-config
-           python-docutils))
+           python
+           python-docutils
+           python-pygments))
     (inputs
      (list glib dbus eudev libical readline))
     (home-page "https://www.bluez.org/")
