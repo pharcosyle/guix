@@ -601,7 +601,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
      (if (target-aarch64?)
          (package-native-inputs mesa)
          (modify-inputs (package-native-inputs mesa)
-           (prepend clang-15))))))
+           (prepend clang-17))))))
 
 (define-public mesa-opencl-icd
   (package/inherit mesa-opencl
