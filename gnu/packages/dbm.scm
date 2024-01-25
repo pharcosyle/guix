@@ -134,7 +134,7 @@
                      (("rm (.*) configure") "")
                      (("chmod (.*) config.guess(.*)$") ""))
                    (invoke "sh" "s_config"))))))
-    (native-inputs (list autoconf automake libtool))
+    (native-inputs (list autoconf-2.69 automake libtool))
     (synopsis "Berkeley database")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
