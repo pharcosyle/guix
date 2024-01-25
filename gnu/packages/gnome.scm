@@ -5604,14 +5604,23 @@ file.")
 (define-public colord-minimal
   (package
     (name "colord-minimal")
-    (version "1.4.6")
+    (version "1.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            "colord-" version ".tar.xz"))
        (sha256
-        (base32 "0vwfx06k1in8hci3kdxpc3c0bh81f1vl5bp7favd3rdz4wd661vl"))))
+        (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri "https://github.com/hughsie/colord/pull/168.patch")
+           (file-name (string-append name "-backport-test-fix.patch"))
+           (sha256
+            (base32
+             "11xbmc34lhi8s3mnw54ccgqwzbs7ynhdhrk5r50r38mzb0kcpdxy")))))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -5677,14 +5686,23 @@ output devices.")
 (define-public colord
   (package/inherit colord-minimal
     (name "colord")
-    (version "1.4.6")
+    (version "1.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            "colord-" version ".tar.xz"))
        (sha256
-        (base32 "0vwfx06k1in8hci3kdxpc3c0bh81f1vl5bp7favd3rdz4wd661vl"))))
+        (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri "https://github.com/hughsie/colord/pull/168.patch")
+           (file-name (string-append name "-backport-test-fix.patch"))
+           (sha256
+            (base32
+             "11xbmc34lhi8s3mnw54ccgqwzbs7ynhdhrk5r50r38mzb0kcpdxy")))))))
     (arguments
      (substitute-keyword-arguments (package-arguments colord-minimal)
        ((#:configure-flags flags)

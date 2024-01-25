@@ -47,7 +47,7 @@
 (define-public nfs-utils
   (package
     (name "nfs-utils")
-    (version "2.4.3")
+    (version "2.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -55,7 +55,7 @@
                    "/nfs-utils-" version ".tar.xz"))
              (sha256
               (base32
-               "16b5y82cjy1cvijg5zmdvivc6sfdlv2slyynxbwwyw43vpjzqrdg"))))
+               "04ah9pk9l5fdmjarz5xpg2z2spqk33z65hig8vi11mn4h4z8f02j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -63,52 +63,52 @@
          "--without-tcp-wrappers"
          ,(string-append "--with-start-statd="
                          (assoc-ref %outputs "out") "/sbin/start-statd")
-         ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5"))
+         ,(string-append "--with-krb5="
+                         (assoc-ref %build-inputs "mit-krb5"))
          ,(string-append "--with-pluginpath="
-                         (assoc-ref %outputs "out")
-                         "/lib/libnfsidmap")
-         "--enable-svcgss")
+                         (assoc-ref %outputs "out") "/lib/libnfsidmap")
+         "--enable-svcgss"
+         ,(string-append "--with-modprobedir="
+                         (assoc-ref %outputs "out") "/etc/modprobe.d")
+         ,(string-append "--with-rpcgen="
+                         (assoc-ref %build-inputs "rpcsvc-proto") "/bin/rpcgen"))
+       #:make-flags
+       (list (string-append "sbindir="
+                            (assoc-ref %outputs "out") "/sbin")
+             "statedir=/tmp"
+             "statdpath=/tmp")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'adjust-command-file-names
            (lambda _
              ;; Remove assumptions of FHS from start-statd script
-             (substitute* `("utils/statd/start-statd")
+             (substitute* "utils/statd/start-statd"
                (("^PATH=.*") "")
                (("^flock")
-                (string-append
-                 (assoc-ref %build-inputs "util-linux")
-                 "/bin/flock"))
+                (string-append (assoc-ref %build-inputs "util-linux")
+                               "/bin/flock"))
                (("^exec rpc.statd")
-                (string-append "exec "
-                 (assoc-ref %outputs "out") "/sbin/rpc.statd")))
-
-             ;; find rpcgen
-             (substitute* "configure"
-               (("/usr/local/bin/rpcgen")
-                (which "rpcgen")))
-
-             ;; This hook tries to write to /var
-             ;; That needs to be done by a service too.
-             (substitute* `("Makefile.in")
-               (("^install-data-hook:")
-                "install-data-hook-disabled-for-guix:"))
+                (string-append
+                 "exec " (assoc-ref %outputs "out") "/sbin/rpc.statd")))
 
              ;; Replace some hard coded paths.
-             (substitute* `("utils/nfsd/nfssvc.c")
+             (substitute* "utils/nfsd/nfssvc.c"
                (("/bin/mount")
-                (string-append
-                 (assoc-ref %build-inputs "util-linux")
-                 "/bin/mount")))
-             (substitute* `("utils/statd/statd.c")
-               (("/usr/sbin/")
-                (string-append (assoc-ref %outputs "out") "/sbin/")))
-             (substitute* `("utils/mount/Makefile.in"
-                            "utils/nfsdcld/Makefile.in"
-                            "utils/nfsdcltrack/Makefile.in")
-               (("^sbindir = /sbin")
-                (string-append "sbindir = "
-                               (assoc-ref %outputs "out") "/sbin")))
+                (string-append (assoc-ref %build-inputs "util-linux")
+                               "/bin/mount")))
+             (substitute* "utils/statd/statd.c"
+               (("/usr/sbin/sm-notify")
+                (string-append (assoc-ref %outputs "out")
+                               "/sbin/sm-notify")))
+
+             (substitute* "configure"
+               (("\\$dir/bin/krb5-config")
+                (string-append (assoc-ref %build-inputs "mit-krb5")
+                               "/bin/krb5-config")))
+             (substitute* "tools/nfsrahead/Makefile.in"
+               (("/usr/lib/udev/rules.d/")
+                (string-append (assoc-ref %outputs "out")
+                               "/lib/udev/rules.d")))
              #t)))))
     (inputs
      `(("keyutils" ,keyutils)
