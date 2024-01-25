@@ -800,6 +800,21 @@ It also includes runtime support libraries for these languages.")
                                        "gcc-13-libsanitizer-no-crypt.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
+    ;; TODO Triggers a rebuild so maybe do this later or just get rid of it.
+    ;; (arguments
+    ;;  (substitute-keyword-arguments (package-arguments gcc-11)
+    ;;    ((#:configure-flags flags #~'())
+    ;;     ;; Unbundle timezone data.
+    ;;     #~(cons (string-append "--with-libstdcxx-zoneinfo="
+    ;;                            (search-input-directory %build-inputs
+    ;;                                                    "share/zoneinfo"))
+    ;;             #$flags))))
+    ;; (inputs
+    ;;  (modify-inputs (package-inputs gcc-11)
+    ;;    ;; TODO Try non lazy and see if it flubs, otherwise leave a comment here that this is possibly a prudent idea.
+    ;;    (prepend (module-ref (resolve-interface
+    ;;                          '(gnu packages base))
+    ;;                         'tzdata-for-tests)))) ; Use the stable tzdata.
     (arguments
      (substitute-keyword-arguments (package-arguments gcc-11)
        ((#:phases phases #~%standard-phases)
@@ -842,7 +857,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-13)
+(define-public gcc gcc-14)
 
 
 ;;;
@@ -1011,16 +1026,10 @@ using compilers other than GCC."
             (lambda _
               (chdir "libstdc++-v3"))))
 
-      #:configure-flags ``("--disable-libstdcxx-pch"
+      #:configure-flags '`("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
                                            (assoc-ref %outputs "out")
-                                           "/include")
-                           ;; libstdc++-v3/src/c++20/tzdb.cc won't compile
-                           ;; ("error: ‘mutex’ does not name a type"). Work
-                           ;; around it by disabling the experimental
-                           ;; C++20 time zone feature.
-                           ,,@(if (version>=? (package-version gcc) "13")
-                                  '("--with-libstdcxx-zoneinfo=no") '()))))
+                                           "/include"))))
     (outputs '("out" "debug"))
     (inputs '())
     (native-inputs
@@ -1036,7 +1045,16 @@ using compilers other than GCC."
 
 (define libstdc++
   ;; Libstdc++ matching the default GCC.
-  (make-libstdc++ gcc))
+  (let ((base (make-libstdc++ gcc)))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags flags #~'())
+          ;; libstdc++-v3/src/c++20/tzdb.cc, new in GCC 13, weirdly won't
+          ;; compile here ("error: ‘mutex’ does not name a type"). Just
+          ;; disable it, at least for now.
+          #~(cons "--with-libstdcxx-zoneinfo=no" #$flags)))))))
 
 (define libstdc++-headers
   ;; XXX: This package is for internal use to work around
