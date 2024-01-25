@@ -807,16 +807,14 @@ certificates for free.")
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.93-4")
+    (version "1.94")
     (source (origin
               (method url-fetch)
-              ;; Use a developer release (for OpenSSL 3.2 compatibility) until 1.94 comes out.
-              (uri "https://github.com/radiator-software/p5-net-ssleay/archive/refs/tags/1.93_04.tar.gz")
-              ;; (uri (string-append "mirror://cpan/authors/id/C/CH/CHRISN/"
-              ;;                     "Net-SSLeay-" version ".tar.gz"))
+              (uri (string-append "mirror://cpan/authors/id/C/CH/CHRISN/"
+                                  "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1bk6rs88jnhrp5m00rysc89qh18qbb54iv1dgwqp5gzvzk36pd9z"))))
+                "0pfrpi77964cg15dm6y0w03l64xs0k2nqc15qh2xmv8vdnjyhywx"))))
     (build-system perl-build-system)
     (inputs (list openssl))
     (arguments
