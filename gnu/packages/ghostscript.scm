@@ -173,9 +173,7 @@ printing, and psresize, for adjusting page sizes.")
          "025bl5zv19n5sh0yl9gwmxl35fzrjpdwha80rppyq6vjn14cjn4c"))
        (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                 "ghostscript-no-header-id.patch"
-                                "ghostscript-no-header-uuid.patch"
-                                "ghostscript-CVE-2023-36664.patch"
-                                "ghostscript-CVE-2023-36664-fixup.patch"))
+                                "ghostscript-no-header-uuid.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries. The bundled OpenJPEG is a patched fork so
@@ -311,7 +309,9 @@ output file formats and printers.")
        (patches
         (search-patches "ghostscript-9.56-no-header-creationdate.patch"
                         "ghostscript-9.56-no-header-id.patch"
-                        "ghostscript-no-header-uuid.patch"))))
+                        "ghostscript-no-header-uuid.patch"
+                        "ghostscript-CVE-2023-36664.patch"
+                        "ghostscript-CVE-2023-36664-fixup.patch"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ghostscript)
        ((#:configure-flags configure-flags '())
