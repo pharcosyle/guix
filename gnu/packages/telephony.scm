@@ -229,7 +229,7 @@ used as drop-in replacement for the non-free code from RFC 3591.")
        ("libpcap" ,libpcap)
        ("libsndfile" ,libsndfile)
        ("libjpeg" ,libjpeg-turbo)      ;XXX: should be propagated from libtiff
-       ("libtiff" ,libtiff)
+       ("libtiff" ,libtiff-4.5)
        ("netpbm" ,netpbm)
        ("sox" ,sox)
        ;; For the documentation
