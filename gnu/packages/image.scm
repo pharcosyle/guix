@@ -716,7 +716,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.5.0")
+   (version "4.6.0")
    (source
      (origin
        (method url-fetch)
@@ -724,7 +724,7 @@ extracting icontainer icon files.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0z16pqkj9wfifri7xhbvy6jmp690wyjcasam098cddp7qmwwkyns"))))
+         "1ll7mzmn5z0qybrb3ypf4bq49wjk6w5d479nrx8jpqni0yb68y71"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.8 MiB of HTML documentation
@@ -1850,14 +1850,16 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.1.5.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
+              (uri (string-append
+                    "https://github.com/libjpeg-turbo/libjpeg-turbo"
+                    "/releases/download/" version
+                    "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "1gq74ai4r146hjzsgpp5ykw1kahr2hra7bwvxjnigswxdvmkzp1g"))))
+                "19jwl6rqj0ryss0dwi71fkb7gpxhsrq2gvvk6w10j6yrg1d53kn2"))))
     (build-system cmake-build-system)
     (native-inputs
      (list nasm))

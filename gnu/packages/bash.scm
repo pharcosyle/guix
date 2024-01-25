@@ -97,7 +97,12 @@
    (18 "105am94qxjc27gga4a8asvsi01090xwjfim3s16lafwjvm4xsha6")
    (19 "10njgv5mrc5rhsp5lvxcbm0pnzn59a8spi2nhdasifyl1a32cp1j")
    (20 "07f0wlmqjdfarp44w3gj9gdqbqm5x20rvlhpn34ngklmxcm2bz5n")
-   (21 "1kahfqqalcwi4m73pg3ssz6lh0kcqsqax09myac7a15d2y0vhd43")))
+   (21 "1kahfqqalcwi4m73pg3ssz6lh0kcqsqax09myac7a15d2y0vhd43")
+   (22 "0w74aym0g1fh48864a3qxh89f26iaq7wsbg7244c6kjr94527dbq")
+   (23 "1lywjqbc36j5pdzfcvnz1zy30j76aqmsm190p888av0hw815b45g")
+   (24 "1hq23djqbr7s9y2324jq9mxr5bwdkmgizn3zgpchbsqp054k85cp")
+   (25 "0x9hc4silzl4d3zw4p43i5dm7w86k50j47f87lracwfgwy3z8f2i")
+   (26 "1b1fhm1dsi67r8ip17s0xvx2qq31fsxc1g9n3r931dd0k9a1zvln")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -146,7 +151,17 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                 "1yrjmf0mqg2q8pqphjlark0mcmgf88b0acq7bqf4gx3zvxkc2fd1"))
               (patch-flags '("-p0"))
               (patches (cons (search-patch "bash-linux-pgrp-pipe.patch")
-                             %patch-series-5.2))))
+                              ;; (origin
+                              ;;   (method url-fetch)
+                              ;;   (uri (string-append
+                              ;;         "https://src.fedoraproject.org/rpms/bash/raw/"
+                              ;;         "08f64cbc4e6631776d593cc122010dbe73dfba23/f/"
+                              ;;         "bash-configure-c99.patch"))
+                              ;;   (file-name (string-append name "-gcc-14-fix.patch"))
+                              ;;   (sha256
+                              ;;    (base32
+                              ;;     "0qdcdrsyc9rdwr4d67xhihna5hi4h4lw4v2c5a3h87bdh50ii1hd")))
+                               %patch-series-5.2))))
      (version (string-append version "." (number->string (length %patch-series-5.2))))
      (build-system gnu-build-system)
 

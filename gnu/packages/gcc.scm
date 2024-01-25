@@ -786,10 +786,28 @@ It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1nj3qyswcgc650sl3h0480a171ixp33ca13zl90p61m689jffxg2"))
-              (patches (search-patches "gcc-12-strmov-store-file-names.patch"
-                                       "gcc-5.0-libvtv-runpath.patch"))
+              (patches
+               (append
+                (search-patches "gcc-12-strmov-store-file-names.patch"
+                                "gcc-5.0-libvtv-runpath.patch"
+                                "gcc-13-remove-crypt-interceptors.patch")))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
+    ;; TODO Triggers a rebuild so maybe do this later or just get rid of it.
+    ;; (arguments
+    ;;  (substitute-keyword-arguments (package-arguments gcc-11)
+    ;;    ((#:configure-flags flags #~'())
+    ;;     ;; Unbundle timezone data.
+    ;;     #~(cons (string-append "--with-libstdcxx-zoneinfo="
+    ;;                            (search-input-directory %build-inputs
+    ;;                                                    "share/zoneinfo"))
+    ;;             #$flags))))
+    ;; (inputs
+    ;;  (modify-inputs (package-inputs gcc-11)
+    ;;    ;; TODO Try non lazy and see if it flubs, otherwise leave a comment here that this is possibly a prudent idea.
+    ;;    (prepend (module-ref (resolve-interface
+    ;;                          '(gnu packages base))
+    ;;                         'tzdata-for-tests)))) ; Use the stable tzdata.
     (properties
      `((compiler-cpu-architectures
         ("aarch64" ,@%gcc-13-aarch64-micro-architectures)
@@ -797,10 +815,48 @@ It also includes runtime support libraries for these languages.")
         ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
        ,@(package-properties gcc-11)))))
 
+(define-public gcc-14
+  (package
+    (inherit gcc-11)
+    ;; TODO Temporary while using GCC 14 snapshot.
+    (version "14.0.1")
+    ;; (version "14.1.0")
+    (source (origin
+              (method url-fetch)
+              ;; TODO Temporary while using GCC 14 snapshot.
+              (uri "https://gcc.gnu.org/pub/gcc/snapshots/14-20240204/gcc-14-20240204.tar.xz")
+              ;; (uri (string-append "mirror://gnu/gcc/gcc-"
+              ;;                     version "/gcc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "13nwf33sm5chi9nlmpg7ff08h7rvyrd6c0218dzrkcgnjnjvwr2l"))
+              (patches (search-patches "gcc-12-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))
+              (modules '((guix build utils)))
+              (snippet gcc-canadian-cross-objdump-snippet)))
+    (properties
+     ;; TODO
+     `((compiler-cpu-architectures
+        ("aarch64" ,@%gcc-13-aarch64-micro-architectures)
+        ("armhf" ,@%gcc-13-armhf-micro-architectures)
+        ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
+       ,@(package-properties gcc-11))
+     ;; `((compiler-cpu-architectures
+     ;;    ("aarch64" ,@%gcc-14-aarch64-micro-architectures)
+     ;;    ("armhf" ,@%gcc-14-armhf-micro-architectures)
+     ;;    ("x86_64" ,@%gcc-14-x86_64-micro-architectures))
+     ;;   ,@(package-properties gcc-11))
+     )
+    ;; ;; TODO Temporary while using GCC 14 snapshot. ; TODO trying without first
+    ;; (native-inputs (modify-inputs (package-native-inputs gcc-11)
+    ;;                  (prepend (@ (gnu packages flex) flex))))
+    ))
+
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
 (define-public gcc gcc-13)
+;; (define-public gcc gcc-14)
 
 
 ;;;
@@ -961,16 +1017,10 @@ using compilers other than GCC."
             (lambda _
               (chdir "libstdc++-v3"))))
 
-      #:configure-flags ``("--disable-libstdcxx-pch"
+      #:configure-flags '`("--disable-libstdcxx-pch"
                            ,(string-append "--with-gxx-include-dir="
                                            (assoc-ref %outputs "out")
-                                           "/include")
-                           ;; libstdc++-v3/src/c++20/tzdb.cc won't compile
-                           ;; ("error: ‘mutex’ does not name a type"). Work
-                           ;; around it by disabling the experimental
-                           ;; C++20 time zone feature.
-                           ,,@(if (version>=? (package-version gcc) "13")
-                                  '("--with-libstdcxx-zoneinfo=no") '()))))
+                                           "/include"))))
     (outputs '("out" "debug"))
     (inputs '())
     (native-inputs
@@ -986,7 +1036,16 @@ using compilers other than GCC."
 
 (define libstdc++
   ;; Libstdc++ matching the default GCC.
-  (make-libstdc++ gcc))
+  (let ((base (make-libstdc++ gcc)))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags flags #~'())
+          ;; libstdc++-v3/src/c++20/tzdb.cc, new in GCC 13, weirdly won't
+          ;; compile here ("error: ‘mutex’ does not name a type"). Just
+          ;; disable it, at least for now.
+          #~(cons "--with-libstdcxx-zoneinfo=no" #$flags)))))))
 
 (define libstdc++-headers
   ;; XXX: This package is for internal use to work around

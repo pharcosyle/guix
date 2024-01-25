@@ -1655,14 +1655,26 @@ checksum tool based on the BLAKE3 cryptographic hash function.")
        (sha256
         (base32 "1yhpjjjv38y14nrj15bkndq824v42plndgi3k8mmc04grj1fbnjf"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "doc"))
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "--disable-static"
+              "--disable-failure-tokens")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'move-man-pages
+            (lambda _
+              (let* ((old (string-append #$output "/share/man"))
+                     (new (string-append #$output:doc "/share/man")))
+                (mkdir-p (dirname new))
+                (rename-file old new)))))))
     (native-inputs
      (list autoconf
            automake
            libtool
            perl
-           pkg-config
-           python-3
-           python-passlib))
+           pkg-config))
     (synopsis
      "Extended crypt library for descrypt, md5crypt, bcrypt, and others")
     (description
@@ -1673,6 +1685,16 @@ sha256crypt, md5crypt, SunMD5, sha1crypt, NT, bsdicrypt, bigcrypt, and
 descrypt.")
     (home-page "https://github.com/besser82/libxcrypt")
     (license license:lgpl2.1)))
+
+(define-public libxcrypt-glibc
+  (package
+    (inherit libxcrypt)
+    (name "libxcrypt-glibc")
+    (arguments
+     (substitute-keyword-arguments (package-arguments libxcrypt)
+       ((#:configure-flags flags #~'())
+        #~(cons "--enable-obsolete-api=glibc"
+                #$flags))))))
 
 (define-public keychain
   (package
