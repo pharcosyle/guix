@@ -1857,7 +1857,7 @@ accepted as a quirk (ie AMD Vega 10).")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.5.2")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1866,7 +1866,7 @@ accepted as a quirk (ie AMD Vega 10).")
              version "/Linux-PAM-" version ".tar.xz"))
        (sha256
         (base32
-         "0kgrsj2scv5mx6w925h9hxf11jnqqs9z8s22aw94b90xm4qp3v74"))
+         "1bb96579nf63npg3smm0z35rncp265vg54hriwp7xrxybd7a7x7z"))
        (patches (search-patches "linux-pam-unix_chkpwd.patch"
                                 "linux-pam-no-setfsuid.patch"))))
 
