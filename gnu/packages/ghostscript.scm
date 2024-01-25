@@ -50,7 +50,7 @@
 (define-public lcms
   (package
     (name "lcms")
-    (version "2.15")
+    (version "2.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lcms/lcms/"
@@ -58,7 +58,7 @@
                                   "/lcms2-" version ".tar.gz"))
               (sha256
                (base32
-                "0fdbf7cr4rrm9r5c4k876l50aqgs0qhld0af5az36d2h1yyvq35j"))))
+                "0lasskcj7k0sp0z7cpnwwisp826j51i1l7v322hcxd5rv15d6wyq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -76,7 +76,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
 (define-public libpaper
   (package
     (name "libpaper")
-    (version "2.1.2")
+    (version "2.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rrthomas/libpaper/releases"
@@ -84,7 +84,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07q0x9ibyr604a9421a84n1wri468ggigk2c99lbjips9vv0rnhz"))))
+                "0jkg45ws4535bk9a3y46g2lgwwziaklhp3x6j156hvh3a9ybx65p"))))
     (build-system gnu-build-system)
     (native-inputs
      (list help2man))
