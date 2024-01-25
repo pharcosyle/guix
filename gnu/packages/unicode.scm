@@ -77,14 +77,14 @@ renderer.")
 (define-public ucd
   (package
     (name "ucd")
-    (version "15.0.0")
+    (version "15.1.0")
     (source
      (origin
        (method url-fetch/zipbomb)
        (uri (string-append "https://www.unicode.org/Public/zipped/" version
                            "/UCD.zip"))
        (sha256
-        (base32 "133inqn33hcfvylmps63yjr6rrqrfq6x7a5hr5fd51z6yc0f9gaz"))))
+        (base32 "0xv10nkvg6451415imvb0qx72ljp0hv9f8h1sl6509ir0lync76b"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -108,7 +108,7 @@ test data for conformance to several important Unicode algorithms.")
 (define-public unicode-emoji
   (package
     (name "unicode-emoji")
-    (version "15.0")
+    (version "15.1")
     (source #f)
     (build-system trivial-build-system)
     (arguments
@@ -130,15 +130,15 @@ test data for conformance to several important Unicode algorithms.")
      `(("unicode-emoji-sequences"
         ,(unicode-emoji-file
           "sequences" version
-          "0vdmbsa3x2pby59rirp2zjq4ggsgn1a2z35666h9dn1jlkc248jw"))
+          "1lahs35c3dqpai22yvn5ri31livrz0cvc8c63jzgn11mbq8wjwpb"))
        ("unicode-emoji-test"
         ,(unicode-emoji-file
           "test" version
-          "1nskm3qqb568dlsz54r0ympqbzyf9zhn40lxw5mhk3iqr0xg4ic4"))
+          "1nby2gl5wffhcpa8i91a0qxx3a2751qampx6rxvam3m2k8jfwxnq"))
        ("unicode-emoji-zwj-sequences"
         ,(unicode-emoji-file
           "zwj-sequences" version
-          "10hig5b0igrm97ajny9sj0jrppvy2f3xar9p0rv6cx5p2y8pydgy"))))
+          "0mqfzcz1ka78jjk8gk6bfywq4ldmj26rri08zsdqzkfgr8ys0xls"))))
     (home-page "https://www.unicode.org")
     (synopsis "Unicode Emoji data")
     (description
@@ -150,7 +150,7 @@ Unicode Technological Standard #51.")
 (define-public unicode-cldr-common
   (package
     (name "unicode-cldr-common")
-    (version "43.0")
+    (version "44.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -159,7 +159,7 @@ Unicode Technological Standard #51.")
                            "/cldr-common-" version ".zip"))
        (sha256
         (base32
-         "14pmxsxb8q7avvc57ja1sjg79q47m8q2i32z8yhnpq0idbdxl03q"))))
+         "1rmfwkvcrbx13x2lykh2k6hb35d0y1di95jx1zx9r6cazsnp0zxx"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
