@@ -631,14 +631,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.41")
+   (version "2.42")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/binutils/binutils-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "02xkm9xgcrqhln742636nm43yzrpjkhqj0z64h03gf7pab0bxi54"))
+       (base32 "04mgvzgsdcksm7cm0qs8j4ljb562asqdkhjfrmr4q1m5pl78am5a"))
       (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
    (arguments
@@ -826,13 +826,13 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.38")
+   (version "2.39")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "1lizxxqbfma5zgmcj0gk5iyk171f2nfvdhbv8rjrkcmjk24rk0pv"))
+              "09nrwb0ksbah9k35jchd28xxp2hidilqdgz7b8v5f30pz1yd8yzp"))
             (patches (search-patches "glibc-ldd-powerpc.patch"
                                      "glibc-2.37-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
@@ -842,7 +842,6 @@ the store.")
                                      "glibc-supported-locales.patch"
                                      "glibc-2.37-hurd-clock_t_centiseconds.patch"
                                      "glibc-2.37-hurd-local-clock_gettime_MONOTONIC.patch"
-                                     "glibc-2.38-hurd-ucontext.patch"
                                      "glibc-hurd-mach-print.patch"
                                      "glibc-hurd-gettyent.patch"
                                      "glibc-hurd-getauxval.patch"))))
@@ -906,10 +905,6 @@ the store.")
                                            '%build-inputs)
                                       "kernel-headers")
                            "/include")
-
-            ;; Libcrypt and <crypt.h> are deprecated in glibc 2.38 and not
-            ;; built by default.  Build it to reduce application breakage.
-            "--enable-crypt"
 
             ;; This is the default for most architectures as of GNU libc 2.26,
             ;; but we specify it explicitly for clarity and consistency.  See
