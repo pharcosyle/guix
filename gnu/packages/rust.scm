@@ -379,9 +379,9 @@ safety and thread safety guarantees.")
     ;; therefore the build process needs 8GB of RAM while building.
     ;; It may support i686 soon:
     ;; <https://github.com/thepowersgang/mrustc/issues/78>.
-    ;; XXX: The rust bootstrap is currently broken on riscv64,
-    ;; remove it until this is fixed.
-    (supported-systems '("x86_64-linux" "aarch64-linux"))
+    ;; List of systems where rust-bootstrap is explicitly known to build:
+    (supported-systems '("x86_64-linux" "aarch64-linux"
+                         "riscv64-linux" "powerpc64le-linux"))
 
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
@@ -544,7 +544,8 @@ ar = \"" binutils "/bin/ar" "\"
     ;; rustc invokes gcc, so we need to set its search paths accordingly.
     (native-search-paths
       %gcc-search-paths)
-    (supported-systems (delete "i586-gnu" %supported-systems))
+    ;; Limit this to systems where the final rust compiler builds successfully.
+    (supported-systems '("x86_64-linux" "aarch64-linux" "riscv64-linux"))
     (synopsis "Compiler for the Rust programming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
@@ -1063,6 +1064,19 @@ safety and thread safety guarantees.")
                    (substitute* "patch.rs"
                      ,@(make-ignore-test-list
                         '("fn gitoxide_clones_shallow_old_git_patch"))))))
+             ,@(if (target-riscv64?)
+                   ;; Keep this phase separate so it can be adjusted without needing
+                   ;; to adjust the skipped tests on other architectures.
+                   `((add-after 'unpack 'disable-tests-broken-on-riscv64
+                       (lambda _
+                         (with-directory-excursion "src/tools/cargo/tests/testsuite"
+                           (substitute* "build.rs"
+                             ,@(make-ignore-test-list
+                                 '("fn uplift_dwp_of_bin_on_linux")))
+                           (substitute* "cache_lock.rs"
+                             ,@(make-ignore-test-list
+                                 '("fn multiple_download")))))))
+                   `())
              (add-after 'unpack 'disable-tests-broken-on-aarch64
                (lambda _
                  (with-directory-excursion "src/tools/cargo/tests/testsuite/"
