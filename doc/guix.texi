@@ -22,7 +22,7 @@
 @set SUBSTITUTE-URLS https://@value{SUBSTITUTE-SERVER-1} https://@value{SUBSTITUTE-SERVER-2}
 
 @copying
-Copyright @copyright{} 2012-2023 Ludovic Courtès@*
+Copyright @copyright{} 2012-2024 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
@@ -16763,6 +16763,20 @@ guix package}).
 This option can be repeated several times, in which case the manifests
 are concatenated.
 
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Consider the package @var{expr} evaluates to.
+
+A typical use case for this option is specifying a package that is
+hidden and thus cannot be referred to in the usual way, as in this
+example:
+
+@example
+guix weather -e '(@@@@ (gnu packages rust) rust-bootstrap)'
+@end example
+
+This option can be repeated.
+
 @item --coverage[=@var{count}]
 @itemx -c [@var{count}]
 Report on substitute coverage for packages: list packages with at least
@@ -25838,6 +25852,9 @@ The @code{(gnu services databases)} module provides the following services.
 
 @subsubheading PostgreSQL
 
+@defvar postgresql-service-type
+The service type for the PostgreSQL database server.  Its value should
+be a valid @code{postgresql-configuration} object, documented below.
 The following example describes a PostgreSQL service with the default
 configuration.
 
@@ -25864,6 +25881,7 @@ sudo -u postgres -s /bin/sh
 createuser --interactive
 createdb $MY_USER_LOGIN      # Replace appropriately.
 @end example
+@end defvar
 
 @deftp {Data Type} postgresql-configuration
 Data type representing the configuration for the
@@ -28637,10 +28655,11 @@ services:
 
 @subsubheading Jami
 
-@cindex jami, service
-
-This section describes how to configure a Jami server that can be used
-to host video (or audio) conferences, among other uses.  The following
+@defvar jami-service-type
+The service type for running Jami as a service.  It takes a
+@code{jami-configuration} object as a value, documented below.  This
+section describes how to configure a Jami server that can be used to
+host video (or audio) conferences, among other uses.  The following
 example demonstrates how to specify Jami account archives (backups) to
 be provisioned automatically:
 
@@ -28768,6 +28787,7 @@ Account_username: f3345f2775ddfe07a4b0d95daea111d15fbc1199
 The remaining actions should be self-explanatory.
 
 The complete set of available configuration options is detailed below.
+@end defvar
 
 @c TODO: Ideally, the following fragments would be auto-generated at
 @c build time, so that they needn't be manually duplicated.
@@ -28863,6 +28883,12 @@ account fingerprint for a registered username.
 @cindex VoIP server
 This section describes how to set up and run a
 @uref{https://mumble.info, Mumble} server (formerly known as Murmur).
+
+@defvar mumble-server-service-type
+
+This is the service to run a Mumble server.  It takes a
+@code{mumble-server-configuration} object as its value, defined below.
+@end defvar
 
 @deftp {Data Type} mumble-server-configuration
 The service type for the Mumble server.  An example configuration can

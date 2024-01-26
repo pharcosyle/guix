@@ -104,6 +104,7 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages rpc)
   #:use-module (gnu packages serialization)
@@ -1862,7 +1863,7 @@ for k-neighbor-graph construction and approximate nearest neighbor search.")
 (define-public python-opentsne
   (package
     (name "python-opentsne")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch) ; no tests in PyPI release
@@ -1871,7 +1872,7 @@ for k-neighbor-graph construction and approximate nearest neighbor search.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05qzpq1zjs42bl0z8girfwcj3nfxs1a99c5525vp3589sglk351g"))))
+        (base32 "0xjp0l4rxk1s685skbx50m3m9hwlj78w74qwgswnkmkk6f7c8dsi"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3418,57 +3419,79 @@ in a fast and accurate way.")
     (inherit xgboost)
     (name "python-xgboost")
     (source (package-source xgboost))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'preparations
-           (lambda _
-             ;; Move python-package content to parent directory to silence
-             ;; some warnings about files not being found if we chdir.
-             (rename-file "python-package/xgboost" "xgboost")
-             (rename-file "python-package/README.rst" "README.rst")
-             (rename-file "python-package/setup.cfg" "setup.cfg")
-             (rename-file "python-package/setup.py" "setup.py")
-             ;; Skip rebuilding libxgboost.so.
-             (substitute* "setup.py"
-               (("ext_modules=\\[CMakeExtension\\('libxgboost'\\)\\],") "")
-               (("'install_lib': InstallLib,") ""))))
-         (add-after 'install 'install-version-and-libxgboost
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (pylib (string-append out "/lib/python"
-                                          ,(version-major+minor
-                                            (package-version python))
-                                          "/site-packages"))
-                    (xgbdir (string-append pylib "/xgboost"))
-                    (version-file (string-append xgbdir "/VERSION"))
-                    (libxgboost (string-append (assoc-ref inputs "xgboost")
-                                               "/lib/libxgboost.so")))
-               (with-output-to-file version-file
-                 (lambda ()
-                   (display ,(package-version xgboost))))
-               (mkdir-p (string-append xgbdir "/lib"))
-               (symlink libxgboost (string-append xgbdir "/lib"
-                                                  "/libxgboost.so")))))
-         (replace 'check
-           ;; Python-specific tests are located in tests/python.
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (when tests?
-               (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "tests/python"
-                       ;; FIXME: CLI tests fail with PermissionError.
-                       "--ignore" "tests/python/test_cli.py" "-k"
-                       (string-append
-                        "not test_cli_regression_demo"
-                        ;; The tests below open a network connection.
-                        " and not test_model_compatibility"
-                        " and not test_get_group"
-                        " and not test_cv_no_shuffle"
-                        " and not test_cv"
-                        " and not test_training"
-                        ;; "'['./runexp.sh']' returned non-zero exit status 1"
-                        " and not test_cli_binary_classification"))))))))
+     (list
+      #:test-flags
+      '(list "tests/python"
+             ;; FIXME: CLI tests fail with PermissionError.
+             "--ignore" "tests/python/test_cli.py"
+             "-k"
+             (string-append
+              "not test_cli_regression_demo"
+              ;; These tests use the Boston dataset that has been
+              ;; removed from scipy.
+              " and not test_sklearn_demo"
+              " and not test_sklearn_parallel_demo"
+              " and not test_predict_shape"
+              " and not test_num_parallel_tree"
+              " and not test_boston_housing_regression"
+              " and not test_boston_housing_rf_regression"
+              " and not test_parameter_tuning"
+              " and not test_regression_with_custom_objective"
+              " and not test_RFECV"
+              ;; Pandas incompatibility? Says:
+              ;; '_CalibratedClassifier' object has no attribute
+              ;; 'base_estimator'
+              " and not test_pandas_input"
+              ;; Accuracy problems?
+              " and not test_exact"
+              " and not test_approx"
+              " and not test_hist"
+              ;; The tests below open a network connection.
+              " and not test_model_compatibility"
+              " and not test_get_group"
+              " and not test_cv_no_shuffle"
+              " and not test_cv"
+              " and not test_training"
+              ;; "'['./runexp.sh']' returned non-zero exit status 1"
+              " and not test_cli_binary_classification"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'preparations
+            (lambda _
+              ;; Move python-package content to parent directory to silence
+              ;; some warnings about files not being found if we chdir.
+              (rename-file "python-package/xgboost" "xgboost")
+              (rename-file "python-package/README.rst" "README.rst")
+              (rename-file "python-package/setup.cfg" "setup.cfg")
+              (rename-file "python-package/setup.py" "setup.py")
+              ;; Skip rebuilding libxgboost.so.
+              (substitute* "setup.py"
+                (("ext_modules=\\[CMakeExtension\\('libxgboost'\\)\\],") "")
+                (("'install_lib': InstallLib,") ""))
+              ;; Remove bad dataset.  This has been removed in scipy.
+              (substitute* "tests/python/testing.py"
+                (("TestDataset\\('boston', get_boston, 'reg:squarederror', 'rmse'\\),")
+                 "")
+                (("datasets.load_boston")
+                 "datasets.load_digits"))))
+          (add-after 'install 'install-version-and-libxgboost
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let* ((pylib (string-append #$output "/lib/python"
+                                           #$(version-major+minor
+                                              (package-version python))
+                                           "/site-packages"))
+                     (xgbdir (string-append pylib "/xgboost"))
+                     (version-file (string-append xgbdir "/VERSION"))
+                     (libxgboost (string-append (assoc-ref inputs "xgboost")
+                                                "/lib/libxgboost.so")))
+                (with-output-to-file version-file
+                  (lambda ()
+                    (display #$(package-version xgboost))))
+                (mkdir-p (string-append xgbdir "/lib"))
+                (symlink libxgboost (string-append xgbdir "/lib"
+                                                   "/libxgboost.so"))))))))
     (native-inputs
      (list python-pandas python-pytest python-scikit-learn))
     (inputs
@@ -4161,6 +4184,86 @@ Note: currently this package does not provide GPU support.")
        (replace "onnx" onnx-for-torch2)
        (replace "onnx-optimizer" onnx-optimizer-for-torch2)))))
 
+(define-public python-pytorch-geometric
+  (package
+    (name "python-pytorch-geometric")
+    (version "2.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pyg-team/pytorch_geometric/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hrs579asjsph16hyb4ablkbgfwd5j9y5s6ny7ahn3qrbkl2ji1g"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      ;; Hangs with AttributeError: 'NoneType' object has no attribute 'rpc_async'
+      '(list "--ignore=test/distributed/test_rpc.py"
+             ;; A message passing jinja template is missing
+             "--ignore=test/nn/conv/test_message_passing.py"
+             "--ignore=test/nn/test_sequential.py"
+             "--ignore=test/nn/models/test_basic_gnn.py"
+             ;; These all fail with a size mismatch error such as
+             ;; RuntimeError: shape '[-1, 2, 1, 1]' is invalid for input of size 3
+             "--ignore=test/explain/algorithm/test_captum_explainer.py"
+             "-k" (string-append
+                   ;; Permissions error
+                   "not test_packaging"
+                   ;; This can fail due to accuracy problems
+                   " and not test_gdc"
+                   ;; These refuse to be run on CPU and really want a GPU
+                   " and not test_add_random_walk_pe"
+                   " and not test_asap"
+                   " and not test_two_hop"))
+      #:phases
+      '(modify-phases %standard-phases
+         (add-after 'unpack 'delete-top-level-directories
+           (lambda _
+             ;; The presence of these directories confuses the pyproject build
+             ;; system.
+             (for-each delete-file-recursively
+                       '("conda" "docker" "graphgym")))))))
+    (propagated-inputs
+     (list onnx
+           python-captum
+           python-graphviz
+           python-h5py
+           python-jinja2
+           python-matplotlib
+           python-networkx
+           python-numba
+           python-numpy
+           python-opt-einsum
+           python-pandas
+           python-protobuf
+           python-psutil
+           python-pyparsing
+           python-pytorch-lightning
+           python-rdflib
+           python-requests
+           python-scikit-image
+           python-scikit-learn
+           python-scipy
+           python-statsmodels
+           python-sympy
+           python-tabulate
+           python-torchmetrics
+           python-tqdm))
+    (native-inputs
+     (list python-flit-core
+           python-pytest
+           python-pytest-cov))
+    (home-page "https://pyg.org")
+    (synopsis "Graph Neural Network library for PyTorch")
+    (description
+     "PyG is a library built upon PyTorch to easily write and train Graph
+Neural Networks for a wide range of applications related to structured data.")
+    (license license:expat)))
+
 (define-public python-lightning-cloud
   (package
     (name "python-lightning-cloud")
@@ -4745,24 +4848,23 @@ and Numpy.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0n1vsih99pvswcaygdxkc6kq6r48ny130z6ca8pp3281396r2ykw"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
+     (list
+      #:test-flags
+      '(list "-vv" "--stage=unit"
              ;; This tests features that are only implemented when non-free
              ;; software is available (Intel MKL or CUDA).
-             (for-each delete-file
-                       (list "tests/distributions/test_spanning_tree.py"
-                             "tests/infer/mcmc/test_mcmc_api.py"))
-
+             "--ignore=tests/distributions/test_spanning_tree.py"
+             "--ignore=tests/infer/mcmc/test_mcmc_api.py"
+             ;; This test fails sometimes.
+             "--ignore=tests/optim/test_optim.py"
              ;; Four test_gamma_elbo tests fail with bad values for unknown
              ;; reasons.
-             (delete-file "tests/distributions/test_rejector.py")
-             ;; This test fails sometimes.
-             (delete-file "tests/optim/test_optim.py")
-             (invoke "pytest" "-vv" "--stage=unit"))))))
+             "--ignore=tests/distributions/test_rejector.py"
+             ;; This looks like a test system failure.  All of these fail
+             ;; because x is an array of functions, not an array of numbers.
+             "-k" "not test_sample")))
     (propagated-inputs
      (list python-numpy
            python-opt-einsum

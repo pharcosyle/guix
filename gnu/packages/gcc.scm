@@ -1110,6 +1110,12 @@ as the 'native-search-paths' field."
    (custom-gcc gcc-11 "gdc" '("d")
                %generic-search-paths)))
 
+;;; Alias tracking the latest GDC version.
+(define-public gdc
+  (hidden-package
+   (custom-gcc gcc "gdc" '("d")
+               %generic-search-paths)))
+
 (define-public (make-libgccjit gcc)
   (package
     (inherit gcc)

@@ -9929,14 +9929,14 @@ plotting.  a three dimensional point cloud.")
 (define-public r-ggridges
   (package
     (name "r-ggridges")
-    (version "0.5.5")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggridges" version))
        (sha256
         (base32
-         "18bmbq5pd751hnw8rpvshvapg09630i2pqpwk5a3yhgz4hwa8xvm"))))
+         "0dafd10ny6l2rlr1y453rhjiy17a33k15f82nk31238mk8qamk7g"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-ggplot2 r-scales r-withr))
@@ -16870,14 +16870,14 @@ the differences were not significantly different.")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "18gib8ly7kfzdbi3srczrdqvjghf7swp127ksfs1fvs9dzgkkg96"))))
+         "1vq7abyirrrpx00d464pgva2i17f3wxx08f4rc23bl331s3lsx23"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-estimability r-mvtnorm r-numderiv))
@@ -18136,14 +18136,14 @@ mathematics.")
 (define-public r-rcppannoy
   (package
     (name "r-rcppannoy")
-    (version "0.0.21")
+    (version "0.0.22")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppAnnoy" version))
        (sha256
         (base32
-         "1xzhax5hmn79h6kmz7inrlaya5mdpzqj6j7n5ridyzc4vcrs412q"))))
+         "0rcgvmlp3by57k562pbxsncirww1vv8zarfxrjzfgly4hzbj28cz"))))
     (properties `((upstream-name . "RcppAnnoy")))
     (build-system r-build-system)
     (propagated-inputs
@@ -26395,30 +26395,27 @@ LargeVis method of Tang et al. (2016) is also provided.")
 (define-public r-kableextra
   (package
     (name "r-kableextra")
-    (version "1.3.4")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "kableExtra" version))
        (sha256
         (base32
-         "1c5vzy95cbz36jwyssr927qicrayifinv861rvnmg4nghb1gl7q9"))))
+         "02blaamz6xkdwgyvw6akjhn5fvwy8l24k7nwqj2id6g8qagwrqlg"))))
     (properties `((upstream-name . "kableExtra")))
     (build-system r-build-system)
     (propagated-inputs
      (list r-digest
-           r-glue
            r-htmltools
            r-knitr
            r-magrittr
            r-rmarkdown
            r-rstudioapi
-           r-rvest
            r-scales
            r-stringr
            r-svglite
            r-viridislite
-           r-webshot
            r-xml2))
     (native-inputs
      (list r-knitr))
@@ -28780,14 +28777,14 @@ settings.")
 (define-public r-r-huge
   (package
     (name "r-r-huge")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "R.huge" version))
        (sha256
         (base32
-         "1wjcssvn76fblpivwkapdwcw08pygbkj7qskcl0wn8mda9w5f72b"))))
+         "1s3cg0kjaici6chgy21zhxwag9ldiif4103ajk121l8ambd1xjq5"))))
     (properties `((upstream-name . "R.huge")))
     (build-system r-build-system)
     (propagated-inputs
@@ -28804,14 +28801,14 @@ the @code{aroma.affymetrix} package.")
 (define-public r-r-filesets
   (package
     (name "r-r-filesets")
-    (version "2.15.0")
+    (version "2.15.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "R.filesets" version))
        (sha256
         (base32
-         "14dngx6ffhfvlaixpvlq890nwgil6zyaw8wy3dlcrv001wynzmms"))))
+         "1qwxk3p56yq06nsdl0jwbw6j8r6qjakznsd3z63gnpsgkckfkx88"))))
     (properties `((upstream-name . "R.filesets")))
     (build-system r-build-system)
     (arguments
@@ -29555,14 +29552,14 @@ conditional on one covariate, and multimodal regression.")
 (define-public r-rainbow
   (package
     (name "r-rainbow")
-    (version "3.7")
+    (version "3.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rainbow" version))
        (sha256
         (base32
-         "1cldipi3cb55d434wv03ymwygbisfwgq2b84gwwkgqpfal2xk78m"))))
+         "0gc25napmcgg1qr17z4zixzxcdiv9midi1x5fin4pzkhicl5d97c"))))
     (properties `((upstream-name . "rainbow")))
     (build-system r-build-system)
     (propagated-inputs
@@ -33737,14 +33734,14 @@ permuted copies (shadows).")
 (define-public r-directlabels
   (package
     (name "r-directlabels")
-    (version "2023.8.25")
+    (version "2024.1.21")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "directlabels" version))
        (sha256
         (base32
-         "0p7as0yvvywbdqjpng70sdiy0xyczac4qbv534cwqxiqyx81vp8j"))))
+         "1zmnyqipiv6gxqi2ix5jzbql53p3kjv76l76kj7gv1llzy2a8fxv"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-quadprog))
@@ -34096,13 +34093,13 @@ coefficients are constructed using multiplier bootstrap.")
 (define-public r-consrank
   (package
     (name "r-consrank")
-    (version "2.1.3")
+    (version "2.1.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ConsRank" version))
               (sha256
                (base32
-                "0v1dr7zj2fpgncymakv5qszdrlqzvc5zxfyc3yrsj09gbm0gvyby"))))
+                "001hmiii7khh1q2wav38737svzr0anr42nyp8hhplqfbiw0cc4y2"))))
     (properties `((upstream-name . "ConsRank")))
     (build-system r-build-system)
     (propagated-inputs (list r-gtools r-proxy r-rgl r-rlist r-tidyr))
@@ -40934,14 +40931,14 @@ be efficient and easy to use.")
 (define-public r-ggh4x
   (package
     (name "r-ggh4x")
-    (version "0.2.7")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggh4x" version))
        (sha256
         (base32
-         "114xvlpdhnsdnw1g89yls3z80dxcj9fah09kvfddhlwbqbknxjxf"))))
+         "1vk2xqf1m14zy0jynv73f56a3slrpa9nymvw236v9ixgafarwkm8"))))
     (properties `((upstream-name . "ggh4x")))
     (build-system r-build-system)
     (propagated-inputs

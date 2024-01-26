@@ -99,8 +99,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sqlite)
-  #:autoload (json parser) (json->scm)
-  #:export (all-mozilla-locales))
+  #:autoload (json parser) (json->scm))
 
 (define-public mozjs
   (package

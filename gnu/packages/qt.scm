@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2023 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2018, 2019, 2020, 2021, 2023 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015-2019, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019, 2023 Ricardo Wurmus <rekado@elephly.net>
@@ -71,9 +71,11 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dlang)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages enchant)
@@ -3404,8 +3406,8 @@ linux/libcurl_wrapper.h"
      (modify-inputs (package-native-inputs qtwebengine-5)
        (delete "python2" "python2-six")
        (replace "node" node-lts)
-       (append clang-14
-               lld-as-ld-wrapper
+       (append clang-15
+               lld-as-ld-wrapper-15
                python-wrapper
                python-beautifulsoup4
                python-html5lib)))
@@ -5172,23 +5174,28 @@ including @i{fix-its} for automatic refactoring.")
            vulkan-headers
            xvfb-run))
     (inputs
-     (list bash-minimal
-           coreutils-minimal
-           clang
-           clazy
-           elfutils
-           gdb
-           kcachegrind
-           libxkbcommon
-           llvm
-           qt5compat
-           qtdeclarative
-           qtshadertools
-           qtsvg
-           yaml-cpp
-           valgrind
-           vulkan-loader
-           `(,zstd "lib")))
+     (append
+      (list bash-minimal
+            coreutils-minimal
+            clang
+            clazy
+            d-demangler
+            elfutils
+            gdb
+            kcachegrind
+            libxkbcommon
+            llvm
+            qt5compat
+            qtdeclarative
+            qtshadertools
+            qtsvg
+            yaml-cpp
+            valgrind
+            vulkan-loader
+            `(,zstd "lib"))
+      (if (supported-package? rust-rustc-demangle-capi-0.1)
+          (list rust-rustc-demangle-capi-0.1)
+          '())))
     (home-page "https://www.qt.io/")
     (synopsis "Integrated development environment (IDE) for Qt")
     (description "Qt Creator is an IDE tailored to the needs of Qt developers.

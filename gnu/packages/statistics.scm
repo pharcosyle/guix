@@ -2134,7 +2134,7 @@ machine learning, computer vision, and high-dimensional statistics.")
 (define-public python-arviz
   (package
     (name "python-arviz")
-    (version "0.16.1")
+    (version "0.17.0")
     (source (origin
               (method git-fetch)        ; PyPI misses some test files
               (uri (git-reference
@@ -2143,7 +2143,7 @@ machine learning, computer vision, and high-dimensional statistics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19phaqbpls82300z7ghicrldjxyjq4ilmmwsmd9zkl8c7ld5cb4j"))))
+                "0rmv7nniciq2jjnmk3qslc777wm8mjp7vsbk5dqx87a94dp7198f"))))
     (build-system pyproject-build-system)
     (arguments
      ;; FIXME: matplotlib tests fail because of the "--save" test flag.
@@ -2182,7 +2182,7 @@ comparison and diagnostics.")
 (define-public python-pymc
   (package
     (name "python-pymc")
-    (version "5.10.0")
+    (version "5.10.3")
     (source (origin
               (method git-fetch)        ; no tests in PyPI
               (uri (git-reference
@@ -2191,7 +2191,7 @@ comparison and diagnostics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17gb7ny2isfgyps7qffdxq18a9p43qy1fhqhbh75cnqd5wv1yxzb"))))
+                "0ydngbki4xb0i4j0nayzqqrvwlxp30fp56kiwm95n2i7iwgmki02"))))
     (build-system pyproject-build-system)
     (arguments
      (list #:tests? #f ; tests are too computationally intensive
@@ -3543,14 +3543,14 @@ statements.")
 (define-public r-segmented
   (package
     (name "r-segmented")
-    (version "2.0-1")
+    (version "2.0-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "segmented" version))
        (sha256
         (base32
-         "0r3l39sihncrmhs6y3nydr6izp5ss86rfwjyhwf2x0clvqq2gkz9"))))
+         "0ym5z2zngkqvs1cd7c3k16k9ipsli6xc6qp0nmr77va34d8v0n4q"))))
     (build-system r-build-system)
     (propagated-inputs (list r-mass r-nlme))
     (home-page "https://cran.r-project.org/web/packages/segmented")
@@ -4286,13 +4286,13 @@ want to migrate to S4.")
 (define-public r-r-oo
   (package
     (name "r-r-oo")
-    (version "1.25.0")
+    (version "1.26.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.oo" version))
               (sha256
                (base32
-                "1vxy8yw4yblb3vgl64yh0b6zf1d51rnc2c23kmyyw629fxhr1cdq"))))
+                "0ra3sjs7sqqif3dlcdry7p40vd4jxm0407d3s6sgn5i2ihw2nq7p"))))
     (properties `((upstream-name . "R.oo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4517,27 +4517,27 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "178a9sb07rph4mh7cz004ls0g7d4b7jk065m4ycfrlzxcs9jnlwd"))))
+         "0pc3ad9k36lk3c5qbgx4blhs8aihqyysfxljyirgahsmrdhw4878"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-cli
            r-cpp11
            r-dplyr
-           r-magrittr
            r-glue
            r-lifecycle
+           r-magrittr
            r-purrr
            r-rlang
            r-stringr
-           r-tidyselect
            r-tibble
+           r-tidyselect
            r-vctrs))
     (native-inputs
      (list r-knitr))
@@ -5399,14 +5399,14 @@ Farebrother's algorithm or Liu et al.'s algorithm.")
 (define-public r-cowplot
   (package
     (name "r-cowplot")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cowplot" version))
        (sha256
         (base32
-         "1ppsg3rbqz9a16zq87izdj5w8ylb6jb6v13xb01k7m3n2h4mv4f6"))))
+         "0wxjynpbamyimpms7psbac7xgwswzlidczpc037q20y5yld9fml7"))))
     (build-system r-build-system)
     (propagated-inputs
      (list r-ggplot2 r-gtable r-rlang r-scales))
@@ -7215,14 +7215,14 @@ various statistical models with linear predictors.")
 (define-public r-bayesfactor
   (package
     (name "r-bayesfactor")
-    (version "0.9.12-4.6")
+    (version "0.9.12-4.7")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "BayesFactor" version))
         (sha256
           (base32
-            "1nvm26m5m8xi8iw1fj8ca79z3aqln4l3c0hvh38yvm9p584nwpzx"))))
+            "0z9p9vdcmcdwqmixaiqnhli2b06whbap6y4pqx4a5gcdgxlj09zr"))))
     (properties `((upstream-name . "BayesFactor")))
     (build-system r-build-system)
     (propagated-inputs
