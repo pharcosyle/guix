@@ -11,7 +11,7 @@
 ;;; Copyright © 2020, 2021 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Matthew James Kraai <kraai@ftbfs.org>
-;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2021, 2024 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 (unmatched parenthesis <paren@disroot.org>
 ;;; Copyright © 2022 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2022 Jim Newsome <jnewsome@torproject.org>
@@ -748,7 +748,7 @@ safety and thread safety guarantees.")
              (for-each delete-file
                        (find-files "vendor" "\\.(a|dll|exe|lib)$"))))))
       (inputs (modify-inputs (package-inputs base-rust)
-                             (replace "llvm" llvm-15))))))
+                             (replace "llvm" llvm-17))))))
 
 (define-public rust-1.68
   (rust-bootstrapped-package
@@ -1039,6 +1039,9 @@ safety and thread safety guarantees.")
                    (substitute* "alt_registry.rs"
                      ,@(make-ignore-test-list
                         '("fn warn_for_unused_fields")))
+                   (substitute* "registry_auth.rs"
+                     ,@(make-ignore-test-list
+                        '("fn token_not_logged")))
                    (substitute* '("cargo_add/locked_unchanged/mod.rs"
                                   "cargo_add/lockfile_updated/mod.rs"
                                   "cargo_remove/update_lock_file/mod.rs")
@@ -1155,15 +1158,17 @@ safety and thread safety guarantees.")
                                      "                "
                                      "rustflags.arg(\"-Clink-args=-Wl,-rpath="
                                      out "/lib\");\n"))))))
-             (add-after 'unpack 'unpack-profiler-rt
-               ;; Copy compiler-rt sources to where libprofiler_builtins looks
-               ;; for its vendored copy.  Keep the clang-runtime version in
-               ;; sync with the LLVM version used to build Rust.
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (mkdir-p "src/llvm-project/compiler-rt")
-                 (invoke "tar" "-xf" #$(package-source clang-runtime-15)
-                   "-C" "src/llvm-project/compiler-rt" "--strip-components=1")))
-             (add-after 'enable-codegen-tests 'enable-profiling
+             (add-after 'unpack 'copy-compiler-rt-source
+                ;; Note: Keep the clang-runtime version in sync with the LLVM
+                ;; version used to build Rust.
+                (lambda _
+                  (let ((compiler-rt "src/llvm-project/compiler-rt"))
+                    (mkdir-p compiler-rt)
+                    (copy-recursively
+                     (string-append #$(package-source clang-runtime-17)
+                                    "/compiler-rt")
+                     compiler-rt))))
+             (add-after 'configure 'enable-profiler
                (lambda _
                  (substitute* "config.toml"
                    (("^profiler =.*$") "")
@@ -1250,7 +1255,8 @@ exec -a \"$0\" \"~a\" \"$@\""
        (modify-inputs (package-inputs base-rust)
                       (prepend curl libffi `(,nghttp2 "lib") zlib)))
       ;; Add test inputs.
-      (native-inputs (cons* `("gdb" ,gdb/pinned)
+      (native-inputs (cons* `("clang-source" ,(package-source clang-runtime-17))
+                            `("gdb" ,gdb/pinned)
                             `("procps" ,procps)
                             (package-native-inputs base-rust))))))
 
@@ -1265,7 +1271,7 @@ exec -a \"$0\" \"~a\" \"$@\""
       (outputs '("out"))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:tests? _ #f) #f)   ; This package for cross-building.
+         ((#:tests? _ #f) #f)           ; This package for cross-building.
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'unpack 'unbundle-xz
@@ -1313,36 +1319,36 @@ exec -a \"$0\" \"~a\" \"$@\""
                  ;; The Guix LLVM package installs only shared libraries.
                  (setenv "LLVM_LINK_SHARED" "1")
 
-                 (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-                 (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
-                 (when (assoc-ref inputs (string-append "glibc-cross-" ,target))
-                   (setenv "LIBRARY_PATH"
-                           (string-join
+                  (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+                  (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
+                  (when (assoc-ref inputs (string-append "glibc-cross-" #$target))
+                    (setenv "LIBRARY_PATH"
+                            (string-join
                              (delete
-                               (string-append
-                                 (assoc-ref inputs
-                                            (string-append "glibc-cross-" ,target))
-                                 "/lib")
-                               (string-split (getenv "LIBRARY_PATH") #\:))
+                              (string-append
+                               (assoc-ref inputs
+                                          (string-append "glibc-cross-" #$target))
+                               "/lib")
+                              (string-split (getenv "LIBRARY_PATH") #\:))
                              ":"))
-                   (setenv "CPLUS_INCLUDE_PATH"
-                           (string-join
+                    (setenv "CPLUS_INCLUDE_PATH"
+                            (string-join
                              (delete
-                               (string-append
-                                 (assoc-ref inputs
-                                            (string-append "glibc-cross-" ,target))
-                                 "/include")
-                               (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                              (string-append
+                               (assoc-ref inputs
+                                          (string-append "glibc-cross-" #$target))
+                               "/include")
+                              (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
                              ":")))))
-             (replace 'configure
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (target-cc
-                         (search-input-file
-                           inputs (string-append "/bin/" ,(cc-for-target target)))))
-                   (call-with-output-file "config.toml"
-                     (lambda (port)
-                       (display (string-append "
+              (replace 'configure
+                (lambda* (#:key inputs outputs #:allow-other-keys)
+                  (let* ((out (assoc-ref outputs "out"))
+                         (target-cc
+                          (search-input-file
+                           inputs (string-append "/bin/" #$(cc-for-target target)))))
+                    (call-with-output-file "config.toml"
+                      (lambda (port)
+                        (display (string-append "
 [llvm]
 [build]
 cargo = \"" (search-input-file inputs "/bin/cargo") "\"
@@ -1371,8 +1377,8 @@ ar = \"" (which "ar") "\"
 llvm-config = \"" (search-input-file inputs "/bin/llvm-config") "\"
 linker = \"" target-cc "\"
 cc = \"" target-cc "\"
-cxx = \"" (search-input-file inputs (string-append "/bin/" ,(cxx-for-target target))) "\"
-ar = \"" (search-input-file inputs (string-append "/bin/" ,(ar-for-target target))) "\"
+cxx = \"" (search-input-file inputs (string-append "/bin/" #$(cxx-for-target target))) "\"
+ar = \"" (search-input-file inputs (string-append "/bin/" #$(ar-for-target target))) "\"
 [dist]
 ") port))))))
              (replace 'build
@@ -1393,15 +1399,15 @@ ar = \"" (search-input-file inputs (string-append "/bin/" ,(ar-for-target target
              (delete 'wrap-rustc)))))
       (inputs
        (modify-inputs (package-inputs base-rust)
-                      (prepend xz)))    ; for lzma-sys
+         (prepend xz)))                 ; for lzma-sys
       (propagated-inputs
        (if (target-mingw? target)
-         (modify-inputs (package-propagated-inputs base-rust)
-                        (prepend
-                          (if (string=? "i686-w64-mingw32" target)
-                              mingw-w64-i686-winpthreads
-                              mingw-w64-x86_64-winpthreads)))
-         (package-propagated-inputs base-rust)))
+           (modify-inputs (package-propagated-inputs base-rust)
+             (prepend
+              (if (string=? "i686-w64-mingw32" target)
+                  mingw-w64-i686-winpthreads
+                  mingw-w64-x86_64-winpthreads)))
+           (package-propagated-inputs base-rust)))
       (native-inputs
        (if (target-mingw? target)
          (modify-inputs (package-native-inputs base-rust)
@@ -1417,8 +1423,7 @@ ar = \"" (search-input-file inputs (string-append "/bin/" ,(ar-for-target target
                                  (cross-libc target)
                                  (cross-binutils target)))))
       (properties
-       `((hidden? . #t)
-         ,(package-properties base-rust))))))
+       `((hidden? . #t) ,(package-properties base-rust))))))
 
 (define-public rust-analyzer
   (package
