@@ -1,0 +1,90 @@
+--- a/fig2dev/dev/readeps.c
++++ b/fig2dev/dev/readeps.c
+@@ -434,7 +434,7 @@
+ 	 * Convert a pdf to eps, using the first available of the following:
+ 	 *   pdftops -q -f 1 -l 1 -eps in.pdf -
+ 	 *   pdftocairo -q -f 1 -l 1 -eps in.pdf -
+-	 *   gs -q -dSAFER -sDEVICE=eps2write -sPageList=1 -o - in.pdf
++	 *   gs -q -dSAFER -sDEVICE=eps2write -dFirstPage=1 -dLastPage=1 -o - in.pdf
+ 	 * Only pdftops uses the original /MediaBox as the BoundingBox in the
+ 	 * resulting pfd. The other two crop the BoundingBox to the smallest box
+ 	 * containing all the ink on the paper.
+@@ -446,7 +446,7 @@
+ #ifdef GSEXE
+ 	else if (has_gs())
+ 		cmd_fmt = GSEXE
+-			" -q -dSAFER -sDEVICE=eps2write -sPageList=1 -o - '%s'";
++			" -q -dSAFER -sDEVICE=eps2write -dFirstPage=1 -dLastPage=1 -o - '%s'";
+ #endif
+ 	else {
+ 		static bool	reported = false;
+--- a/fig2dev/tests/bitmaps.at
++++ b/fig2dev/tests/bitmaps.at
+@@ -245,8 +245,9 @@
+ 4 0 0 50 -1 16 12 4.7124 4 210 2100 7225 1575 Included postscript file\001
+ EOF`
+ # $blackpixels are 1488 on archlinux with ghostscript 9.20,
+-#		1433 on ubuntu 16.04.2 with ghostscript 9.18
+-AT_CHECK([test $blackpixels -gt 1431 && test $blackpixels -lt 1498])
++#		1433 on ubuntu 16.04.2 with ghostscript 9.18,
++#               1498 on Debian with ghostscript 10.02
++AT_CHECK([test $blackpixels -gt 1431 && test $blackpixels -lt 1500])
+ AT_CLEANUP
+ 
+ AT_SETUP([find /MediaBox in pdf file])
+--- a/fig2dev/dev/genlatex.c
++++ b/fig2dev/dev/genlatex.c
+@@ -110,7 +110,7 @@
+ char		thin_ldot [] = THIN_LDOT;
+ char		thick_ldot[] = THICK_LDOT;
+ 
+-static bool	select_fontsize = true;
++static bool	select_fontname = true;
+ static	int	verbose = 0;
+ double		dash_mag = 1.0;
+ int		thick_width = 2;
+@@ -237,7 +237,7 @@
+ 		break;
+ 
+ 	case 'F':
+-		select_fontsize = false;
++		select_fontname = false;
+ 		break;
+ 
+ 	case 'f':			/* set default text font */
+@@ -888,7 +888,7 @@
+ 	/* smash is used to position text at baseline */
+ 	fprintf(tfp, "\\makebox(0,0)%s{\\smash{", tpos);
+ 
+-	select_font(t, select_fontsize, true, false);
++	select_font(t, true, select_fontname, false);
+ 
+ 	set_color(t->color);
+ --- a/fig2dev/dev/genepic.c
++++ b/fig2dev/dev/genepic.c
+@@ -166,7 +166,7 @@
+ /* Local to the file only */
+ static double	Threshold;
+ static bool	linew_spec = false;
+-static bool	select_fontsize = true;
++static bool	select_fontname = true;
+ static int	CurWidth = 0;
+ static int	LineStyle = SOLID_LINE;
+ static int	LLX = 0, LLY = 0;
+@@ -305,7 +305,7 @@
+ 		break;
+ 
+ 	case 'F':
+-		select_fontsize = false;
++		select_fontname = false;
+ 		break;
+ 
+ 	case 'R':
+@@ -1257,6 +1257,6 @@
+ 		fprintf(tfp, "\\makebox(0,0)%s{", tpos);
+ 	fprintf(tfp, "\\smash{");
+ 
+-	select_font(text, select_fontsize, true, false);
++	select_font(text, true, select_fontname, false);
+ 	put_string(text->cstring, text->font, special_text(text),
+ 			need_conversion);
