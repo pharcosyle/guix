@@ -50,7 +50,10 @@
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cch429zbmrg2zy1mkx9xwnpvkjhmlw40c88bvi2virws744dqhm"))))
+         "1cch429zbmrg2zy1mkx9xwnpvkjhmlw40c88bvi2virws744dqhm"))
+       (patches
+        (search-patches
+         (string-append name "-ghostscript-10.02-fixes.patch")))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -59,6 +62,11 @@
                   (srfi srfi-26))
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'check 'fix-test-for-ghostsscript-10.02
+            (lambda _
+              ;; Already done upstream, remove this on next update.
+              (substitute* "fig2dev/tests/testsuite"
+               (("1498") "1500"))))
           (add-after 'install 'wrap-program
             (lambda* (#:key inputs #:allow-other-keys)
               (let ((programs
