@@ -1199,7 +1199,7 @@ Language.")
         ("bison" ,bison)
         ("perl" ,perl)))
     (inputs
-     (list fmt
+     (list fmt-9
            jemalloc
            libaio
            libxml2
