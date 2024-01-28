@@ -683,6 +683,28 @@ By operating at a lower level than most similar tools, it supports X11,
 Wayland, and Linux console environments alike.")
       (license license:expat))))
 
+(use-modules (guix build-system trivial)
+             (guix gexp))
+(define-public kmonad
+  (package
+    (name "kmonad")
+    (version "0.4.1")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     (list
+      #:builder
+      (with-imported-modules '((guix build utils))
+        #~(begin
+            (use-modules (guix build utils))
+            (copy-recursively #$(local-file "/gnu/store/1rgj3vz33zlx06vx4q9nkrk6r92qf3ff-kmonad-0.4.1-1.a0af5b8"
+                                            #:recursive? #t)
+                              #$output)))))
+    (synopsis #f)
+    (description #f)
+    (home-page #f)
+    (license #f)))
+
 (define-public nixfmt
   (package
     (name "nixfmt")
