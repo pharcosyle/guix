@@ -174,8 +174,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.4.0")
-        (commit "aeb494322ca9dec4a4d66a7d063239c8536bd538")
-        (revision 16))
+        (commit "33f7aa0f8e43aa15c984a658523354a558735fab")
+        (revision 17))
     (package
       (name "guix")
 
@@ -191,11 +191,12 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1xl769lkpvkjpvq4vwkxm4dp77sr9finvr6izvf4kvyi6s3hbsys"))
+                  "080iiyxvdy7j93y10hfbigd7s9isr2qgzxwhpmbshknb6yagcmi5"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:configure-flags (list
+       `(#:tests? #f
+         #:configure-flags (list
 
                             ;; Provide channel metadata for 'guix describe'.
                             ;; Don't pass '--with-channel-url' and
