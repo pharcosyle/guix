@@ -1170,11 +1170,11 @@ safety and thread safety guarantees.")
              (add-after 'unpack 'copy-compiler-rt-source
                 ;; Note: Keep the clang-runtime version in sync with the LLVM
                 ;; version used to build Rust.
-                (lambda _
+                (lambda* (#:key inputs #:allow-other-keys)
                   (let ((compiler-rt "src/llvm-project/compiler-rt"))
                     (mkdir-p compiler-rt)
                     (copy-recursively
-                     (string-append #$(package-source clang-runtime-17)
+                     (string-append (assoc-ref inputs "clang-source")
                                     "/compiler-rt")
                      compiler-rt))))
              (add-after 'configure 'enable-profiler
