@@ -749,7 +749,7 @@ safety and thread safety guarantees.")
                        (find-files "vendor" "\\.(a|dll|exe|lib)$"))))))
       (inputs (modify-inputs (package-inputs base-rust)
                              ;; TODO I'm dumb and did this in a merge commit, bumping to llvm-17 should be in *this* commit. ALso update any other "-15" (clang versions)
-                             (replace "llvm" llvm-17))))))
+                             (replace "llvm" llvm-15))))))
 
 (define-public rust-1.68
   (rust-bootstrapped-package
@@ -1264,7 +1264,7 @@ exec -a \"$0\" \"~a\" \"$@\""
        (modify-inputs (package-inputs base-rust)
                       (prepend curl libffi `(,nghttp2 "lib") zlib)))
       ;; Add test inputs.
-      (native-inputs (cons* `("clang-source" ,(package-source clang-runtime-17))
+      (native-inputs (cons* `("clang-source" ,(package-source clang-runtime-15))
                             `("gdb" ,gdb/pinned)
                             `("procps" ,procps)
                             (package-native-inputs base-rust))))))
