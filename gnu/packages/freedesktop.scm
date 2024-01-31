@@ -3100,7 +3100,7 @@ compositors.")
     (inputs
      (list bash-minimal
            grim
-           hyprland
+           ;; hyprland
            hyprland-protocols
            mesa
            pipewire
