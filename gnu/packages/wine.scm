@@ -45,6 +45,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages image)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -71,6 +72,7 @@
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -79,7 +81,7 @@
 (define-public wine-minimal
   (package
     (name "wine-minimal")
-    (version "9.0")
+    (version "9.1")
     (source
      (origin
        (method url-fetch)
@@ -91,7 +93,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "1vm61hrkinjqicxidhbhq3j8sb1iianfypdvjmnvgxcmac50kzbw"))))
+        (base32 "1zwg4pda7skdb0cxjdn4f2nci5ds6yi91w987glsnp63dwdvkcq1"))))
     (properties '((upstream-name . "wine")))
     (build-system gnu-build-system)
     (native-inputs (list bison flex))
@@ -203,7 +205,12 @@ integrate Windows applications into your desktop.")
            unixodbc
            v4l-utils
            vkd3d
-           vulkan-loader))
+           vulkan-loader
+           ;; For wayland support.
+           mesa ; TODO Maybe this was already propagated by another dependency consdiering that the 'wrap-executable' phase copies those files out of it?
+           libxkbcommon
+           wayland
+           wayland-protocols))
     (arguments
      (substitute-keyword-arguments (package-arguments wine-minimal)
        ((#:phases phases)
@@ -233,14 +240,17 @@ integrate Windows applications into your desktop.")
                                               icd "/intel_icd.i686.json")))))))))
                 (_
                  `()))))
-       ((#:configure-flags _ '()) #~'())))))
+       ;; TODO not sure if these are necessary
+       ((#:configure-flags _ '())
+        #~'("--with-wayland"
+            "--with-vulkan"))))))
 
 (define-public wine64
   (package
     (inherit wine)
     (name "wine64")
     (inputs (modify-inputs (package-inputs wine)
-              (prepend wine)))
+              (prepend wine-minimal)))
     (arguments
      (substitute-keyword-arguments
          (strip-keyword-arguments '(#:system) (package-arguments wine))
@@ -250,6 +260,14 @@ integrate Windows applications into your desktop.")
         )
        ((#:phases phases)
         #~(modify-phases #$phases
+            (add-after 'install 'copy-wine32-binaries
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let ((out (assoc-ref %outputs "out")))
+                  ;; Copy the 32-bit binaries needed for WoW64.
+                  (copy-file (search-input-file inputs "/bin/wine")
+                             (string-append out "/bin/wine"))
+                  (copy-file (search-input-file inputs "/bin/wine-preloader")
+                             (string-append out "/bin/wine-preloader")))))
             ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
             ;; when installing to x86_64-linux so both are available.
             ;; TODO: Add more JSON files as they become available in Mesa.
@@ -267,24 +285,16 @@ integrate Windows applications into your desktop.")
                                                              basename)))
                                            '("radeon_icd.x86_64.json"
                                              "intel_icd.x86_64.json"
-                                             "radeon_icd.i686.json"
-                                             "intel_icd.i686.json"))))
+                                             ;; TODO temporarily removing these since I'm trying to build without 32-bit mesa
+                                             ;; "radeon_icd.i686.json"
+                                             ;; "intel_icd.i686.json"
+                                             ))))
                           (wrap-program (string-append out "/bin/wine-preloader")
                             `("VK_ICD_FILENAMES" ":" = ,icd-files))
                           (wrap-program (string-append out "/bin/wine64-preloader")
                             `("VK_ICD_FILENAMES" ":" = ,icd-files)))))))
                  (_
                   `()))
-            (add-after 'install 'copy-wine32-binaries
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                (let ((out (assoc-ref %outputs "out")))
-                  ;; Copy the 32-bit binaries needed for WoW64.
-                  (copy-file (search-input-file inputs "/bin/wine")
-                             (string-append out "/bin/wine"))
-                  ;; Copy the real 32-bit wine-preloader instead of the wrapped
-                  ;; version.
-                  (copy-file (search-input-file inputs "/bin/.wine-preloader-real")
-                             (string-append out "/bin/wine-preloader")))))
             (add-after 'install 'copy-wine32-libraries
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out")))
@@ -294,8 +304,8 @@ integrate Windows applications into your desktop.")
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out")))
                   ;; Copy the missing man file for the wine binary from wine.
-                  (copy-file (search-input-file inputs "/share/man/man1/wine.1.gz")
-                             (string-append out "/share/man/man1/wine.1.gz")))))))
+                  (copy-file (search-input-file inputs "/share/man/man1/wine.1.zst")
+                             (string-append out "/share/man/man1/wine.1.zst")))))))
        ((#:configure-flags configure-flags '())
         #~(cons "--enable-win64" #$configure-flags))))
     (synopsis "Implementation of the Windows API (WoW64 version)")
