@@ -624,7 +624,9 @@ receiving MJPG streams.")
         (base32 "16pl22ra3x2mkp8p3awslhlhj46b1nq9g89301gb0q4rgmnm705i"))))
     (build-system gnu-build-system)
     (inputs
-     (list gtk+-2 libdv libjpeg-turbo libpng libquicktime sdl))
+     (list gtk+-2 libdv libjpeg-turbo libpng
+           ;; libquicktime
+           sdl))
     (native-inputs
      (list pkg-config))
     (synopsis "Tools for handling MPEG")
@@ -1691,7 +1693,7 @@ operate properly.")
      (append
       ;; XXX: rav1e depends on rust, which currently only works on x86_64.
       ;; See also the related configure flag when changing this.
-      (if (target-x86-64?) (list rav1e) '())
+      ;; (if (target-x86-64?) (list rav1e) '())
       (list dav1d
             fontconfig
             freetype
@@ -1804,9 +1806,9 @@ operate properly.")
          "--enable-libmp3lame"
          "--enable-libopus"
          "--enable-libpulse"
-         #$@(if (target-x86-64?)
-                '("--enable-librav1e")
-                '())
+         ;; #$@(if (target-x86-64?)
+         ;;        '("--enable-librav1e")
+         ;;        '())
          "--enable-libsoxr"
          "--enable-libspeex"
          "--enable-libsrt"

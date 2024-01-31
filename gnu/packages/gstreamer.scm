@@ -852,7 +852,7 @@ model to base your own plug-in on, here it is.")
             bzip2
             cairo
             ;; ccextractor
-            chromaprint
+            ;; chromaprint
             curl
             directfb
             ;; dssim
@@ -928,7 +928,7 @@ model to base your own plug-in on, here it is.")
             spandsp
             srt
             tinyalsa
-            transcode
+            ;; transcode
             usrsctp
             v4l-utils
             vo-aacenc
