@@ -965,7 +965,7 @@ safety and thread safety guarantees.")
 ;;; Here we take the latest included Rust, make it public, and re-enable tests
 ;;; and extra components such as rustfmt.
 (define-public rust
-  (let ((base-rust rust-1.75))
+  (let ((base-rust rust-1.70))
     (package
       (inherit base-rust)
       (properties (alist-delete 'hidden? (package-properties base-rust)))
@@ -982,7 +982,6 @@ safety and thread safety guarantees.")
                          ;; These are referenced by the cargo output
                          ;; so we unbundle them.
                          "vendor/curl-sys/curl"
-                         "vendor/curl-sys-0.4.63+curl-8.1.2/curl"
                          "vendor/libffi-sys/libffi"
                          "vendor/libnghttp2-sys/nghttp2"
                          "vendor/libz-sys/src/zlib"))
@@ -1003,9 +1002,9 @@ safety and thread safety guarantees.")
                (("features = \\[\"fs\"" all)
                 (string-append all ", \"use-libc\"")))))))
       (arguments
-       (substitute-keyword-arguments
-         (strip-keyword-arguments '(#:tests?)
-           (package-arguments base-rust))
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:tests? _)
+          #f)
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'unpack 'relax-gdb-auto-load-safe-path
@@ -1027,47 +1026,6 @@ safety and thread safety guarantees.")
                  (substitute* "src/tools/cargo/tests/testsuite/git.rs"
                    ,@(make-ignore-test-list
                       '("fn fetch_downloads_with_git2_first_")))))
-             (add-after 'unpack 'disable-tests-requiring-mercurial
-               (lambda _
-                 (with-directory-excursion "src/tools/cargo/tests/testsuite/cargo_init"
-                   (substitute* '("mercurial_autodetect/mod.rs"
-                                  "simple_hg_ignore_exists/mod.rs")
-                     ,@(make-ignore-test-list
-                        '("fn case"))))))
-             (add-after 'unpack 'disable-tests-using-cargo-publish
-               (lambda _
-                 (with-directory-excursion "src/tools/cargo/tests/testsuite"
-                   (substitute* "alt_registry.rs"
-                     ,@(make-ignore-test-list
-                        '("fn warn_for_unused_fields")))
-                   (substitute* "registry_auth.rs"
-                     ,@(make-ignore-test-list
-                        '("fn token_not_logged")))
-                   (substitute* '("cargo_add/locked_unchanged/mod.rs"
-                                  "cargo_add/lockfile_updated/mod.rs"
-                                  "cargo_remove/update_lock_file/mod.rs")
-                     ,@(make-ignore-test-list
-                        '("fn case")))
-                   (substitute* "git_shallow.rs"
-                     ,@(make-ignore-test-list
-                        '("fn gitoxide_clones_git_dependency_with_shallow_protocol_and_git2_is_used_for_followup_fetches"
-                          "fn gitoxide_clones_registry_with_shallow_protocol_and_aborts_and_updates_again"
-                          "fn gitoxide_clones_registry_with_shallow_protocol_and_follow_up_fetch_maintains_shallowness"
-                          "fn gitoxide_clones_registry_with_shallow_protocol_and_follow_up_with_git2_fetch"
-                          "fn gitoxide_clones_registry_without_shallow_protocol_and_follow_up_fetch_uses_shallowness"
-                          "fn gitoxide_shallow_clone_followed_by_non_shallow_update"
-                          "fn gitoxide_clones_shallow_two_revs_same_deps"
-                          "fn gitoxide_git_dependencies_switch_from_branch_to_rev"
-                          "fn shallow_deps_work_with_revisions_and_branches_mixed_on_same_dependency")))
-                   (substitute* "install.rs"
-                     ,@(make-ignore-test-list
-                        '("fn failed_install_retains_temp_directory")))
-                   (substitute* "offline.rs"
-                     ,@(make-ignore-test-list
-                        '("fn gitoxide_cargo_compile_offline_with_cached_git_dep_shallow_dep")))
-                   (substitute* "patch.rs"
-                     ,@(make-ignore-test-list
-                        '("fn gitoxide_clones_shallow_old_git_patch"))))))
              ,@(if (target-riscv64?)
                    ;; Keep this phase separate so it can be adjusted without needing
                    ;; to adjust the skipped tests on other architectures.
@@ -1099,29 +1057,6 @@ safety and thread safety guarantees.")
                    (substitute* "features2.rs"
                      ,@(make-ignore-test-list
                         '("fn dep_with_optional_host_deps_activated"))))))
-             (add-after 'unpack 'patch-command-exec-tests
-               ;; This test suite includes some tests that the stdlib's
-               ;; `Command` execution properly handles in situations where
-               ;; the environment or PATH variable are empty, but this fails
-               ;; since we don't have `echo` available at its usual FHS
-               ;; location.
-               (lambda _
-                 (substitute* "tests/ui/command/command-exec.rs"
-                   (("Command::new\\(\"echo\"\\)")
-                    (format #f "Command::new(~s)" (which "echo"))))))
-             (add-after 'unpack 'patch-command-uid-gid-test
-               (lambda _
-                 (substitute* "tests/ui/command/command-uid-gid.rs"
-                   (("/bin/sh") (which "sh"))
-                   (("/bin/ls") (which "ls")))))
-             (add-after 'unpack 'skip-shebang-tests
-               ;; This test make sure that the parser behaves properly when a
-               ;; source file starts with a shebang. Unfortunately, the
-               ;; patch-shebangs phase changes the meaning of these edge-cases.
-               ;; We skip the test since it's drastically unlikely Guix's
-               ;; packaging will introduce a bug here.
-               (lambda _
-                 (delete-file "tests/ui/parser/shebang/sneaky-attrib.rs")))
              (add-after 'unpack 'patch-process-tests
                (lambda* (#:key inputs #:allow-other-keys)
                  (let ((bash (assoc-ref inputs "bash")))
@@ -1156,17 +1091,6 @@ safety and thread safety guarantees.")
                  (substitute* "src/tools/cargo/tests/testsuite/test.rs"
                    ,@(make-ignore-test-list
                       '("fn bin_env_for_test")))))
-             (add-after 'unpack 'adjust-rpath-values
-               ;; This adds %output:out to rpath, allowing us to install utilities in
-               ;; different outputs while reusing the shared libraries.
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (let ((out (assoc-ref outputs "out")))
-                   (substitute* "src/bootstrap/src/core/builder.rs"
-                     ((" = rpath.*" all)
-                      (string-append all
-                                     "                "
-                                     "rustflags.arg(\"-Clink-args=-Wl,-rpath="
-                                     out "/lib\");\n"))))))
              (add-after 'unpack 'copy-compiler-rt-source
                 ;; Note: Keep the clang-runtime version in sync with the LLVM
                 ;; version used to build Rust.
@@ -1259,7 +1183,8 @@ exec -a \"$0\" \"~a\" \"$@\""
                                (string-append (assoc-ref outputs "rust-src")
                                               "/lib/rustlib/src/rust/library")
                                (string-append bin "/.rust-analyzer-real"))))
-                   (chmod (string-append bin "/rust-analyzer") #o755))))))))
+                   (chmod (string-append bin "/rust-analyzer") #o755))))
+             (delete 'validate-runpath)))))
       (inputs
        (modify-inputs (package-inputs base-rust)
                       (prepend curl libffi `(,nghttp2 "lib") zlib)))
