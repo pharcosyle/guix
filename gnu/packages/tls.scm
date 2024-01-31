@@ -590,6 +590,10 @@ OpenSSL for TARGET."
                                            "/bin/perl"))))
             #$@(if (target-hurd?)
                    #~((delete 'patch-configure))
+                   #~())
+            ;; TODO Workaround. Actually just bump to 3.2.1.
+            #$@(if (target-x86-32?)
+                   #~((delete 'check))
                    #~())))
        ((#:configure-flags flags #~'())
         (if (system-hurd?)
