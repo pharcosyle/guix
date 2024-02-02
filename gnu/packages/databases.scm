@@ -2018,6 +2018,7 @@ changes.")
                        (string-append "--prefix=" out))))))))
     (native-inputs
      (list docbook-xsl
+           libxcrypt
            libxslt
            python ;for the Waf build system
            which))
