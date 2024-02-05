@@ -1472,6 +1472,39 @@ pixel units.")
      (list extra-cmake-modules qttools-5))
     (arguments '())))
 
+(define-public ksvg
+  (package
+    (name "ksvg")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0pvb3fvzxc3niny9cqwvbvpkgj4x1r62pkd3c0cpd3b7r0g8wsi8"))))
+    (build-system qt-build-system)
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (inputs
+     (list
+      qtdeclarative
+      qtsvg
+      karchive-6
+      kconfig-6
+      kcolorscheme
+      kcoreaddons-6
+      kguiaddons-6
+      kirigami-6))
+    (arguments (list #:qtbase qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Components for handling SVGs")
+    (description "A library for rendering SVG-based themes with stylesheet
+re-coloring and on-disk caching.")
+    (license license:lgpl2.1+)))
+
 (define-public ksyntaxhighlighting-6
   (package
     (name "ksyntaxhighlighting")
