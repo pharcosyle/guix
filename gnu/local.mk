@@ -60,6 +60,7 @@
 # Copyright © 2023 Ivana Drazovic <iv.dra@hotmail.com>
 # Copyright © 2023 Andy Tai <atai@atai.org>
 # Copyright © 2023 B. Wilson <elaexuotee@wilsonb.com>
+# Copyright © 2023 Bruno Victal <mirai@makinata.eu>
 # Copyright © 2023 gemmaro <gemmaro.dev@gmail.com>
 # Copyright © 2023 Herman Rimm <herman@rimm.ee>
 # Copyright © 2023 Troy Figiel <troy@troyfigiel.com>
@@ -928,6 +929,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
   %D%/packages/patches/aoflagger-use-system-provided-pybind11.patch \
+  %D%/packages/patches/appstream-force-reload-stemmer.patch	\
   %D%/packages/patches/apr-fix-atomics.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/aria2-unbundle-wslay.patch		\
@@ -1002,6 +1004,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-remove-test-sqlite.patch		\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\
+  %D%/packages/patches/calls-disable-application-test.patch	\
+  %D%/packages/patches/calls-disable-sip-test.patch		\
   %D%/packages/patches/camlboot-dynamically-allocate-stack-signal.patch	\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
   %D%/packages/patches/ccextractor-add-missing-header.patch	\
@@ -1050,6 +1054,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/cmake-curl-certificates-3.24.patch	\
   %D%/packages/patches/coda-use-system-libs.patch		\
+  %D%/packages/patches/cogl-fix-double-free.patch		\
   %D%/packages/patches/collectd-5.11.0-noinstallvar.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
@@ -1180,6 +1185,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fasthenry-spFactor.patch			\
   %D%/packages/patches/fbreader-curl-7.62.patch		\
   %D%/packages/patches/fbreader-fix-icon.patch		\
+  %D%/packages/patches/feedbackd-use-system-gmobile.patch	\
   %D%/packages/patches/fenics-dolfin-algorithm.patch		\
   %D%/packages/patches/fenics-dolfin-demo-init.patch		\
   %D%/packages/patches/fenics-dolfin-boost.patch		\
@@ -1299,6 +1305,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gdm-remove-hardcoded-xwayland-path.patch	\
   %D%/packages/patches/gdm-wayland-session-wrapper-from-env.patch	\
   %D%/packages/patches/gdm-pass-gdk-pixbuf-loader-env.patch	\
+  %D%/packages/patches/gegl-compatibility-old-librsvg.patch	\
   %D%/packages/patches/gemmi-fix-pegtl-usage.patch		\
   %D%/packages/patches/gemmi-fix-sajson-types.patch		\
   %D%/packages/patches/genimage-mke2fs-test.patch		\
@@ -1321,12 +1328,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
-  %D%/packages/patches/gitg-fix-positional-argument.patch	\
   %D%/packages/patches/gklib-suitesparse.patch			\
   %D%/packages/patches/glib-appinfo-watch.patch			\
-  %D%/packages/patches/glib-gerror-null-format.patch	\
-  %D%/packages/patches/glib-networking-disable-connection-tls1.2-test.patch	\
-  %D%/packages/patches/glib-networking-gnutls-binding.patch	\
   %D%/packages/patches/glib-skip-failing-test.patch		\
   %D%/packages/patches/glibc-2.33-riscv64-miscompilation.patch	\
   %D%/packages/patches/glibc-CVE-2019-7309.patch		\
@@ -1366,10 +1369,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-2.29-supported-locales.patch     	\
   %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/glslang-install-static-libs.patch     	\
+  %D%/packages/patches/gmobile-make-it-installable.patch	\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnash-fix-giflib-version.patch	        \
   %D%/packages/patches/gnome-2048-fix-positional-argument.patch	\
+  %D%/packages/patches/gnome-control-center-firmware-security.patch	\
   %D%/packages/patches/gnome-control-center-libexecdir.patch	\
   %D%/packages/patches/gnome-dictionary-meson-i18n.patch	\
   %D%/packages/patches/gnome-online-miners-tracker-3.patch	\
@@ -1430,6 +1435,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
   %D%/packages/patches/guile-emacs-fix-configure.patch		\
   %D%/packages/patches/gtk2-fix-builder-test.patch		\
+  %D%/packages/patches/gtk2-harden-list-store.patch		\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\
@@ -1524,6 +1530,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/json-c-0.12-CVE-2020-12762.patch		\
   %D%/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch	\
   %D%/packages/patches/julia-Use-MPFR-4.2.patch	                \
+  %D%/packages/patches/libcall-ui-make-it-installable.patch	\
   %D%/packages/patches/libftdi-fix-paths-when-FTDIPP-set.patch	\
   %D%/packages/patches/libgeotiff-fix-tests-with-proj-9.1.1.patch	\
   %D%/packages/patches/libgeotiff-fix-tests-with-proj-9.3.0.patch	\
@@ -1706,7 +1713,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mit-krb5-hurd.patch			\
   %D%/packages/patches/mixxx-link-qtscriptbytearray-qtscript.patch	\
   %D%/packages/patches/mixxx-system-googletest-benchmark.patch	\
-  %D%/packages/patches/mm-common-reproducible-tarball.patch	\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mpg321-CVE-2019-14247.patch		\
   %D%/packages/patches/mpg321-gcc-10.patch			\
@@ -1718,7 +1724,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/musl-cross-locale.patch			\
-  %D%/packages/patches/mutter-fix-inverted-test.patch		\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/m17n-lib-1.8.0-use-pkg-config-for-freetype.patch	\
   %D%/packages/patches/nanosvg-prusa-slicer.patch		\
@@ -2076,6 +2081,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libsequoia-remove-store.patch		\
   %D%/packages/patches/serf-python3.patch			\
   %D%/packages/patches/shakespeare-spl-fix-grammar.patch		\
+  %D%/packages/patches/shared-mime-info-xdgmime-path.patch	\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
   %D%/packages/patches/slim-config.patch			\
   %D%/packages/patches/slim-login.patch				\

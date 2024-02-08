@@ -107,6 +107,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
@@ -259,7 +260,7 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
 (define-public harfbuzz
   (package
     (name "harfbuzz")
-    (version "5.3.1")
+    (version "8.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/harfbuzz/harfbuzz"
@@ -267,7 +268,7 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ka3nkk2lks2lgakq02vyibwdziv11dkpa2brkx230asnyby0v2a"))))
+                "0izq2lpqxrf1l755nxrxkkiarywkx5j43asznankxplbxgm0358h"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "bin"))                  ;160K, only hb-view depend on cairo
@@ -362,7 +363,7 @@ applications.")
 (define-public pango
   (package
     (name "pango")
-    (version "1.50.10")
+    (version "1.50.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/pango/"
@@ -371,7 +372,7 @@ applications.")
               (patches (search-patches "pango-skip-libthai-test.patch"))
               (sha256
                (base32
-                "0rj9sszflckk8gj47ppirpndpp3mzsx97l64lalj8kc580g2ypby"))))
+                "1s41sprfgkc944fva36zjmkmdpv8hn1bdpyg55xc4663pw2z4rqx"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
@@ -615,6 +616,11 @@ printing and other features typical of a source code editor.")
                ;; Tests require a running X server.
                (system (string-append Xvfb " :1 &"))
                (setenv "DISPLAY" ":1")
+               ;; Use an X11 setup to find the display.
+               (setenv "GDK_BACKEND" "x11")
+               ;; Avoid spawning (and failing to connect to) the accessiblity
+               ;; bus.
+               (setenv "GTK_A11Y" "none")
                ;; For the missing /etc/machine-id.
                (setenv "DBUS_FATAL_WARNINGS" "0")))))))
     (native-inputs
@@ -631,7 +637,7 @@ printing and other features typical of a source code editor.")
      ;; gtksourceview-5.pc refers to all these.
      (list fontconfig
            fribidi
-           glib-next
+           glib
            gtk
            libxml2
            pango
@@ -686,7 +692,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
     (name "gdk-pixbuf")
-    (version "2.42.8")
+    (version "2.42.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -694,12 +700,12 @@ highlighting and other features typical of a source code editor.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1iplb43nn74pp3w1wjwwn522i9man6jia85k6j8v4494rcxfmb44"))))
+                "0jz4kziz5lirnjjvbspbqzsigk8vnqknng1fga89d81vs5snr6zf"))))
     (build-system meson-build-system)
     (outputs '("out" "debug"))
     (arguments
      `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
-       #:configure-flags '("-Dinstalled_tests=false")
+       #:configure-flags '("-Dinstalled_tests=false" "-Dgtk_doc=true")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-failing-tests
@@ -736,9 +742,8 @@ highlighting and other features typical of a source code editor.")
            pkg-config
 
            ;; For the documentation.
-           docbook-xml-4.3
-           docbook-xsl
-           libxslt))                    ;for xsltproc
+           gi-docgen
+           python-docutils))
     (native-search-paths
      ;; This file is produced by the gdk-pixbuf-loaders-cache-file
      ;; profile hook.
@@ -787,7 +792,7 @@ ever use this library.")
   (hidden-package
    (package
      (name "at-spi2-core")
-     (version "2.45.90")
+     (version "2.48.4")
      (source (origin
                (method url-fetch)
                (uri (string-append "mirror://gnome/sources/" name "/"
@@ -795,7 +800,7 @@ ever use this library.")
                                    name "-" version ".tar.xz"))
                (sha256
                 (base32
-                 "03dba3c6m3sfapkkbbgzvbi1qcmrrlppydxjjs1m8ds9qb9hl1g9"))))
+                 "05d5azffbglnvqzwk8ngg61jksm3brrwhmfpymsrccz8j8lv3v19"))))
      (build-system meson-build-system)
      (arguments
       (list
@@ -812,10 +817,15 @@ ever use this library.")
                      (lambda _
                        ;; xfconfd requires a writable HOME
                        (setenv "HOME" (getenv "TMPDIR"))
-                       ;; Run test-suite under a dbus session.
-                       (setenv "XDG_DATA_DIRS"  ;for finding org.xfce.Xfconf.service
-                               (string-append #$output "/share:"
-                                              (getenv "XDG_DATA_DIRS")))
+                       ;; dbus-run-session may crash if XDG_DATA_DIRS has too
+                       ;; many entries, maybe related to
+                       ;; https://gitlab.freedesktop.org/dbus/dbus/-/issues/481.
+                       (setenv "XDG_DATA_DIRS"
+                               (string-append
+                                #$output "/share:"
+                                #$(this-package-native-input
+                                   "gsettings-desktop-schemas")
+                                "/share"))
                        ;; Don't fail on missing  '/etc/machine-id'.
                        (setenv "DBUS_FATAL_WARNINGS" "0")
                        (with-directory-excursion (string-append "../at-spi2-core-"
@@ -833,12 +843,13 @@ ever use this library.")
       ;; atspi-2.pc refers to all these.
       (list dbus glib libx11 libxi libxtst))
      (native-inputs
-      (list gettext-minimal
+      (list findutils
+            gettext-minimal
             `(,glib "bin")
             gobject-introspection
             gsettings-desktop-schemas
             pkg-config
-            python-dbusmock
+            python-dbusmock-minimal
             python-pytest
             python-wrapper))
      (synopsis "Assistive Technology Service Provider Interface, core components")
@@ -863,25 +874,14 @@ is part of the GNOME accessibility project.")
             (add-after 'unpack 'set-documentation-path
               (lambda _
                 ;; Ensure that the cross-references point to the "doc" output.
-                (substitute* "doc/libatspi/meson.build"
-                  (("docpath =.*")
-                   (string-append "docpath = '" #$output:doc
-                                  "/share/gtk-doc/html'\n")))))
-            (add-before 'install 'prepare-doc-directory
-              (lambda _
-                (mkdir-p (string-append #$output:doc "/share"))))
-            #$@(if (%current-target-system)
-                   #~()
-                   #~((add-after 'install 'move-documentation
-                        (lambda _
-                          (copy-recursively
-                           (string-append #$output "/share/gtk-doc")
-                           (string-append #$output:doc "/share/gtk-doc"))
-                          (delete-file-recursively
-                           (string-append #$output "/share/gtk-doc"))))))))))
+                (substitute* "doc/meson.build"
+                  (("docs_dir =.*")
+                   (string-append "docs_dir = '" #$output:doc
+                                  "/share/doc'\n")))))))))
     (native-inputs
      (modify-inputs (package-native-inputs at-spi2-core)
-       (append docbook-xml-4.3 gtk-doc/stable)))
+       (append gi-docgen python python-sphinx)
+       (replace "python-dbusmock" python-dbusmock)))
     (properties (alist-delete 'hidden?
                               (package-properties at-spi2-core)))))
 
@@ -905,6 +905,7 @@ is part of the GNOME accessibility project.")
                 "1nn6kks1zyvb5xikr9y2k7r9bwjy1g4b0m0s66532bclymbwfamc"))
               (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
                                        "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
+                                       "gtk2-harden-list-store.patch"
                                        "gtk2-theme-paths.patch"
                                        "gtk2-fix-builder-test.patch"))))
     (build-system gnu-build-system)
@@ -993,7 +994,7 @@ application suites.")
   (package
     (inherit gtk+-2)
     (name "gtk+")
-    (version "3.24.37")
+    (version "3.24.38")
     (source
      (origin
        (method url-fetch)
@@ -1002,7 +1003,7 @@ application suites.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0mvzzgjrzzir7nzx379yz3swzk3pn1s283hgzm8l2yakq2sg0ib7"))
+         "1rwfvm2098pkwnnxjm70ig44x1a2fbwa8i2ma3cbs9cb077xw4ff"))
        (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                 "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
     ;; There is no "doc" output, because adding gtk-doc here would introduce a
@@ -1114,7 +1115,7 @@ application suites.")
 (define-public gtk
   (package
     (name "gtk")
-    (version "4.8.1")
+    (version "4.12.3")
     (source
      (origin
        (method url-fetch)
@@ -1122,9 +1123,10 @@ application suites.")
                            (version-major+minor version)  "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "1za2nyqqs2lrbss61gfw17qba2f0w6a119m1xk4d0fx2k3gdis2w"))
+        (base32 "128ahzsj016vz8brd8kplhfkxg2q7wy7kndibx2qfr68yrif530l"))
        (patches
-        (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))))
+        (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))
+       (modules '((guix build utils)))))
     (build-system meson-build-system)
     (outputs '("out" "bin" "doc"))
     (arguments
@@ -1148,6 +1150,9 @@ application suites.")
                             ;; Use the same test options as upstream uses for
                             ;; their CI.
                             "--suite=gtk"
+                            "--no-suite=failing"
+                            "--no-suite=flaky"
+                            "--no-suite=headless" ; requires mutter…
                             "--no-suite=gsk-compare-broadway")
       #:phases
       #~(modify-phases %standard-phases
@@ -1165,6 +1170,9 @@ application suites.")
               (substitute* "meson.build"
                 (("gtk_update_icon_cache: true")
                  "gtk_update_icon_cache: false"))
+              (substitute* (find-files "testsuite/gsk/nodeparser/"
+                                       "^text-color.*\\.node$")
+                (("Noto Sans") "DejaVu Sans"))
               ;; Disable failing tests.
               (substitute* (find-files "testsuite" "meson.build")
                 (("[ \t]*'empty-text.node',") "")
@@ -1253,6 +1261,7 @@ application suites.")
            cups                         ;for CUPS print-backend
            ffmpeg                       ;for ffmpeg media-backend
            fribidi
+           gi-docgen
            gstreamer                    ;for gstreamer media-backend
            gst-plugins-bad              ;provides gstreamer-player
            gst-plugins-base             ;provides gstreamer-gl
@@ -1712,7 +1721,7 @@ text rendering library.")
   (package
     (inherit pangomm)
     (name "pangomm")
-    (version "2.46.2")
+    (version "2.46.3")
     (source
      (origin
        (method url-fetch)
@@ -1721,7 +1730,7 @@ text rendering library.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1x56xb4k1d9g88a1d9rlcvy97mmj39rib6c3wfzpff04vjs2li2p"))))
+        (base32 "0ya3yb36d745m5ccgwhgxl8xjh82hiys3lvk08zqyq0s8x6y03s1"))))
     (propagated-inputs
      (list cairomm-1.14 glibmm-2.64 pango))))
 
@@ -1865,7 +1874,7 @@ tutorial.")
   (package
     (inherit gtkmm)
     (name "gtkmm")
-    (version "3.24.6")
+    (version "3.24.8")
     (source
      (origin
        (method url-fetch)
@@ -1874,7 +1883,7 @@ tutorial.")
                        (version-major+minor version)  "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "1mhi3ws43l051fha4zssfpykraa1qc2hd408l2xk65jfjhp18gjb"))))
+        (base32 "1i4ql0j6id6g34w5nbhd7vjak7l3s50lqgdjaj2ranrfj9j0r56j"))))
     (propagated-inputs
      `(("atkmm-2.28" ,atkmm-2.28)
        ("cairomm-1.14" ,cairomm-1.14)
@@ -2908,7 +2917,7 @@ Unix desktop environment under X11 as well as Wayland.")
 (define-public libpanel
   (package
     (name "libpanel")
-    (version "1.0.2")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -2917,21 +2926,27 @@ Unix desktop environment under X11 as well as Wayland.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10lkysbwg9w0lm1hj7lw4g7y9j8b88kmq07nfgx0r6f319znj12v"))))
+        (base32 "0wal073anl6iviyljyr8pw0m7av4ik6azpmrwzxw4snp95ib27aq"))))
     (build-system meson-build-system)
     (arguments
-     (list #:configure-flags #~(list "-Ddocs=disabled")  ;fontconfig issue
-           #:phases #~(modify-phases %standard-phases
-                        (add-after 'unpack 'disable-gtk-update-icon-cache
-                          (lambda _
-                            (substitute* "meson.build"
-                              (("gtk_update_icon_cache: true")
-                               "gtk_update_icon_cache: false")))))))
-    (native-inputs (list `(,glib-next "bin")
-                         gobject-introspection
-                         pkg-config
-                         vala))
-    (inputs (list glib-next gtk libadwaita))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-gtk-update-icon-cache
+            (lambda _
+              (substitute* "meson.build"
+                (("gtk_update_icon_cache: true")
+                 "gtk_update_icon_cache: false"))))
+          (add-before 'build 'set-home
+            (lambda _
+              (setenv "HOME" (getcwd)))))))
+    (native-inputs
+     (list gi-docgen
+           `(,glib "bin")
+           gobject-introspection
+           pkg-config
+           vala))
+    (inputs (list glib gtk libadwaita))
     (home-page "https://gitlab.gnome.org/GNOME/libpanel")
     (synopsis "Dock and panel library for GTK 4")
     (description "Libpanel provides a library to create IDE-like applications
