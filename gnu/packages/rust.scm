@@ -159,7 +159,7 @@
      (origin
        (method url-fetch)
        (uri (rust-uri version))
-       (sha256 (base32 "0xk9dhfff16caambmwij67zgshd8v9djw6ha0fnnanlv7rii31dc"))
+       (sha256 (base32 "0xk8dhfff16caambmwij67zgshd8v9djw6ha0fnnanlv7rii31dc"))
        (modules '((guix build utils)))
        (snippet
         '(begin

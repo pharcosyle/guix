@@ -565,7 +565,7 @@ OpenSSL for TARGET."
 (define-public openssl-3.0
   (package
     (inherit openssl-1.1)
-    (version "3.2.0")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -578,7 +578,7 @@ OpenSSL for TARGET."
               (patches (search-patches "openssl-3.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "03k9nhz1igzi5hm9ck2bhj25dffs4ngglsawzc33fhvygkq2dj0l"))))
+                "0favqgxbjjnwvz0zvg7cx2brnc25l860npaysxvhd19cwngk5iw3"))))
     (arguments
      (substitute-keyword-arguments (package-arguments openssl-1.1)
        ((#:phases phases '%standard-phases)
@@ -590,10 +590,6 @@ OpenSSL for TARGET."
                                            "/bin/perl"))))
             #$@(if (target-hurd?)
                    #~((delete 'patch-configure))
-                   #~())
-            ;; TODO Workaround. Actually just bump to 3.2.1.
-            #$@(if (target-x86-32?)
-                   #~((delete 'check))
                    #~())))
        ((#:configure-flags flags #~'())
         (if (system-hurd?)

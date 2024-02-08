@@ -856,14 +856,14 @@ Javascript and a small built-in standard library with C library wrappers.")
 (define-public duktape
   (package
     (name "duktape")
-    (version "2.6.0")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://duktape.org/duktape-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "19szwxzvl2g65fw95ggvb8h0ma5bd9vvnnccn59hwnc4dida1x4n"))))
+                "14187ihsr9vsl4pj5jhsn5h7khpk0cnfzp9hk24wcrsmigxd5y4h"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f                  ; No tests.

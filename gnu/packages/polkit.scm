@@ -29,6 +29,7 @@
 
 (define-module (gnu packages polkit)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix gexp)
   #:use-module (guix memoization)
   #:use-module ((guix licenses) #:select (lgpl2.0+))
@@ -58,16 +59,16 @@
 (define-public polkit
   (package
     (name "polkit")
-    (version "121")
+    (version "124")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.freedesktop.org/software/polkit/releases/"
-                    name "-" version ".tar.gz"))
-              (patches (search-patches "polkit-disable-systemd.patch"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/polkit-org/polkit")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1apz3bh7nbpmlp1cr00pb8z8wp0c7yb23ninb959jz3r38saxiwx"))
+                "0lrs16d3zifnrvjjypfj4q0bz16ym5r0ddhmzcbmflxs2bdldksm"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -158,7 +159,7 @@
            pkg-config
            python
            python-dbusmock-minimal))
-    (home-page "https://www.freedesktop.org/wiki/Software/polkit/")
+    (home-page "https://github.com/polkit-org/polkit")
     (synopsis "Authorization API for privilege management")
     (description "Polkit is an application-level toolkit for defining and
 handling the policy that allows unprivileged processes to speak to

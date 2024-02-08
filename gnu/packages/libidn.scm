@@ -34,14 +34,14 @@
 (define-public libidn
   (package
    (name "libidn")
-   (version "1.41")
+   (version "1.42")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libidn/libidn-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0ic9zlqqppwaqr3i0r8lb8f47rrazzc8d5pfgg8vs6mqciip0kc8"))))
+              "08s7rgg8rnmdrk8zyj6m1rb3j3cs6h44pjv0jckzxr06v3f9khfn"))))
    (build-system gnu-build-system)
    ;; FIXME: No Java and C# libraries are currently built.
    (arguments
@@ -60,14 +60,14 @@ Java libraries.")
 (define-public libidn2
   (package
     (name "libidn2")
-    (version "2.3.4")
+    (version "2.3.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libidn/" name "-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "0pxlvf37j9ivg2wp56q1xvx7g6y9cfmpd87mskwd2lg0nirbmjlk"))))
+                "0r3xzmmrx4hsc53jdncd5yqmkwzjgc4vh4hfkndm3f8hns8sf8ac"))))
     (inputs
      (list libunistring))
     (build-system gnu-build-system)
