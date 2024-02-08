@@ -199,8 +199,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.7.7")
-    (replacement gnutls/fixed)
+    (version "3.8.3")
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -208,11 +207,10 @@ living in the same process.")
               (uri (string-append "mirror://gnupg/gnutls/v"
                                   (version-major+minor version)
                                   "/gnutls-" version ".tar.xz"))
-              (patches (search-patches "gnutls-skip-trust-store-test.patch"
-                                       "gnutls-cross.patch"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
               (sha256
                (base32
-                "01i1gl15k6qwvxmxx0by1mn9nlmcmym18wdpm7dn9awfsp8474dy"))))
+                "0ghpyhhfa3nsraph6dws50jb3dc8g2cfl7dizdnyrm179fawakzp"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? (not (or (%current-target-system)
@@ -253,6 +251,16 @@ living in the same process.")
                    (substitute* "tests/fastopen.sh"
                      (("^unset RETCODE")
                       "exit 77\n"))))   ;skip
+               #$@(if (target-hurd?)
+                      #~((add-after 'unpack 'set-path-max
+                           (lambda _
+                             ;; Fix reference to undefined 'PATH_MAX'.  This
+                             ;; is fixed in GnuTLS commit
+                             ;; 3b6ec1e01de4e96d36276dfe34ee9e183f285264.
+                             (substitute* "lib/pathbuf.h"
+                               (("^#define GNUTLS_PATH_MAX PATH_MAX")
+                                "#define GNUTLS_PATH_MAX 8192\n")))))
+                      #~())
                #$@(if (target-ppc32?)
                       ;; https://gitlab.com/gnutls/gnutls/-/issues/1354
                       ;; Extend the test timeout from the default of 20 * 1000
@@ -291,7 +299,7 @@ living in the same process.")
                (if (string-prefix? "mips64el" system)
                    '()
                    (list p11-kit)))))
-    (home-page "https://www.gnu.org/software/gnutls/")
+    (home-page "https://gnutls.org")
     (synopsis "Transport layer security library")
     (description
      "GnuTLS is a secure communications library implementing the SSL, TLS
@@ -299,27 +307,10 @@ and DTLS protocols.  It is provided in the form of a C library to support the
 protocols, as well as to parse and write X.509, PKCS #12, OpenPGP and other
 required structures.")
     (license license:lgpl2.1+)
-    (properties '((ftp-server . "ftp.gnutls.org")
-                  (ftp-directory . "/gcrypt/gnutls")))))
+    (properties
+     '((release-monitoring-url . "https://gnutls.org/download.html")))))
 
 (define-deprecated/public-alias gnutls-latest gnutls)
-
-;; Replacement for gnutls@3.7.7 to address GNUTLS-SA-2020-07-14 /
-;; CVE-2023-0361, GNUTLS-SA-2023-10-23 / CVE-2023-5981, GNUTLS-SA-2024-01-14 /
-;; CVE-2024-0553, and GNUTLS-SA-2024-01-09 / CVE-2024-0567
-(define gnutls/fixed
-  (package
-    (inherit gnutls)
-    (version "3.8.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/gnutls/v"
-                                  (version-major+minor version)
-                                  "/gnutls-" version ".tar.xz"))
-              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
-              (sha256
-               (base32
-                "0ghpyhhfa3nsraph6dws50jb3dc8g2cfl7dizdnyrm179fawakzp"))))))
 
 (define-public gnutls/dane
   ;; GnuTLS with build libgnutls-dane, implementing DNS-based
@@ -336,7 +327,7 @@ required structures.")
     ;; This package supersedes the Guile bindings that came with GnuTLS until
     ;; version 3.7.8 included.
     (name "guile-gnutls")
-    (version "3.7.14")
+    (version "4.0.0")
     (home-page "https://gitlab.com/gnutls/guile/")
     (source (origin
               ;; url-fetch is used here to avoid a circular dependency with
@@ -344,11 +335,11 @@ required structures.")
               (method url-fetch)
               (uri (string-append
                     "https://gitlab.com/gnutls/guile/uploads/"
-                    "1fdc941351d54cd7affda1bb912b9ca5"
+                    "9060bc55069cedb40ab46cea49b439c0"
                     "/guile-gnutls-" version ".tar.gz"))
               (sha256
                (base32
-                "0ldnxq5qxzy92jd8w5c717bgx4038x9qmi43bzl6kmlkzpagqayy"))))
+                "0fdjmy9vfjwk2v616nan1zz6iy9i086vrh5mdcsfqxi00ckbjk2v"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -361,7 +352,11 @@ required structures.")
               (string-append "--with-guile-site-ccache-dir="
                              "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache")
               (string-append "--with-guile-extension-dir="
-                             "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions"))))
+                             "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions"))
+
+      ;; The 'gnutls' package currently lacks support for SRP, making this
+      ;; test fail.
+      #:make-flags #~'("XFAIL_TESTS=tests/srp-base64.scm")))
     (native-inputs
      (list libtool
            pkg-config
@@ -444,8 +439,7 @@ OpenSSL for TARGET."
 (define-public openssl-1.1
   (package
     (name "openssl")
-    (version "1.1.1q")
-    (replacement openssl/fixed)
+    (version "1.1.1u")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -458,7 +452,7 @@ OpenSSL for TARGET."
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "1jhhzp4gh6ymidxm1ckjk948l583awp0w3y2nvqdz7022kk9r4yp"))))
+                "1ipbcdlqyxbj5lagasrq2p6gn0036wq6hqp7gdnd1v1ya95xiy72"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"        ;6.8 MiB of man3 pages and full HTML documentation
@@ -567,25 +561,6 @@ OpenSSL for TARGET."
     (description "OpenSSL is an implementation of SSL/TLS.")
     (license license:openssl)
     (home-page "https://www.openssl.org/")))
-
-(define openssl/fixed
-  (package
-    (inherit openssl-1.1)
-    (name "openssl")
-    (version "1.1.1u")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                        version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/"
-                                        "openssl-" version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/openssl-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
-              (sha256
-               (base32
-                "1ipbcdlqyxbj5lagasrq2p6gn0036wq6hqp7gdnd1v1ya95xiy72"))))))
 
 (define-public openssl-3.0
   (package

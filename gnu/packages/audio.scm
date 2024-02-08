@@ -11,7 +11,7 @@
 ;;; Copyright © 2016–2023 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
-;;; Copyright © 2018, 2020, 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020, 2022, 2023, 2024 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2018, 2019, 2022 Marius Bakke <marius@gnu.org>
@@ -69,6 +69,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
@@ -264,55 +265,18 @@ softsynth library that can be used with other applications.")
 (define-public webrtc-audio-processing
   (package
     (name "webrtc-audio-processing")
-    (version "0.3.1")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "http://freedesktop.org/software/pulseaudio/"
-                       name "/" name "-" version ".tar.xz"))
+                       name "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1gsx7k77blfy171b6g3m0k0s0072v6jcawhmx1kjs9w5zlwdkzd0"))))
-    (build-system gnu-build-system)
-    (arguments
-     ;; TODO: Move this to a snippet/patch or remove with the upgrade to 1.0.
-     (if (or (target-riscv64?)
-             (target-powerpc?))
-       (list
-         #:phases
-         #~(modify-phases %standard-phases
-             (add-after 'unpack 'patch-source
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((patch-file
-                        #$(local-file
-                           (search-patch
-                             "webrtc-audio-processing-big-endian.patch"))))
-                   (invoke "patch" "--force" "-p1" "-i" patch-file)
-                   (substitute* "webrtc/typedefs.h"
-                     (("defined\\(__aarch64__\\)" all)
-                      (string-append
-                        ;; powerpc-linux
-                        "(defined(__PPC__) && __SIZEOF_SIZE_T__ == 4)\n"
-                        "#define WEBRTC_ARCH_32_BITS\n"
-                        "#define WEBRTC_ARCH_BIG_ENDIAN\n"
-                        ;; powerpc64-linux
-                        "#elif (defined(__PPC64__) && defined(_BIG_ENDIAN))\n"
-                        "#define WEBRTC_ARCH_64_BITS\n"
-                        "#define WEBRTC_ARCH_BIG_ENDIAN\n"
-                        ;; aarch64-linux
-                        "#elif " all
-                        ;; riscv64-linux
-                        " || (defined(__riscv) && __riscv_xlen == 64)"
-                        ;; powerpc64le-linux
-                        " || (defined(__PPC64__) && defined(_LITTLE_ENDIAN))"))))))))
-       '()))
-    (native-inputs
-     (if (or (target-riscv64?)
-             (target-powerpc?))
-       (list
-         (local-file (search-patch "webrtc-audio-processing-big-endian.patch"))
-         patch)
-       '()))
+        (base32 "0xfvq5lxg612vfzk3zk6896zcb4cgrrb7fq76w9h40magz0jymcm"))))
+    (build-system meson-build-system)
+    (native-inputs (list pkg-config))
+    (inputs (list abseil-cpp))
     (synopsis "WebRTC's Audio Processing Library")
     (description "WebRTC-Audio-Processing library based on Google's
 implementation of WebRTC.")
@@ -2595,6 +2559,7 @@ synchronous execution of all clients, and low latency operation.")
                  prefix (,(getenv "GUIX_PYTHONPATH")))))))))
     (inputs
      (list alsa-lib
+           bash-minimal
            dbus
            expat
            libsamplerate
@@ -3255,7 +3220,7 @@ lv2-c++-tools.")
 (define-public openal
   (package
     (name "openal")
-    (version "1.22.2")
+    (version "1.23.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3263,30 +3228,27 @@ lv2-c++-tools.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "081xgkma2a19dscwx21xdpklh8gq399w4f1fx737qsx7rnawr55f"))))
+                "08avhhfd96x4c18p8ys3va85nhx31xgpa3bz1ckmfkjc2f4lnvvr"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after
-          'unpack 'use-full-library-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "alc/backends/pulseaudio.cpp"
-              (("#define PALIB \"libpulse\\.so\\.0\"")
-               (string-append "#define PALIB \""
-                              (assoc-ref inputs "pulseaudio")
-                              "/lib/libpulse.so.0"
-                              "\"")))
-            (substitute* "alc/backends/alsa.cpp"
-              (("LoadLib\\(\"libasound\\.so\\.2\"\\)")
-               (string-append "LoadLib(\""
-                              (assoc-ref inputs "alsa-lib")
-                              "/lib/libasound.so.2"
-                              "\")")))
-            #t)))))
-    (inputs
-     (list alsa-lib pulseaudio))
+     (list
+      #:tests? #f                       ; no check target
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'use-full-library-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "alc/backends/pulseaudio.cpp"
+                (("#define PALIB \"libpulse\\.so\\.0\"")
+                 (string-append "#define PALIB \""
+                                (search-input-file inputs "lib/libpulse.so.0")
+                                "\"")))
+              (substitute* "alc/backends/alsa.cpp"
+                (("LoadLib\\(\"libasound\\.so\\.2\"\\)")
+                 (string-append "LoadLib(\""
+                                (search-input-file inputs "lib/libasound.so.2")
+                                "/lib/libasound.so.2"
+                                "\")"))))))))
+    (inputs (list alsa-lib pulseaudio))
     (synopsis "3D audio API")
     (description
      "OpenAL provides capabilities for playing audio in a virtual 3D

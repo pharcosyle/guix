@@ -51,6 +51,7 @@
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix memoization)
+  #:use-module (guix search-paths)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
@@ -453,19 +454,7 @@ ttest third-party/unittest)\n" line))))))
                       #t)))))
 
     ;; Clang supports the same environment variables as GCC.
-    (native-search-paths
-     (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CPLUS_INCLUDE_PATH")
-            (files '("include/c++" "include")))
-           (search-path-specification
-            (variable "OBJC_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "LIBRARY_PATH")
-            (files '("lib" "lib64")))))
+    (native-search-paths %gcc-search-paths)
 
     (home-page "https://clang.llvm.org")
     (synopsis "C language family frontend for LLVM")
@@ -608,7 +597,8 @@ output), and Binutils.")
     ("17.0.6" . "1a7rq3rgw5vxm8y39fyzr4kv7w97lli4a0c1qrkchwk8p0n07hgh")))
 
 (define %llvm-patches
-  '(("14.0.6" . ("clang-14.0-libc-search-path.patch"))
+  '(("14.0.6" . ("clang-14.0-libc-search-path.patch"
+                 "clang-runtime-14-glibc-2.36-compat.patch"))
     ("15.0.7" . ("clang-15.0-libc-search-path.patch"))
     ("16.0.6" . ("clang-16.0-libc-search-path.patch"))
     ("17.0.6" . ("clang-17.0-libc-search-path.patch"))))
@@ -857,7 +847,8 @@ Library.")
 (define-public clang-runtime-13
   (clang-runtime-from-llvm
    llvm-13
-   "1z2xr9nn4mgc3hn9ark2k5y4wznpk47xppkp63bcbagr6589acvv"))
+   "1z2xr9nn4mgc3hn9ark2k5y4wznpk47xppkp63bcbagr6589acvv"
+   '("clang-runtime-13-glibc-2.36-compat.patch")))
 
 (define-public clang-13
   (clang-from-llvm llvm-13 clang-runtime-13
@@ -936,7 +927,8 @@ Library.")
 (define-public clang-runtime-12
   (clang-runtime-from-llvm
    llvm-12
-   "1950rg294izdwkaasi7yjrmadc9mzdd5paf0q63jjcq2m3rdbj5l"))
+   "1950rg294izdwkaasi7yjrmadc9mzdd5paf0q63jjcq2m3rdbj5l"
+   '("clang-runtime-13-glibc-2.36-compat.patch")))
 
 (define-public clang-12
   (clang-from-llvm llvm-12 clang-runtime-12
@@ -992,7 +984,8 @@ Library.")
 (define-public clang-runtime-11
   (clang-runtime-from-llvm
    llvm-11
-   "0x1j8ngf1zj63wlnns9vlibafq48qcm72p4jpaxkmkb4qw0grwfy"))
+   "0x1j8ngf1zj63wlnns9vlibafq48qcm72p4jpaxkmkb4qw0grwfy"
+   '("clang-runtime-13-glibc-2.36-compat.patch")))
 
 (define-public clang-11
   (clang-from-llvm llvm-11 clang-runtime-11
@@ -1050,7 +1043,8 @@ Library.")
 (define-public clang-runtime-10
   (clang-runtime-from-llvm
    llvm-10
-   "1yjqjri753w0fzmxcyz687nvd97sbc9rsqrxzpq720na47hwh3fr"))
+   "1yjqjri753w0fzmxcyz687nvd97sbc9rsqrxzpq720na47hwh3fr"
+   '("clang-runtime-13-glibc-2.36-compat.patch")))
 
 (define-public clang-10
   (clang-from-llvm llvm-10 clang-runtime-10
@@ -1121,7 +1115,8 @@ Library.")
   (clang-runtime-from-llvm
    llvm-9
    "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"
-   '("clang-runtime-9-libsanitizer-mode-field.patch")))
+   '("clang-runtime-9-libsanitizer-mode-field.patch"
+     "clang-runtime-9-glibc-2.36-compat.patch")))
 
 (define-public clang-9
   (clang-from-llvm llvm-9 clang-runtime-9
@@ -1166,7 +1161,8 @@ Library.")
   (clang-runtime-from-llvm
    llvm-8
    "0dqqf8f930l8gag4d9qjgn1n0pj0nbv2anviqqhdi1rkhas8z0hi"
-   '("clang-runtime-9-libsanitizer-mode-field.patch")))
+   '("clang-runtime-9-libsanitizer-mode-field.patch"
+     "clang-runtime-9-glibc-2.36-compat.patch")))
 
 (define-public clang-8
   (clang-from-llvm llvm-8 clang-runtime-8
@@ -1209,7 +1205,8 @@ Library.")
   (clang-runtime-from-llvm
    llvm-7
    "1n48p8gjarihkws0i2bay5w9bdwyxyxxbpwyng7ba58jb30dlyq5"
-   '("clang-runtime-9-libsanitizer-mode-field.patch")))
+   '("clang-runtime-9-libsanitizer-mode-field.patch"
+     "clang-runtime-9-glibc-2.36-compat.patch")))
 
 (define-public clang-7
   (clang-from-llvm llvm-7 clang-runtime-7
@@ -1251,7 +1248,8 @@ Library.")
   (clang-runtime-from-llvm
    llvm-6
    "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"
-   '("clang-runtime-9-libsanitizer-mode-field.patch")))
+   '("clang-runtime-9-libsanitizer-mode-field.patch"
+     "clang-runtime-9-glibc-2.36-compat.patch")))
 
 (define-public clang-6
   (clang-from-llvm llvm-6 clang-runtime-6

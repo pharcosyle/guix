@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020, 2021, 2023 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2021 Mark H Weaver <mhw@netris.org>
@@ -153,7 +153,6 @@
            docbook-xsl
            doxygen
            xmlto
-           libxml2 ;for XML_CATALOG_FILES
            libxslt
            yelp-tools))
     (inputs
@@ -276,6 +275,10 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                 (substitute* '("contenttype.c" "gdbus-address-get-session.c"
                                "gdbus-peer.c" "appinfo.c" "desktop-app-info.c")
                   (("[ \t]*g_test_add_func.*;") "")))
+              (substitute* "glib/tests/error.c"
+                ;; This test segfaults with glibc 2.38.
+                (("g_test_add_func.*new-valist/invalid.*" all)
+                 (string-append "//" all "\n")))
 
               #$@(if (target-x86-32?)
                      ;; Comment out parts of timer.c that fail on i686 due to
@@ -498,7 +501,11 @@ functions for strings and common data structures.")
         '(substitute* "glib/tests/spawn-test.c"
            (("/bin/sh") "sh")))
        (sha256
-        (base32 "1bgfch7zj1pq4rkqcibfky1470ijljyrx5pn5s5v9mk72s22n6nz"))))
+        (base32 "1bgfch7zj1pq4rkqcibfky1470ijljyrx5pn5s5v9mk72s22n6nz"))
+       (patches (append
+                 ;; Remove with upgrade to >=2.75.4
+                 (search-patches "glib-gerror-null-format.patch")
+                 (origin-patches (package-source glib))))))
     (arguments
      (substitute-keyword-arguments (package-arguments glib)
        ((#:test-options test-options ''())
@@ -565,7 +572,7 @@ functions for strings and common data structures.")
        (prepend docbook-xml-4.2
                 docbook-xml
                 docbook-xsl
-                gtk-doc
+                gtk-doc/stable
                 libxml2
                 libxslt)))
     (arguments
@@ -791,7 +798,7 @@ The intltool collection can be used to do these things:
                "1jl7gsr7aclb9nvqazr039m86y7f7ivfhl2pixcrbfqjkb97r6kb"))))
     (build-system gnu-build-system)
     (inputs
-     (list libxml2 python-libxml2 python))
+     (list bash-minimal libxml2 python-libxml2 python))
     (arguments
      (list
       #:phases

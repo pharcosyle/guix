@@ -40,6 +40,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -493,7 +494,8 @@ with optional @acronym{TLS, Transport-Level Security} to protect credentials.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list boost
+     (list bash-minimal                           ;for 'wrap-program'
+           boost
            ncurses
            openssl
            perl

@@ -282,7 +282,6 @@
            gobject-introspection
            gsettings-desktop-schemas
            gtk-doc/stable
-           libxml2                      ;for XML_CATALOG_FILES
            pkg-config))
     (propagated-inputs
      ;; These libraries are required by the .pc file.
@@ -663,7 +662,6 @@ of writing test cases for asynchronous interactions.")
            gtk-doc/stable
            ;; Would only be required by configure flag "--enable-extended-tests".
            ;;gtx
-           libxml2                      ;for XML_CATALOG_FILES
            pkg-config
            python-pygobject
            python-wrapper
@@ -725,7 +723,6 @@ of known objects without needing a central registrar.")
            gobject-introspection
            gtk-doc/stable
            libtool
-           libxml2                      ;for XML_CATALOG_FILES
            pkg-config
            vala
            xorg-server-for-tests))
@@ -854,7 +851,8 @@ tomorrow, the rest of the week and for special occasions.")
            itstool
            pkg-config))
     (inputs
-     (list babl
+     (list bash-minimal
+           babl
            cairo
            gegl
            geocode-glib
@@ -1772,7 +1770,6 @@ client devices can handle.")
            `(,glib "bin")
            gtk-doc/stable
            gobject-introspection
-           libxml2                      ;for XML_CATALOG_FILES
            pkg-config
            vala))
     (inputs
@@ -2586,7 +2583,6 @@ GNOME Desktop.")
            gettext-minimal
            `(,glib "bin")
            glib                         ;for m4 macros
-           libxml2                      ;for XML_CATALOG_FILES
            libxslt                      ;for documentation
            pkg-config
            python-wrapper))             ;for tests
@@ -3068,21 +3064,18 @@ configuring CUPS.")
        (sha256
         (base32
          "0qa7cx6ra5hwqnxw95b9svgjg5q6ynm8y843iqjszxvds5z53h36"))))
+    (outputs '("out" "doc"))
     (build-system meson-build-system)
     (arguments
      (list
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'fix-docbook
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; Don't attempt to download XSL schema.
-              (substitute* "meson.build"
-                (("http://docbook.sourceforge.net/release/xsl-ns/current\
-/manpages/docbook.xsl")
-                 (string-append #$(this-package-native-input "docbook-xsl")
-                                "/xml/xsl/docbook-xsl-"
-                                #$(package-version docbook-xsl)
-                                "/manpages/docbook.xsl"))))))))
+          (add-after 'install 'move-doc
+            (lambda _
+              (let* ((old (string-append #$output "/share/gtk-doc"))
+                     (new (string-append #$output:doc "/share/gtk-doc")))
+                (mkdir-p (dirname new))
+                (rename-file old new)))))))
     (propagated-inputs (list gdk-pixbuf glib)) ;in Requires of libnotify.pc.
     (inputs (list gtk+ libpng))
     (native-inputs
@@ -3244,7 +3237,6 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
            gobject-introspection
            hicolor-icon-theme
            itstool
-           libxml2                      ;for XML_CATALOG_FILES
            libxslt                      ;for xsltproc
            python
            python-pygobject
@@ -4697,7 +4689,6 @@ and RDP protocols.")
     (native-inputs
      (list bash-completion
            libxslt                      ;for xsltproc
-           libxml2                      ;for XML_CATALOG_FILES
            docbook-xml-4.2
            docbook-xsl
            `(,glib "bin")
@@ -4849,7 +4840,10 @@ indicators etc).")
                (base32
                 "0s42l6dkajciqc99zp6dc9l8yv9g8w7d8mgv97l7h7drgd60hand"))
               (patches
-               (search-patches "glib-networking-gnutls-binding.patch"))))
+               ;; Fixed in 2.76.0
+               ;; see https://gitlab.gnome.org/GNOME/glib-networking/-/issues/201
+               (search-patches "glib-networking-disable-connection-tls1.2-test.patch"
+                               "glib-networking-gnutls-binding.patch"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config gettext-minimal))
@@ -5212,7 +5206,6 @@ and the GLib main loop, to integrate well with GNOME applications.")
            gettext-minimal
            `(,glib "bin")               ;for gdbus-codegen, etc.
            gobject-introspection
-           libxml2                      ;for XML_CATALOG_FILES
            libxslt
            pkg-config
            python
@@ -5666,9 +5659,8 @@ output devices.")
     (native-inputs
      (modify-inputs (package-native-inputs colord-minimal)
        (append bash-completion
-               docbook-xsl-1.79.1
+               docbook-xsl
                gtk-doc/stable
-               libxml2                  ;for XML_CATALOG_FILES
                libxslt
                sane-backends
                vala)))))                ;for VAPI, needed by simple-scan
@@ -5830,8 +5822,7 @@ faster results and to avoid unnecessary server load.")
            umockdev
            ;; For man pages.
            docbook-xsl
-           libxslt                      ; for 'xsltproc'
-           libxml2))                    ; for 'XML_CATALOG_FILES'
+           libxslt))                    ; for 'xsltproc'
     (inputs
      (list dbus-glib libgudev libusb))
     (propagated-inputs
@@ -6016,7 +6007,6 @@ services for numerous locations.")
            docbook-xsl
            gettext-minimal
            `(,glib "bin")               ;for glib-mkenums
-           libxml2                      ;for XML_CATALOG_FILES
            libxslt
            perl
            pkg-config))
@@ -6685,7 +6675,8 @@ discovery protocols.")
     (propagated-inputs
      (list dconf))
     (inputs
-     (list gtk+
+     (list bash-minimal
+           gtk+
            gdk-pixbuf
            at-spi2-core
            cairo
@@ -7257,7 +7248,8 @@ principles are simplicity and standards compliance.")
            python-pep8
            xorg-server-for-tests))
     (inputs
-     (list gobject-introspection
+     (list bash-minimal
+           gobject-introspection
            gtk+
            python-wrapper
            python-pygobject))
@@ -7642,24 +7634,22 @@ such as gzip tarballs.")
                  (,(dirname (search-input-file (or native-inputs inputs)
                                                "bin/gdbus"))))))))
        #:configure-flags
-       '("-Ddocbook=false" ; FIXME: disabled because of docbook validation error
-         "-Dman=false"   ; FIXME: disabled because of docbook validation error
-         "-Delogind=true"
+       '("-Delogind=true"
          "-Dsystemd=false"
          "-Dsystemd_session=disable"
          "-Dsystemd_journal=false")))
     (build-system meson-build-system)
     (native-inputs
-     (list docbook-xml
+     (list docbook-xml-4.1.2
            docbook-xsl
            `(,glib "bin")               ; for glib-compile-schemas, etc.
            intltool
-           libxml2                      ;for 'XML_CATALOG_FILES'
            libxslt
            pkg-config
            xmlto))
     (inputs
-     (list elogind
+     (list bash-minimal
+           elogind
            gnome-desktop
            gsettings-desktop-schemas
            gtk+
@@ -8151,6 +8141,10 @@ Microsoft Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (delete-file-recursively "tests/book-migration")
               (substitute* "tests/CMakeLists.txt"
                 (("add_subdirectory\\(book-migration\\)") ""))))
+          (add-after 'unpack 'patch-locale-in-test
+            (lambda _
+              (substitute* "tests/libebook/client/test-book-client-custom-summary.c"
+                (("en_US\\.UTF-8") "C.UTF-8"))))
           (add-after 'unpack 'patch-paths
             (lambda _
               (substitute* '("tests/test-server-utils/e-test-server-utils.c"
@@ -8280,7 +8274,8 @@ Evolution (hence the name), but is now used by other packages as well.")
      ;; caribou-1.0.pc refers to all these.
      (list libgee libxklavier libxtst gtk+))
     (inputs
-     `(("clutter" ,clutter)
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ("clutter" ,clutter)
        ("dconf" ,dconf)
        ("gtk+-2" ,gtk+-2)
        ("python-pygobject" ,python-pygobject)))
@@ -9328,6 +9323,7 @@ printf '~a is deprecated.  Use the \"gnome-extensions\" CLI or \
            xorg-server-for-tests))
     (inputs
      (list accountsservice
+           bash-minimal
            caribou
            docbook-xsl
            evolution-data-server
@@ -10246,7 +10242,8 @@ specified duration and save it as a GIF encoded animated image file.")
            `(,gtk+ "bin")
            pkg-config))
     (inputs
-     (list gsettings-desktop-schemas
+     (list bash-minimal
+           gsettings-desktop-schemas
            gtk+
            libhandy-0.0
            libsecret
@@ -11565,7 +11562,7 @@ mp3, Ogg Vorbis and FLAC")
     (arguments
      `(#:imported-modules ((guix build python-build-system)
                            (guix build glib-or-gtk-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
 
        #:modules ((guix build glib-or-gtk-build-system)
                   (guix build utils)
@@ -11583,14 +11580,18 @@ mp3, Ogg Vorbis and FLAC")
                    (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH")))
                (wrap-program (string-append out "/bin/soundconverter")
                  `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
-                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
-             #t)))))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")))
     (inputs
-     (list gtk+ python python-pygobject gstreamer gst-plugins-base))
+     (list bash-minimal
+           gtk+
+           python
+           python-pygobject
+           gstreamer
+           gst-plugins-base))
     (home-page "https://soundconverter.org/")
     (synopsis "Convert between audio formats with a graphical interface")
     (description
@@ -11874,7 +11875,8 @@ advanced image management tool")
        ("python-pytest-runner" ,python-pytest-runner)
        ("python-pytest" ,python-pytest)))
     (inputs
-     `(("cairo" ,cairo)
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ("cairo" ,cairo)
        ("dbus-glib" ,dbus-glib)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
@@ -12059,7 +12061,8 @@ higher level porcelain stuff.")
                 (wrap-program prog
                   `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
     (inputs
-     (list glib
+     (list bash-minimal
+           glib
            gsettings-desktop-schemas
            gspell
            gtk+
@@ -12752,7 +12755,8 @@ It uses pandoc as back-end for parsing Markdown.")
          (list valgrind)
          '())))
     (inputs
-     `(("glib" ,glib)
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ("glib" ,glib)
        ("json-glib" ,json-glib)
        ("libevdev" ,libevdev)
        ("libsystemd" ,elogind)
@@ -12823,7 +12827,8 @@ your operating-system definition:
            gobject-introspection
            pkg-config))
     (inputs
-     (list adwaita-icon-theme
+     (list bash-minimal
+           adwaita-icon-theme
            gtk+
            guile-3.0                    ;for wrap-script
            libratbag
@@ -12886,7 +12891,8 @@ provided there is a DBus service present:
            pkg-config
            yelp-tools))
     (inputs
-     (list gst-plugins-base
+     (list bash-minimal
+           gst-plugins-base
            gst-plugins-good
            gstreamer
            gtk+
@@ -13330,7 +13336,8 @@ world.")
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (inputs
-     `(("enchant" ,enchant)
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ("enchant" ,enchant)
        ("glib" ,glib)
        ("goocanvas" ,goocanvas)
        ("gtk" ,gtk+)

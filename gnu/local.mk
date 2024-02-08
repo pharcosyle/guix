@@ -11,7 +11,7 @@
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016-2023 Efraim Flashner <efraim@flashner.co.il>
-# Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+# Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018, 2023, 2024 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1034,6 +1034,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-17.0-libc-search-path.patch	\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
+  %D%/packages/patches/clang-runtime-13-glibc-2.36-compat.patch	\
+  %D%/packages/patches/clang-runtime-14-glibc-2.36-compat.patch	\
+  %D%/packages/patches/clang-runtime-9-glibc-2.36-compat.patch		\
   %D%/packages/patches/clang-runtime-9-libsanitizer-mode-field.patch	\
   %D%/packages/patches/clang-runtime-3.5-libsanitizer-mode-field.patch	\
   %D%/packages/patches/clang-runtime-3.7-fix-build-with-python3.patch	\
@@ -1077,7 +1080,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/date-output-pkg-config-files.patch	\
   %D%/packages/patches/datefudge-gettimeofday.patch		\
   %D%/packages/patches/dbacl-include-locale.h.patch		\
-  %D%/packages/patches/dbacl-icheck-multiple-definitions.patch		\
+  %D%/packages/patches/dbacl-icheck-multiple-definitions.patch	\
+  %D%/packages/patches/dblatex-inkscape-1.0.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
@@ -1086,11 +1090,19 @@ dist_patch_DATA =						\
   %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/dee-vapi.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
-  %D%/packages/patches/diffutils-fix-signal-processing.patch	\
   %D%/packages/patches/directfb-davinci-glibc-228-compat.patch	\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
-  %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
-  %D%/packages/patches/docbook-xsl-support-old-url.patch	\
+  %D%/packages/patches/docbook-utils-documentation-edits.patch	\
+  %D%/packages/patches/docbook-utils-escape-characters.patch	\
+  %D%/packages/patches/docbook-utils-remove-jade-sp.patch	\
+  %D%/packages/patches/docbook-utils-respect-refentry-for-name.patch	\
+  %D%/packages/patches/docbook-utils-source-date-epoch.patch	\
+  %D%/packages/patches/docbook-utils-use-date-element.patch	\
+  %D%/packages/patches/docbook2x-filename-handling.patch	\
+  %D%/packages/patches/docbook2x-fix-synopsis.patch		\
+  %D%/packages/patches/docbook2x-manpage-typo.patch		\
+  %D%/packages/patches/docbook2x-preprocessor-declaration.patch	\
+  %D%/packages/patches/docbook2x-static-datadir-evaluation.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/dovecot-opensslv3.patch			\
@@ -1179,11 +1191,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/ffmpeg-jami-libopusenc-reload-packet-loss-at-encode.patch \
   %D%/packages/patches/ffmpeg-jami-remove-mjpeg-log.patch	\
   %D%/packages/patches/ffmpeg-jami-screen-sharing-x11-fix.patch	\
+  %D%/packages/patches/ffmpeg-4-binutils-2.41.patch	\
   %D%/packages/patches/fifengine-boost-compat.patch		\
   %D%/packages/patches/fifengine-python-3.9-compat.patch	\
   %D%/packages/patches/fifengine-swig-compat.patch		\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
+  %D%/packages/patches/file-32bit-time.patch			\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/firebird-riscv64-support-pt1.patch	\
   %D%/packages/patches/firebird-riscv64-support-pt2.patch	\
@@ -1244,6 +1258,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-fix-isl-includes.patch	\
   %D%/packages/patches/gcc-6-fix-buffer-size.patch	\
   %D%/packages/patches/gcc-6-libsanitizer-mode-size.patch	\
+  %D%/packages/patches/gcc-7-libsanitizer-fsconfig-command.patch \
   %D%/packages/patches/gcc-7-libsanitizer-mode-size.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
@@ -1255,6 +1270,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-5-fix-powerpc64le-build.patch	\
   %D%/packages/patches/gcc-5-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-5-source-date-epoch-2.patch		\
+  %D%/packages/patches/gcc-5.5.0-libstdc++-xmlcatalog.patch	\
   %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
@@ -1271,8 +1287,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-10-cross-environment-variables.patch \
   %D%/packages/patches/gcc-11-libstdc++-hurd-libpthread.patch   \
   %D%/packages/patches/gcc-12-cross-environment-variables.patch \
-  %D%/packages/patches/gcc-10-tree-sra-union-handling.patch	\
   %D%/packages/patches/gcc-11-libstdc++-powerpc.patch           \
+  %D%/packages/patches/gcc-13.2.0-libstdc++-docbook-xsl-uri.patch	\
+  %D%/packages/patches/gcc-13.2.0-libstdc++-info-install-fix.patch	\
   %D%/packages/patches/gcolor3-update-libportal-usage.patch	\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-brect-bounds.patch			\
@@ -1288,10 +1305,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/gettext-libunicode-update.patch		\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
-  %D%/packages/patches/ghc-9.2-glibc-2.33-link-order.patch \
+  %D%/packages/patches/ghc-9-StgCRunAsm-only-when-needed.patch	\
   %D%/packages/patches/ghc-9.2-grep-warnings.patch \
   %D%/packages/patches/ghc-testsuite-dlopen-pie.patch		\
   %D%/packages/patches/ghc-testsuite-grep-compat.patch		\
+  %D%/packages/patches/ghc-testsuite-recomp015-execstack.patch	\
   %D%/packages/patches/ghc-basement-fix-32bit.patch		\
   %D%/packages/patches/ghc-bytestring-handle-ghc9.patch	\
   %D%/packages/patches/ghc-language-haskell-extract-ghc-8.10.patch	\
@@ -1306,6 +1324,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gitg-fix-positional-argument.patch	\
   %D%/packages/patches/gklib-suitesparse.patch			\
   %D%/packages/patches/glib-appinfo-watch.patch			\
+  %D%/packages/patches/glib-gerror-null-format.patch	\
+  %D%/packages/patches/glib-networking-disable-connection-tls1.2-test.patch	\
   %D%/packages/patches/glib-networking-gnutls-binding.patch	\
   %D%/packages/patches/glib-skip-failing-test.patch		\
   %D%/packages/patches/glibc-2.33-riscv64-miscompilation.patch	\
@@ -1328,6 +1348,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-2.37-hurd-clock_t_centiseconds.patch	\
   %D%/packages/patches/glibc-2.37-hurd-local-clock_gettime_MONOTONIC.patch	\
   %D%/packages/patches/glibc-2.37-versioned-locpath.patch	\
+  %D%/packages/patches/glibc-2.38-hurd-ucontext.patch		\
+  %D%/packages/patches/glibc-2.38-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-hurd-clock_t_centiseconds.patch	\
   %D%/packages/patches/glibc-hurd-getauxval.patch		\
   %D%/packages/patches/glibc-hurd-gettyent.patch		\
@@ -1354,11 +1376,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnome-settings-daemon-gc.patch		\
   %D%/packages/patches/gnome-session-support-elogind.patch	\
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
+  %D%/packages/patches/gnumach-fix-i686-linux-build.patch	\
+  %D%/packages/patches/gnumach-fix-task_info.patch		\
   %D%/packages/patches/gnumach-support-noide.patch		\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnupg-1-build-with-gcc10.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
-  %D%/packages/patches/gnutls-cross.patch			\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-absolute-shlib-path-1.72.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
@@ -1459,10 +1482,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/idris-test-ffi008.patch			\
   %D%/packages/patches/igraph-fix-varargs-integer-size.patch	\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
-  %D%/packages/patches/imagemagick-CVE-2020-27829.patch		\
-  %D%/packages/patches/imagemagick-ReadDCMImage-fix.patch	\
-  %D%/packages/patches/imagemagick-ReadDCMPixels-fix.patch	\
-  %D%/packages/patches/imagemagick-WriteTHUMBNAILImage-fix.patch	\
   %D%/packages/patches/inkscape-poppler-compat.patch		\
   %D%/packages/patches/instead-use-games-path.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
@@ -1595,6 +1614,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libqalculate-3.8.0-libcurl-ssl-fix.patch	\
   %D%/packages/patches/libquicktime-ffmpeg.patch 		\
   %D%/packages/patches/librecad-support-for-boost-1.76.patch	\
+  %D%/packages/patches/libsepol-versioned-docbook.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtgvoip-disable-sse2.patch 		\
   %D%/packages/patches/libtgvoip-disable-webrtc.patch 		\
@@ -1756,9 +1776,25 @@ dist_patch_DATA =						\
   %D%/packages/patches/openjdk-currency-time-bomb2.patch	\
   %D%/packages/patches/openjdk-9-pointer-comparison.patch       \
   %D%/packages/patches/openjdk-9-setsignalhandler.patch         \
+  %D%/packages/patches/openjdk-9-classlist-reproducibility.patch	\
+  %D%/packages/patches/openjdk-9-idlj-reproducibility.patch	\
+  %D%/packages/patches/openjdk-9-jar-reproducibility.patch	\
+  %D%/packages/patches/openjdk-9-module-reproducibility.patch	\
+  %D%/packages/patches/openjdk-9-module2-reproducibility.patch	\
+  %D%/packages/patches/openjdk-9-module3-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-char-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-classlist-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-corba-reproducibility.patch	\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-jar-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-jtask-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-module-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-module3-reproducibility.patch	\
+  %D%/packages/patches/openjdk-10-module4-reproducibility.patch	\
   %D%/packages/patches/openjdk-10-pointer-comparison.patch      \
   %D%/packages/patches/openjdk-10-setsignalhandler.patch        \
+  %D%/packages/patches/openjdk-11-classlist-reproducibility.patch	\
+  %D%/packages/patches/openjdk-13-classlist-reproducibility.patch	\
   %D%/packages/patches/openjdk-15-xcursor-no-dynamic.patch	\
   %D%/packages/patches/openjdk-21-fix-rpath.patch		\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
@@ -1801,7 +1837,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-docrepr-fix-tests.patch		\
   %D%/packages/patches/python-feedparser-missing-import.patch	\
   %D%/packages/patches/python-louvain-fix-test.patch		\
+  %D%/packages/patches/python-matplotlib-fix-legend-loc-best-test.patch	\
   %D%/packages/patches/python-random2-getrandbits-test.patch		\
+  %D%/packages/patches/python-pillow-use-zlib-1.3.patch	\
   %D%/packages/patches/python-poppler-qt5-fix-build.patch	\
   %D%/packages/patches/python-pyreadstat-link-libiconv.patch	\
   %D%/packages/patches/python-pyls-black-41.patch		\
@@ -1902,6 +1940,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\
   %D%/packages/patches/python-3-hurd-configure.patch		\
+  %D%/packages/patches/python-3-reproducible-build.patch	\
   %D%/packages/patches/python-aionotify-0.2.0-py3.8.patch	\
   %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
   %D%/packages/patches/python-cross-compile.patch		\
@@ -2056,6 +2095,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/supertux-unbundle-squirrel.patch		\
+  %D%/packages/patches/sway-add-libinput-config-accel.patch	\
   %D%/packages/patches/swig-support-gcc-12.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
@@ -2173,7 +2213,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wcstools-extend-makefiles.patch	\
   %D%/packages/patches/wdl-link-libs-and-fix-jnetlib.patch	\
   %D%/packages/patches/webkitgtk-adjust-bubblewrap-paths.patch	\
-  %D%/packages/patches/webrtc-audio-processing-big-endian.patch	\
   %D%/packages/patches/webrtc-for-telegram-desktop-unbundle-libsrtp.patch \
   %D%/packages/patches/websocketpp-fix-for-cmake-3.15.patch	\
   %D%/packages/patches/wmctrl-64-fix.patch			\
@@ -2215,7 +2254,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xygrib-newer-proj.patch			\
   %D%/packages/patches/yggdrasil-extra-config.patch	\
   %D%/packages/patches/zig-0.9-riscv-support.patch		\
-  %D%/packages/patches/zig-do-not-link-against-librt.patch	\
   %D%/packages/patches/zig-use-baseline-cpu-by-default.patch	\
   %D%/packages/patches/zig-use-system-paths.patch		\
   %D%/packages/patches/zsh-egrep-failing-test.patch

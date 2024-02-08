@@ -12,7 +12,7 @@
 ;;; Copyright © 2019-2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2020, 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2023, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
@@ -460,7 +460,8 @@ $(prefix)/etc/openrc\n")))
                     ;; the 'patch-shebangs' phase, which would otherwise
                     ;; change it to 'GUILE/bin/guile'.
                     (delete 'patch-shebangs))))
-      (native-inputs `(("pkg-config" ,pkg-config)
+      (native-inputs `(("locales" ,(libc-utf8-locales-for-target))
+                       ("pkg-config" ,pkg-config)
 
                        ;; Guile libraries are needed here for
                        ;; cross-compilation.
@@ -478,6 +479,7 @@ $(prefix)/etc/openrc\n")))
                        ("guile-zstd" ,guile-zstd)
                        ("guile-ssh" ,guile-ssh)
                        ("guile-git" ,guile-git)
+                       ("guile-semver" ,guile-semver)
 
                        ;; XXX: Keep the development inputs here even though
                        ;; they're unnecessary, just so that 'guix environment
@@ -491,7 +493,8 @@ $(prefix)/etc/openrc\n")))
                        ("help2man" ,help2man)
                        ("po4a" ,po4a)))
       (inputs
-       `(("bzip2" ,bzip2)
+       `(("bash-minimal", bash-minimal)
+         ("bzip2" ,bzip2)
          ("gzip" ,gzip)
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
@@ -1529,9 +1532,9 @@ environments.")
        (list
         #:modules `(((guix build guile-build-system)
                      #:select (target-guile-effective-version))
-                    ,@%gnu-build-system-modules)
+                    ,@%default-gnu-modules)
         #:imported-modules `((guix build guile-build-system)
-                             ,@%gnu-build-system-modules)
+                             ,@%default-gnu-imported-modules)
         #:phases
         #~(modify-phases %standard-phases
             (add-before 'build 'set-GUILE_AUTO_COMPILE
@@ -1778,9 +1781,9 @@ in an isolated environment, in separate namespaces.")
        (list
         #:modules `(((guix build guile-build-system)
                      #:select (target-guile-effective-version))
-                    ,@%gnu-build-system-modules)
+                    ,@%default-gnu-modules)
         #:imported-modules `((guix build guile-build-system)
-                             ,@%gnu-build-system-modules)
+                             ,@%default-gnu-imported-modules)
         #:phases
         #~(modify-phases %standard-phases
             (add-before 'build 'set-GUILE_AUTO_COMPILE
@@ -2198,19 +2201,18 @@ Python eggs, Ruby gems, and more to RPMs, debs, Solaris packages and more.")
                         (mkdir-p datadir)
                         (invoke "touch" (string-append datadir "index.db"))
                         (setenv "HOME" home))
-                      (invoke "./bootstrap")
-                      #t))
+                      (invoke "./bootstrap")))
                   (add-after 'install 'wrap-executables
                     (lambda* (#:key outputs inputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
                             (curl (assoc-ref inputs "curl")))
                         (wrap-program (string-append out "/bin/akku")
-                          `("LD_LIBRARY_PATH" ":" prefix (,(string-append curl "/lib"))))
-                        #t))))))
+                          `("LD_LIBRARY_PATH" ":" prefix
+                            (,(string-append curl "/lib"))))))))))
     (native-inputs
      (list which autoconf automake pkg-config))
     (inputs
-     (list guile-3.0 curl))
+     (list bash-minimal guile-3.0 curl))
     (home-page "https://akkuscm.org/")
     (synopsis "Language package manager for Scheme")
     (description

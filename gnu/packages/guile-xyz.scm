@@ -183,7 +183,7 @@
                   #t))))
     (build-system gnu-build-system)
     (inputs
-     (list guile-3.0 nspr nss))
+     (list bash-minimal guile-3.0 nspr nss))
     ;; FIXME the bundled csv contains one more exported procedure
     ;; (sxml->csv-string) than guile-csv. The author is maintainer of both
     ;; projects.
@@ -197,9 +197,9 @@
     (arguments
      `(#:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:make-flags
        ;; TODO: The documentation must be built with the `docs' target.
        (let* ((out (assoc-ref %outputs "out"))
@@ -286,9 +286,9 @@ more.")
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")
        #:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-guilescript
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -755,9 +755,9 @@ you send to a FIFO file.")
     (arguments
      `(#:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases (modify-phases %standard-phases
                   (delete 'strip)
                   (add-after 'install 'wrap-program
@@ -1894,9 +1894,9 @@ bindings to the @code{yaml-cpp} C++ library.")
     (arguments
      `(#:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:configure-flags
        (list (string-append
               "--with-guile-site-dir=" %output "/share/guile/site/"
@@ -2124,10 +2124,10 @@ above command-line parameters.")
         #:modules `(((guix build guile-build-system)
                      #:select
                      (target-guile-effective-version))
-                    ,@%gnu-build-system-modules)
+                    ,@%default-gnu-modules)
         #:phases
         (with-imported-modules `((guix build guile-build-system)
-                                 ,@%gnu-build-system-modules)
+                                 ,@%default-gnu-imported-modules)
           #~(modify-phases %standard-phases
               (add-after 'install 'hall-wrap-binaries
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -2273,7 +2273,7 @@ user which package sets would they like to install from it.")
                   (guix build emacs-utils)
                   (ice-9 rdelim)
                   (ice-9 popen))
-       #:imported-modules (,@%gnu-build-system-modules
+       #:imported-modules (,@%default-gnu-imported-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
        #:phases
@@ -2682,7 +2682,7 @@ many readers as needed).")
                    #:select (target-guile-effective-version))
                   (guix build utils))
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:configure-flags (list "--with-ncursesw" ; Unicode support
                                "--with-gnu-filesystem-hierarchy")
        #:phases
@@ -2958,7 +2958,7 @@ inspired by the SCSH regular expression system.")
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:tests? #f ; test suite is non-deterministic :(
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-haunt
@@ -2994,14 +2994,13 @@ inspired by the SCSH regular expression system.")
                                            (string-append dep "/lib/guile/"
                                                           version
                                                           "/site-ccache"))
-                                         deps))))
-                             #t)))))))))
+                                         deps)))))))))))))
     (native-inputs
      (list pkg-config texinfo))
     (inputs
      ;; Depend on the latest Guile to avoid bytecode compatibility issues when
      ;; using modules built against the latest version.
-     (list guile-3.0-latest))
+     (list bash-minimal guile-3.0-latest))
     (propagated-inputs
      (list guile-reader guile-commonmark))
     (synopsis "Functional static site generator")
@@ -3243,7 +3242,7 @@ The picture values can directly be displayed in Geiser.")
        `(#:modules
          ((ice-9 match)
           (srfi srfi-1)
-          ,@%gnu-build-system-modules)
+          ,@%default-gnu-modules)
          #:tests? #f                    ; there are none
          #:make-flags
          (list (string-append "PICT_DIR="
@@ -3402,8 +3401,7 @@ serializing continuations or delimited continuations.")
              ;; TODO: It would be better to patch the Makefile.
              (setenv "GUILE_LOAD_PATH"
                      (string-append ".:"
-                                    (getenv "GUILE_LOAD_PATH")))
-             #t))
+                                    (getenv "GUILE_LOAD_PATH")))))
          (add-after 'install 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Wrap the 'python' executable so it can find its
@@ -3428,10 +3426,9 @@ serializing continuations or delimited continuations.")
                  `("GUILE_LOAD_PATH" ":" prefix
                    (,load-path))
                  `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                   (,compiled-path)))
-               #t))))))
+                   (,compiled-path)))))))))
     (inputs
-     (list guile-3.0 guile-persist guile-readline guile-stis-parser))
+     (list bash-minimal guile-3.0 guile-persist guile-readline guile-stis-parser))
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (synopsis "Python implementation in Guile")
@@ -4063,7 +4060,8 @@ applied to surplus arguments.")
        ("texinfo" ,texinfo)
        ("texlive" ,(texlive-updmap.cfg (list texlive-epsf)))))
     (inputs
-     (list dbus-glib
+     (list bash-minimal
+           dbus-glib
            guile-3.0
            guile-lib
            guile-readline
@@ -4273,7 +4271,8 @@ processing filters.")
        ("gettext" ,gettext-minimal)
        ("perl" ,perl)))
     (inputs
-     `(;; Guile
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ;; Guile
        ("guile" ,guile-2.2)
        ("guile-lib" ,guile2.2-lib)
        ("guile-readline" ,guile2.2-readline)
@@ -5526,9 +5525,9 @@ schedulers.")
       (arguments
        `(#:modules (((guix build guile-build-system)
                      #:prefix guile:)
-                    ,@%gnu-build-system-modules)
+                    ,@%default-gnu-modules)
          #:imported-modules ((guix build guile-build-system)
-                             ,@%gnu-build-system-modules)
+                             ,@%default-gnu-imported-modules)
          #:tests? #false ; there are none
          #:phases
          (modify-phases %standard-phases
@@ -5713,9 +5712,9 @@ high-level API for network management that uses rtnetlink.")
      `(#:make-flags '("GUILE_AUTO_COMPILE=0") ;to prevent guild warnings
        #:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-program
                     (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -5769,9 +5768,9 @@ GitLab instance.")
      `(#:make-flags '("GUILE_AUTO_COMPILE=0")     ;to prevent guild warnings
        #:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases
        (modify-phases %standard-phases
          (delete 'strip)

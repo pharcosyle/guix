@@ -44,6 +44,7 @@
 ;;; Copyright © 2021 Simon Streit <simon@netpanic.org>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Thomas Albers Raviola <thomas@thomaslabs.org>
+;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2022, 2023 Sughosha <sughosha@disroot.org>
 ;;; Copyright © 2022 Remco van 't Veer <remco@remworks.net>
 ;;; Copyright © 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -459,8 +460,7 @@ score, keyboard, guitar, drum and controller views.")
                    (find-files "3rdparty"
                                (lambda (file stat)
                                  (string-match "^3rdparty/[^/]*$" file))
-                               #:directories? #t))
-                  #t))))
+                               #:directories? #t))))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "clementine_test"
@@ -482,15 +482,16 @@ score, keyboard, guitar, drum and controller views.")
              (let ((out             (assoc-ref outputs "out"))
                    (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
                (wrap-program (string-append out "/bin/clementine")
-                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
-               #t))))))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix
+                   (,gst-plugin-path)))))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("googletest" ,googletest)
-       ("pkg-config" ,pkg-config)
-       ("qtlinguist" ,qttools-5)))
+     (list gettext-minimal
+           googletest
+           pkg-config
+           qttools-5))
     (inputs
-     (list boost
+     (list bash-minimal
+           boost
            chromaprint
            fftw
            glib
@@ -640,7 +641,8 @@ you create custom user interfaces for your MIDI hardware.")
              (setenv "DISPLAY" ":1")
              (setenv "HOME" (getcwd)))))))
     (native-inputs
-     (list gettext-minimal
+     (list bash-minimal
+           gettext-minimal
            googletest
            pkg-config
            qttools
@@ -779,7 +781,7 @@ many input formats and provides a customisable Vi-style user interface.")
     (native-inputs
      (list diffutils
            `(,glib "bin")               ; for gtester
-           gtk-doc
+           gtk-doc/stable
            intltool
            libtool
            pkg-config))
@@ -1537,7 +1539,7 @@ and auto-mapping slices to MIDI note numbers.")
            python))
     (native-inputs
      (list bison
-           dblatex
+           dblatex/stable
            flex
            fontforge
            gettext-minimal
@@ -2166,7 +2168,8 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
                 (wrap-program (search-input-file outputs "bin/solfege")
                   `("GUIX_PYTHONPATH" ":" prefix (,path)))))))))
     (inputs
-     (list python-wrapper
+     (list bash-minimal
+           python-wrapper
            python-pygobject
            gettext-minimal
            gtk+
@@ -3136,18 +3139,7 @@ browser.")
                 "1rs248pkgn6d29nkvw9ab6dvi1vsz220jdmz1ddzr29cpyc0adfh"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; no test target
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cmake_admin/CreateManpages.cmake"
-               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
-             #t)))))
+     `(#:tests? #f))                      ; no test target
     (inputs
      (list qtbase-5 qtsvg-5 qttools-5 alsa-lib))
     (native-inputs
@@ -3180,23 +3172,12 @@ backends, including ALSA, OSS, Network and FluidSynth.")
                 "0kh8pns9pla9c47y2nwckjpiihczg6rpg96aignsdsd7vkql69s9"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f  ; no test target
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cmake_admin/CreateManpages.cmake"
-               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
-             #t)))))
+     `(#:tests? #f))  ; no test target
     (inputs
      (list drumstick qtbase-5 qtsvg-5 qtx11extras))
     (native-inputs
      (list libxslt ;for xsltproc
-           docbook-xsl qttools-5 pkg-config))
+           docbook-xml-4.4 docbook-xsl qttools-5 pkg-config))
     (home-page "https://vmpk.sourceforge.io/")
     (synopsis "Virtual MIDI piano keyboard")
     (description
@@ -3428,7 +3409,7 @@ can connect to any JACK port and record the output into a stereo WAV file.")
      `(#:modules ((guix build gnu-build-system)
                   ((guix build python-build-system) #:prefix python:)
                   (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
+       #:imported-modules (,@%default-gnu-imported-modules
                            (guix build python-build-system))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
@@ -5188,7 +5169,7 @@ studio.")
            cunit
            gettext-minimal
            gobject-introspection
-           gtk-doc
+           gtk-doc/stable
            libtool
            libxslt
            pkg-config
@@ -5787,7 +5768,7 @@ console music players.")
              go-github-com-wtolson-go-taglib
              go-github-com-yookoala-realpath))
       (inputs
-       (list chromaprint ffmpeg))
+       (list bash-minimal chromaprint ffmpeg))
       (arguments
        `(#:import-path "gitlab.com/ambrevar/demlo"
          #:phases
@@ -5803,8 +5784,7 @@ console music players.")
                      ,(map (lambda (dir)
                              (string-append dir "/bin:"
                                             dir "/sbin"))
-                           (list ffmpeg chromaprint))))
-                 #t)))
+                           (list ffmpeg chromaprint)))))))
            (add-after 'install 'install-scripts
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -5817,8 +5797,8 @@ console music players.")
                  (install-file (string-append root "/config.lua") xdg-data-dirs)
                  ;; TODO: Test fish completion.
                  (install-file (string-append root "/completion/demlo.fish")
-                               (string-append out "/share/fish/vendor_completions.d"))
-                 #t))))))
+                               (string-append
+                                out "/share/fish/vendor_completions.d"))))))))
       (home-page "https://gitlab.com/ambrevar/demlo")
       (synopsis "Dynamic and extensible music library organizer")
       (description "Demlo is a music library organizer.  It can encode, fix
@@ -5883,6 +5863,7 @@ discard bad quality ones.
                          '("qtmultimedia"))))))))))
     (inputs
      (list alsa-lib
+           bash-minimal
            fftw
            jack-1
            portaudio
@@ -5915,7 +5896,8 @@ with error and volume history, and advanced features.")
     (native-inputs
      (list intltool pkg-config))
     (inputs
-     (list glib
+     (list bash-minimal
+           glib
            grilo
            gstreamer
            gst-plugins-base
@@ -5938,8 +5920,8 @@ with error and volume history, and advanced features.")
              (let ((out (assoc-ref outputs "out"))
                    (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
                (wrap-program (string-append out "/bin/pragha")
-                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
-               #t))))))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix
+                   (,gst-plugin-path)))))))))
     (home-page "https://pragha-music-player.github.io")
     (synopsis "Music player")
     (description "Pragha is a lightweight music player based on Gtk and

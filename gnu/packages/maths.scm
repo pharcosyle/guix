@@ -422,38 +422,39 @@ programming language.")
 
 (define-public units
   (package
-   (name "units")
-   (version "2.22")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/units/units-" version
-                                ".tar.gz"))
-            (sha256 (base32
-                     "0j2q2a9sgldqwcifsnb7qagsmp8fvj91vfh6v4k7gzi1fwhf24sx"))))
-   (build-system gnu-build-system)
-   (inputs
-    `(("readline" ,readline)
-      ("python" ,python-wrapper)        ;for 'units_cur' script
-      ("python-requests" ,python-requests)))
-   (arguments
-    `(#:phases (modify-phases %standard-phases
-                 (add-after 'install 'wrap-units_cur
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (bin (string-append out "/bin")))
-                       (wrap-program (string-append bin "/units_cur")
-                         `("GUIX_PYTHONPATH" ":" prefix
-                           ,(search-path-as-string->list (getenv "GUIX_PYTHONPATH"))))
-                       #t))))))
-   (synopsis "Conversion between thousands of scales")
-   (description
-    "GNU Units converts numeric quantities between units of measure.  It
+    (name "units")
+    (version "2.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/units/units-" version
+                                  ".tar.gz"))
+              (sha256 (base32
+                       "0j2q2a9sgldqwcifsnb7qagsmp8fvj91vfh6v4k7gzi1fwhf24sx"))))
+    (build-system gnu-build-system)
+    (inputs
+     (list bash-minimal       ;for wrap-program
+           readline
+           python-wrapper   ;for 'units_cur' script
+           python-requests))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-units_cur
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (wrap-program (string-append bin "/units_cur")
+                          `("GUIX_PYTHONPATH" ":" prefix
+                            ,(search-path-as-string->list
+                              (getenv "GUIX_PYTHONPATH"))))))))))
+    (synopsis "Conversion between thousands of scales")
+    (description
+     "GNU Units converts numeric quantities between units of measure.  It
 can handle scale changes through adaptive usage of standard scale
 prefixes (micro-, kilo-, etc.).  It can also handle nonlinear
 conversions such as Fahrenheit to Celsius.  Its interpreter is powerful
 enough to be used effectively as a scientific calculator.")
-   (license license:gpl3+)
-   (home-page "https://www.gnu.org/software/units/")))
+    (license license:gpl3+)
+    (home-page "https://www.gnu.org/software/units/")))
 
 (define-public double-conversion
   (package
@@ -684,10 +685,11 @@ precision floating point numbers.")
               (sha256
                (base32
                 "0jxkxrnpys2j3rh8bzx0bmnh4w6xm28jd57rgxsjp0s863agpc6w"))))
+    (outputs '("out" "static"))
     (build-system gnu-build-system)
     (arguments
      (let ((system (%current-system)))
-       `(#:configure-flags (list "--disable-static") ;halves package size
+       `(#:make-flags (list "CFLAGS=-fPIC")
          #:phases
          (modify-phases %standard-phases
            ,@(cond
@@ -733,7 +735,16 @@ precision floating point numbers.")
                        (("gsl_ieee_env_setup.*" all)
                         (string-append "exit (77);\n" all)))))))
 
-              (else '()))))))
+              (else '()))
+           (add-after 'install 'move-static-library
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((static (string-append (assoc-ref outputs "static") "/lib/"))
+                     (out    (string-append (assoc-ref outputs "out") "/lib/")))
+                 (mkdir-p static)
+                 (rename-file (string-append out "libgsl.a")
+                              (string-append static "libgsl.a"))
+                 (rename-file (string-append out "libgslcblas.a")
+                              (string-append static "libgslcblas.a")))))))))
     (native-inputs
      (if (and (target-riscv64?)
               (%current-target-system))
@@ -752,15 +763,6 @@ numbers.")
     (properties `((tunable? . #t)))
 
     (license license:gpl3+)))
-
-;; TODO: Merge back into the gsl package as a separate output.
-(define-public gsl-static
-  (package/inherit gsl
-    (name "gsl-static")
-    (arguments
-     `(,@(package-arguments gsl)
-        #:configure-flags (list "--disable-shared")
-        #:make-flags (list "CFLAGS=-fPIC")))))
 
 (define-public sleef
   (package
@@ -1267,7 +1269,7 @@ singular value problems.")
                `("PERL5LIB" ":" suffix (,PERL5LIB))
                `("PATH" ":" suffix (,(dirname gnuplot))))))))))
     (inputs
-     (list gnuplot perl-list-moreutils vnlog))
+     (list bash-minimal gnuplot perl-list-moreutils vnlog))
     (native-inputs
      ;; For tests.
      (list perl-ipc-run perl-string-shellquote))
@@ -3330,8 +3332,7 @@ ASCII text files using Gmsh's own scripting language.")
          (add-after 'unpack 'fix-sip-dir
            (lambda _
              (substitute* "pyqtdistutils.py"
-               (("os.path.join\\(sip_dir, 'PyQt5'\\)") "sip_dir"))
-             #t))
+               (("os.path.join\\(sip_dir, 'PyQt5'\\)") "sip_dir"))))
          ;; Now we have to pass the correct sip_dir to setup.py.
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
@@ -3339,8 +3340,7 @@ ASCII text files using Gmsh's own scripting language.")
              ((@@ (guix build python-build-system) call-setuppy)
               "build_ext"
               (list (string-append "--sip-dir="
-                                   (search-input-directory inputs "share/sip")))
-              #t)))
+                                   (search-input-directory inputs "share/sip"))))))
          ;; Ensure that icons are found at runtime.
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3354,7 +3354,8 @@ ASCII text files using Gmsh's own scripting language.")
            ;;("python-astropy" ,python-astropy) ;; FIXME: Package this.
            qttools-5 python-sip-4))
     (inputs
-     (list ghostscript ;optional, for EPS/PS output
+     (list bash-minimal
+           ghostscript ;optional, for EPS/PS output
            python-dbus
            python-h5py ;optional, for HDF5 data
            python-pyqt
@@ -4130,7 +4131,7 @@ language understood by many solvers.")
      `(#:modules ((ice-9 match)
                   (ice-9 popen)
                   (srfi srfi-1)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -7094,7 +7095,7 @@ set.")
      (list openblas lapack))
     (arguments
      `(#:modules ((srfi srfi-1)
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:configure-flags '("--enable-shared"
                            "--disable-fortran"
                            "--without-MPI"
@@ -7596,7 +7597,7 @@ theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
     (build-system gnu-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:modules (((guix build python-build-system) #:select (site-packages))
                   (guix build gnu-build-system)
                   (guix build utils))
@@ -9078,7 +9079,7 @@ symbolic reasoning engines that need to reason about polynomial constraints.")
      (arguments
       (list #:test-target "test"
             #:modules `((ice-9 match)
-                        ,@%gnu-build-system-modules)
+                        ,@%default-gnu-modules)
             #:configure-flags #~(list "--aiger=.")
             #:phases
             #~(modify-phases %standard-phases
@@ -9132,7 +9133,7 @@ symbolic reasoning engines that need to reason about polynomial constraints.")
                        ;; values to construct commands (yes, eww), so we
                        ;; can't easily substitute* them.
                        '("lglddtrace" "lgluntrace" "lingeling" "plingeling"))))))))
-     (inputs (list `(,aiger "static") gzip bzip2 xz p7zip))
+     (inputs (list `(,aiger "static") bash-minimal gzip bzip2 xz p7zip))
      (home-page "http://fmv.jku.at/lingeling")
      (synopsis "SAT solver")
      (description "This package provides a range of SAT solvers, including

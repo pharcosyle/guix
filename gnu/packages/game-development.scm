@@ -654,9 +654,9 @@ clone.")
                   (srfi srfi-1)
                   ((guix build guile-build-system)
                    #:select (target-guile-effective-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-modules)
        #:imported-modules ((guix build guile-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-command
@@ -2025,6 +2025,7 @@ games.")
      (list pkg-config))
     (inputs
      (list alsa-lib
+           bash-minimal
            bullet
            freetype
            glew
@@ -2257,6 +2258,7 @@ scripted in a Python-like language.")
      (list pkg-config))
     (inputs
      (list alsa-lib
+           bash-minimal
            brotli
            dbus
            embree

@@ -28,6 +28,7 @@
 
 (define-module (gnu packages openldap)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
@@ -232,7 +233,7 @@ servers from Python programs.")
                    #:select (add-installed-pythonpath python-version))
                   (guix build utils))
       #:imported-modules `((guix build python-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
       #:disallowed-references (list httpd)
       #:configure-flags
       #~(list "--enable-cmocka"
@@ -319,7 +320,8 @@ servers from Python programs.")
                             "/bin/ds-logpipe.py"
                             "/bin/ds-replcheck"))))))))
     (inputs
-     (list bdb
+     (list bash-minimal
+           bdb
            cracklib
            cyrus-sasl
            gnutls

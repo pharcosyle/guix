@@ -143,7 +143,7 @@
 ;;; Copyright © 2023 Parnikkapore <poomklao@yahoo.com>
 ;;; Copyright © 2023 Foundation Devices, Inc. <hello@foundationdevices.com>
 ;;; Copyright © c4droid <c4droid@foxmail.com>
-;;; Copyright © 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2023, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2023 Attila Lendvai <attila@lendvai.name>
 ;;; Copyright © 2023, 2024 Troy Figiel <troy@troyfigiel.com>
 ;;;
@@ -5677,14 +5677,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "6.0")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "18imkjacvpxfgg1lbpraqywx3j7hr5dv99d242byqvrh2jf53yv8"))))
+         "0hsa7g6ddynifrwdgadqcx80khhblfy94slzpbr7birn2w5ldpxz"))))
     (build-system python-build-system)
     (inputs
      (list libyaml python-cython))
@@ -8536,7 +8536,8 @@ comparison.
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
-        (base32 "18amhxyxa6yzy1nwky4ggdgvvxnbl3qz2lki05vfx0dqf6w7ia81"))))
+        (base32 "18h78s5ld1i6mz00w258hy29909nfr3ddq6ry9kq18agw468bks8"))
+       (patches (search-patches "python-matplotlib-fix-legend-loc-best-test.patch"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -9431,7 +9432,9 @@ Python list with elements of type @code{PIL.Image} (from the
               (snippet '(begin
                           (delete-file-recursively "src/thirdparty")))
               (patches
-               (search-patches "python-pillow-CVE-2022-45199.patch"))))
+               (search-patches "python-pillow-CVE-2022-45199.patch"
+                               ;; Included in 10.1.0.
+                               "python-pillow-use-zlib-1.3.patch"))))
     (build-system python-build-system)
     (native-inputs (list python-pytest))
     (inputs (list freetype
@@ -22052,7 +22055,7 @@ OpenSSH Server for example.")
 (define-public python-pyelftools
   (package
     (name "python-pyelftools")
-    (version "0.29")
+    (version "0.30")
     (home-page "https://github.com/eliben/pyelftools")
     (source
      (origin
@@ -22061,7 +22064,7 @@ OpenSSH Server for example.")
                            (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mi7i9zlhkkap4q50ciak57ia46mj2jzq0713m3dh0x8j05k9xml"))
+        (base32 "0gk47mq5cqv6qz35aydn67wma5m70gv5f9f6pg38zny6vsfavmq3"))
        (snippet
         ;; Delete bundled readelf executable.
         '(delete-file "test/external_tools/readelf"))))
@@ -22078,9 +22081,9 @@ OpenSSH Server for example.")
     (synopsis
      "Analyze binary and library file information")
     (description "This Python library provides interfaces for parsing and
-     analyzing two binary and library file formats ; the Executable and Linking
-     Format (ELF), and debugging information in the Debugging With Attributed
-     Record Format (DWARF).")
+analyzing two binary and library file formats ; the Executable and Linking
+Format (ELF), and debugging information in the Debugging With Attributed
+Record Format (DWARF).")
     (license license:public-domain)))
 
 (define-public python-pefile
@@ -31881,8 +31884,7 @@ CMake.")
                             (string-append x11 "/lib/libX11.so.6")))
               (substitute* "Screenkey/xlib.py"
                            (("libXtst.so.6")
-                            (string-append xtst "/lib/libXtst.so.6")))
-              #t)))
+                            (string-append xtst "/lib/libXtst.so.6"))))))
           (add-after 'install 'wrap-screenkey
             (lambda* (#:key outputs #:allow-other-keys)
               (wrap-program
@@ -31891,7 +31893,8 @@ CMake.")
                 `("GI_TYPELIB_PATH"
                   ":" prefix (,(getenv "GI_TYPELIB_PATH")))))))))
     (inputs
-     (list python-distutils-extra
+     (list bash-minimal
+           python-distutils-extra
            python-tokenize-rt
            libx11
            libxtst

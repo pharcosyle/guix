@@ -60,6 +60,7 @@
   #:use-module (guix download)
   #:use-module (guix bzr-download)
   #:use-module (guix git-download)
+  #:use-module (guix search-paths)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
@@ -737,7 +738,6 @@ highlighting and other features typical of a source code editor.")
            ;; For the documentation.
            docbook-xml-4.3
            docbook-xsl
-           libxml2                      ;for XML_CATALOG_FILES
            libxslt))                    ;for xsltproc
     (native-search-paths
      ;; This file is produced by the gdk-pixbuf-loaders-cache-file
@@ -1161,11 +1161,6 @@ application suites.")
                  "find_program('rst2man.py'"))))
           (add-after 'unpack 'patch
             (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
-              ;; Correct DTD resources of docbook.
-              (substitute* (find-files "docs" "\\.xml$")
-                (("http://www.oasis-open.org/docbook/xml/4.3/")
-                 (string-append #$(this-package-native-input "docbook-xml")
-                                "/xml/dtd/docbook/")))
               ;; Disable building of icon cache.
               (substitute* "meson.build"
                 (("gtk_update_icon_cache: true")
@@ -2186,36 +2181,22 @@ information.")
                (search-patches "gtk-doc-respect-xml-catalog.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:parallel-tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-gtk-doc-scan
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "gtk-doc.xsl"
-               (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/html/chunk.xsl"))
-               (("http://docbook.sourceforge.net/release/xsl/current/common/en.xml")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/common/en.xml")))
-             #t))
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (substitute* "tests/Makefile.am"
-               (("annotations.sh bugs.sh empty.sh fail.sh gobject.sh program.sh")
-                ""))
-             #t))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
          (add-after 'install 'wrap-executables
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
+           (lambda _
+             (let ((docbook-xsl-catalog
+                    #$(let ((docbook-xsl (this-package-input "docbook-xsl")))
+                        (file-append docbook-xsl
+                                     "/xml/xsl/" (package-name docbook-xsl)
+                                     "-" (package-version docbook-xsl)
+                                     "/catalog.xml"))))
                (for-each (lambda (prog)
                            (wrap-program prog
-                             `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
-                         (find-files (string-append out "/bin")))))))))
+                             `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
+                             `("XML_CATALOG_FILES" " " suffix (,docbook-xsl-catalog))))
+                         (find-files (string-append #$output "/bin")))))))))
     (native-inputs
      (list gettext-minimal
            `(,glib "bin")
@@ -2225,7 +2206,8 @@ information.")
            pkg-config
            python-wrapper))
     (inputs
-     (list bc
+     (list bash-minimal
+           bc
            dblatex
            docbook-xml-4.3
            docbook-xsl
@@ -2239,6 +2221,8 @@ information.")
            python-pygments
            source-highlight
            yelp-tools))
+    ;; xsltproc's search paths, to avoid propagating libxslt.
+    (native-search-paths %libxslt-search-paths)
     (home-page "https://wiki.gnome.org/DocumentationProject/GtkDoc")
     (synopsis "GTK+ DocBook Documentation Generator")
     (description "GtkDoc is a tool used to extract API documentation from C-code

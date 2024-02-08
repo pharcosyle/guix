@@ -1198,7 +1198,7 @@ the OCaml core distribution.")
     (build-system gnu-build-system)
     (arguments
      (list
-      #:imported-modules `(,@%gnu-build-system-modules
+      #:imported-modules `(,@%default-gnu-imported-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
       #:modules '((guix build gnu-build-system)
@@ -5770,6 +5770,27 @@ Atom.")
      "GSL-OCaml is an interface to the @dfn{GNU scientific library} (GSL) for
 the OCaml language.")
     (license license:gpl3+)))
+
+(define-public ocaml4.07-gsl-1
+  (package-with-ocaml4.07
+    (package
+      (inherit ocaml-gsl)
+      (version "1.19.3")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/mmottl/gsl-ocaml"
+                                    "/releases/download/v"
+                                    version "/gsl-ocaml-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0nzp43hp8pbjqkrxnwp5lgjrabxayf61h18fjaydi0s5faq6f3xh"))))
+      (build-system ocaml-build-system)
+      (inputs
+       `(("gsl" ,gsl "static")))
+      (native-inputs
+       `(("ocamlbuild" ,ocamlbuild)))
+      (arguments '())
+      (propagated-inputs '()))))
 
 (define-public cubicle
   (package

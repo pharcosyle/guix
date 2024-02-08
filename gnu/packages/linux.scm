@@ -42,7 +42,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020, 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2023, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020, 2022 Michael Rohleder <mike@rohleder.de>
@@ -269,7 +269,7 @@ of 'uname -r' behind the Linux version numbers."
     (arguments
      (substitute-keyword-arguments
          (package-arguments linux)
-       ((#:imported-modules imported-modules %gnu-build-system-modules)
+       ((#:imported-modules imported-modules %default-gnu-imported-modules)
         `((guix build kconfig) ,@imported-modules))
        ((#:modules modules)
         `((guix build kconfig) ,@modules))
@@ -2111,14 +2111,14 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "23.5")
+    (version "23.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
                           version ".tar.xz"))
       (sha256
-       (base32 "12z5786dnf37n8wvv73wdcqp3nvsqzhwdk3ajna0mag4yz1fqdyw"))))
+       (base32 "0al2138z0m2bqrviv3zw2i2km4v8xg5wrw867li4jk4s2l3dwz95"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -2214,11 +2214,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                      ;; Change the test to refer to the right file.
                      (substitute* "tests/ts/misc/mcookie"
                        (("/etc/services")
-                        services))
-
-                     ;; The C.UTF-8 locale does not exist in our libc.
-                     (substitute* "tests/ts/column/invalid-multibyte"
-                       (("C\\.UTF-8") "en_US.utf8")))))
+                        services)))))
                (add-before 'check 'disable-setarch-test
                  (lambda _
                    ;; The setarch tests are unreliable in QEMU's user-mode
@@ -2946,35 +2942,24 @@ MIDI functionality to the Linux-based operating system.")
                "09m4dnn4kplawprd2bl15nwa0b4r1brab3x44ga7f1fyk7aw5zwq"))))
     (build-system gnu-build-system)
     (arguments
-     ;; XXX: Disable man page creation until we have DocBook.
-     '(#:configure-flags (list "--disable-xmlto"
-
-                               ;; The udev rule is responsible for restoring
-                               ;; the volume.
-                               (string-append "--with-udev-rules-dir="
-                                              (assoc-ref %outputs "out")
-                                              "/lib/udev/rules.d"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'disable-broken-test
-           (lambda _
-             ;; XXX: The 1.1.8 release tarball is missing a header that's
-             ;; required for this test to work.  Fixed in 1.1.9.
-             (substitute* "axfer/test/Makefile"
-               ((".*container-test.*") ""))
-             #t))
-         (add-before
-           'install 'pre-install
-           (lambda _
-             ;; Don't try to mkdir /var/lib/alsa.
-             (substitute* "Makefile"
-               (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
-                "true\n"))
-             #t)))))
+     (list
+      #:configure-flags
+      #~(list
+         ;; The udev rule is responsible for restoring the volume.
+         (string-append "--with-udev-rules-dir=" #$output "/lib/udev/rules.d"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'install 'pre-install
+            (lambda _
+              ;; Don't try to mkdir /var/lib/alsa.
+              (substitute* "Makefile"
+                (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
+                 "true\n")))))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)))
+     (list docbook-xml-4.2 docbook-xsl xmlto
+           gettext-minimal))
     (inputs
-     (list libsamplerate ncurses alsa-lib xmlto))
+     (list libsamplerate ncurses alsa-lib))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -3250,7 +3235,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "6.0.0")
+    (version "6.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3258,7 +3243,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "02jq36p7py8zs8s8jj49ap82sgf5wi5yfbgsfiirkv1awzlkjcaj"))))
+                "0wm2g70vfhnf8wb6py3zmzwxp4zv1icny1pvkwaxmr67rggbhlac"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -4127,7 +4112,8 @@ NUMA performance on your system.")
     (native-inputs
      (list autoconf pkg-config))
     (inputs
-     `(("bzip2" ,bzip2)
+     `(("bash" ,bash-minimal) ; for wrap-program
+       ("bzip2" ,bzip2)
        ("gzip" ,gzip)
        ("pam" ,linux-pam)
        ("xz" ,xz)
@@ -4378,7 +4364,6 @@ to the in-kernel OOM killer.")
            ;; For documentation.
            docbook-xml-4.2
            docbook-xsl
-           libxml2            ;for $XML_CATALOG_FILES
            libxslt))
     (inputs
      ;; When linked against libblkid, eudev can populate /dev/disk/by-label
@@ -5130,21 +5115,21 @@ in a digital read-out.")
            ;; There are build scripts written in these languages.
            perl
            python-2
-           python-3))
+           python-3
+           ;; Documentation
+           docbook-xsl
+           xmlto
+           asciidoc))
     (inputs
      (list slang ;for the interactive TUI
+           zlib
            ;; newt
            python-2                            ;'perf' links against libpython
            elfutils
            libiberty                 ;used alongside BDF for symbol demangling
            libunwind                 ;better stack walking
            libtraceevent
-           numactl                   ;for 'perf bench numa mem'
-           ;; Documentation.
-           libxml2                                ;for $XML_CATALOG_FILES
-           docbook-xsl
-           xmlto
-           asciidoc))
+           numactl))                 ;for 'perf bench numa mem'
     (home-page "https://perf.wiki.kernel.org/")
     (synopsis "Linux profiling with performance counters")
     (description
@@ -5251,7 +5236,8 @@ thanks to the use of namespaces.")
                    (string-append (which "env") " "
                                   #$output "/bin/singularity")))))))))
     (inputs
-     (list coreutils
+     (list bash-minimal                           ;for 'wrap-program'
+           coreutils
            libarchive
            python-wrapper
            squashfs-tools
@@ -5669,7 +5655,7 @@ arrays when needed.")
                     (for-each delete-file-recursively directories)
                     (remove-store-references "sbin/mdadm")
                     (delete-file "sbin/mdmon")))))))
-       ((#:modules modules %gnu-build-system-modules)
+       ((#:modules modules %default-gnu-modules)
         `((ice-9 ftw) ,@modules))
        ((#:strip-flags _ '())
         ''("--strip-all"))                        ;strip a few extra KiB
@@ -5895,7 +5881,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.66")
+    (version "5.72")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5903,7 +5889,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0x5mn9x6g626izxnw236933wvq83qagsh9qc9ac9550cb55sdzir"))))
+                "0vjk4ihywzv8k07bxq7clqgi2afrw54nfp0gcnxw35m98nipz7a9"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -5911,6 +5897,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
       #~(list "--sysconfdir=/etc"
               "--localstatedir=/var"
               "--enable-library"
+              "--enable-wiimote"
               "--disable-systemd"
               ;; TODO: is this needed?  Not installed by default since 5.55.
               "--enable-hid2hci"
@@ -5947,10 +5934,12 @@ Bluetooth audio output devices like headphones or loudspeakers.")
     (native-inputs
      (list gettext-minimal
            pkg-config
-           python-docutils))
+           python
+           python-docutils
+           python-pygments))
     (inputs
      (list glib dbus eudev libical readline))
-    (home-page "http://www.bluez.org/")
+    (home-page "https://www.bluez.org/")
     (synopsis "Linux Bluetooth protocol stack")
     (description
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
@@ -7027,7 +7016,7 @@ not as a replacement for it.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--disable-pywrap")
-       #:modules (,@%gnu-build-system-modules
+       #:modules (,@%default-gnu-modules
                   (ice-9 binary-ports)
                   (rnrs bytevectors)
                   (srfi srfi-26))
@@ -9502,14 +9491,14 @@ platforms, it is not limited to resource-constrained systems.")
 (define-public kexec-tools
   (package
     (name "kexec-tools")
-    (version "2.0.23")
+    (version "2.0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kernel"
                                   "/kexec/kexec-tools-" version ".tar.xz"))
               (sha256
                (base32
-                "06r44i91g1s9f7k5b9kmvb58j9vrqvysfh32pb70cnyrgmncsqxa"))))
+                "1kbh8l67rbz0d3k6x7g5vj5ahg6f7lwvxcj1br8mrk818436mqvz"))))
     (build-system gnu-build-system)
     (arguments
      ;; There are no automated tests.
@@ -9620,14 +9609,15 @@ headers.")
     (native-inputs
      (list bison flex))
     (inputs
-     `(("clang-toolchain" ,clang-toolchain-9)
-       ("libbpf" ,(package-source libbpf))
-       ;; LibElf required but libelf does not contain
-       ;; archives, only object files.
-       ;; https://github.com/iovisor/bcc/issues/504
-       ("elfutils" ,elfutils)
-       ("luajit" ,luajit)
-       ("python-wrapper" ,python-wrapper)))
+     (list bash-minimal                 ;for wrap-program
+           clang-toolchain-9
+           (package-source libbpf)
+           ;; LibElf required but libelf does not contain
+           ;; archives, only object files.
+           ;; https://github.com/iovisor/bcc/issues/504
+           elfutils
+           luajit
+           python-wrapper))
     (arguments
      `(;; Tests all require root permissions and a "standard" file hierarchy.
        #:tests? #f
@@ -9670,8 +9660,7 @@ headers.")
                                        ,(version-major+minor
                                          (package-version python))
                                        "/site-packages")))))
-                (find-files tools python-executable?))
-               #t))))))
+                (find-files tools python-executable?))))))))
     (home-page "https://github.com/iovisor/bcc")
     (synopsis "Tools for BPF on Linux")
     (description
@@ -9923,7 +9912,7 @@ provides user-space tools for creating EROFS file systems.")
               ;; line lets sysconfdir correctly pick up DESTDIR.
               (substitute* "configure.ac"
                 (("^test .* sysconfdir=/etc\n$") ""))))
-          (add-after 'wrap 'wrap-rasdaemon
+          (add-after 'install 'wrap-rasdaemon
             (lambda* (#:key inputs #:allow-other-keys)
               (let ((path (map dirname
                                (list (search-input-file inputs "/sbin/dmidecode")
