@@ -1002,7 +1002,7 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.13")
+    (version "4.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1010,7 +1010,7 @@ hostname.")
                     "download/" version "/shadow-" version ".tar.xz"))
               (sha256
                (base32
-                "0b6xz415b4y3y5nk3pw9xibv05kln4cjbmhybyncmrx2g5fj9zls"))))
+                "1lpw5jn75ihzxh59jnhshl4s376bhfgqr8vkhmv54cgy6s92fsb9"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -1064,8 +1064,11 @@ hostname.")
                     (man (string-append out "/share/man")))
                (delete-file (string-append bin "/groups"))
                (for-each delete-file (find-files man "^groups\\."))))))))
+    (native-inputs
+     (list pkg-config))
     (inputs
-     (append (list libxcrypt-glibc)
+     (append (list libbsd
+                   libxcrypt-glibc)
              (if (target-hurd?)
                  '()
                  (list linux-pam))
