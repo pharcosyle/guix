@@ -80,6 +80,7 @@
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
@@ -894,7 +895,8 @@ the freedesktop.org XDG Base Directory specification.")
       (if (not (target-riscv64?))
           (list kexec-tools)
           '())
-      (list linux-pam
+      (list libxcrypt-glibc
+            linux-pam
             libcap
             `(,util-linux "lib")        ;for 'libmount'
             shadow                      ;for 'nologin'
