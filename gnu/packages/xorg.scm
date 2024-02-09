@@ -860,14 +860,14 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
 (define-public font-util
   (package
     (name "font-util")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://xorg/individual/font/font-util-"
                             version ".tar.xz"))
         (sha256
-          (base32 "0z8gsi0bz5nnpsl008fyb4isrkrqrmhxjar5ywwpx30j83wlnwlz"))))
+          (base32 "15fcd3rzlgm51fwgfapg6vzyd1kkd28rj149xq7iajqr7h9697sw"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -1376,7 +1376,7 @@ configuration files.")
 (define-public libxkbfile
   (package
     (name "libxkbfile")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
@@ -1386,7 +1386,7 @@ configuration files.")
              ".tar.xz"))
        (sha256
         (base32
-         "1ca4crhzc5a2gdkc4r0m92wyirsy5mngnz0430bj02s2mi7pi8xq"))))
+         "1v2bhw1q1cj3wjfs0igq393iz10whcavbyxlm3k9xfvsk7m3xdm9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -3640,7 +3640,7 @@ alternative implementations like XRandR or TwinView.")
 (define-public xkbcomp-intermediate        ;used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.6")
+    (version "1.4.7")
     (source
      (origin
        (method url-fetch)
@@ -3648,7 +3648,7 @@ alternative implementations like XRandR or TwinView.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "164fqnpq80vbl7693x82h38kvxcdf668vggpg9439q21xw8xcl7s"))))
+         "0xqzz209m9i43jbyrf2lh4xdbyhzzzn9mis2f2c32kplwla82a0a"))))
     (build-system gnu-build-system)
     (inputs
      (list xorgproto libxkbfile libx11))
@@ -3741,14 +3741,14 @@ one from a running X server.")
 (define-public xkbutils
   (package
     (name "xkbutils")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/app/xkbutils-"
                            version ".tar.xz"))
        (sha256
-        (base32 "197f4pgw3jdnlp7sj37f3xf15ayad20sl7vvg2rvx0j5qplsi97n"))))
+        (base32 "0pp2bsksblvvw0fx667k2bl5sm0baj7pp2cjvq0vmk093vpbp8ii"))))
     (build-system gnu-build-system)
     (inputs
       (list libxt libxaw xorgproto))
@@ -4049,7 +4049,7 @@ it for output on various types of printers.")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.6")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
@@ -4057,7 +4057,7 @@ it for output on various types of printers.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0vjqnn42gscw1z2wdj24kdwjwvd7mw58pj0nm9203k1fn4jqa2sq"))))
+         "0pw2iv7dcy2xq5fh3427nx88pjj9d9rry3930qj1c6mricaf6dj4"))))
     (build-system gnu-build-system)
     (inputs
      (list libx11 xorgproto))
@@ -4410,7 +4410,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxext
   (package
     (name "libxext")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
       (origin
         (method url-fetch)
@@ -4420,7 +4420,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.xz"))
         (sha256
           (base32
-            "1jkv7l9qm4vms6af4faax916rirxp6r8rpjrhlxa6zn5jp4c056v"))))
+            "0lwpx0b7lid47pff6dagp5h63bi0b3gsy05lqpyhbr4l76i9zdgd"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))             ;man pages represent 40% of the total
     (arguments
@@ -4866,7 +4866,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
       (origin
         (method url-fetch)
@@ -4876,7 +4876,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.xz"))
         (sha256
           (base32
-            "0a5l9q37c9m6gfdchlj43a9j3mw2avfwasfn0ivlkqbq980kjxl9"))))
+            "1lxlqd9ffjr1myfpyk91594n1h07ck6121m6ba8qajjz6xjv1m8s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static" ,@(malloc0-flags))))
@@ -4894,7 +4894,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.13")
+    (version "1.0.14")
     (source
      (origin
        (method url-fetch)
@@ -4902,7 +4902,7 @@ new API's in libXft, or the legacy API's in libX11.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0z35xqna3dnrfxgn9aa1y6jx7mrwsn8vi8dcwm3sg23qx9nvx7ha"))))
+         "1nayf8qck0b1xb88dirdbvj7clr18wq1dxs73zwbpzdsnsv9xgp4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '(,@(malloc0-flags) "--disable-static")))
@@ -5539,14 +5539,14 @@ The XCB util module provides the following libraries:
 (define-public xcb-util-cursor
   (package
     (name "xcb-util-cursor")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://xcb.freedesktop.org/dist/"
-                           "xcb-util-cursor-" version ".tar.xz"))
+       (uri (string-append "mirror://xorg/individual/lib/"
+                           name "-" version ".tar.xz"))
        (sha256
-        (base32 "1yria9h0vqpblkgzqhpygk3rraijd3mmipg0mdhkayxbpj8gxp18"))))
+        (base32 "0mrwcrm6djbd5zdvqb5v4wr87bzawnaacyqwwhfghw09ssq9kbqc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
