@@ -1146,7 +1146,7 @@ themselves.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.17")
+    (version "0.18")
     (source
       (origin
         (method url-fetch)
@@ -1156,30 +1156,17 @@ themselves.")
                ".tar.xz"))
         (sha256
           (base32
-            "0wsvv5d05maqbidvnavka7n0fnql55m4jix5wwlk14blr6ikna3l"))))
-    (build-system gnu-build-system)
+            "1ab2qbksf15jrpzd6x9ncri64d2bnhlw7aajdws58lj9gljv0qal"))))
+    (build-system meson-build-system)
     (arguments
-     '(;; Make sure libpciaccess can read compressed 'pci.ids' files as
-       ;; provided by pciutils.
-       #:configure-flags
-       (list "--with-zlib"
-             (string-append "--with-pciids-path="
+     '(#:configure-flags
+       (list (string-append "-Dpci-ids="
                             (assoc-ref %build-inputs "pciutils")
-                            "/share/hwdata"))
-
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'add-L-zlib
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Provide '-LZLIB/lib' next to '-lz' in the .la file.
-             (let ((zlib (assoc-ref inputs "zlib"))
-                   (out  (assoc-ref outputs "out")))
-               (substitute* (string-append out "/lib/libpciaccess.la")
-                 (("-lz")
-                  (string-append "-L" zlib "/lib -lz")))
-               #t))))))
+                            "/share/hwdata"))))
     (inputs
-     (list zlib pciutils))                   ;for 'pci.ids.gz'
+     (list pciutils ; for 'pci.ids.gz'
+           zlib)) ; Make sure libpciaccess can read compressed 'pci.ids'
+                  ; files as provided by pciutils.
     (native-inputs
        (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -1187,21 +1174,7 @@ themselves.")
     (description "Xorg Generic PCI access library.")
     (license license:x11)))
 
-(define-public libpciaccess-0.17
-  (package
-    (inherit libpciaccess)
-    (name "libpciaccess")
-    (version "0.17")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/lib/libpciaccess-"
-             version
-             ".tar.xz"))
-       (sha256
-        (base32
-         "0wsvv5d05maqbidvnavka7n0fnql55m4jix5wwlk14blr6ikna3l"))))))
+(define-public libpciaccess-0.17 libpciaccess)
 
 (define-public libpthread-stubs
   (package
