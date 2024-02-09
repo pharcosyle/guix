@@ -5569,8 +5569,8 @@ The XCB util module provides the following libraries:
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://xcb.freedesktop.org/dist/"
-                           "xcb-util-cursor-" version ".tar.xz"))
+       (uri (string-append "mirror://xorg/individual/lib/"
+                           name "-" version ".tar.xz"))
        (sha256
         (base32 "0mrwcrm6djbd5zdvqb5v4wr87bzawnaacyqwwhfghw09ssq9kbqc"))))
     (build-system gnu-build-system)
