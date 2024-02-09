@@ -182,6 +182,7 @@
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -7020,7 +7021,7 @@ DAV, and others.")
 (define-public gusb-minimal
   (package
     (name "gusb-minimal")
-    (version "0.4.0")
+    (version "0.4.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7029,23 +7030,27 @@ DAV, and others.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d8lk7mw8zmcl5xlq00dvhsjib4mdi0f1n827hg9wkgj78vp74h4"))))
+                "1zd0wvwansr9dfpl6qcs0691vnzaj1hdzzyxj4lcd1wfkgiv25f6"))))
     (build-system meson-build-system)
     (arguments
-     `(#:tests? #f          ;libusb fails to initialize.  Wonder what that is.
+     `(#:tests? #f ; Tests try to access USB.
        #:configure-flags
-       (cons "-Ddocs=false"
-             (if ,(%current-target-system)
-                 ;; Introspection data cannot currently be cross-compiled.
-                 '("-Dintrospection=false"
-                   ;; Requires introspection data.
-                   "-Dvapi=false")
-                 '()))))
+       (cons* "-Dtests=false"
+              "-Ddocs=false"
+              (string-append "-Dusb_ids="
+                             (assoc-ref %build-inputs "hwdata")
+                             "/share/hwdata/usb.ids")
+              (if ,(%current-target-system)
+                  ;; Introspection data cannot currently be cross-compiled.
+                  '("-Dintrospection=false"
+                    ;; Requires introspection data.
+                    "-Dvapi=false")
+                  '()))))
     (native-inputs
-     (list gobject-introspection pkg-config python vala))
+     (list gobject-introspection hwdata pkg-config python vala))
     (propagated-inputs
      ;; All of these are required by gusb.pc.
-     (list glib libusb json-glib-minimal))
+     (list glib libusb json-glib))
     (home-page "https://github.com/hughsie/libgusb")
     (synopsis "GLib binding for libusb1")
     (description
@@ -7061,11 +7066,10 @@ USB transfers with your high-level application or system daemon.")
     (arguments
      (substitute-keyword-arguments (package-arguments gusb-minimal)
        ((#:configure-flags flags)
-        `(cons "-Ddocs=true"
-               (delete "-Ddocs=false" ,flags)))))
+        `(delete "-Ddocs=false" ,flags))))
     (native-inputs
-     (cons `("gtk-doc" ,gtk-doc/stable)
-           (package-native-inputs gusb-minimal)))))
+     (modify-inputs (package-native-inputs gusb-minimal)
+       (prepend gi-docgen)))))
 
 (define-public simple-scan
   (package
