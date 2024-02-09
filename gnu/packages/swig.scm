@@ -34,7 +34,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 
-(define-public swig
+(define-public swig-prev
   (package
     (name "swig")
     (version "4.1.1")
@@ -70,12 +70,12 @@ you tailor the wrapping process to suit your application.")
     ;; See http://www.swig.org/Release/LICENSE for details.
     (license gpl3+)))
 
-(define-public swig-next
+(define-public swig
   ;; a number of packages using swig do not build with this version
   ;; so we need to keep swig 4.0.2 above and place the current release
   ;; as swig-next
   (package
-    (inherit swig)
+    (inherit swig-prev)
     (name "swig")
     (version "4.2.0")
     (source (origin
@@ -86,4 +86,7 @@ you tailor the wrapping process to suit your application.")
               (sha256
                (base32
                 "15wwh9215rdkflpr85r7zxr2nmrib03jr4bvh5i0f9lyb3bs4716"))))
+    (native-inputs
+     (modify-inputs (package-native-inputs swig-prev)
+       (delete pcre2)))
     (inputs (list pcre2))))
