@@ -1873,8 +1873,8 @@ accepted as a quirk (ie AMD Vega 10).")
     (build-system gnu-build-system)
     (native-inputs
      (list flex
-           ;; TODO: optional dependencies
-           ;; ("libxcrypt" ,libxcrypt)
+           libxcrypt-glibc
+           ;; TODO: optional dependency
            ;; ("cracklib" ,cracklib)
            ))
     (arguments
