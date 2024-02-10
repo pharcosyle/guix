@@ -985,7 +985,8 @@ re-executing them as necessary.")
      (list coreutils
            shadow                     ;for login (used in telnetd and rlogind)
            ncurses
-           readline))                   ;for 'ftp'
+           readline                     ;for 'ftp'
+           libxcrypt-glibc))
     (native-inputs
      (if (member (%current-system)
                  (package-supported-systems net-tools))
