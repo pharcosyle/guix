@@ -66,7 +66,7 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (version "8.0.3")
+    (version "10.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/api/v4/projects/4207231"
@@ -74,12 +74,10 @@
                                   version "/graphviz-" version ".tar.xz"))
               (sha256
                (base32
-                "1hgyy18jksinwiq9n1bs72qygr16wwj16c84jz2csxrk2xsjdw1s"))))
+                "08gy34qdnn3w4j3n8rgxna4c2jbg4g90xfqgm9i8h5xwji50dn3v"))))
     (build-system gnu-build-system)
     (arguments
-     ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
-     (list #:tests? #f
-           #:phases
+     (list #:phases
            #~(modify-phases %standard-phases
                (add-after 'install 'move-guile-bindings
                  (lambda* (#:key outputs #:allow-other-keys)
