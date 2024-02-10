@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages autotools))
@@ -81,17 +82,19 @@ around or take advantage of platform-specific deficiencies or features.")
 (define-public apr-util
   (package
     (name "apr-util")
-    (version "1.6.1")
+    (version "1.6.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-util-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0nq3s1yn13vplgl6qfm09f7n0wm08malff9s59bqf9nid9xjzqfk"))))
+               "1dbjjwyfqvq7xa7xsxq2rv0clkwsmna2j12575n34ih7f7ipc454"))
+             (patches
+              (search-patches "apr-util-allow-libxcrypt.patch"))))
     (build-system gnu-build-system)
     (inputs
-     (list apr))
+     (list apr libxcrypt-glibc))
     (propagated-inputs
      (list expat))
     (arguments
