@@ -383,6 +383,7 @@ example, modify the message headers or body, or encrypt or sign the message.")
            linux-pam
            libltdl
            gdbm
+           libxcrypt
            ;; Required for SEARCH CHARSET.
            libunistring))
     (home-page "https://mailutils.org")
