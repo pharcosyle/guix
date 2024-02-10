@@ -1328,7 +1328,7 @@ fullscreen) or other display servers.")
 (define-public wayland-protocols
   (package
     (name "wayland-protocols")
-    (version "1.32")
+    (version "1.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.freedesktop.org/wayland/"
@@ -1336,7 +1336,7 @@ fullscreen) or other display servers.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04dsn79409mryxs6maq9kfhca97gvl3pr1ggjnv9d0hc6jfpjnbl"))))
+                "0flnqfc8npzn6rxsw4afpr8yifwsn5kq81327yh62vhd145wbw4l"))))
     (build-system meson-build-system)
     (inputs
      (list wayland))
