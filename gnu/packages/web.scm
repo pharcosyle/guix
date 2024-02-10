@@ -321,14 +321,14 @@ and its related documentation.")
   (hidden-package
     (package
       (inherit httpd)
-      (version "2.4.57")
+      (version "2.4.58")
       (source (origin
                (method url-fetch)
                (uri (string-append "mirror://apache/httpd/httpd-"
                                    version ".tar.bz2"))
                (sha256
                 (base32
-                 "0ajdz5f2w9nbmqydip2mv9m4xlnc4swmw7mqzgnrbq4mxr5bik6v")))))))
+                 "1id45r2ccgkbjm9i998997ch32lvicpyynyx8x6aa4420wmdf5ps")))))))
 
 (define-public miniflux
   (package
