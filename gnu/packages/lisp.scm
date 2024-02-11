@@ -363,16 +363,16 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
 (define-public clisp
   (package
     (name "clisp")
-    (version "2.50-pre")
+    (version "2.49-92")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.com/gnu-clisp/clisp")
-             (commit "bf72805c4dace982a6d3399ff4e7f7d5e77ab99a")))
+             (commit "clisp-2.49.92-2018-02-18")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ala1xksy261bbhdmm6sp363zi8ncpfighhb1bd17x10apc0s2mi"))))
+        (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))))
     (build-system gnu-build-system)
     (native-inputs
      (list cl-asdf))
