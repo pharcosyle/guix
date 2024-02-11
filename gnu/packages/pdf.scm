@@ -334,9 +334,7 @@ please install the @code{flyer-composer-gui} package.")))
                  openjpeg
                  poppler-data
                  zlib
-                 ;; To build poppler-glib (as needed by Evince), we need Cairo and
-                 ;; GLib.  But of course, that Cairo must not depend on Poppler.
-                 cairo-sans-poppler))
+                 cairo))
    (propagated-inputs
     ;; As per poppler-cairo and poppler-glib.pc.
     ;; XXX: Ideally we'd propagate Cairo too, but that would require a
