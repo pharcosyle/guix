@@ -8336,7 +8336,6 @@ users.")
      (list
       #:configure-flags
       #~(list
-         "-Dnmtui=false"
          ;; Otherwise, the RUNPATH will lack the final 'NetworkManager' path
          ;; component.
          (string-append "-Dc_link_args=-Wl,-rpath="

@@ -233,8 +233,7 @@ the traditional flat-text whatis databases.")
                 "174x2x9ws47b14lm339j6rzm7mxy1j3qhh484khscw0yy1qdbw4b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
-       #:test-target "regress"
+     `(#:test-target "regress"
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'set-prefix
                     (lambda* (#:key outputs #:allow-other-keys)

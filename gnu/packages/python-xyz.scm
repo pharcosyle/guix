@@ -21902,8 +21902,7 @@ implementation of your Python package and its public API surface.")
                 "10d53q50zn2s8iiszv01nr9r4imimc2dvplkl4ymj1sm1r52qca5"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; TODO explicitly ignore those locale tests or get glibc-locales working and try adding that. Or just keep this "tests false", whatever
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-test-hypothesis-deadlines
            (lambda _
@@ -21918,9 +21917,7 @@ implementation of your Python package and its public API surface.")
                (invoke "pytest" "-v")))))))
     (native-inputs
      (list python-hypothesis python-pytest-cov python-pytest-mock
-           python-pytest
-           ;; glibc-locales ; For tests.
-           ))
+           python-pytest))
     (propagated-inputs ; TODO: Add python-fastnumbers.
      (list python-pyicu))
     (home-page "https://github.com/SethMMorton/natsort")
