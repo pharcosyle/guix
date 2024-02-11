@@ -5546,7 +5546,16 @@ file.")
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            "colord-" version ".tar.xz"))
        (sha256
-        (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))))
+        (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri "https://github.com/hughsie/colord/pull/168.patch")
+           (file-name (string-append name "-backport-test-fix.patch"))
+           (sha256
+            (base32
+             "11xbmc34lhi8s3mnw54ccgqwzbs7ynhdhrk5r50r38mzb0kcpdxy")))))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -5616,7 +5625,16 @@ output devices.")
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            "colord-" version ".tar.xz"))
        (sha256
-        (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))))
+        (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri "https://github.com/hughsie/colord/pull/168.patch")
+           (file-name (string-append name "-backport-test-fix.patch"))
+           (sha256
+            (base32
+             "11xbmc34lhi8s3mnw54ccgqwzbs7ynhdhrk5r50r38mzb0kcpdxy")))))))
     (arguments
      (substitute-keyword-arguments (package-arguments colord-minimal)
        ((#:configure-flags flags)
