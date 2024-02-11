@@ -4513,7 +4513,7 @@ passwords in the GNOME keyring.")
            libxslt))
     (propagated-inputs
      (list glib                         ; required by libvala-0.40.pc
-           graphviz))
+           graphviz-9))
     (home-page "https://wiki.gnome.org/Projects/Vala/")
     (synopsis "Compiler using the GObject type system")
     (description "Vala is a programming language using modern high level
