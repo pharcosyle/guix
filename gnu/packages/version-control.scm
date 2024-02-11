@@ -96,6 +96,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cook)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
@@ -2392,6 +2393,7 @@ following features:
     (inputs
      (list apr
            apr-util
+           libxcrypt-glibc
            lz4
            perl
            python-wrapper
