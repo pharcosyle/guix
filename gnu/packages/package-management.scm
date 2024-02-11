@@ -2082,7 +2082,6 @@ cp -r /tmp/locale/*/en_US.*")))
            libseccomp
            libxau
            libxml2
-           openssl
            p11-kit
            util-linux
            xdg-dbus-proxy))
