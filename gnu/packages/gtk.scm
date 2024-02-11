@@ -164,7 +164,7 @@ such as mate-panel and xfce4-panel.")
 (define-public cairo
   (package
     (name "cairo")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
@@ -172,66 +172,47 @@ such as mate-panel and xfce4-panel.")
         (string-append "https://cairographics.org/releases/cairo-"
                        version ".tar.xz"))
        (sha256
-        (base32 "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))
-       (patches (search-patches
-		 "cairo-CVE-2018-19876.patch"
-		 "cairo-CVE-2020-35492.patch"))))
-    (build-system glib-or-gtk-build-system)
-    (outputs '("out" "doc"))
+        (base32 "0r0by563s75xyzz0d0j1nmjqmdrk2x9agk7r57p3v8vqp4v0ffi4"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:tests? #f ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
-       #:configure-flags
-       (list
-        "--disable-static"
-        ;; XXX: To be enabled.
-        ;; "--enable-gallium=yes"
-        ;; "--enable-gl=yes"
-        ;; " --enable-glesv2=yes"
-        ;; "--enable-glesv3=yes"
-        ;; "--enable-cogl=yes"
-        ;; "--enable-directfb=yes"
-        ;; "--enable-vg=yes"
-        "--enable-tee=yes"              ;needed for GNU IceCat
-        "--enable-xml=yes"              ;for cairo-xml support
-        (string-append "--with-html-dir="
-                       (assoc-ref %outputs "doc")
-                       "/share/gtk-doc/html"))))
+     (list #:glib-or-gtk? #t
+           #:configure-flags
+           #~(list
+              ;; Adding the gtk-doc dependency necessary to enable docs
+              ;; introduces a cycle.
+              ;; "-Dgtk_doc=true"
+
+              ;; Testing requires additional dependencies: libspectre,
+              ;; ghostscript, poppler, and librsvg. The latter two introduce
+              ;; cyles and the tests still fail. A few run (successfully) even
+              ;; with this flag disabled so don't also set the build tests
+              ;; argument to false.
+              "-Dtests=disabled")))
     (native-inputs
-     `(,@(if (target-hurd?)
-             '()
-             `(("gobject-introspection" ,gobject-introspection)))
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+     (list pkg-config
+           python))
     (inputs
-     `(("bash-minimal" ,bash-minimal)   ;for glib-or-gtk-wrap
-       ,@(if (target-hurd?)
-             '()
-             `(("drm" ,libdrm)))
-       ("ghostscript" ,ghostscript)
-       ("libspectre" ,libspectre)
-       ,@(if (target-hurd?)
-             '()
-             `(("poppler" ,poppler)))))
+     (list bash-minimal)) ; for glib-or-gtk-wrap
     (propagated-inputs
-     `( ;; ("cogl" ,cogl)
-       ;; ("directfb" ,directfb)
-       ("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("glib" ,glib)
-       ;; ("gtk+" ,gtk+)
-       ("libpng" ,libpng)
-       ;; ("librsvg" ,librsvg)
-       ;; ("opengl" ,mesa)
-       ("pixman" ,pixman)
-       ("x11" ,libx11)
-       ("xcb" ,libxcb)
-       ("xext" ,libxext)
-       ("xrender" ,libxrender)))
+     (list
+      ;; Font backends (required)
+      fontconfig
+      freetype
+      ;; "Standard" surface backends
+      libpng
+      pixman
+      zlib
+      ;; "Platform" surface backends
+      libx11
+      libxcb
+      libxext
+      libxrender
+      ;; GObject support
+      glib))
     (synopsis "Multi-platform 2D graphics library")
     (description "Cairo is a 2D graphics library with support for multiple output
-devices.  Currently supported output targets include the X Window System (via
-both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file
-output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
+devices.  Currently supported output targets include the X Window System, XCB,
+Quartz, Win32, image buffers, PostScript,PDF, and SVG file output.")
     (home-page "https://cairographics.org/")
     (license
      ;; This project is dual-licensed.
@@ -239,22 +220,13 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
       license:lgpl2.1+
       license:mpl1.1))))
 
-(define-public cairo-sans-poppler
-  ;; Variant used to break the dependency cycle between Poppler and Cairo.
-  (package/inherit cairo
-    (inputs (alist-delete "poppler" (package-inputs cairo)))
-    (properties `((hidden? . #t)))))
-
 (define-public cairo-xcb
   (package/inherit cairo
     (name "cairo-xcb")
-    (inputs
-     `(("mesa" ,mesa)
-       ,@(package-inputs cairo)))
     (arguments
-     `(#:tests? #f
-       #:configure-flags
-       '("--enable-xlib-xcb" "--enable-gl" "--enable-egl")))
+     (substitute-keyword-arguments (package-arguments cairo)
+       ((#:configure-flags configure-flags  #~'())
+        #~(cons "-Dxlib-xcb=enabled" #$configure-flags))))
     (synopsis "2D graphics library (with X11 support)")))
 
 (define-public harfbuzz
@@ -363,7 +335,7 @@ applications.")
 (define-public pango
   (package
     (name "pango")
-    (version "1.50.14")
+    (version "1.51.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/pango/"
@@ -372,7 +344,7 @@ applications.")
               (patches (search-patches "pango-skip-libthai-test.patch"))
               (sha256
                (base32
-                "1s41sprfgkc944fva36zjmkmdpv8hn1bdpyg55xc4663pw2z4rqx"))))
+                "1xd9s5i0i3vs589kzqm28pi8wjq9qqmalzppdaz3p43gmq4w3vvl"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
@@ -1608,14 +1580,14 @@ guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
 (define-public cairomm
   (package
     (name "cairomm")
-    (version "1.16.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cairographics.org/releases/"
                                   "cairomm-" version ".tar.xz"))
               (sha256
                (base32
-                "0gy1gn79gwqzrf1d7f7rf25yy2dr7xginkg3al7jpnkxm6cbyqva"))))
+                "1yrwy14k1lh74kmr41pnms6zr1c9z8md4xkji2mfia1y9qwma4mq"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -1673,7 +1645,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.50.1")
+    (version "2.50.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1681,7 +1653,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "054jglmnbig14fs99qqi5y174z9j90r6dprpyszw42742cs95jfc"))))
+                "1yx9a2mwzxqwf61rv3r8qggywv5kv8k84cb81mc44118ld7api8v"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
