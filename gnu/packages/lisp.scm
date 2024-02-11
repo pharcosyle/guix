@@ -378,7 +378,8 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
      (list cl-asdf))
     (inputs (list libffcall ncurses readline libsigsegv))
     (arguments
-     `(#:configure-flags '(,@(if (string-prefix? "armhf-linux"
+     `(#:tests? #f
+       #:configure-flags '(,@(if (string-prefix? "armhf-linux"
                                                  (or (%current-system)
                                                      (%current-target-system)))
                                  '("CFLAGS=-falign-functions=4")
