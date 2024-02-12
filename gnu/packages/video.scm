@@ -5758,7 +5758,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -5767,7 +5767,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1308g0nqxq65h76a7h91999cbglkwihgrpid64kdn0r9vh6399sq"))))
+        (base32 "0k4s1ksh371fjqm9xqc9pacijj78qhcqiby11v01l90gw5bbjpi5"))))
     (build-system cmake-build-system)
     (arguments
       ;; The test suite tries to download test data and git clone a 3rd-party
