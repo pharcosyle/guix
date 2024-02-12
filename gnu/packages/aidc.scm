@@ -48,26 +48,27 @@
 (define-public zxing-cpp
   (package
     (name "zxing-cpp")
-    (version "2.0.0")
+    (version "2.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/nu-book/zxing-cpp")
+                    (url "https://github.com/zxing-cpp/zxing-cpp")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ndyv2s7ldlz15xiww6kpg9rmys3v8lx9w3a78by6gscv0wx20v7"))))
+                "1dr12rj1b6m436nbwmcd0b1njhmkl26qxy4f1lhcmd4x5x2f2vfa"))))
     (build-system cmake-build-system)
     (arguments
      (list
       #:configure-flags #~'("-DBUILD_EXAMPLES=off"
                             "-DBUILD_UNIT_TESTS=on")))
     (native-inputs
-     (list googletest))
+     (list googletest
+           pkg-config))
     (synopsis "C++ port of ZXing")
     (description "ZXing-CPP is a barcode scanning library.")
-    (home-page "https://github.com/nu-book/zxing-cpp")
+    (home-page "https://github.com/zxing-cpp/zxing-cpp")
     (license license:asl2.0)))
 
 ;;; This older variant is kept for gst-plugins-bad (see:
