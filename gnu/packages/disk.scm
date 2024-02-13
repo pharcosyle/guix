@@ -1178,7 +1178,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "2.28")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/storaged-project/"
@@ -1186,7 +1186,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "1x3xbgd2dyjhcqvyalpnrp727xidfxmaxgyyvv5gwx4aw90wijc2"))))
+                "1ys4msps5svz93kfpd575pw70jcav3gjay6k099pk3npr5kazr21"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1195,7 +1195,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
               (substitute* "src/lib/blockdev.c"
-               (("/etc/libblockdev/conf.d/" path) (string-append out path)))))))))
+               (("/etc/libblockdev/.*/conf.d/" path) (string-append out path)))))))))
     (native-inputs
      (list gobject-introspection
            pkg-config
@@ -1206,11 +1206,14 @@ to create devices with respective mappings for the ATARAID sets discovered.")
       (cons cryptsetup (libcryptsetup-propagated-inputs))
       (list btrfs-progs
             dosfstools
-            dmraid
+            e2fsprogs
             eudev
             glib
+            gptfdisk
+            keyutils
             kmod
             libbytesize
+            libnvme
             libyaml
             lvm2
             mdadm
