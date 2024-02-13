@@ -1197,7 +1197,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
           (add-after 'unpack 'patch-configuration-directory
             (lambda _
               (substitute* "src/lib/blockdev.c"
-                (("/etc/libblockdev/conf.d/" path)
+                (("/etc/libblockdev/.*/conf.d/" path)
                  (string-append #$output path)))))
           (add-after 'unpack 'patch-plugin-paths
             (lambda* (#:key inputs #:allow-other-keys)
@@ -1221,7 +1221,6 @@ to create devices with respective mappings for the ATARAID sets discovered.")
       (list bcache-tools
             btrfs-progs
             dosfstools
-            dmraid
             e2fsprogs
             eudev
             glib
