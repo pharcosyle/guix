@@ -1902,7 +1902,20 @@ audio/video codec library.")
              (sha256
               (base32
                "0283az1r92vpynn6xdr6dakz87ji97cab5kgyrh9102wb46kh2z8"))
-             (patches (search-patches "ffmpeg-4-binutils-2.41.patch"))))
+             (patches
+              (append
+               (search-patches "ffmpeg-4-binutils-2.41.patch")
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://git.ffmpeg.org/gitweb/ffmpeg.git/patch/"
+                        "031f1561cd286596cdb374da32f8aa816ce3b135"))
+                  (file-name (string-append (package-name ffmpeg-5)
+                                            "-svt-av1-1.5-fix.patch"))
+                  (sha256
+                   (base32
+                    "18gziwk4zvzvy0693fpihmsngcj69grna6b6av7c9kfzhr6pwv3p"))))))))
     (inputs (modify-inputs (package-inputs ffmpeg)
               (replace "sdl2" sdl2-2.0)))
     (arguments
