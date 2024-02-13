@@ -748,6 +748,19 @@ collection of tools for doing simple manipulations of TIFF images.")
     '((upstream-name . "tiff")))
    (home-page "http://www.simplesystems.org/libtiff/")))
 
+(define-public libtiff-4.5
+  (package
+    (inherit libtiff)
+   (version "4.5.0")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.osgeo.org/libtiff/tiff-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0z16pqkj9wfifri7xhbvy6jmp690wyjcasam098cddp7qmwwkyns"))))))
+
 (define-public leptonica
   (package
     (name "leptonica")
