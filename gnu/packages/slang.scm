@@ -145,7 +145,9 @@ to inspect different parts of the same file, at the same time.")
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (inputs
-     (list slang popt python fribidi))
+     (list popt python fribidi))
+    (propagated-inputs
+     (list slang)) ; In Requires.private of pkg-config
     (arguments
      (list
        #:tests? #f    ; no test suite
