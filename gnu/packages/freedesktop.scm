@@ -1621,7 +1621,7 @@ Analysis and Reporting Technology) functionality.")
 (define-public udisks
   (package
     (name "udisks")
-    (version "2.8.4")
+    (version "2.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1629,7 +1629,7 @@ Analysis and Reporting Technology) functionality.")
                     version "/udisks-" version ".tar.bz2"))
               (sha256
                (base32
-                "06cq52kp1nyy15qzylywy9s7hhhqc45k0s3y68crf0zsmjyng0yj"))))
+                "1klf5pcr9yg8g88mwwh3q2j0idfwd8hfr2q6nknhsm02yv638mxp"))))
     (build-system gnu-build-system)
     (native-inputs
      (list docbook-xml-4.3              ; to build the manpages
@@ -1650,13 +1650,13 @@ Analysis and Reporting Technology) functionality.")
            libatasmart
            libblockdev
            libgudev
+           mdadm
            polkit
            util-linux))
     (outputs '("out"
                "doc"))                  ;5 MiB of gtk-doc HTML
     (arguments
      (list
-      #:tests? #f                       ; requiring system message dbus
       #:disallowed-references '("doc")  ;enforce separation of "doc"
       #:configure-flags
       #~(list "--enable-man"
@@ -1666,16 +1666,23 @@ Analysis and Reporting Technology) functionality.")
               (string-append "--with-html-dir=" #$output:doc
                              "/share/doc/udisks/html")
               (string-append "--with-udevdir=" #$output "/lib/udev"))
+      #:make-flags
+      #~(list (string-append "INTROSPECTION_GIRDIR="
+                             #$output "/share/gir-1.0")
+              (string-append "INTROSPECTION_TYPELIBDIR="
+                             #$output "/lib/girepository-1.0"))
       #:phases
       #~(modify-phases %standard-phases
-          (add-before 'configure 'fix-girdir
-            (lambda _
-              ;; Install introspection data to its own output.
-              (substitute* "udisks/Makefile.in"
-                (("girdir = .*")
-                 "girdir = $(datadir)/gir-1.0\n")
-                (("typelibsdir = .*")
-                 "typelibsdir = $(libdir)/girepository-1.0\n"))))
+          (add-after 'unpack 'hardcode-bin-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/tests/test.c"
+                (("/bin/true") (search-input-file inputs "/bin/true"))
+                (("/bin/false") (search-input-file inputs "/bin/false"))
+                (("/bin/sleep") (search-input-file inputs "/bin/sleep")))
+              (substitute* "data/80-udisks2.rules"
+                (("/bin/sh") (search-input-file inputs "/bin/sh"))
+                (("/bin/sed") (search-input-file inputs "/bin/sed"))
+                (("/sbin/mdadm") (search-input-file inputs "/sbin/mdadm")))))
           (add-after 'install 'wrap-udisksd
             (lambda _
               ;; Tell 'udisksd' where to find the 'mount' command.
