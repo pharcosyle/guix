@@ -5282,15 +5282,19 @@ isolation or root privileges.")
                (base32 "1wq8bw60l090z2kb717wyzk5wz1jrcn31ykdaa7k9pz9w79v0v67"))
               (file-name (git-file-name name version))))
     (build-system meson-build-system)
-    (outputs (list "out" "doc"))        ; docs are 80% of all output
-    (arguments
-     (list
-      #:configure-flags
-      #~(let ((doc (string-append #$output:doc "/share/doc/" #$name)))
-          (list (string-append "-Dhtmldir=" doc "/html")
-                (string-append "-Drstdir=" doc "/rst")
-                "-Ddocs-build=true" "-Ddocs=all"))))
-    (native-inputs (list pkg-config perl python python-sphinx))
+    (outputs (list "out"
+                   ;; "doc"
+                   ))        ; docs are 80% of all output
+    ;; (arguments
+    ;;  (list
+    ;;   #:configure-flags
+    ;;   #~(let ((doc (string-append #$output:doc "/share/doc/" #$name)))
+    ;;       (list (string-append "-Dhtmldir=" doc "/html")
+    ;;             (string-append "-Drstdir=" doc "/rst")
+    ;;             "-Ddocs-build=true" "-Ddocs=all"))))
+    (native-inputs (list pkg-config perl python
+                         ;; python-sphinx
+                         ))
     ;; libnvme.pc, libnvme-mi.pc lists these in Requires.private.
     (propagated-inputs (list dbus json-c openssl))
     (home-page "https://github.com/linux-nvme/libnvme")
