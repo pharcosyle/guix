@@ -436,7 +436,7 @@ with the following features:
 (define-public libbytesize
   (package
     (name "libbytesize")
-    (version "2.8")
+    (version "2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -444,7 +444,7 @@ with the following features:
                     "download/" version "/libbytesize-" version ".tar.gz"))
               (sha256
                (base32
-                "1871jpndh6m063rsnamyzhqr6lm6mzzf0c3mhb6b32g16xdfyynq"))))
+                "1lfa02ac96p12xxq75ilx3qk7kym4xrlqyfh26axb7y5iazf670x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))
