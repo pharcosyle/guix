@@ -1182,15 +1182,15 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "3.1.1")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/storaged-project/"
                                   "libblockdev/releases/download/"
-                                  version "-1/libblockdev-" version ".tar.gz"))
+                                  version "/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "1ny2glwmb5dcdv2x0giinbyma9fhk59z8117k1kr15pm7yjk7jx5"))))
+                "16hq27pwdkv1p22l8gr2j9ayp6i3cg5ry1r83wb8izpxxln9x2ri"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -1199,7 +1199,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
           (add-after 'unpack 'patch-configuration-directory
             (lambda _
               (substitute* "src/lib/blockdev.c"
-                (("/etc/libblockdev/conf.d/" path)
+                (("/etc/libblockdev/.*/conf.d/" path)
                  (string-append #$output path)))))
           (add-after 'unpack 'patch-plugin-paths
             (lambda* (#:key inputs #:allow-other-keys)
@@ -1227,13 +1227,14 @@ to create devices with respective mappings for the ATARAID sets discovered.")
       (list bcache-tools
             btrfs-progs
             dosfstools
-            dmraid
             e2fsprogs
             eudev
             glib
             gptfdisk
+            json-glib
             keyutils
             kmod
+            libatasmart
             libbytesize
             libnvme
             libyaml
