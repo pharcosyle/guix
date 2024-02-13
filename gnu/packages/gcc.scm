@@ -746,7 +746,8 @@ It also includes runtime support libraries for these languages.")
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"
                                      "gcc-10-libsanitizer-no-crypt.patch"
-                                     "gcc-11-libstdc++-hurd-libpthread.patch"))
+                                     "gcc-11-libstdc++-hurd-libpthread.patch"
+                                     "gcc-remove-crypt-interceptors.patch"))
             (modules '((guix build utils)))
             (snippet gcc-canadian-cross-objdump-snippet)))
    (properties
