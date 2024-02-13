@@ -412,7 +412,7 @@ Subject: Hello Nice to meet you!")
     ;; Set a password for the user account; the test needs it.
     (users (cons (user-account
                   (name "alice")
-                  (password (crypt "testpass" "$6$abc"))
+                  (password "$6$abc$WefTbXiLFaxnojbw6AkjjZ1jvYAcTniFE9cLJZ22Td9ZNk45RDja0MsPJMKrJsb7EHVn9/abaO1Hfh6mf6iFj1")
                   (comment "Bob's sister")
                   (group "users")
                   (supplementary-groups '("wheel" "audio" "video")))
