@@ -225,6 +225,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages music)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages w3m)
@@ -20378,20 +20379,59 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
                 (sha256
                  (base32
                   "00ap23b6q6qay2hz4nyvf9xsmib68hdf47gwyg9gjlq85qhagw41"))
-                (file-name (git-file-name name version))))
+                (file-name (git-file-name name version))
+                (patches
+                 (list
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append
+                          "https://github.com/pharcosyle/dirvish/commit/"
+                          "96813da0dee43f5f8d24c0ef5e11bd904ddec495.patch"))
+                    (file-name (string-append name "-external-program-vars.patch"))
+                    (sha256
+                     (base32
+                      "068d1k1034m929shwdjq7fsnwn5fjj0y43nx65n260vpv8d5rhih")))))))
       (build-system emacs-build-system)
       (arguments
        (list
         #:phases
         #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-executable-paths
+              (lambda* (#:key inputs #:allow-other-keys)
+                (emacs-substitute-variables "dirvish-widgets.el"
+                  ("dirvish-convert-program" (search-input-file inputs "/bin/convert"))
+                  ("dirvish-ffmpegthumbnailer-program" (search-input-file inputs "/bin/ffmpegthumbnailer"))
+                  ("dirvish-mediainfo-program" (search-input-file inputs "/bin/mediainfo"))
+                  ;; ("dirvish-epub-thumbnailer-program" (search-input-file inputs "/bin/epub-thumbnailer"))
+                  ("dirvish-pdfinfo-program" (search-input-file inputs "/bin/pdfinfo"))
+                  ("dirvish-pdftoppm-program" (search-input-file inputs "/bin/pdftoppm"))
+                  ("dirvish-zipinfo-program" (search-input-file inputs "/bin/zipinfo"))
+                  ("dirvish-tar-program" (search-input-file inputs "/bin/tar")))
+                (emacs-substitute-variables "extensions/dirvish-fd.el"
+                  ("dirvish-fd-program" (search-input-file inputs "/bin/fd"))
+                  ("dirvish-fd-ls-program" (search-input-file inputs "/bin/ls")))
+                (emacs-substitute-variables "extensions/dirvish-yank.el"
+                  ("dirvish-rsync-program" (search-input-file inputs "/bin/rsync")))))
             ;; Move the extensions source files to the top level, which
             ;; is included in the EMACSLOADPATH.
-            (add-after 'unpack 'move-source-files
+            (add-after 'patch-executable-paths 'move-source-files
               (lambda _
                 (let ((el-files (find-files "./extensions" ".*\\.el$")))
                   (for-each (lambda (f)
                               (rename-file f (basename f)))
                             el-files)))))))
+      (inputs
+       (list imagemagick
+             ffmpegthumbnailer
+             mediainfo
+             ;; epub-thumbnailer ; TODO: Not packaged in Guix yet.
+             poppler
+             unzip
+             tar
+             fd
+             rsync))
+      (propagated-inputs
+       (list emacs-pdf-tools))
       (home-page "https://github.com/alexluigit/dirvish")
       (synopsis "Improved version of the Emacs package Dired")
       (description
