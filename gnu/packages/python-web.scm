@@ -3833,22 +3833,110 @@ Amazon Web Services (AWS) API.")
 (define-public awscli-2
   (package
     (inherit awscli)
-    (name "awscli")
-    (version "2.2.0")
+    (version "2.15.21")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri (string-append name "v2") version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aws/aws-cli")
+             (commit version)))
        (sha256
         (base32
-         "0g1icsy2l4n540gnhliypy830dfp08hpfc3rk12dlxgc9v3ra4wl"))))
+         "11pr1hhvwirslavy08fb4yxdlp9kw6bk9b7zpgdyihwwc7cvrwf8"))
+       (file-name (git-file-name (package-name awscli) version))))
+    (build-system pyproject-build-system)
     (arguments
-     ;; FIXME: The 'pypi' release does not contain tests.
-     '(#:tests? #f))
+     (list
+      #:test-flags #~(list
+                      ;; Deprecation warning(s) currently break the tests:
+                      ;; "DeprecationWarning: 'urllib3.contrib.pyopenssl'
+                      ;; module is deprecated and will be removed..."
+                      "-Wignore::DeprecationWarning"
+                      "--ignore=tests/dependencies" ; We mess with these.
+                      "--ignore=tests/integration" ; Require networking.
+                      "--ignore=tests/backends" ; Not useful.
+                      ;; Slow, possibly less useful, and contain a few
+                      ;; failures (unclear if they're meaningful)
+                      "--ignore=tests/functional")
+      ;; pyproject-build-system doesn't seem to respect pyproject.toml
+      ;; 'backend-path' so we have to specify the full path here.
+      #:build-backend "backends.pep517"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'allow-newer-dependencies
+            ;; awscli is pretty conservative with its version ranges and
+            ;; often (though not always) simply removing the version ceiling
+            ;; to get it to build with newer deps is fine.
+            (lambda _
+              (substitute* "pyproject.toml"
+                (("cryptography>=3.3.2,<40.0.2") "cryptography>=3.3.2"))))
+          (add-after 'unpack 'hardcode-reference-to-groff
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "awscli/help.py"
+                (("self._exists_on_path\\('groff'\\)") "True")
+                (("cmdline = \\['groff'")
+                 (string-append "cmdline = ['"
+                                (search-input-file inputs "bin/groff")
+                                "'")))))
+          (add-before 'check 'adjust-tests
+            (lambda _
+              (substitute* "tests/unit/test_help.py"
+                ;; We hardcode groff so it always exists.
+                (("test_no_groff_or_mandoc_exists")
+                 "skip_test_no_groff_or_mandoc_exists"))))
+          (add-before 'check 'set-home-env
+            (lambda _
+              ;; Permission denied: '/homeless-shelter'
+              (setenv "HOME" "/tmp")))
+          (add-after 'install 'install-shell-completions
+            (lambda _
+              (let ((bash-completion (string-append
+                                      #$output
+                                      "/share/bash-completion/completions")))
+                (mkdir-p bash-completion)
+                (call-with-output-file (string-append bash-completion "/aws")
+                  (lambda (port)
+                    (format port
+                            (string-join
+                             (list "complete" "-C"
+                                   (string-append #$output "/bin/aws_completer")
+                                   "aws"))))))
+              (let ((zsh-site-functions (string-append
+                                         #$output
+                                         "/share/zsh/site-functions")))
+                (mkdir-p zsh-site-functions)
+                (rename-file (string-append #$output
+                                            "/bin/aws_zsh_completer.sh")
+                             (string-append zsh-site-functions "/_aws"))))))))
+    (native-inputs
+     (list python-flit-core
+           ;; For tests.
+           python-jsonschema
+           python-mock
+           python-pytest))
+    ;; A number of dependencies are currently vendored (python-botocore,
+    ;; python-s3transfer...). I don't recommend trying to unbundle them: some
+    ;; are modified from their upstream versions or only work at specific
+    ;; versions. Packaging for awscli is generally a mess.
     (inputs
-     (list python-importlib-resources
-           python-executor))))
-
+     (list groff
+           python-awscrt
+           python-colorama
+           python-cryptography
+           python-dateutil
+           python-distro
+           python-docutils
+           python-jmespath
+           python-ruamel.yaml
+           python-prompt-toolkit
+           python-urllib3-1))
+    (propagated-inputs
+     (list
+      ;; `less' is referenced in some parts of awscli. Worth explicitly
+      ;; propagating? Patching references is another option but there are a
+      ;; number of them and it would be pretty brittle.
+      ;; less
+      ))))
 
 (define-public python-wsgiproxy2
   (package
