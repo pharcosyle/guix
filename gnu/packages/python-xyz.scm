@@ -17828,6 +17828,26 @@ text.")
        (sha256
         (base32 "189n8hpijy14jfan4ha9f5n06mnl33cxz7ay92wjqgkr639s0vg9"))))))
 
+(define-public python-awscrt
+  (package
+    (name "python-awscrt")
+    (version "0.19.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "awscrt" version))
+       (sha256
+        (base32 "1zld0dymdbjk6n17sz9vbc89l9anmlzfv0m34rn6l57fbm9i258w"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f))
+    (native-inputs
+     (list cmake-minimal))
+    (home-page "https://github.com/awslabs/aws-crt-python")
+    (synopsis "Python bindings for the AWS Common Runtime")
+    (description "A common runtime for AWS Python projects.")
+    (license license:asl2.0)))
+
 (define-public python-moto
   (package
     (name "python-moto")
