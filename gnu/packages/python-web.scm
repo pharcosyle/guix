@@ -3767,6 +3767,22 @@ can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
     (license license:expat)))
 
+(define-public python-urllib3-1
+  (package
+    (inherit python-urllib3)
+    (version "1.26.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "urllib3" version))
+        (sha256
+         (base32
+          "1840hlr9wwb1c835klcrnxfv8rwcpxavk6jjgi2i6x36lnxw3v7q"))))
+    (build-system python-build-system)
+    (native-inputs
+     (modify-inputs (package-native-inputs python-urllib3)
+       (delete python-hatchling)))))
+
 (define-public awscli
   (package
     ;; Note: updating awscli typically requires updating botocore as well.
