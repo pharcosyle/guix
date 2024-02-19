@@ -183,6 +183,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dictionaries)
   #:use-module (gnu packages djvu)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages ebook)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
@@ -29418,14 +29419,12 @@ leader key in vim), and much more.")
        (list
         #:phases
         #~(modify-phases %standard-phases
-            (add-after 'unpack 'set-unzip-location
+            (add-after 'unpack 'patch-tldr-directory-path
               (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "tldr.el"
-                  (("\"unzip")
-                   (string-append "\""
-                                  (search-input-file inputs "/bin/unzip")))))))))
+                (emacs-substitute-variables "tldr.el"
+                  ("tldr-directory-path" (search-input-directory inputs "share/tldr-pages"))))))))
       (inputs
-       (list unzip))
+       (list tldr-pages))
       (propagated-inputs
        (list emacs-request))
       (home-page "https://github.com/kuanyui/tldr.el")
