@@ -2554,6 +2554,32 @@ Mono’s typeface forms are simple and free from unnecessary details.  Rendered
 in small sizes, the text looks crisper.")
     (license license:silofl1.1)))
 
+(define-public font-symbols-nerd-mono
+  (package
+    (name "font-symbols-nerd-mono")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rainstormstudio/nerd-icons.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ggj6lm02m7nb5gxnqs2v2lkxsclml6kq176vam9qyg1fsm7yvdw"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/rainstormstudio/nerd-icons.el")
+    (synopsis "Symbols-only Nerd Font")
+    (description "Symbols-only build of Nerd Fonts chiefly designed as an
+alternative to all-the-icons.")
+    ;; Package is released under GPL3+. The underlying Nerd Fonts are
+    ;; licenced under SIL OFL 1.1 and the source code under Expat with
+    ;; constituent fonts under other and varied licenses (see
+    ;; https://github.com/ryanoasis/nerd-fonts/blob/master/LICENSE).
+    (license
+     (list license:gpl3+ license:silofl1.1 license:expat))))
+
 (define-public font-juliamono
   (package
     (name "font-juliamono")
