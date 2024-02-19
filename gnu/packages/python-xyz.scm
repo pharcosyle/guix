@@ -5355,38 +5355,36 @@ and convert DDL to BigQuery JSON schema.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    ;; XXX: Update to the latest version requires new build system - Hatch
-    ;; https://hatch.pypa.io/
-    (version "4.5.1")
+    (version "4.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jsonschema" version))
        (sha256
-        (base32 "1z0x22691jva7lwfcfh377jdmlz68zhiawxzl53k631l34k8hvbw"))))
+        (base32 "1ym5k12ys8yw3n64gkrkidj2ljf57rs9g2cr2232aqcddpa4yqag"))))
     (build-system pyproject-build-system)
     (arguments
      (list
       #:phases
       #~(modify-phases %standard-phases
-          (add-before 'build 'pretend-version
-            ;; The version string is usually derived via setuptools-scm, but
-            ;; without the git metadata available, the version string is set to
-            ;; '0.0.0'.
+          ;; Remove this once `python-trove-classifers' is updated to version
+          ;; 2023.4.25 or later.
+          (add-after 'unpack 'remove-unknown-classifiers
             (lambda _
-              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (setenv "JSON_SCHEMA_TEST_SUITE" "json")
-                (invoke "trial" "jsonschema")))))))
-    (native-inputs (list python-setuptools-scm python-twisted))
+              (substitute* "pyproject.toml"
+                (("\"Topic :: File Formats :: JSON\",") "")
+                (("\"Topic :: File Formats :: JSON :: JSON Schema\",") "")))))))
+    (native-inputs
+     (list python-hatch-fancy-pypi-readme
+           python-hatch-vcs
+           python-hatchling
+           python-pytest))
     (propagated-inputs
      (list python-attrs
-           python-importlib-metadata
-           python-pyrsistent
-           python-typing-extensions))
-    (home-page "https://github.com/Julian/jsonschema")
+           python-jsonschema-specifications
+           python-referencing
+           python-rpds-py))
+    (home-page "https://github.com/python-jsonschema/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
      "Jsonschema is an implementation of JSON Schema for Python.")
