@@ -2820,14 +2820,14 @@ that have uses outside of the Zope framework.")
 (define-public python-zope-testing
   (package
     (name "python-zope-testing")
-    (version "4.7")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.testing" version))
        (sha256
         (base32
-         "1sh3c3i0m8n8fnhqiry0bk3rr356i56ry7calmn57s1pvv8yhsyn"))))
+         "0jfnycp9kzmmkk0rard8chd81v5yp6vnm09ky7d3qmv6svcd0z78"))))
     (build-system python-build-system)
     (home-page "https://pypi.org/project/zope.testing/")
     (synopsis "Zope testing helpers")
