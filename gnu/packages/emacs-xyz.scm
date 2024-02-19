@@ -38669,6 +38669,127 @@ headlines, keywords, tables and source blocks.")
 hacker.")
       (license license:expat))))
 
+(define-public doom-emacs
+  (let ((commit "f0ad161643c05842ca41bcb5daadcf7a7db98983")
+        (revision "1"))
+    (package
+      (name "doom-emacs")
+      (version (git-version "3.0.0-pre" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/doomemacs/doomemacs")
+               (commit commit)))
+         (sha256
+          (base32
+           "14jp2g7m3jl0f0ms3367lmi05rfhdc59qaa705nmw7xqrdivz8rd"))
+         (file-name (git-file-name name version))
+         (patches
+          (list
+           (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/pharcosyle/doomemacs/commit/"
+                   "7ae2e75c63c534be9e41a3fb3758389e95b663d5.patch"))
+             (file-name (string-append name "-dirvish.patch"))
+             (sha256
+              (base32
+               "1b8655zwvhicd7azmamw63dqfpfbqdyfd62f6a83508b61iwdkcl")))
+           (origin
+             (method url-fetch)
+             (uri "https://github.com/doomemacs/doomemacs/pull/7683.patch")
+             (file-name (string-append name "-factorize-executables.patch"))
+             (sha256
+              (base32
+               "0242z79b97k9frvzk4wgsxa7w8s0h1wc429nscs4qbw4shyvskl3")))))))
+      (build-system copy-build-system)
+      (arguments
+       (list
+        #:imported-modules `(,@%copy-build-system-modules
+                             (guix build emacs-utils))
+        #:modules '((guix build copy-build-system)
+                    (guix build utils)
+                    ((guix build emacs-utils) #:select (emacs-substitute-variables %emacs)))
+        ;; #:install-plan
+        ;; '(("." "share/doom-emacs/"))
+        ;; #:tests? #t
+        ;; #:test-command '("./bin/doom" "test")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-executable-paths
+              (lambda* (#:key inputs #:allow-other-keys)
+                (parameterize ((%emacs (search-input-file inputs "/bin/emacs")))
+                  (emacs-substitute-variables "lisp/doom-projects.el"
+                    ("doom-rg-binary" (search-input-file inputs "/bin/rg"))
+                    ("doom-projectile-fd-binary" (search-input-file inputs "/bin/fd"))))))
+            (add-after 'install 'symlink-bin
+              (lambda _
+                (mkdir #$output:bin)
+                (symlink (string-append #$output "/bin")
+                         (string-append #$output:bin "/bin")))))))
+      (native-inputs
+       (list emacs-minimal))
+      (inputs
+       (list ripgrep
+             fd))
+      (propagated-inputs
+       (list
+        ;; Use the same version/commit as Doom.
+        (with-git-commit
+         font-symbols-nerd-mono
+         #:upstream-version "0.1.0"
+         #:commit "c6a4acf19454b415cba1c43daf4bfca8fccdd9ba"
+         #:hash "1pnlp54f0c2wgc65p932xyk71lyw361x17w71fnxgp72j1a3y6dz")))
+      (outputs '("out" "bin"))
+      (synopsis "An Emacs framework for the stubborn martian hacker")
+      (description "Doom is a configuration framework for GNU Emacs tailored for
+Emacs bankruptcy veterans who want less framework in their frameworks, a modicum
+of stability (and reproducibility) from their package manager, and the
+performance of a hand rolled config (or better).")
+      (home-page "https://github.com/doomemacs/doomemacs")
+      (license license:expat))))
+
+(define-syntax ->
+  (syntax-rules ()
+    ((_ x) x)
+    ((_ x (f args ...) expr ...) (-> (f x args ...) expr ...))
+    ((_ x f expr ...) (-> (f x) expr ...))))
+
+(define* (with-git-commit pkg
+                          #:key
+                          upstream-version
+                          (revision "0")
+                          commit
+                          hash)
+  (with-git pkg
+            #:upstream-version upstream-version
+            #:revision revision
+            #:commit commit
+            #:hash hash))
+
+(define* (with-git pkg
+                   #:key
+                   upstream-version
+                   revision
+                   commit
+                   hash)
+  (package
+    (inherit pkg)
+    (version (if revision
+                 (git-version upstream-version revision commit)
+                 upstream-version))
+    (source
+     (origin
+       (inherit (package-source pkg))
+       (uri (git-reference
+             (inherit (-> pkg package-source origin-uri))
+             (commit commit)))
+       (sha256
+        (base32
+         hash))
+       (file-name (git-file-name (package-name pkg) version))))))
+
 (define-public emacs-osm
   (package
     (name "emacs-osm")
