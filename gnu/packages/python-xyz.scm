@@ -5408,6 +5408,41 @@ and convert DDL to BigQuery JSON schema.")
               (lambda _
                 (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))))))))
 
+(define-public python-jsonschema-specifications
+  (package
+    (name "python-jsonschema-specifications")
+    (version "2023.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jsonschema_specifications" version))
+       (sha256
+        (base32 "1k348xkq45jx13kmv32ls6k4qvjq3ywd4q0i7zamw3z7nf3ng9s8"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Remove this once `python-trove-classifers' is updated to version
+          ;; 2023.4.25 or later.
+          (add-after 'unpack 'remove-unknown-classifiers
+            (lambda _
+              (substitute* "pyproject.toml"
+                (("\"Topic :: File Formats :: JSON :: JSON Schema\",") "")))))))
+    (native-inputs
+     (list python-hatch-vcs
+           python-hatchling
+           python-pytest))
+    (propagated-inputs
+     (list python-referencing))
+    (home-page "https://github.com/python-jsonschema/jsonschema-specifications")
+    (synopsis "Support files exposing JSON from the JSON Schema specifications")
+    (description
+     "JSON support files from the JSON Schema Specifications (metaschemas,
+vocabularies, etc.), packaged for runtime access from Python as a
+referencing-based Schema Registry.")
+    (license license:expat)))
+
 (define-public python-schema
   (package
     (name "python-schema")
