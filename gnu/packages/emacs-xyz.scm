@@ -20364,39 +20364,42 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
     (license license:gpl3+)))
 
 (define-public emacs-dirvish
-  (package
-    (name "emacs-dirvish")
-    (version "2.0.53")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/alexluigit/dirvish")
-                    (commit "c535e2147171be5506f4ff34e862bacbfb3de768")))
-              (sha256
-               (base32
-                "1nmp5ci4dvcpih6phfhk66s98lf8b49qd35ymy29kqkf5v4cnwga"))
-              (file-name (git-file-name name version))))
-    (build-system emacs-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; Move the extensions source files to the top level, which
-          ;; is included in the EMACSLOADPATH.
-          (add-after 'unpack 'move-source-files
-            (lambda _
-              (let ((el-files (find-files "./extensions" ".*\\.el$")))
-                (for-each (lambda (f)
-                            (rename-file f (basename f)))
-                          el-files)))))))
-    (home-page "https://github.com/alexluigit/dirvish")
-    (synopsis "Improved version of the Emacs package Dired")
-    (description
-     "Dirvish is an improved version of the Emacs inbuilt package Dired.  It
+  ;; Upstream hasn't made a named release in a long time.
+  (let ((commit "119f9f59a618bb7b476c93e9ab1d7542c5c1df41")
+        (revision "1"))
+    (package
+      (name "emacs-dirvish")
+      (version (git-version "2.0.53" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alexluigit/dirvish")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "00ap23b6q6qay2hz4nyvf9xsmib68hdf47gwyg9gjlq85qhagw41"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            ;; Move the extensions source files to the top level, which
+            ;; is included in the EMACSLOADPATH.
+            (add-after 'unpack 'move-source-files
+              (lambda _
+                (let ((el-files (find-files "./extensions" ".*\\.el$")))
+                  (for-each (lambda (f)
+                              (rename-file f (basename f)))
+                            el-files)))))))
+      (home-page "https://github.com/alexluigit/dirvish")
+      (synopsis "Improved version of the Emacs package Dired")
+      (description
+       "Dirvish is an improved version of the Emacs inbuilt package Dired.  It
 not only gives Dired an appealing and highly customizable user interface, but
 also comes together with almost all possible parts required for full usability
 as a modern file manager.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-which-key
   (package
