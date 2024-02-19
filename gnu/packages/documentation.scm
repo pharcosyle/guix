@@ -37,6 +37,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
@@ -427,3 +428,28 @@ the Net to search for documents which are not on the local system.")
       (description "Zeal is a simple offline documentation browser
 inspired by Dash.")
       (license gpl3+))))
+
+(define-public tldr-pages
+  ;; Doesn't have named releases, you're supposed to use the latest from git.
+  (let ((commit "174f3f0afa984cd12179a94f798b984f3fe55fe7")
+        (revision "1"))
+    (package
+      (name "tldr-pages")
+      (version (git-version "2.1" revision commit))
+      (source
+       (origin
+         (method url-fetch/zipbomb)
+         (uri (string-append "https://raw.githubusercontent.com"
+                             "/tldr-pages/tldr-pages.github.io/"
+                             commit "/assets/tldr.zip"))
+         (sha256
+          (base32
+           "1glq3yqfryhiyqgwzzjllvmmj4r0chca9bkh9aav7b4kdkbhppfb"))))
+      (build-system copy-build-system)
+      (arguments
+       (list #:install-plan #~'(("." "share/tldr-pages/"))))
+      (home-page "https://tldr.sh")
+      (synopsis "Simplified and community-driven man pages")
+      (description "The tldr pages are a community effort to simplify the
+beloved man pages with practical examples.")
+      (license cc-by4.0))))
