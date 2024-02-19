@@ -30978,6 +30978,7 @@ files are easily readable and they work nicely with version control systems.")
     (license license:gpl3+)))
 
 (define-public emacs-nerd-icons
+  ;; Make sure to update `font-symbols-nerd-mono' alongside.
   (let ((commit "4bd9795f1f3f47cb874e10ff5c3845e037f0b3e2")
         (revision "1"))
     (package
@@ -30995,6 +30996,8 @@ files are easily readable and they work nicely with version control systems.")
       (build-system emacs-build-system)
       (arguments
        (list #:include #~(cons "^data\\/" %default-include)))
+      (propagated-inputs
+       (list font-symbols-nerd-mono))
       (synopsis "Library for easily using nerd font icons inside Emacs")
       (description "Nerd-icons an alternative to all-the-icons.  It works on both
 GUI and terminal, and requires a nerd font installed on your system.")
