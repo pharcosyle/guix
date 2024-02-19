@@ -5443,6 +5443,46 @@ vocabularies, etc.), packaged for runtime access from Python as a
 referencing-based Schema Registry.")
     (license license:expat)))
 
+(define-public python-referencing
+  (package
+    (name "python-referencing")
+    (version "0.33.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "referencing" version))
+       (sha256
+        (base32 "1xqjnk2hckplbmwww79p9lzw5s03zl91rgm3qa4r23xwfkgzwxf7"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:tests? #f ; Circular dependency with `python-jsonschema'.
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Remove this once `python-trove-classifers' is updated to version
+          ;; 2023.4.25 or later.
+          (add-after 'unpack 'remove-unknown-classifiers
+            (lambda _
+              (substitute* "pyproject.toml"
+                (("\"Topic :: File Formats :: JSON\",") "")
+                (("\"Topic :: File Formats :: JSON :: JSON Schema\",") "")))))))
+    (native-inputs
+     (list python-hatch-vcs
+           python-hatchling
+           ;; For tests.
+           ;; python-pytest
+           ;; python-pytest-subtests
+           ;; python-jsonschema
+           ))
+    (propagated-inputs
+     (list python-attrs
+           python-rpds-py))
+    (home-page "https://github.com/python-jsonschema/referencing")
+    (synopsis "Cross-specification JSON referencing")
+    (description
+     "An implementation-agnostic implementation of JSON reference resolution.")
+    (license license:expat)))
+
 (define-public python-schema
   (package
     (name "python-schema")
