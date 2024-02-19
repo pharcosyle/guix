@@ -20130,6 +20130,26 @@ text.")
      "MonthDelta provides functionality to do date computations with months.")
     (license license:expat)))
 
+(define-public python-awscrt
+  (package
+    (name "python-awscrt")
+    (version "0.19.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "awscrt" version))
+       (sha256
+        (base32 "1zld0dymdbjk6n17sz9vbc89l9anmlzfv0m34rn6l57fbm9i258w"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f))
+    (native-inputs
+     (list cmake-minimal))
+    (home-page "https://github.com/awslabs/aws-crt-python")
+    (synopsis "Python bindings for the AWS Common Runtime")
+    (description "A common runtime for AWS Python projects.")
+    (license license:asl2.0)))
+
 (define-public python-moto
   (package
     (name "python-moto")
