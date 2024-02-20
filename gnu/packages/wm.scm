@@ -1866,6 +1866,19 @@ corners, shadows, inactive window dimming, etc.")
     (description "Swayidle is a idle management daemon for Wayland compositors.")
     (license license:expat))) ; MIT license
 
+(define-public swayidle-no-logind
+  (let ((base swayidle))
+    (package
+      (inherit base)
+      (name "swayidle-no-logind")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags configure-flags  #~'())
+          #~(delete "-Dlogind-provider=elogind" #$configure-flags))))
+      (inputs
+       (modify-inputs (package-inputs base)
+         (delete elogind))))))
+
 (define-public swaylock
   (package
     (name "swaylock")
