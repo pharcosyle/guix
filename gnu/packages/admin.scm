@@ -5607,6 +5607,20 @@ on a GUI toolkit.")
 allows applications to use whatever seat management is available.")
     (license license:expat)))
 
+(define-public libseat-no-logind
+  (let ((base libseat))
+    (package
+      (inherit base)
+      (name "libseat-no-logind")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags configure-flags  #~'())
+          #~(cons "-Dlibseat-logind=disabled"
+                  (delete "-Dlibseat-logind=elogind" #$configure-flags)))))
+      (propagated-inputs
+       (modify-inputs (package-propagated-inputs base)
+         (delete elogind))))))
+
 (define-public seatd
   (package
     (inherit libseat)
