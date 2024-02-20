@@ -59,7 +59,12 @@ PulseAudio clients to use PipeWire transparently."))
    (start #~(make-forkexec-constructor
              (list #$(file-append
                       (home-pipewire-configuration-pipewire config)
-                      "/bin/pipewire"))))
+                      "/bin/pipewire"))
+             #:log-file (string-append
+                         (or (getenv "XDG_STATE_HOME")
+                             (format #f "~a/.local/state"
+                                     (getenv "HOME")))
+                         "/log/pipewire.log")))
    (stop #~(make-kill-destructor))))
 
 (define (home-pipewire-pulseaudio-shepherd-service config)
@@ -70,7 +75,12 @@ PulseAudio clients to use PipeWire transparently."))
    (start #~(make-forkexec-constructor
              (list #$(file-append
                       (home-pipewire-configuration-pipewire config)
-                      "/bin/pipewire-pulse"))))
+                      "/bin/pipewire-pulse"))
+             #:log-file (string-append
+                         (or (getenv "XDG_STATE_HOME")
+                             (format #f "~a/.local/state"
+                                     (getenv "HOME")))
+                         "/log/pipewire-pulse.log")))
    (stop #~(make-kill-destructor))))
 
 (define (home-wireplumber-shepherd-service config)
@@ -81,7 +91,12 @@ PulseAudio clients to use PipeWire transparently."))
    (start #~(make-forkexec-constructor
              (list #$(file-append
                       (home-pipewire-configuration-wireplumber config)
-                      "/bin/wireplumber"))))
+                      "/bin/wireplumber"))
+             #:log-file (string-append
+                         (or (getenv "XDG_STATE_HOME")
+                             (format #f "~a/.local/state"
+                                     (getenv "HOME")))
+                         "/log/wireplumber.log")))
    (stop #~(make-kill-destructor))))
 
 (define (home-pipewire-shepherd-services config)
