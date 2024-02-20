@@ -9486,18 +9486,18 @@ providing convenience for writing the daemon's modules as well as external
 tools for managing PipeWire.")
     (license license:expat)))
 
-(define-public wireplumber-minimal
+(define-public wireplumber-no-logind
   (let ((base wireplumber))
     (package
       (inherit base)
-      (name "wireplumber-minimal")
+      (name "wireplumber-no-logind")
       (arguments
        (substitute-keyword-arguments (package-arguments base)
-         ((#:configure-flags flags ''())
-          #~(cons "-Delogind=disabled" #$flags))))
+         ((#:configure-flags configure-flags  #~'())
+           #~(cons "-Delogind=disabled" #$configure-flags))))
       (inputs
        (modify-inputs (package-inputs base)
-         (delete "elogind"))))))
+         (delete elogind))))))
 
 (define-public ell
   (package
