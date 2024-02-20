@@ -8470,6 +8470,24 @@ services.")
                    license:lgpl2.1+))
     (properties '((upstream-name . "NetworkManager")))))
 
+(define-public network-manager-no-logind
+  (let ((base network-manager))
+    (package
+      (inherit base)
+      (name "network-manager-no-logind")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags configure-flags  #~'())
+          #~(cons* "-Dsession_tracking=no"
+                   "-Dsuspend_resume=upower"
+                   (filter (lambda (flag)
+                             (not (member flag '("-Dsession_tracking=elogind"
+                                                 "-Dsuspend_resume=elogind"))))
+                           #$configure-flags)))))
+      (propagated-inputs
+       (modify-inputs (package-propagated-inputs base)
+         (delete elogind))))))
+
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
