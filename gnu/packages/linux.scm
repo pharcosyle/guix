@@ -7660,7 +7660,7 @@ set the screen to be pitch black at a value of 0 (or higher).
        (list
         #:configure-flags
         #~(list (string-append "--udev-dir=" #$output "/lib/udev/rules.d")
-                "--dbus-provider=elogind"
+                "--dbus-provider=basu"
                 "--enable-udev"
                 "--enable-logind")
         #:make-flags
@@ -7681,7 +7681,7 @@ set the screen to be pitch black at a value of 0 (or higher).
       (native-inputs
        (list pkg-config))
       (inputs
-       (list elogind))
+       (list basu))
       (home-page "https://github.com/Hummer12007/brightnessctl")
       (synopsis "Backlight and LED brightness control")
       (description
