@@ -5789,6 +5789,20 @@ mediate access to shared devices, such as graphics and input, for applications
 that require it.")
     (license license:expat)))
 
+(define-public seatd-no-logind
+  (let ((base seatd))
+    (package
+      (inherit base)
+      (name "seatd-no-logind")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags configure-flags  #~'())
+          #~(cons* "-Dlibseat-logind=disabled"
+                   (delete "-Dlibseat-logind=elogind" #$configure-flags)))))
+      (propagated-inputs
+       (modify-inputs (package-propagated-inputs base)
+         (delete elogind))))))
+
 (define-public sysdig
   ;; Use the latest commit for now, as the latest 0.36.1 release does not yet
   ;; support the falcosecurity-libs 0.16 API.
