@@ -45762,6 +45762,20 @@ to start services when logged in, provisioning the @code{pipewire},
 @code{wireplumber}, and, if configured, @code{pipewire-pulseaudio}
 services.  @xref{Shepherd Home Service}.
 
+Some configuration at the system level is necessary: add the PipeWire
+udev rules to your operating system definition and, if you're using
+PipeWire to replace PulseAudio, remove the Alsa and PulseAudio services.
+
+@lisp
+(operating-system
+  ;; …
+  (services
+   (cons (udev-rules-service 'pipewire-rules pipewire)
+         (modify-services %desktop-services
+           (delete pulseaudio-service-type)
+           (delete alsa-service-type)))))
+@end lisp
+
 @defvar home-pipewire-service-type
 This provides the service definition for @command{pipewire}, which will
 run on login.  Its value is a @code{home-pipewire-configuration} object.
