@@ -3149,7 +3149,7 @@ for xdg-desktop-portal that is using Qt/KF5.")
     (arguments
      `(#:configure-flags
        '("-Dsystemd=disabled"
-         "-Dsd-bus-provider=libelogind")
+         "-Dsd-bus-provider=basu")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'hardcode-binaries
@@ -3172,8 +3172,8 @@ for xdg-desktop-portal that is using Qt/KF5.")
                                           "/share/doc/" ,name)))))))
     (native-inputs
      (list cmake-minimal pkg-config))
-    (inputs (list elogind
-                  bash-minimal
+    (inputs (list bash-minimal
+                  basu
                   grim
                   iniparser
                   mesa
