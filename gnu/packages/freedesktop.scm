@@ -3149,7 +3149,7 @@ extra portals specific to Hyprland, mostly for window sharing.")
       (native-inputs
        (list scdoc pkg-config bash-minimal))
       (inputs
-       (list elogind))
+       (list basu))
       (home-page "https://sr.ht/~kennylevinsen/poweralertd")
       (synopsis "Power alert daemon")
       (description "poweralertd is a daemon that watches for UPower events and
