@@ -1791,6 +1791,9 @@ blacklisted.certs.pem"
 ;;; Convenience alias to point to the latest version of OpenJDK.
 (define-public openjdk openjdk21)
 
+;;; Convenience alias to point to the latest LTS version of OpenJDK.
+(define-public openjdk-lts openjdk21)
+
 
 ;; This version of JBR is here in order to be able to build custom
 ;; IntelliJ plugins.  Those usually need both jbr11 and jbr17 for
