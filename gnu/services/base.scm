@@ -3468,7 +3468,10 @@ to handle."
          (name "greeter")
          (group "greeter")
          (supplementary-groups (greetd-greeter-supplementary-groups config))
-         (system? #t))))
+         (system? #t)
+         (comment "Greetd greeter user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
 
 (define (make-greetd-pam-mount-conf-file config)
   (computed-file
