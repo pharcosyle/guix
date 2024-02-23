@@ -259,10 +259,52 @@
 
             greetd-service-type
             greetd-configuration
+            greetd-configuration?
+            greetd-motd
+            greetd-allow-empty-passwords?
+            greetd-terminals
+            greetd-greeter-supplementary-groups
+
             greetd-terminal-configuration
+            greetd-terminal-configuration?
+            greetd-package
+            greetd-config-file-name
+            greetd-log-file-name
+            greetd-terminal-vt
+            greetd-terminal-switch
+            greetd-source-profile?
+            greetd-default-session-user
+            greetd-default-session-command
+            greetd-initial-session-user
+            greetd-initial-session-command
+
             greetd-agreety-session
+            greetd-agreety-session?
+            greetd-agreety
+            greetd-agreety-command
+            greetd-agreety-command-args
+            greetd-agreety-extra-env
+            greetd-agreety-xdg-env?
+
             greetd-wlgreet-session
+            greetd-wlgreet-session?
+            greetd-wlgreet
+            greetd-wlgreet-command
+            greetd-wlgreet-command-args
+            greetd-wlgreet-output-mode
+            greetd-wlgreet-scale
+            greetd-wlgreet-background
+            greetd-wlgreet-headline
+            greetd-wlgreet-prompt
+            greetd-wlgreet-prompt-error
+            greetd-wlgreet-border
+            greetd-wlgreet-extra-env
+
             greetd-wlgreet-sway-session
+            greetd-wlgreet-sway-session?
+            greetd-wlgreet-sway-session-wlgreet-session
+            greetd-wlgreet-sway-session-sway
+            greetd-wlgreet-sway-session-sway-configuration
 
             %base-services))
 
