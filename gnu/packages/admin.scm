@@ -1994,6 +1994,15 @@ at once based on a Perl regular expression.")
                 (("syslogd\\.pid")
                  ;; The file is called 'syslog.pid' (no 'd').
                  "syslog.pid"))))
+          (add-after 'install 'set-statdir
+            ;; For some reason the value of STATDIR gets becomes
+            ;; nothing/blank. Set it back to the default.
+            (lambda _
+              ;; Encoded in ISO-8859-1 (or iso-latin-1).
+              (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                (substitute* (string-append #$output "/sbin/rottlog")
+                  (("^STATDIR=\"\"")
+                   "STATDIR=\"/var/lib/rottlog\"")))))
           (add-after 'install 'install-info
             (lambda _
               (invoke "make" "install-info"))))))
