@@ -5795,7 +5795,7 @@ faster results and to avoid unnecessary server load.")
               ;; If not specified, udev will try putting history information
               ;; in /gnu/store.
               "-Dhistorydir=/var/lib/upower"
-              (string-append "-Dudevrulesdir=" #$output "/bin/udev/rules.d")
+              (string-append "-Dudevrulesdir=" #$output "/lib/udev/rules.d")
               (string-append "-Dudevhwdbdir=" #$output "/lib/udev/hwdb.d"))
       #:phases
       #~(modify-phases %standard-phases
