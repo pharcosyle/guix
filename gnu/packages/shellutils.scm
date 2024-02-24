@@ -775,6 +775,7 @@ Latin script and other languages.")
                (mkdir-p man)
                (with-directory-excursion "src/github.com/direnv/direnv"
                  (install-file "man/direnv.1" man)
+                 (install-file "man/direnv-fetchurl.1" man)
                  (install-file "man/direnv-stdlib.1" man)
                  (install-file "man/direnv.toml.1" man)))))
          (replace 'check
@@ -794,8 +795,7 @@ Latin script and other languages.")
     (native-inputs
      (list go-github-com-burntsushi-toml
            go-github-com-mattn-go-isatty
-           go-golang-org-x-mod
-           which))
+           go-golang-org-x-mod))
     (home-page "https://direnv.net/")
     (synopsis "Environment switcher for the shell")
     (description
