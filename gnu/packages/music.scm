@@ -572,7 +572,7 @@ enables iPod support in music players such as Clementine.")
            libmtp
            libxml2
            protobuf
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtx11extras
            sqlite
@@ -800,7 +800,7 @@ Winamp/XMMS skins.")
            libebur128
            libmtp
            protobuf
-           pulseaudio
+           pulseaudio-minimal
            qtbase
            sqlite
            taglib))
@@ -867,7 +867,7 @@ It is a fork of Clementine aimed at music collectors and audiophiles.")
            libvorbis
            ncurses
            opusfile
-           pulseaudio
+           pulseaudio-minimal
            wavpack))
      (home-page "https://cmus.github.io/")
      (synopsis "Small console music player")
@@ -1029,7 +1029,7 @@ settings (aliasing, linear interpolation and cubic interpolation).")
            liblo
            libsndfile
            lrdf
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtsvg-5
            qtxmlpatterns
@@ -1558,7 +1558,7 @@ biographies, reviews and more.")
            gtk+
            jack-2
            json-c
-           pulseaudio))
+           pulseaudio-minimal))
     (home-page "https://lingot.nongnu.org/")
     (synopsis "Accurate & configurable musical instrument tuner")
     (description
@@ -5376,7 +5376,7 @@ includes LV2 plugins and a JACK standalone client.")
            libvorbis
            portaudio
            portmidi
-           pulseaudio
+           pulseaudio-minimal
            python
            qtbase-5
            qtdeclarative-5
@@ -7119,7 +7119,7 @@ and as an LV2 plugin.")
            pango
            pcre
            pipewire
-           pulseaudio
+           pulseaudio-minimal
            reproc
            rtaudio
            rtmidi

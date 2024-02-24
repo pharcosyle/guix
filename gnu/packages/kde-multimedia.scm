@@ -583,7 +583,7 @@ camera.  Use it to take pictures and make videos to share.")
            libcanberra
            breeze-icons ; default icon set
            plasma-framework
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            solid-5))
     (home-page "https://apps.kde.org/kmix/")
@@ -634,7 +634,7 @@ This package is part of the KDE multimedia module.")
            libvorbis
            opus
            breeze-icons ; default icon set
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtmultimedia-5
            zlib))
