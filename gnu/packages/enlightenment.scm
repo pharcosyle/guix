@@ -140,7 +140,7 @@
          (list lua-5.2))
        (list lz4
              openssl
-             pulseaudio
+             pulseaudio-minimal
              wayland
              zlib)))
     (arguments
@@ -367,7 +367,7 @@ Libraries with some extra bells and whistles.")
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
-       ("pulseaudio" ,pulseaudio)
+       ("pulseaudio-minimal" ,pulseaudio-minimal)
        ("setxkbmap" ,setxkbmap)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xkeyboard-config" ,xkeyboard-config)
