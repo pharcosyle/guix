@@ -513,7 +513,7 @@ system, and the core design of Django is reused in Grantlee.")
            openssl
            pcre2
            postgresql
-           pulseaudio
+           pulseaudio-minimal
            sqlite
            unixodbc
            xcb-util
@@ -1837,7 +1837,7 @@ recognition API for devices.")))
     (inputs
      (list alsa-lib
            mesa
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            ;; Gstreamer is needed for the mediaplayer plugin
            gstreamer
@@ -1939,7 +1939,7 @@ Vulkan, OpenGL and other main graphic APIs.")
            mesa
            qtbase
            qtdeclarative
-           pulseaudio))
+           pulseaudio-minimal))
     (home-page (package-home-page qtbase))
     (synopsis "Qt Multimedia module")
     (description "The Qt Multimedia module provides set of APIs to play and

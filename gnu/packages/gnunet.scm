@@ -220,7 +220,7 @@ authentication and support for SSL3 and TLS.")
            libunistring
            miniupnpc
            opus
-           pulseaudio
+           pulseaudio-minimal
            sqlite
            zbar
            zlib))
