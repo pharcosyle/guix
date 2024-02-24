@@ -708,7 +708,7 @@ for the GStreamer multimedia library.")
            glib-networking
            glu
            gtk+
-           jack-2
+           jack-minimal-2
            lame
            libavc1394
            libcaca
