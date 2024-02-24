@@ -1625,33 +1625,23 @@ definitions.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list cairo
-           bash-minimal
+     (list bash-minimal
            fontconfig                   ;dlopen'd
            freetype
            gettext-minimal
-           libice
-           libsm
-           libx11
-           libxi
            libjpeg-turbo
            libltdl
            libpng
            libspiro
            libtiff
            libungif
-           libxft
            libxml2
-           pango
            potrace
            python
-           zlib))
+           zlib
+           gtk+)) ; For the GUI.
     (arguments
      (list
-      #:configure-flags #~'( ;; TODO: Provide GTK+ for the Wayland-friendly GDK
-                            ;; backend, instead of the legacy X11 backend.
-                            ;; Currently it introduces a circular dependency.
-                            "-DENABLE_X11=ON")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'do-not-override-RPATH
@@ -1693,7 +1683,7 @@ definitions.")
                                            "/lib"))
                           '("libtiff" "libjpeg-turbo" "libpng" "libungif"
                             "libxml2" "zlib" "libspiro" "freetype"
-                            "pango" "cairo" "fontconfig-minimal")))
+                            "fontconfig-minimal" "gtk+")))
                   ;; Checks for potrace program at runtime
                   `("PATH" ":" prefix (,potrace)))))))))
     (synopsis "Outline font editor")
@@ -1720,8 +1710,6 @@ generate bitmaps.")
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments fontforge)
-       ((#:configure-flags _)
-        #~'())
        ((#:phases phases)
         #~(modify-phases #$phases
             (delete 'do-not-override-RPATH)))))
