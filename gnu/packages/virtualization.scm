@@ -525,7 +525,7 @@ exec smbd $@")))
              opensbi-qemu
              ;; pciutils
              pixman
-             pulseaudio
+             pulseaudio-minimal
              sdl2
              seabios-qemu
              spice
@@ -671,7 +671,7 @@ server and embedded PowerPC, and S390 guests.")
                       "usbredir"
                       "libdrm"
                       "libepoxy"
-                      "pulseaudio"
+                      "pulseaudio-minimal"
                       "vde2"
                       "libcacard")))))
 

@@ -517,7 +517,7 @@ matching them against regular expressions.")
            libnotify
            libxfce4ui
            pavucontrol
-           pulseaudio
+           pulseaudio-minimal
            xfce4-panel))
     (home-page "https://git.xfce.org/panel-plugins/xfce4-pulseaudio-plugin/")
     (synopsis "PulseAudio panel plugin for Xfce")
@@ -1592,7 +1592,7 @@ A plugin for the Xfce panel is also available.")
     (native-inputs
      (list intltool pkg-config))
     (inputs
-     (list xfconf libnotify pulseaudio keybinder-3.0 gtk+))
+     (list xfconf libnotify pulseaudio-minimal keybinder-3.0 gtk+))
     (home-page "https://goodies.xfce.org/projects/applications/xfce4-volumed")
     (synopsis "XFCE volume keys daemon")
     (description
