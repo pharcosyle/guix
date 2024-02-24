@@ -728,7 +728,7 @@ for the GStreamer multimedia library.")
            mesa
            mpg123
            orc
-           pulseaudio
+           pulseaudio-minimal
            speex
            taglib
            twolame

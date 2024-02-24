@@ -74,7 +74,7 @@
        ("gtk+" ,gtk+)
        ("libltdl" ,libltdl)
        ("libvorbis" ,libvorbis)
-       ("pulseaudio" ,pulseaudio)
+       ("pulseaudio-minimal" ,pulseaudio-minimal)
        ("udev" ,eudev)
        ("sound-theme-freedesktop" ,sound-theme-freedesktop)))
     (native-inputs
