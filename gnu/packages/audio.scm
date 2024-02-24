@@ -2524,10 +2524,10 @@ synchronous execution of all clients, and low latency operation.")
 
 ;; Packages depending on JACK should always prefer jack-2.  Both jack-1 and
 ;; jack-2 implement the same API.
-(define-public jack-2
+(define-public jack-minimal-2
   (package
     (inherit jack-1)
-    (name "jack2")
+    (name "jack2-minimal")
     (version "1.9.22")
     (source (origin
               (method git-fetch)
@@ -2542,7 +2542,7 @@ synchronous execution of all clients, and low latency operation.")
     (arguments
      (list
       #:tests? #f                      ; no check target
-      #:configure-flags #~'("--dbus" "--alsa")
+      #:configure-flags #~'("--dbus")
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'configure 'set-linkflags
@@ -2557,25 +2557,52 @@ synchronous execution of all clients, and low latency operation.")
                  (string-append m
                                 "    conf.env.append_unique('LINKFLAGS',"
                                 "'-Wl,-rpath=" #$output "/lib')\n")))))
-          (add-after 'install 'wrap-python-scripts
+          (add-after 'install 'remove-extraneous
             (lambda _
-              ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
-              (wrap-program (string-append #$output "/bin/jack_control")
-                `("GUIX_PYTHONPATH" ":"
-                  prefix (,(getenv "GUIX_PYTHONPATH")))))))))
+              (for-each
+               (lambda (dir)
+                 (delete-file-recursively (string-append #$output dir)))
+               (list "/bin"
+                     "/share/man"
+                     "/share/dbus-1"
+                     "/lib/jack"))
+              (for-each delete-file
+                        (find-files (string-append #$output "/lib")
+                                    "(libjacknet|libjackserver)")))))))
     (inputs
-     (list alsa-lib
-           bash-minimal
+     (list bash-minimal
            dbus
            expat
            libsamplerate
            opus
-           python-dbus
            readline))
     (native-inputs
      (list pkg-config))
     ;; Most files are under GPLv2+, but some headers are under LGPLv2.1+
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public jack-2
+  (package
+    (inherit jack-minimal-2)
+    (name "jack2")
+    (arguments
+     (substitute-keyword-arguments (package-arguments jack-minimal-2)
+       ((#:configure-flags configure-flags)
+        #~(cons* "--alsa"
+                 #$configure-flags))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (add-after 'install 'wrap-python-scripts
+              (lambda _
+                ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
+                (wrap-program (string-append #$output "/bin/jack_control")
+                  `("GUIX_PYTHONPATH" ":"
+                    prefix (,(getenv "GUIX_PYTHONPATH"))))))
+            (delete 'remove-extraneous)))))
+    (inputs
+     (modify-inputs (package-inputs jack-minimal-2)
+       (prepend alsa-lib
+                python-dbus)))))
 
 (define-public jack-example-tools
   (package
