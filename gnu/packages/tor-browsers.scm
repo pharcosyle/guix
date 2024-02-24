@@ -250,7 +250,7 @@ Browser.")
            libvpx
            icu4c
            pixman
-           pulseaudio
+           pulseaudio-minimal
            mesa
            pciutils
            mit-krb5
@@ -659,7 +659,7 @@ Browser.")
                                          "pciutils"
                                          "mit-krb5"
                                          "eudev"
-                                         "pulseaudio"
+                                         "pulseaudio-minimal"
                                          ;; For the integration of native notifications
                                          ;; (same reason as icedove)
                                          "libnotify")))))

@@ -787,7 +787,7 @@ variable defined below.  It requires guile-json to be installed."
            libvpx
            icu4c
            pixman
-           pulseaudio
+           pulseaudio-minimal
            mesa
            pciutils
            mit-krb5
@@ -1136,7 +1136,7 @@ variable defined below.  It requires guile-json to be installed."
                                          "pciutils"
                                          "mit-krb5"
                                          "eudev"
-                                         "pulseaudio"
+                                         "pulseaudio-minimal"
                                          ;; For the integration of native notifications
                                          ;; (same reason as icedove)
                                          "libnotify")))))
@@ -1567,7 +1567,7 @@ ca495991b7852b855"))
               (let* ((lib (string-append #$output "/lib"))
                      (gtk #$(this-package-input "gtk+"))
                      (gtk-share (string-append gtk "/share"))
-                     (pulseaudio #$(this-package-input "pulseaudio"))
+                     (pulseaudio #$(this-package-input "pulseaudio-minimal"))
                      (pulseaudio-lib (string-append pulseaudio "/lib"))
                      (eudev #$(this-package-input "eudev"))
                      (eudev-lib (string-append eudev "/lib"))
@@ -1612,7 +1612,7 @@ ca495991b7852b855"))
            ;; UNBUNDLE-ME! nss  (pending upgrade of 'nss' to 3.90 or later)
            pango
            pixman
-           pulseaudio
+           pulseaudio-minimal
            sqlite
            startup-notification
            eudev

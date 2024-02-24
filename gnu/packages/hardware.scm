@@ -528,7 +528,7 @@ support.")
                     zlib
                     libdbusmenu-qt
                     quazip
-                    pulseaudio
+                    pulseaudio-minimal
                     libxcb
                     xcb-util-wm
                     qtx11extras

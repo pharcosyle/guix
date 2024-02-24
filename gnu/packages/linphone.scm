@@ -666,7 +666,7 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
            ortp
            libpcap
            portaudio
-           pulseaudio
+           pulseaudio-minimal
            spandsp
            speex
            speexdsp

@@ -1715,7 +1715,7 @@ operate properly.")
             libx264
             mesa
             openal
-            pulseaudio
+            pulseaudio-minimal
             sdl2
             soxr
             speex
@@ -2522,7 +2522,7 @@ input files is possible, including video files.")
            opus
            perl
            protobuf
-           pulseaudio
+           pulseaudio-minimal
            python-wrapper
            qtbase-5
            qtsvg-5
@@ -2684,7 +2684,7 @@ streaming protocols.")
            mesa
            opus
            perl
-           pulseaudio
+           pulseaudio-minimal
            python-wrapper
            sdl
            speex
@@ -2779,7 +2779,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
            lua-5.2
            mesa
            pipewire
-           pulseaudio
+           pulseaudio-minimal
            shaderc
            wayland
            wayland-protocols
@@ -3673,7 +3673,7 @@ for use with HTML5 video.")
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
        ("libxv" ,libxv)
-       ("pulseaudio" ,pulseaudio)
+       ("pulseaudio-minimal" ,pulseaudio-minimal)
        ("qtbase" ,qtbase-5)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
@@ -4186,7 +4186,7 @@ be used for realtime video capture via Linux-specific APIs.")
       nlohmann-json
       pciutils
       pipewire
-      pulseaudio
+      pulseaudio-minimal
       python
       qrcodegen-cpp
       qtbase
@@ -4911,7 +4911,7 @@ making @dfn{screencasts}.")
            jack-1
            libxi
            libxinerama
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtx11extras))
     (native-inputs (list pkg-config))
@@ -5648,7 +5648,7 @@ programmers to access a standard API to open and decompress media files.")
            mesa
            libass
            alsa-lib
-           pulseaudio
+           pulseaudio-minimal
            libx11
            freetype
            wxwidgets-gtk2))
@@ -6647,7 +6647,7 @@ can also directly record to WebM or MP4 if you prefer.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list ffmpeg pulseaudio wayland wayland-protocols libx264))
+     (list ffmpeg pulseaudio-minimal wayland wayland-protocols libx264))
     (home-page "https://github.com/ammen99/wf-recorder")
     (synopsis "Screen recorder for wlroots-based compositors")
     (description

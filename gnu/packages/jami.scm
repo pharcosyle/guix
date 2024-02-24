@@ -214,7 +214,7 @@
            opendht
            openssl
            pjproject-jami
-           pulseaudio
+           pulseaudio-minimal
            sdbus-c++-1.4.0
            speex
            speexdsp

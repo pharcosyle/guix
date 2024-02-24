@@ -577,7 +577,7 @@ matching them against regular expressions.")
                   keybinder
                   libnotify
                   libxfce4ui
-                  pulseaudio
+                  pulseaudio-minimal
                   xfce4-panel))
     (home-page
      "https://docs.xfce.org/panel-plugins/xfce4-pulseaudio-plugin/")
@@ -1736,7 +1736,7 @@ A plugin for the Xfce panel is also available.")
     (native-inputs
      (list xfce4-dev-tools))
     (inputs
-     (list xfconf libnotify pulseaudio keybinder-3.0 gtk+))
+     (list xfconf libnotify pulseaudio-minimal keybinder-3.0 gtk+))
     (home-page "https://gitlab.xfce.org/apps/xfce4-volumed-pulse")
     (synopsis "XFCE volume keys daemon")
     (description

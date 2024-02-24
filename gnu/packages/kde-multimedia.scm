@@ -626,7 +626,7 @@ camera.  Use it to take pictures and make videos to share.")
            libcanberra
            breeze-icons ; default icon set
            libplasma
-           pulseaudio
+           pulseaudio-minimal
            solid))
     (home-page "https://apps.kde.org/kmix/")
     (synopsis "Volume control and mixer")
@@ -676,7 +676,7 @@ This package is part of the KDE multimedia module.")
            libvorbis
            opus
            breeze-icons ; default icon set
-           pulseaudio
+           pulseaudio-minimal
            qtmultimedia
            zlib))
     (arguments

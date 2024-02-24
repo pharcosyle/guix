@@ -528,7 +528,7 @@ possible for applications to export and import their menus over DBus.")
            libxtst
            `(,lm-sensors "lib")
            lxqt-globalkeys
-           pulseaudio
+           pulseaudio-minimal
            qtwayland
            solid
            wayland
@@ -911,7 +911,7 @@ window manager OpenBox.")
         (base32 "1gvb73xxyv7avqx9wk8lvcfisbfdxcr6rc8ncnv35cn09f5gqg3c"))))
     (build-system cmake-build-system)
     (inputs
-     (list glib qtbase pulseaudio))
+     (list glib qtbase pulseaudio-minimal))
     (native-inputs
      (list pkg-config lxqt-build-tools))
     (arguments
