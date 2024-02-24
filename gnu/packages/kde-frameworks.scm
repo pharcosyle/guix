@@ -253,7 +253,7 @@ continuous display of high-volume data.")
     (build-system cmake-build-system)
     (native-inputs
      (list appstream extra-cmake-modules pkg-config qttools))
-    (inputs (list qtbase qt5compat glib qtbase-5 pulseaudio))
+    (inputs (list qtbase qt5compat glib qtbase-5 pulseaudio-minimal))
     (arguments
      (list #:configure-flags
            #~(list "-DCMAKE_CXX_FLAGS=-fPIC")))

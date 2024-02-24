@@ -311,7 +311,7 @@ sound server.")
            gtkmm-3
            json-glib
            libcanberra
-           pulseaudio))
+           pulseaudio-minimal))
     (native-inputs
      (list intltool pkg-config))
     (home-page "https://www.freedesktop.org/software/pulseaudio/pavucontrol/")
@@ -348,7 +348,7 @@ easily control the volume of all clients, sinks, etc.")
                (("/usr") ""))))
          (delete 'configure)))) ; There's no configure phase.
     (inputs
-     (list pulseaudio))
+     (list pulseaudio-minimal))
     (native-inputs
      (list pkg-config))
     (home-page "https://github.com/falconindy/ponymix")
@@ -377,13 +377,13 @@ sinks.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-path
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((pulse (assoc-ref inputs "pulseaudio")))
+             (let ((pulse (assoc-ref inputs "pulseaudio-minimal")))
                (substitute* "pulsemixer"
                  (("libpulse.so.0")
                   (string-append pulse "/lib/libpulse.so.0")))
                #t))))))
     (inputs
-     (list pulseaudio))
+     (list pulseaudio-minimal))
     (home-page "https://github.com/GeorgeFilipkin/pulsemixer/")
     (synopsis "Command-line and curses mixer for PulseAudio")
     (description "Pulsemixer is a PulseAudio mixer with command-line and
@@ -407,7 +407,7 @@ curses-style interfaces.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list cxxopts pulseaudio))
+     (list cxxopts pulseaudio-minimal))
     (home-page "https://github.com/cdemoulins/pamixer")
     (synopsis "PulseAudio command line mixer")
     (description
@@ -440,7 +440,7 @@ volume levels of the sinks (get, set, decrease, increase, toggle mute, etc).")
     (native-inputs
      (list autoconf automake pkg-config))
     (inputs
-     (list avahi gtk+ libnotify libx11 pulseaudio))
+     (list avahi gtk+ libnotify libx11 pulseaudio-minimal))
     (home-page "https://github.com/christophgysin/pasystray")
     (synopsis "PulseAudio controller for the system tray")
     (description "@command{pasystray} enables control of various
