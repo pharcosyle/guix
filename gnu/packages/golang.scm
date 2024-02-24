@@ -3770,35 +3770,33 @@ packages.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys
-  (let ((commit "ca59edaa5a761e1d0ea91d6c07b063f85ef24f78")
-        (revision "0"))
-    (package
-      (name "go-golang-org-x-sys")
-      (version (git-version "0.8.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/sys")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1p81niiin8dwyrjl2xsc95136w3vdw4kmj0w3mlh0vh5v134s4xq"))))
-      (build-system go-build-system)
-      (arguments
-       (list
-        #:import-path "golang.org/x/sys"
-        ;; Source-only package
-        #:tests? #f
-        #:phases
-        #~(modify-phases %standard-phases
-            ;; Source-only package
-            (delete 'build))))
-      (synopsis "Go support for low-level system interaction")
-      (description "This package provides supplemental libraries offering Go
+  (package
+    (name "go-golang-org-x-sys")
+    (version "0.17.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://go.googlesource.com/sys")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0yqbn48bfkggn1hhw10jxg5gfmmw5kfvqcxnxim7i9k20b2b4sr6"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "golang.org/x/sys"
+      ;; Source-only package
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Source-only package
+          (delete 'build))))
+    (synopsis "Go support for low-level system interaction")
+    (description "This package provides supplemental libraries offering Go
 support for low-level interaction with the operating system.")
-      (home-page "https://go.googlesource.com/sys")
-      (license license:bsd-3))))
+    (home-page "https://go.googlesource.com/sys")
+    (license license:bsd-3)))
 
 (define-public go-golang-org-x-text
   (package
@@ -3911,43 +3909,41 @@ time.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-mod
-  (let ((commit "7c05a442b7c1d1a107879b4a090bb5a38d3774a1")
-        (revision "0"))
-    (package
-      (name "go-golang-org-x-mod")
-      (version (git-version "0.7.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/golang/mod")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "14r24fq3kn84k2y2jvvg8hwpy52a3q429pimrdwl5zwknbr2awmh"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "golang.org/x/mod/"
-         #:tests? #f
-         #:phases (modify-phases %standard-phases
-                    ;; Source-only package
-                    (delete 'build))))
-      (home-page "https://golang.org/x/mod")
-      (synopsis "Tools to work directly with Go module mechanics")
-      (description
-       "This repository holds packages for writing tools that work directly
+  (package
+    (name "go-golang-org-x-mod")
+    (version "0.15.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/golang/mod")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1024mn5jnpmqmqzll0n30knsjxk66a85hrhifcdzfsjkfr1ylwl5"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "golang.org/x/mod/"
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ;; Source-only package
+                  (delete 'build))))
+    (home-page "https://golang.org/x/mod")
+    (synopsis "Tools to work directly with Go module mechanics")
+    (description
+     "This repository holds packages for writing tools that work directly
 with Go module mechanics.  That is, it is for direct manipulation of Go modules
 themselves.
 
 The specific case of loading packages should still be done by invoking the
 @command{go} command, which remains the single point of truth for package
 loading algorithms.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public go-github-com-burntsushi-toml
   (package
     (name "go-github-com-burntsushi-toml")
-    (version "1.2.1")
+    (version "1.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3956,7 +3952,7 @@ loading algorithms.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v9czq4hsyvdz7yx70y6sgq77wmrgfmn09r9cj4w85z38jqnamv7"))))
+                "1s1d3622al03xgx84iqai384ycfp5hgy2r6h4db29byamqgk530l"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/BurntSushi/toml"))
@@ -4990,7 +4986,7 @@ The yaml package supports most of YAML 1.2, but preserves some behavior from
 (define-public go-github-com-mattn-go-isatty
   (package
     (name "go-github-com-mattn-go-isatty")
-    (version "0.0.11")
+    (version "0.0.20")
     (source
      (origin
        (method git-fetch)
@@ -5000,7 +4996,7 @@ The yaml package supports most of YAML 1.2, but preserves some behavior from
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0h671sv7hfprja495kavazkalkx7xzaqksjh13brcnwq67ijrali"))))
+         "0g63n9wpb991qnq9mn2kvd8jk1glrp6gnd851kvwz2wmzdkggiga"))))
     (build-system go-build-system)
     (propagated-inputs
      (list go-golang-org-x-sys))
