@@ -903,7 +903,7 @@ indicator to any terminal application.")
 (define-public go-github-com-burntsushi-toml
   (package
     (name "go-github-com-burntsushi-toml")
-    (version "1.2.1")
+    (version "1.3.2")
     (source
      (origin
        (method git-fetch)
@@ -912,7 +912,7 @@ indicator to any terminal application.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1v9czq4hsyvdz7yx70y6sgq77wmrgfmn09r9cj4w85z38jqnamv7"))))
+        (base32 "1s1d3622al03xgx84iqai384ycfp5hgy2r6h4db29byamqgk530l"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/BurntSushi/toml"))
