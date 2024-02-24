@@ -1284,8 +1284,7 @@ working directory."
         (if (string-suffix? ".zip" source)
             (invoke "unzip" source)
             (invoke "tar" "xvf" source))
-        (chdir (first-subdirectory "."))))
-  #true)
+        (chdir (first-subdirectory ".")))))
 @end lisp
 
 Note the @code{chdir} call: it changes the working directory to where the source was
@@ -1322,13 +1321,8 @@ this:
         (output-directory (assoc-ref outputs "out"))
         (doc-directory (assoc-ref outputs "doc")))
     ;; ...
-    #true))
+    ))
 @end lisp
-
-The procedure must return @code{#true} on success.  It's brittle to rely on the return
-value of the last expression used to tweak the phase because there is no
-guarantee it would be a @code{#true}.  Hence the trailing @code{#true} to ensure the right value
-is returned on success.
 
 @subsubsection Code staging
 
