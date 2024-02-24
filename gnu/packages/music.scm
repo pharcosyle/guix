@@ -1422,7 +1422,7 @@ biographies, reviews and more.")
      (list alsa-lib
            fftw
            gtk+
-           jack-2
+           jack-minimal-2
            json-c
            pulseaudio-minimal))
     (home-page "https://lingot.nongnu.org/")
@@ -1860,7 +1860,7 @@ transport is rolling.")
                 "0ihngqbnc50izfy6x7nhgaah00byk8nl6n5smxbyb8fkhm2s8p21"))))
     (build-system meson-build-system)
     (native-inputs (list pkg-config))
-    (inputs (list fltk jack-2 liblo libx11))
+    (inputs (list fltk jack-minimal-2 liblo libx11))
     (home-page "https://new-session-manager.jackaudio.org/")
     (synopsis "Music production session management tool")
     (description "New Session Manager (NSM) is a tool to assist music
@@ -2767,7 +2767,7 @@ Laurens Hammond and Don Leslie.")
              (substitute* "bin/startBristol.in"
                (("ldd `which bristol` | grep jack") "echo guix")))))))
     (inputs
-     (list alsa-lib jack-2 liblo libx11))
+     (list alsa-lib jack-minimal-2 liblo libx11))
     (native-inputs
      (list pkg-config))
     (home-page "https://bristol.sourceforge.net/")
@@ -3281,7 +3281,7 @@ capabilities, custom envelopes, effects, etc.")
            fftwf
            fltk
            fontconfig
-           jack-2
+           jack-minimal-2
            lv2
            mesa
            minixml
@@ -3383,7 +3383,7 @@ allows you to send JACK MIDI events (i.e. play) using your PC keyboard.")
      (list pkg-config which))
     (inputs
      (list gtk+-2
-           jack-2
+           jack-minimal-2
            libogg
            liblo
            lame
@@ -4150,7 +4150,7 @@ using the beets FetchArt plugin.")
     (inputs
      (list alsa-lib
            lhasa
-           jack-2
+           jack-minimal-2
            rtmidi-4.0
            sdl2
            zlib
@@ -4760,7 +4760,7 @@ defined as tabs in the main control surface.")
                 "12dphdhnvfk1k0vmagi1v2lhyxjyj1j3cz6ksjw0ydcvid1x8ap2"))
               (patches (search-patches "seq24-rename-mutex.patch"))))
     (build-system gnu-build-system)
-    (inputs (list alsa-lib gtkmm-2 jack-2))
+    (inputs (list alsa-lib gtkmm-2 jack-minimal-2))
     (native-inputs (list pkg-config))
     (home-page "https://launchpad.net/seq24/")
     (synopsis "Real-time MIDI sequencer")
@@ -4894,7 +4894,7 @@ and more.  Full API documentation and examples are included.")
            fltk
            fluidsynth
            freetype
-           jack-2
+           jack-minimal-2
            ladspa
            libogg
            libsamplerate
@@ -4989,7 +4989,7 @@ standalone JACK client and an LV2 plugin is also available.")
     (inputs
      (list abseil-cpp
            glib
-           jack-2
+           jack-minimal-2
            lv2
            libsamplerate
            pugixml
@@ -6762,7 +6762,7 @@ success = io_mkdir (tmp_log_dir, &err);")))
            gtk
            gtksourceview
            guile-3.0
-           jack-2
+           jack-minimal-2
            json-glib
            libadwaita
            libaudec
