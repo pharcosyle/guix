@@ -2002,7 +2002,7 @@ games.")
              ;; also append ld path for pulseaudio and alsa-lib
              (let* ((out (assoc-ref outputs "out"))
                     (udev_path (string-append (assoc-ref inputs "eudev") "/lib"))
-                    (pulseaudio_path (string-append (assoc-ref inputs "pulseaudio") "/lib"))
+                    (pulseaudio_path (string-append (assoc-ref inputs "pulseaudio-minimal") "/lib"))
                     (alas_lib_path (string-append (assoc-ref inputs "alsa-lib") "/lib")))
                (wrap-program (string-append out "/bin/godot")
                  `("LD_LIBRARY_PATH" ":" prefix (,udev_path ,pulseaudio_path ,alas_lib_path))))))
@@ -2043,7 +2043,7 @@ games.")
            mesa
            opusfile
            pcre2
-           pulseaudio
+           pulseaudio-minimal
            eudev                        ; FIXME: required by mesa
            wslay
            zenity
@@ -2287,7 +2287,7 @@ scripted in a Python-like language.")
            openxr
            opusfile
            pcre2
-           pulseaudio
+           pulseaudio-minimal
            speech-dispatcher
            vulkan-loader
            wslay
@@ -3260,7 +3260,7 @@ progresses the level, or you may regenerate tiles as the world changes.")
 #define MA_ENABLE_PULSEAUDIO
 #include \"external/miniaudio.h\"
 ")))))))
-    (inputs (list glfw pulseaudio))
+    (inputs (list glfw pulseaudio-minimal))
     (native-inputs (list pkg-config))
     (synopsis "C library for videogame programming")
     (description

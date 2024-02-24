@@ -290,7 +290,7 @@ supports HTTP, HTTPS and GnuTLS.")
            libunistring
            miniupnpc
            opus
-           pulseaudio
+           pulseaudio-minimal
            sqlite
            zbar
            zlib))

@@ -888,7 +888,7 @@ noun phrases, verb phrases, etc.).")
                               (mkdir-p bin)
                               (copy-file "praat"
                                          (string-append bin "/praat"))))))))
-    (inputs (list alsa-lib gtk+ jack-1 pulseaudio))
+    (inputs (list alsa-lib gtk+ jack-1 pulseaudio-minimal))
     (native-inputs (list pkg-config))
     (home-page "https://www.fon.hum.uva.nl/praat/")
     (synopsis "Doing phonetics by computer")

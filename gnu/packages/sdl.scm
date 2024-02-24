@@ -105,7 +105,7 @@
            ;; change in pkg-config.
            mesa))
     (native-inputs (list pkg-config))
-    (inputs (list libxrandr glu alsa-lib pulseaudio))
+    (inputs (list libxrandr glu alsa-lib pulseaudio-minimal))
     (outputs '("out" "debug"))
     (synopsis "Cross platform game development library")
     (description "Simple DirectMedia Layer is a cross-platform development
