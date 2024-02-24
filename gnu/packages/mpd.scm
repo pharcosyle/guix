@@ -185,7 +185,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                    opus
                    pcre2
                    pipewire
-                   pulseaudio
+                   pulseaudio-minimal
                    soxr
                    sqlite
                    yajl

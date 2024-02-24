@@ -336,7 +336,7 @@ or musca).
            libconfuse
            libnl
            yajl
-           pulseaudio))
+           pulseaudio-minimal))
     (native-inputs
      (list asciidoc
            perl
@@ -1699,7 +1699,7 @@ its size
            libnl
            libuv
            libxcb
-           pulseaudio
+           pulseaudio-minimal
            xcb-proto
            xcb-util
            xcb-util-cursor
@@ -2204,7 +2204,7 @@ and provides animations for switching between backgrounds.")
            gtk-layer-shell
            libhandy
            libgee
-           pulseaudio
+           pulseaudio-minimal
            wayland-protocols))
     (synopsis "Notification daemon with a graphical interface")
     (description
@@ -2257,7 +2257,7 @@ compository, supporting the following featuers:
                   libxml2
                   pipewire
                   playerctl
-                  pulseaudio
+                  pulseaudio-minimal
                   spdlog
                   wayland
                   wireplumber))
