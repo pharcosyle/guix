@@ -1045,7 +1045,7 @@ utilities to ease adding new glyphs to the font.")
 (define-public font-google-noto
   (package
     (name "font-google-noto")
-    (version "23.11.1")
+    (version "24.2.1")
     (source
      (origin
        (method git-fetch)
@@ -1054,7 +1054,7 @@ utilities to ease adding new glyphs to the font.")
              (commit (string-append "noto-monthly-release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vvxhky35l4i0ha60yw0gj26f3v33hpf2zax17yyj16mww4cn4d8"))))
+        (base32 "087jg8ahpq35xwyrmvm9ivxl0wjic2j4r28bbrwqmgdva9brms40"))))
     (build-system font-build-system)
     (home-page "https://www.google.com/get/noto/")
     (synopsis "Fonts to cover all languages")
@@ -1066,7 +1066,7 @@ display all Unicode symbols.")
 (define-public font-google-noto-emoji
   (package
     (name "font-google-noto-emoji")
-    (version "2.038")
+    (version "2.042")
     (source
      (origin
        (method git-fetch)
@@ -1076,7 +1076,7 @@ display all Unicode symbols.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rgmcc6nqq805iqr8kvxxlk5cf50q714xaxk3ld6rjrd69kb8ix9"))))
+         "17i7awyqz9jv0j2blcf0smmpas375c3pdhjv1zqzl861g8qm1lm2"))))
     (build-system font-build-system)
     (arguments
      (list
@@ -1088,9 +1088,13 @@ display all Unicode symbols.")
               (chdir "fonts")))
           (add-after 'enter-font-directory 'remove-unsupported
             (lambda* _
-              (delete-file "NotoColorEmoji_WindowsCompatible.ttf")
-              (delete-file "Noto-COLRv1-noflags.ttf")
-              (delete-file "Noto-COLRv1.ttf"))))))
+              (for-each delete-file
+                        (list "NotoColorEmoji_WindowsCompatible.ttf"
+                              "Noto-COLRv1-noflags.ttf"
+                              "Noto-COLRv1.ttf"
+                              "NotoColorEmoji-emojicompat.ttf"
+                              "NotoColorEmoji-noflags.ttf"
+                              "Noto-COLRv1-emojicompat.ttf")))))))
     (home-page "https://fonts.google.com/noto/specimen/Noto+Color+Emoji")
     (synopsis "Font for rendering color emoji characters")
     (description
@@ -1123,7 +1127,7 @@ CJK fonts.")
 (define-public font-google-noto-serif-cjk
   (package
     (name "font-google-noto-serif-cjk")
-    (version "2.001")
+    (version "2.002")
     (source
      (origin
        (method url-fetch)
@@ -1132,7 +1136,7 @@ CJK fonts.")
              version "/04_NotoSerifCJKOTC.zip"))
        (file-name (string-append name "-" version ".zip"))
        (sha256
-        (base32 "1l6r3sz2s0vcyfx6ria7wqcq45zp40gxgg97lh8hpmajhzw301ig"))))
+        (base32 "0l19gadkvsrxv3629ia0f63nimb8jvf3xda0av8r4146zpcqa6cl"))))
     (build-system font-build-system)
     (home-page "https://www.google.com/get/noto/")
     (synopsis "Fonts to cover all languages")
