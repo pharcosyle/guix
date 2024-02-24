@@ -127,7 +127,7 @@
       libxrandr
       glu
       alsa-lib
-      pulseaudio
+      pulseaudio-minimal
       dbus
       eudev                             ;for discovering input devices
       glib

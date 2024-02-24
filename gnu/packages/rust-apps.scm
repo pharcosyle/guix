@@ -1060,7 +1060,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
            iproute
            kdeconnect
            (list lm-sensors "lib")
-           pulseaudio
+           pulseaudio-minimal
            openssl
            setxkbmap
            speedtest-cli
@@ -2793,7 +2793,7 @@ consecutive lines and since program start.")
                         "pulseaudio_backend"
                         "rodio_backend")))
     (native-inputs (list pkg-config))
-    (inputs (list alsa-lib dbus pulseaudio))
+    (inputs (list alsa-lib dbus pulseaudio-minimal))
     (home-page "https://github.com/Spotifyd/spotifyd")
     (synopsis "Spotify streaming daemon with Spotify Connect support")
     (description

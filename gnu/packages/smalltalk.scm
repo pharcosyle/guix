@@ -148,7 +148,7 @@ such as ones for networking and GUI programming.")
            libffi
            libxrender
            mesa
-           pulseaudio))
+           pulseaudio-minimal))
     (native-inputs
      (list pkg-config))
     (build-system cmake-build-system)
