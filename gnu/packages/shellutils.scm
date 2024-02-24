@@ -484,7 +484,7 @@ are already there.")
 (define-public direnv
   (package
     (name "direnv")
-    (version "2.32.3")
+    (version "2.33.0")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -493,7 +493,7 @@ are already there.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1hyl67n7na19zm3ksiiyva4228alx0jfh9l3v1mxszn9prwgcfjc"))))
+               "1px092y85spjlpb8jcb8rc4h260ybi81vmvasfwp9yvbfwksl4zz"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/direnv/direnv"
@@ -506,6 +506,7 @@ are already there.")
                (mkdir-p man)
                (with-directory-excursion "src/github.com/direnv/direnv"
                  (install-file "man/direnv.1" man)
+                 (install-file "man/direnv-fetchurl.1" man)
                  (install-file "man/direnv-stdlib.1" man)
                  (install-file "man/direnv.toml.1" man)))))
          (replace 'check
@@ -523,8 +524,9 @@ are already there.")
                  ;; direnv executable that's generated is removed.
                  (invoke "make" "clean"))))))))
     (native-inputs
-     (list go-github-com-burntsushi-toml go-github-com-direnv-go-dotenv
-           go-github-com-mattn-go-isatty go-golang-org-x-mod which))
+     (list go-github-com-burntsushi-toml
+           go-github-com-mattn-go-isatty
+           go-golang-org-x-mod))
     (home-page "https://direnv.net/")
     (synopsis "Environment switcher for the shell")
     (description
