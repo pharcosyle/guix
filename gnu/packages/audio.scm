@@ -2660,7 +2660,7 @@ and testing or configuring the JACK session.  Tools include @code{jack_lsp},
                      "-config" "noupdater"
                      "jacktrip.pro"))))))
     (inputs
-     (list jack-2
+     (list jack-minimal-2
            python
            python-jinja2
            python-pyyaml
@@ -3367,7 +3367,7 @@ streaming.")
     (arguments `(#:tests? #f))                    ;no check target
     (inputs
      (list alsa-lib
-           jack-2
+           jack-minimal-2
            ganv
            glibmm
            gtkmm-2
@@ -3689,7 +3689,7 @@ tempo and pitch of an audio recording independently of one another.")
                 "1ff2yfq3k4l209fr71v3w98fpjjv1chs09vkbmxj03lcikahxns8"))))
     (build-system gnu-build-system)
     (inputs
-     (list alsa-lib jack-2))
+     (list alsa-lib jack-minimal-2))
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (home-page "https://www.music.mcgill.ca/~gary/rtmidi")
