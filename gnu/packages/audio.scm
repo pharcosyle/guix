@@ -2540,28 +2540,29 @@ synchronous execution of all clients, and low latency operation.")
                 "109g08j3jj9jbsrgdcrq53w7a5z4rkwzg7l7sbr90wazrv55zj8a"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f                      ; no check target
-       #:configure-flags '("--dbus" "--alsa")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-linkflags
-           (lambda _
-             ;; Ensure -lstdc++ is the tail of LDFLAGS or the simdtests.cpp
-             ;; will not link with undefined reference to symbol
-             ;; '__gxx_personality_v0@@CXXABI_1.3'
-             (setenv "LDFLAGS" "-lstdc++")
-             ;; Add $libdir to the RUNPATH of all the binaries.
-             (substitute* "wscript"
-               ((".*CFLAGS.*-Wall.*" m)
-                (string-append m
-                               "    conf.env.append_unique('LINKFLAGS',"
-                               "'-Wl,-rpath=" %output "/lib')\n")))))
-         (add-after 'install 'wrap-python-scripts
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
-             (wrap-program (search-input-file outputs "bin/jack_control")
-               `("GUIX_PYTHONPATH" ":"
-                 prefix (,(getenv "GUIX_PYTHONPATH")))))))))
+     (list
+      #:tests? #f                      ; no check target
+      #:configure-flags #~'("--dbus" "--alsa")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'set-linkflags
+            (lambda _
+              ;; Ensure -lstdc++ is the tail of LDFLAGS or the simdtests.cpp
+              ;; will not link with undefined reference to symbol
+              ;; '__gxx_personality_v0@@CXXABI_1.3'
+              (setenv "LDFLAGS" "-lstdc++")
+              ;; Add $libdir to the RUNPATH of all the binaries.
+              (substitute* "wscript"
+                ((".*CFLAGS.*-Wall.*" m)
+                 (string-append m
+                                "    conf.env.append_unique('LINKFLAGS',"
+                                "'-Wl,-rpath=" #$output "/lib')\n")))))
+          (add-after 'install 'wrap-python-scripts
+            (lambda _
+              ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
+              (wrap-program (string-append #$output "/bin/jack_control")
+                `("GUIX_PYTHONPATH" ":"
+                  prefix (,(getenv "GUIX_PYTHONPATH")))))))))
     (inputs
      (list alsa-lib
            bash-minimal
