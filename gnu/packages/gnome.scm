@@ -6114,7 +6114,7 @@ services for numerous locations.")
            network-manager
            nss
            polkit
-           pulseaudio
+           pulseaudio-minimal
            upower
            wayland
            xf86-input-wacom))
@@ -9403,7 +9403,7 @@ Libadwaita.")
            modem-manager
            network-manager-applet
            polkit
-           pulseaudio
+           pulseaudio-minimal
            samba
            tzdata
            udisks
@@ -9609,7 +9609,7 @@ printf '~a is deprecated.  Use the \"gnome-extensions\" CLI or \
            network-manager-applet
            pipewire
            polkit
-           pulseaudio
+           pulseaudio-minimal
            python-pygobject
            startup-notification
            telepathy-logger
@@ -9666,7 +9666,7 @@ like switching to windows and launching applications.")
            gtk+
            libgcrypt
            libx11
-           pulseaudio
+           pulseaudio-minimal
            zlib))
     (synopsis "VNC client viewer widget for GTK+")
     (description "GTK-VNC is a project providing client side APIs for the RFB
