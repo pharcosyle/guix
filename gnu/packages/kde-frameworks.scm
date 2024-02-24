@@ -236,7 +236,7 @@ continuous display of high-volume data.")
     (native-inputs
      ;; TODO: Add building the super experimental QML support
      (list appstream extra-cmake-modules pkg-config qttools-5))
-    (inputs (list glib qtbase-5 pulseaudio))
+    (inputs (list glib qtbase-5 pulseaudio-minimal))
     (arguments
      (list #:configure-flags
            #~'("-DCMAKE_CXX_FLAGS=-fPIC"

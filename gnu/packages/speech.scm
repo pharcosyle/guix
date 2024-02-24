@@ -261,7 +261,7 @@ efficiency through the use of a compact vector representation of n-grams.")
            glib
            libltdl
            libsndfile
-           pulseaudio
+           pulseaudio-minimal
            python))
     (synopsis "Common interface to speech synthesizers")
     (description "The Speech Dispatcher project provides a high-level
@@ -621,7 +621,7 @@ recognition engine.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list alsa-lib espeak-ng libsndfile pulseaudio))
+     (list alsa-lib espeak-ng libsndfile pulseaudio-minimal))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification

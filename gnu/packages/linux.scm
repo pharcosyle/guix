@@ -3026,7 +3026,7 @@ MIDI functionality to the Linux-based operating system.")
            speex ; libspeexdsp resampling plugin
            libsamplerate ; libsamplerate resampling plugin
            ffmpeg ; libavcodec resampling plugin, a52 plugin
-           pulseaudio)) ; PulseAudio plugin
+           pulseaudio-minimal)) ; PulseAudio plugin
     (native-inputs
      (list pkg-config))
     (home-page "http://www.alsa-project.org/")
@@ -9437,7 +9437,7 @@ types and interfaces and translates so that the X server can use them.")
                   libusb
                   openssl ; raop sink
                   libva
-                  pulseaudio
+                  pulseaudio-minimal
                   readline ; for pw-cli
                   sbc
                   vulkan-headers

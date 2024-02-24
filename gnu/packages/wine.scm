@@ -200,7 +200,7 @@ integrate Windows applications into your desktop.")
            libxcomposite
            mit-krb5
            openal
-           pulseaudio
+           pulseaudio-minimal
            sdl2
            unixodbc
            v4l-utils

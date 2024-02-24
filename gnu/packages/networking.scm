@@ -917,7 +917,7 @@ systems with no further dependencies.")
          ;; Fix loading of pulseaudio libraries.
          (add-after 'unpack 'patch-pulseaudio-libraries
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((pulseaudio (assoc-ref inputs "pulseaudio"))
+             (let* ((pulseaudio (assoc-ref inputs "pulseaudio-minimal"))
                     (pulse (string-append pulseaudio "/lib/libpulse.so.0"))
                     (pulse-glib (string-append pulseaudio
                                                "/lib/libpulse-mainloop-glib.so.0")))
@@ -966,7 +966,7 @@ systems with no further dependencies.")
            pango
            polkit
            ppp
-           pulseaudio
+           pulseaudio-minimal
            python-pycairo
            python-pygobject
            python-wrapper

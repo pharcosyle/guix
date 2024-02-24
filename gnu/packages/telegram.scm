@@ -518,7 +518,7 @@ Telegram project, for its use in telegram desktop client.")
            openssl
            opus
            plasma-wayland-protocols
-           pulseaudio
+           pulseaudio-minimal
            protobuf
            qrcodegen-cpp
            qtbase-5

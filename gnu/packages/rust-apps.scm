@@ -808,7 +808,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
                            (lambda (input)
                              (string-append (assoc-ref inputs input) "/bin"))
                            '("alsa-utils" "coreutils" "curl" "dbus" "ibus" "iproute"
-                             "kdeconnect" "lm-sensors" "pulseaudio"
+                             "kdeconnect" "lm-sensors" "pulseaudio-minimal"
                              "openssl"
                              "setxkbmap" "speedtest-cli" "xdg-utils" "xrandr"
                              "zlib"))))
@@ -826,7 +826,7 @@ characters, ASCII whitespace characters, other ASCII characters and non-ASCII.")
        ("iproute" ,iproute)
        ("kdeconnect" ,kdeconnect)
        ("lm-sensors" ,lm-sensors)
-       ("pulseaudio" ,pulseaudio)
+       ("pulseaudio-minimal" ,pulseaudio-minimal)
        ("openssl" ,openssl)
        ("setxkbmap" ,setxkbmap)
        ("speedtest-cli" ,speedtest-cli)
@@ -2246,7 +2246,7 @@ consecutive lines and since program start.")
                         "pulseaudio_backend"
                         "rodio_backend")))
     (native-inputs (list perl pkg-config))
-    (inputs (list alsa-lib dbus pulseaudio))
+    (inputs (list alsa-lib dbus pulseaudio-minimal))
     (home-page "https://github.com/Spotifyd/spotifyd")
     (synopsis "Spotify streaming daemon with Spotify Connect support")
     (description

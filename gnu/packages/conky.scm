@@ -81,7 +81,7 @@
            libxext
            libxft
            libxinerama
-           pulseaudio
+           pulseaudio-minimal
            lua
            ncurses
            curl

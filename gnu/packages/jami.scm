@@ -163,7 +163,7 @@
            opendht
            openssl
            pjproject-jami
-           pulseaudio
+           pulseaudio-minimal
            sdbus-c++
            speex
            speexdsp

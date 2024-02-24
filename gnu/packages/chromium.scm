@@ -918,7 +918,7 @@
            pango
            pciutils
            pipewire
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            re2
            snappy
