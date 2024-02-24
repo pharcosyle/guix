@@ -505,7 +505,7 @@ of other programs.")
            `(,lm-sensors "lib")
            lxqt-globalkeys
            pcre
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtsvg-5
            qtx11extras
@@ -942,7 +942,7 @@ window manager OpenBox.")
         (base32 "0alxsz9q1lw3jc9qv18w9rc1ggib8x85mk3d7c17nbsvld5wfwmc"))))
     (build-system cmake-build-system)
     (inputs
-     (list glib pcre pulseaudio qtbase-5 qtx11extras))
+     (list glib pcre pulseaudio-minimal qtbase-5 qtx11extras))
     (native-inputs
      (list pkg-config lxqt-build-tools qttools-5))
     (arguments

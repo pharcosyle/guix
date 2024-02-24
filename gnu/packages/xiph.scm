@@ -203,7 +203,7 @@ work from the @code{speex} codec.")
     ;; "out" would include only the ALSA back-end, while "pulse" would
     ;; contain 'lib/ao/plugins-4/libpulse.*'.
     (inputs
-     (list alsa-lib pulseaudio))
+     (list alsa-lib pulseaudio-minimal))
     (native-inputs
      (list pkg-config autoconf automake libtool))
     (synopsis "Cross platform audio library")

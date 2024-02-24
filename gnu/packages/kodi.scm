@@ -453,7 +453,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
            (list mariadb "dev")
            openssl
            pcre
-           pulseaudio
+           pulseaudio-minimal
            python
            rapidjson
            samba
