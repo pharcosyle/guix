@@ -141,7 +141,7 @@ to remotely control a user's Windows desktop.")
            opensles
            openssl
            pcsc-lite ; for smartcard support
-           pulseaudio
+           pulseaudio-minimal
            zlib))
     (propagated-inputs (list libxkbcommon openssl wayland))
     (arguments

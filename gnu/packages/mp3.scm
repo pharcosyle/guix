@@ -445,7 +445,7 @@ This package contains the binary.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list alsa-lib pulseaudio))
+     (list alsa-lib pulseaudio-minimal))
     (home-page "https://www.mpg123.org/")
     (synopsis "Console MP3 player and decoder library")
     (description
