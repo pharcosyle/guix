@@ -9804,7 +9804,7 @@ types and interfaces and translates so that the X server can use them.")
                   ffmpeg
                   gst-plugins-base
                   gstreamer
-                  jack-2
+                  jack-minimal-2
                   ldacbt
                   libcamera
                   libfdk
