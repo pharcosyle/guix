@@ -167,9 +167,9 @@ the theoretical best bandwidth for a given pair of input and output sample
 rates.")
     (license l:bsd-2)))
 
-(define-public pulseaudio
+(define-public pulseaudio-minimal
   (package
-    (name "pulseaudio")
+    (name "pulseaudio-minimal")
     (version "16.1")
     (source (origin
               (method url-fetch)
@@ -179,13 +179,6 @@ rates.")
               (sha256
                (base32
                 "1r2aa0g7al9jhrrbrnih6i3bfznd73kkbafrbzwpjyflj7735vwf"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Disable console-kit support by default since it's deprecated
-               ;; anyway.
-               '(substitute* "src/daemon/default.pa.in"
-                  (("load-module module-console-kit" all)
-                   (string-append "#" all "\n"))))
               (patches (search-patches
                         "pulseaudio-fix-mult-test.patch"
                         "pulseaudio-longer-test-timeout.patch"))))
@@ -195,13 +188,15 @@ rates.")
       #:configure-flags
       #~(list "-Doss-output=disabled"
               "-Dlocalstatedir=/var"
-              (string-append "-Dudevrulesdir="
-                             #$output "/lib/udev/rules.d")
               ;; Ensure the RUNPATH contains all installed library locations.
               (string-append "-Dc_link_args=-Wl,-rpath="
                              #$output "/lib/pulseaudio:"
                              #$output "/lib:"
-                             #$output "/lib/pulse-" #$version "/modules"))
+                             #$output "/lib/pulse-" #$version "/modules")
+              "-Ddoxygen=false"
+              "-Dman=false"
+              "-Dbashcompletiondir=no"
+              "-Dzshcompletiondir=no")
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'check 'pre-check
@@ -211,30 +206,22 @@ rates.")
               (setenv "HOME" (getcwd))
               ;; 'thread-test' needs more time on hydra and on slower
               ;; machines, so we set the default timeout to 120 seconds.
-              (setenv "CK_DEFAULT_TIMEOUT" "120"))))))
+              (setenv "CK_DEFAULT_TIMEOUT" "120")))
+          (add-after 'install 'remove-executables-and-sysconf
+            (lambda _
+              (for-each
+               (lambda (dir)
+                 (delete-file-recursively (string-append #$output dir)))
+               (list "/bin" "/etc")))))))
     (inputs
-     (list alsa-lib
-           bluez
-           sbc
-           speexdsp
+     (list speexdsp
            libsndfile
-           jack-1                       ; For routing the output to jack.
            dbus
            glib
            libltdl
-           fftwf
-           avahi
-           webrtc-audio-processing
-           ;; For the optional X11 modules.
-           libice
-           libsm
-           libxcb
-           libxtst
-           elogind
-           eudev))                ;for the detection of hardware audio devices
+           fftwf))
     (native-inputs
      (list check
-           doxygen
            gettext-minimal
            `(,glib "bin")
            m4
@@ -258,6 +245,52 @@ sound server.")
     ;; FFTW, etc.) are GPL'd, so the result is effectively GPLv2+.  See
     ;; 'LICENSE' for details.
     (license l:gpl2+)))
+
+(define-public pulseaudio
+  (package
+    (inherit pulseaudio-minimal)
+    (name "pulseaudio")
+    (source (origin
+              (inherit (package-source pulseaudio-minimal))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Disable console-kit support by default since it's deprecated
+               ;; anyway.
+               '(substitute* "src/daemon/default.pa.in"
+                 (("load-module module-console-kit" all)
+                  (string-append "#" all "\n"))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments pulseaudio-minimal)
+       ((#:configure-flags configure-flags)
+        #~(cons* (string-append "-Dudevrulesdir="
+                                #$output "/lib/udev/rules.d")
+                 (filter (lambda (flag)
+                           (not (member flag '("-Ddoxygen=false"
+                                               "-Dman=false"
+                                               "-Dbashcompletiondir=no"
+                                               "-Dzshcompletiondir=no"))))
+                         #$configure-flags)))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'remove-executables-and-sysconf)))))
+    (inputs
+     (modify-inputs (package-inputs pulseaudio-minimal)
+       (prepend alsa-lib
+                bluez
+                sbc
+                jack-1          ; For routing the output to jack.
+                avahi
+                webrtc-audio-processing
+                ;; For the optional X11 modules.
+                libice
+                libsm
+                libxcb
+                libxtst
+                elogind
+                eudev)))        ; For the detection of hardware audio devices.
+    (native-inputs
+     (modify-inputs (package-native-inputs pulseaudio-minimal)
+       (prepend doxygen)))))
 
 (define-public pavucontrol
   (package
