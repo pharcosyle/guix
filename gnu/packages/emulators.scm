@@ -365,7 +365,7 @@ console.")
              miniupnpc
              openal
              pugixml
-             pulseaudio
+             pulseaudio-minimal
              qtbase-5
              sdl2
              sfml
@@ -2937,7 +2937,7 @@ This is a part of the TiLP project.")
            portaudio
            portmidi
            pugixml
-           pulseaudio
+           pulseaudio-minimal
            python-wrapper
            qtbase-5
            rapidjson

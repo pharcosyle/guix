@@ -489,7 +489,7 @@ SoapySDR library.")
              hamlib
              jack-1
              libusb
-             pulseaudio
+             pulseaudio-minimal
              rtaudio
              soapysdr))
       (arguments
@@ -1232,7 +1232,7 @@ satellites.")
            libsndfile
            log4cpp
            portaudio
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtsvg-5
            spdlog
@@ -1297,7 +1297,7 @@ radio receiver.")
            libxfixes
            libxft
            portaudio
-           pulseaudio))
+           pulseaudio-minimal))
     (synopsis "Software modem for amateur radio use")
     (description
      "Fldigi is a software modem for amateur radio use.  It is a sound card
@@ -1986,7 +1986,7 @@ from devices on the 433 MHz, 868 MHz, 315 MHz, 345 MHz and 915 MHz ISM bands.")
         (base32 "00v8ix51gn30mc6bhm7fi37cyksaf8vs27xsi1435kpix9askcla"))))
     (build-system cmake-build-system)
     (inputs
-     (list libx11 pulseaudio))
+     (list libx11 pulseaudio-minimal))
     (arguments
      '(#:tests? #f))                    ; no test suite
     (home-page "https://github.com/EliasOenal/multimon-ng")
@@ -2060,7 +2060,7 @@ NanoVNA vector network analyzers.")
            fftwf
            hamlib
            openjpeg
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            v4l-utils))
     (arguments
@@ -2160,7 +2160,7 @@ methods:
     (native-inputs
      (list pkg-config))
     (inputs
-     (list alsa-lib ncurses pulseaudio qtbase-5))
+     (list alsa-lib ncurses pulseaudio-minimal qtbase-5))
     (arguments
      `(#:configure-flags '("--disable-static")
        #:phases
@@ -2700,7 +2700,7 @@ voice formats.")
            mbelib
            opencv
            opus
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtcharts-5
            qtdeclarative-5
@@ -2932,7 +2932,7 @@ spectrum waterfall.  It supports at least the following models:
     (native-inputs
      (list pkg-config))
     (inputs
-     (list alsa-lib fftwf libsndfile pulseaudio))
+     (list alsa-lib fftwf libsndfile pulseaudio-minimal))
     (home-page "http://www.whence.com/minimodem/")
     (synopsis "Software audio FSK modem")
     (description
