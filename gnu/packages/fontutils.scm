@@ -1661,14 +1661,6 @@ definitions.")
               (substitute* "CMakeLists.txt"
                 (("^set_default_rpath\\(\\)")
                  ""))))
-          #$@(if (target-hurd?)
-                 #~((add-after 'unpack 'apply-hurd-patch
-                      (lambda _
-                        (let ((patch-file
-                               #$(local-file
-                                  (search-patch "fontforge-hurd.patch"))))
-                          (invoke "patch" "--force" "-p1" "-i" patch-file)))))
-                 #~())
           #$@(if (system-hurd?)
                  #~((replace 'check
                       ;; cmake-build-system ignores #:make-flags for make check
@@ -1736,7 +1728,19 @@ generate bitmaps.")
     (inputs
      (modify-inputs (package-inputs fontforge)
        (prepend libuninameslist)
-       (replace "python" python-2)))))
+       (replace "python" python-2)
+       (replace "gettext-minimal"
+         ;; Fails to build with gettext 0.22+
+         (package
+           (inherit gettext-minimal)
+           (version "0.21.1")
+           (source (origin
+                     (method url-fetch)
+                     (uri (string-append "mirror://gnu/gettext/gettext-"
+                                         version ".tar.gz"))
+                     (sha256
+                      (base32
+                       "0ibdcinjgky0an2yw4aspmc31y0x5hw44mim9xf8gvlc3l76bhz8"))))))))))
 
 (define-public python-statmake
   (package
