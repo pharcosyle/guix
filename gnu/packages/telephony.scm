@@ -646,7 +646,7 @@ address of one of the participants.")
            opus ; avoid bundled
            poco
            protobuf
-           pulseaudio
+           pulseaudio-minimal
            qtbase-5
            qtsvg-5
            speech-dispatcher
