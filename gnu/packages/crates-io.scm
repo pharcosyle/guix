@@ -38315,7 +38315,7 @@ processes for both MacOS and Linux.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list pulseaudio))
+     (list pulseaudio-minimal))
     (home-page "https://github.com/jnqnfe/pulse-binding-rust")
     (synopsis "Binding for the PulseAudio libpulse library")
     (description
@@ -38344,7 +38344,7 @@ library.")
          (add-before 'check 'set-HOME
            (lambda _ (setenv "HOME" "/tmp"))))))
     (native-inputs (list pkg-config))
-    (inputs (list pulseaudio))
+    (inputs (list pulseaudio-minimal))
     (home-page "https://github.com/jnqnfe/pulse-binding-rust")
     (synopsis "Rust language bindings for PulseAudio's libpulse-simple library")
     (description
@@ -38366,7 +38366,7 @@ library.")
      `(#:cargo-inputs (("rust-libpulse-sys" ,rust-libpulse-sys-1)
                        ("rust-pkg-config" ,rust-pkg-config-0.3))))
     (native-inputs (list pkg-config))
-    (inputs (list pulseaudio))
+    (inputs (list pulseaudio-minimal))
     (home-page "https://github.com/jnqnfe/pulse-binding-rust")
     (synopsis "FFI indings for PulseAudio's libpulse-simple system library")
     (description
@@ -38395,7 +38395,7 @@ library.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list pulseaudio))
+     (list pulseaudio-minimal))
     (home-page "https://github.com/jnqnfe/pulse-binding-rust")
     (synopsis "FFI bindings for the PulseAudio")
     (description

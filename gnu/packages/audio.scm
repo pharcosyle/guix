@@ -451,7 +451,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
      `(("alsa" ,alsa-lib)
        ("flac" ,flac)
        ("portaudio" ,portaudio)
-       ("pulseaudio" ,pulseaudio)
+       ("pulseaudio-minimal" ,pulseaudio-minimal)
        ("sdl2" ,sdl2)
        ("sndfile" ,libsndfile)))
     (propagated-inputs
@@ -859,7 +859,7 @@ namespace ARDOUR { const char* revision = \"" version "\" ; const char* date = \
            openssl ; Required by libwebsockets.
            pangomm
            python-rdflib
-           pulseaudio
+           pulseaudio-minimal
            qm-dsp
            readline
            redland
@@ -1489,7 +1489,7 @@ synthesis.")
            soxr
            alsa-lib
            avahi
-           pulseaudio
+           pulseaudio-minimal
            flac
            opus))
     (native-inputs
@@ -1718,7 +1718,7 @@ object library.")
            ladspa
            liblo
            libsndfile
-           pulseaudio))
+           pulseaudio-minimal))
     (home-page "https://csound.com/")
     (synopsis "Sound and music computing system")
     (description
@@ -2892,7 +2892,7 @@ implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list alsa-lib jack-1 pulseaudio))
+     (list alsa-lib jack-1 pulseaudio-minimal))
     (synopsis "Common API for real-time audio I/O")
     (description
      "RtAudio is a set of C++ classes that provides a common API for real-time
@@ -2945,7 +2945,7 @@ cross-platform audio input/output stream library.")
                (base32
                 "0r9igs365cqgrn1m55a8qjz0hc446nwjm3p3i9kphbj5gl7dazk9"))))
     (build-system python-build-system)
-    (inputs (list pulseaudio))
+    (inputs (list pulseaudio-minimal))
     (arguments
      `(#:tests? #f                      ; tests try to communicate with PulseAudio
        #:phases
@@ -3324,7 +3324,7 @@ lv2-c++-tools.")
                                 (search-input-file inputs "lib/libasound.so.2")
                                 "/lib/libasound.so.2"
                                 "\")"))))))))
-    (inputs (list alsa-lib pulseaudio))
+    (inputs (list alsa-lib pulseaudio-minimal))
     (synopsis "3D audio API")
     (description
      "OpenAL provides capabilities for playing audio in a virtual 3D
@@ -3443,7 +3443,7 @@ and ALSA.")
     (native-inputs
      (list autoconf automake libtool pkg-config which))
     (inputs
-     (list alsa-lib pulseaudio))
+     (list alsa-lib pulseaudio-minimal))
     (synopsis "Portable C audio library")
     (description
      "The Portable C Audio Library (pcaudiolib) provides a C@tie{}API to
@@ -4261,7 +4261,7 @@ control functionality, or just for playing around with the sound effects.")
            libmad
            libpng
            libvorbis
-           pulseaudio))
+           pulseaudio-minimal))
     (home-page "https://sox.sourceforge.net")
     (synopsis "Sound processing utility")
     (description
@@ -5198,7 +5198,7 @@ an LV2 audio plugin.")
      (list ;; ("googletest" ,googletest-1.8)
            which))
     (inputs
-     (list fftw ncurses pulseaudio))
+     (list fftw ncurses pulseaudio-minimal))
     (arguments
      '(#:tests? #f
        ;; XXX Enable tests after patching them to use the system googletest.
@@ -5238,7 +5238,7 @@ representations.")
                 "0r13pf8z02pf4wlapa9nyp1h114nnk1s47bdpq3wl8wvw896axw6"))))
     (build-system gnu-build-system)
     (native-inputs (list autoconf automake libtool pkg-config))
-    (inputs (list alsa-lib fftw ncurses pipewire pulseaudio iniparser))
+    (inputs (list alsa-lib fftw ncurses pipewire pulseaudio-minimal iniparser))
     (arguments
      (list #:configure-flags
            #~(list (string-append "PREFIX="
@@ -5474,7 +5474,7 @@ other Gnaural instances, allowing synchronous sessions between many users.")
                   opus
                   twolame
                   alsa-lib
-                  pulseaudio
+                  pulseaudio-minimal
                   jack-1
                   libsamplerate))
     (arguments
@@ -5570,7 +5570,7 @@ supports both of ID3v1/v2 and APEv2 tags.")
     (arguments
      `(#:tests? #f)) ;no tests included
     (inputs
-     (list alsa-lib jack-1 pulseaudio))
+     (list alsa-lib jack-1 pulseaudio-minimal))
     (native-inputs
      (list pkg-config))
     (home-page "http://libsound.io")
@@ -6492,7 +6492,7 @@ be separated.")
            ;; runpath.  Otherwise cubeb tries to dlopen them at runtime.
            "-DCMAKE_SHARED_LINKER_FLAGS=-lasound -lpulse -lspeex")
          #:tests? #f))
-      (inputs (list alsa-lib pulseaudio speex))
+      (inputs (list alsa-lib pulseaudio-minimal speex))
       (synopsis "Cross-platform audio library")
       (description "Cubeb is Mozilla's cross-platform audio library.")
       (home-page "https://github.com/mozilla/cubeb")
