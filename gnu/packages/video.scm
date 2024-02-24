@@ -2317,7 +2317,7 @@ audio/video codec library.")
       (native-inputs
        (list pkg-config))
       (inputs
-       (list ffmpeg libjpeg-turbo libpng gvfs))
+       (list ffmpeg libjpeg-turbo libpng))
       (arguments
        `(#:configure-flags (list "-DENABLE_GIO=ON" "-DENABLE_THUMBNAILER=ON")))
       (home-page "https://github.com/dirkvdb/ffmpegthumbnailer")
