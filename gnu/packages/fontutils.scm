@@ -1973,6 +1973,21 @@ While designed primarily with the GNOME Desktop Environment in mind, it should
 work well with other GTK+ desktop environments.")
    (license license:gpl3+)))
 
+(define-public fontmanager-no-googlefonts
+  (package
+    (inherit fontmanager)
+    (name "fontmanager-no-googlefonts")
+    (arguments
+     (substitute-keyword-arguments (package-arguments fontmanager)
+       ((#:configure-flags configure-flags  #~'())
+        #~(cons* "-Dwebkit=false" #$configure-flags))))
+    (inputs
+     (modify-inputs (package-inputs fontmanager)
+       ;; This `delete' form is only working right when passed string
+       ;; arguents. Weird.
+       (delete "libsoup-minimal"
+               "webkitgtk-with-libsoup2")))))
+
 (define-public fntsample
   (package
     (name "fntsample")
