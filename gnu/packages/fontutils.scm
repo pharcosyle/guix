@@ -1945,30 +1945,30 @@ generated list of fallback fonts are checked.")
        (base32 "0nyda2a6vbzyz4sn9mmrr8bkifzxmmjp7x9a3c4s6n925ccy79cn"))))
    (build-system meson-build-system)
    (arguments
-    `(#:glib-or-gtk? #t
-      #:build-type "release"
-      #:configure-flags
-      (list (string-append "-Dc_link_args=-Wl,-rpath="
-                           (assoc-ref %outputs "out")
-                           "/lib/font-manager"))))
+    (list #:glib-or-gtk? #t
+          #:build-type "release"
+          #:configure-flags
+          #~(list (string-append "-Dc_link_args=-Wl,-rpath="
+                                 #$output
+                                 "/lib/font-manager"))))
    (native-inputs
-    `(("desktop-file-utils" ,desktop-file-utils)
-      ("gettext" ,gettext-minimal)
-      ("glib" ,glib "bin")
-      ("gobject-introspection" ,gobject-introspection)
-      ("pkg-config" ,pkg-config)
-      ("python-wrapper" ,python-wrapper)
-      ("vala" ,vala-0.52)
-      ("yelp-tools" ,yelp-tools)))
+    (list desktop-file-utils
+          gettext-minimal
+          `(,glib "bin")
+          gobject-introspection
+          pkg-config
+          python-wrapper
+          vala-0.52
+          yelp-tools))
    (inputs
-    `(("fonconfig" ,fontconfig)
-      ("freetype" ,freetype)
-      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-      ("gtk+" ,gtk+)
-      ("json-glib" ,json-glib)
-      ("libsoup" ,libsoup-minimal-2)
-      ("sqlite" ,sqlite)
-      ("webkitgtk" ,webkitgtk-with-libsoup2)))
+    (list fontconfig
+          freetype
+          gsettings-desktop-schemas
+          gtk+
+          json-glib
+          libsoup-minimal-2
+          sqlite
+          webkitgtk-with-libsoup2))
    (home-page "https://fontmanager.github.io/")
    (synopsis "Simple font management for GTK+ desktop environments")
    (description "Font Manager is intended to provide a way for users to
