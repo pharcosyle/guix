@@ -1453,7 +1453,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
 (define-public cloog
   (package
     (name "cloog")
-    (version "0.18.4")
+    (version "0.18.0")
     (source
      (origin
       (method url-fetch)
@@ -1465,7 +1465,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
                                 name "-" version ".tar.gz")))
       (sha256
        (base32
-        "03km1aqaiy3sbqc2f046ms9x0mlmacxlvs5rxsvjj8nf20vxynij"))
+        "0a12rwfwp22zd0nlld0xyql11cj390rrq1prw35yjsw8wzfshjhw"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs (list gmp isl-0.11))
