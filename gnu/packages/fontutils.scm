@@ -1933,7 +1933,7 @@ generated list of fallback fonts are checked.")
 (define-public fontmanager
   (package
    (name "fontmanager")
-   (version "0.8.7")
+   (version "0.8.8")
    (source
     (origin
       (method git-fetch)
@@ -1942,15 +1942,11 @@ generated list of fallback fonts are checked.")
             (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0nyda2a6vbzyz4sn9mmrr8bkifzxmmjp7x9a3c4s6n925ccy79cn"))))
+       (base32 "06jvrzh7lmsv5sz04pv674aw18w26c6vyr77nqs1falwvpsx0p9k"))))
    (build-system meson-build-system)
    (arguments
     (list #:glib-or-gtk? #t
-          #:build-type "release"
-          #:configure-flags
-          #~(list (string-append "-Dc_link_args=-Wl,-rpath="
-                                 #$output
-                                 "/lib/font-manager"))))
+          #:configure-flags #~(list "-Dreproducible=true")))
    (native-inputs
     (list desktop-file-utils
           gettext-minimal
@@ -1958,16 +1954,15 @@ generated list of fallback fonts are checked.")
           gobject-introspection
           pkg-config
           python-wrapper
-          vala-0.52
+          vala
           yelp-tools))
    (inputs
-    (list fontconfig
-          freetype
-          gsettings-desktop-schemas
+    (list gsettings-desktop-schemas
           gtk+
           json-glib
-          libsoup-minimal-2
           sqlite
+          ;; For googlefonts.
+          libsoup-minimal-2
           webkitgtk-with-libsoup2))
    (home-page "https://fontmanager.github.io/")
    (synopsis "Simple font management for GTK+ desktop environments")
