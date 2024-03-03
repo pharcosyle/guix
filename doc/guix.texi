@@ -22591,6 +22591,11 @@ These fields determine whether to use IPv4/IPv6 sockets.
 
 @item @code{domains-to-browse} (default: @code{'()})
 This is a list of domains to browse.
+
+@item @code{dbus-privileged-group} (default: @code{"netdev"})
+Privileged access group for Avahi clients over D-Bus. At the time of this
+writing it grants permission to change the host name.
+
 @end table
 @end deftp
 
