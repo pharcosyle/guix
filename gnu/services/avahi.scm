@@ -73,7 +73,9 @@
   (wide-area?        avahi-configuration-wide-area? ;Boolean
                      (default #f))
   (domains-to-browse avahi-configuration-domains-to-browse ;list of strings
-                     (default '())))
+                     (default '()))
+  (dbus-privileged-group avahi-configuration-dbus-privileged-group ;string
+                         (default "netdev")))
 
 (define* (configuration-file config)
   "Return an avahi-daemon configuration file based on CONFIG, an
@@ -140,6 +142,23 @@
            (stop #~(make-kill-destructor))
            (actions (list (shepherd-configuration-action config)))))))
 
+(define (avahi-package-with-dbus-config config)
+  (list
+   (computed-file
+    "avahi-with-dbus-config"
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+          (copy-recursively #$(avahi-configuration-avahi config)
+                            #$output
+                            #:log (%make-void-port "w"))
+          (substitute* (string-append #$output
+                                      "/etc/dbus-1/system.d/avahi-dbus.conf")
+            (("group=\"netdev\"")
+             (string-append "group=\""
+                            #$(avahi-configuration-dbus-privileged-group config)
+                            "\""))))))))
+
 (define avahi-service-type
   (let ((avahi-package (compose list avahi-configuration-avahi)))
     (service-type (name 'avahi)
@@ -152,7 +171,7 @@ service switch (NSS) with support for @code{.local} host name resolution.")
                    (list (service-extension shepherd-root-service-type
                                             avahi-shepherd-service)
                          (service-extension dbus-root-service-type
-                                            avahi-package)
+                                            avahi-package-with-dbus-config)
                          (service-extension account-service-type
                                             (const %avahi-accounts))
                          (service-extension activation-service-type
