@@ -1228,7 +1228,7 @@ and TCP-capable recursive DNS server for finding domains on the internet.")
 (define-public openresolv
   (package
     (name "openresolv")
-    (version "3.13.1")
+    (version "3.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1237,7 +1237,7 @@ and TCP-capable recursive DNS server for finding domains on the internet.")
                     "/openresolv-" version ".tar.xz"))
               (sha256
                (base32
-                "0yvzi7s9jlf46gmwck7m0grvjsf67sc6925q8ripnr9pvidlac4c"))
+                "1c7hyq8q6745b64f6rg2p6xalys08wd34x0d9y40r53s4nzbrd9n"))
               (patches
                (search-patches "openresolv-restartcmd-guix.patch"))))
     (build-system gnu-build-system)
