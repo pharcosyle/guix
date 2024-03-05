@@ -38670,7 +38670,7 @@ hacker.")
       (license license:expat))))
 
 (define-public doom-emacs
-  (let ((commit "f0ad161643c05842ca41bcb5daadcf7a7db98983")
+  (let ((commit "bea81278fd2ecb65db6a63dbcd6db2f52921ee41")
         (revision "1"))
     (package
       (name "doom-emacs")
@@ -38683,7 +38683,7 @@ hacker.")
                (commit commit)))
          (sha256
           (base32
-           "14jp2g7m3jl0f0ms3367lmi05rfhdc59qaa705nmw7xqrdivz8rd"))
+           "1hqnajkr0yqj1vkgxcy10gp018dsvbxri9la6iqiz962wq7j3fjx"))
          (file-name (git-file-name name version))
          (patches
           (list
