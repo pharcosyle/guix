@@ -964,8 +964,30 @@ replace the other outdated Graphviz tools.")
 interfaces in the areas of colors, fonts, text, images, keyboard input.")
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public kholidays-6
+  (package
+    (name "kholidays")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32 "02kkp6j7s9qppks9g7akbd1j468pwldvivh235bcsw2pmdciarl3"))))
+    (build-system cmake-build-system)
+    (native-inputs (list extra-cmake-modules qttools))
+    (inputs (list qtbase qtdeclarative))
+    (home-page "https://invent.kde.org/frameworks/kholidays")
+    (synopsis "Library for regional holiday information")
+    (description "This library provides a C++ API that determines holiday and
+other special events for a geographical region.")
+    (license license:lgpl2.0+)))
+
 (define-public kholidays
   (package
+    (inherit kholidays-6)
     (name "kholidays")
     (version "5.114.0")
     (source (origin
@@ -974,18 +996,12 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
                     "mirror://kde/stable/frameworks/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
-       (sha256
-        (base32 "19r8dxglz5ll6iyvigsccil3ikvcsnyy5nwcpjvjr1c0brigcjmy"))))
-    (build-system cmake-build-system)
+              (sha256
+               (base32 "19r8dxglz5ll6iyvigsccil3ikvcsnyy5nwcpjvjr1c0brigcjmy"))))
     (native-inputs
      (list extra-cmake-modules qttools-5))
     (inputs
-     (list qtbase-5 qtdeclarative-5))
-    (home-page "https://invent.kde.org/frameworks/kholidays")
-    (synopsis "Library for regional holiday information")
-    (description "This library provides a C++ API that determines holiday and
-other special events for a geographical region.")
-    (license license:lgpl2.0+)))
+     (list qtbase-5 qtdeclarative-5))))
 
 (define-public ki18n
   (package
