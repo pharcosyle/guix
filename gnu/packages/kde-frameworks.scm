@@ -1003,10 +1003,10 @@ other special events for a geographical region.")
     (inputs
      (list qtbase-5 qtdeclarative-5))))
 
-(define-public ki18n
+(define-public ki18n-6
   (package
     (name "ki18n")
-    (version "5.114.0")
+    (version "6.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1015,23 +1015,25 @@ other special events for a geographical region.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yg03awcx5ay6lgbgwv91i0ankrm94z9m0wky4v03gnwnvw8pa0v"))))
+                "0j3na5422k387rizb7139n4f3fd8506lmp3dxamagpn9npqijchn"))))
     (build-system cmake-build-system)
     (propagated-inputs
-     (list gettext-minimal python))
+     (list gettext-minimal))
     (native-inputs
-     (list extra-cmake-modules))
+     (list extra-cmake-modules python-minimal tzdata-for-tests))
     (inputs
-     (list qtbase-5 qtdeclarative-5 qtscript iso-codes))
+     (list qtbase qtdeclarative iso-codes))
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
-                        (replace 'check
-                          (lambda* (#:key tests? #:allow-other-keys)
-                            (when tests?
-                              (setenv "HOME"
-                                      (getcwd))
-                              (invoke "ctest" "-E"
-                               "(kcountrytest|kcountrysubdivisiontest)")))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (setenv "HOME"
+                        (getcwd))
+                (invoke "ctest" "-E"
+                        "(kcountrytest|kcountrysubdivisiontest)")))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Gettext-based UI text internationalization")
     (description "KI18n provides functionality for internationalizing user
@@ -1044,6 +1046,27 @@ translators, which can help to achieve a higher overall quality of source and
 translated text.  This includes argument capturing, customizable markup, and
 translation scripting.")
     (license license:lgpl2.1+)))
+
+(define-public ki18n
+  (package
+    (inherit ki18n-6)
+    (name "ki18n")
+    (version "5.114.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1yg03awcx5ay6lgbgwv91i0ankrm94z9m0wky4v03gnwnvw8pa0v"))))
+    (propagated-inputs
+     (list gettext-minimal python))
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list qtbase-5 qtdeclarative-5 qtscript iso-codes))))
 
 (define-public kidletime
   (package
