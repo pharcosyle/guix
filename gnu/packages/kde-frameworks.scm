@@ -863,8 +863,35 @@ as well as an API to create KDED modules.")
                      (setenv "DBUS_FATAL_WARNINGS" "0")
                      (invoke "dbus-launch" "ctest")))))))))
 
+(define-public kdnssd-6
+  (package
+    (name "kdnssd")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "04mpcwxkncvydhkjrxinv7qvs6yk6106vxa62crysrgjd5x1z61v"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (inputs (list avahi ; alternativly dnssd could be used
+                  qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Network service discovery using Zeroconf")
+    (description "KDNSSD is a library for handling the DNS-based Service
+Discovery Protocol (DNS-SD), the layer of Zeroconf that allows network services,
+such as printers, to be discovered without any user intervention or centralized
+infrastructure.")
+    (license license:lgpl2.1+)))
+
 (define-public kdnssd
   (package
+    (inherit kdnssd-6)
     (name "kdnssd")
     (version "5.114.0")
     (source (origin
@@ -876,19 +903,10 @@ as well as an API to create KDED modules.")
               (sha256
                (base32
                 "1zw5rkprr54j05ic8zljk57zahp2v6333slr253r3n1679zqlv64"))))
-    (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules qttools-5))
     (inputs
-     (list avahi ; alternativly dnssd could be used
-           qtbase-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Network service discovery using Zeroconf")
-    (description "KDNSSD is a library for handling the DNS-based Service
-Discovery Protocol (DNS-SD), the layer of Zeroconf that allows network services,
-such as printers, to be discovered without any user intervention or centralized
-infrastructure.")
-    (license license:lgpl2.1+)))
+     (list avahi qtbase-5))))
 
 (define-public kgraphviewer
   (package
