@@ -168,9 +168,10 @@ manual."
 
 (define %documentation-users
   ;; User account for the Info viewer.
-  (list (user-account (name "documentation")
+  (list (user-group (name "documentation") (system? #t))
+        (user-account (name "documentation")
                       (system? #t)
-                      (group "nogroup")
+                      (group "documentation")
                       (home-directory "/var/empty"))))
 
 (define documentation-service-type

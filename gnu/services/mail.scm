@@ -1708,11 +1708,14 @@ match from local for any action outbound
 
 (define %opensmtpd-accounts
   (list (user-group
+         (name "smtpd")
+         (system? #t))
+        (user-group
          (name "smtpq")
          (system? #t))
         (user-account
          (name "smtpd")
-         (group "nogroup")
+         (group "smtpd")
          (system? #t)
          (comment "SMTP Daemon")
          (home-directory "/var/empty")
