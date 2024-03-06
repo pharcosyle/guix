@@ -7671,7 +7671,12 @@ set the screen to be pitch black at a value of 0 (or higher).
             (add-after 'unpack 'adjust-udev-rules
               (lambda _
                 (substitute* "90-brightnessctl.rules"
-                  (("/bin/") "/run/current-system/profile/bin/"))))
+                  (("/bin/") "/run/current-system/profile/bin/")
+                  ;; Make specialized group names so users aren't forced into
+                  ;; joining the broad groups 'video' and 'input'. These can
+                  ;; easily be added with `udev-rules-service'.
+                  (("chgrp video") "chgrp backlight-brightness")
+                  (("chgrp input") "chgrp leds-brightness"))))
             (replace 'configure
               ;; Its custom configure script doesn't understand 'CONFIG_SHELL'.
               (lambda* (#:key (configure-flags '()) #:allow-other-keys)
