@@ -1787,6 +1787,8 @@ whatever the thing is supposed to do).")))
                       (default "/var/run/wpa_supplicant.pid"))
   (dbus?              wpa-supplicant-configuration-dbus?          ;Boolean
                       (default #t))
+  (dbus-admin-group   wpa-supplicant-configuration-dbus-admin-group ;string
+                      (default "netdev"))
   (interface          wpa-supplicant-configuration-interface      ;#f | string
                       (default #f))
   (config-file        wpa-supplicant-configuration-config-file    ;#f | <file-like>
@@ -1823,6 +1825,26 @@ whatever the thing is supposed to do).")))
                      #:pid-file #$pid-file))
            (stop #~(make-kill-destructor))))))
 
+(define (wpa-supplicant-package-with-dbus-config config)
+  (list
+   (computed-file
+    "wpa-supplicant-with-dbus-config"
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+          (copy-recursively
+           #$(wpa-supplicant-configuration-wpa-supplicant config)
+           #$output
+           #:log (%make-void-port "w"))
+          (substitute* (string-append
+                        #$output
+                        "/etc/dbus-1/system.d/wpa_supplicant.conf")
+            (("group=\"netdev\"")
+             (string-append
+              "group=\""
+              #$(wpa-supplicant-configuration-dbus-admin-group config)
+              "\""))))))))
+
 (define wpa-supplicant-service-type
   (let ((config->package
          (lambda (config)
@@ -1831,7 +1853,8 @@ whatever the thing is supposed to do).")))
                   (extensions
                    (list (service-extension shepherd-root-service-type
                                             wpa-supplicant-shepherd-service)
-                         (service-extension dbus-root-service-type config->package)
+                         (service-extension dbus-root-service-type
+                                            wpa-supplicant-package-with-dbus-config)
                          (service-extension profile-service-type config->package)))
                   (description "Run the WPA Supplicant daemon, a service that
 implements authentication, key negotiation and more for wireless networks.")
