@@ -21276,6 +21276,9 @@ List of services that should be started before WPA Supplicant starts.
 @item @code{dbus?} (default: @code{#t})
 Whether to listen for requests on D-Bus.
 
+@item @code{dbus-admin-group} (default: @code{"netdev"})
+Group for administering WPA Supplicant over D-Bus.
+
 @item @code{pid-file} (default: @code{"/var/run/wpa_supplicant.pid"})
 Where to store the PID file.
 
