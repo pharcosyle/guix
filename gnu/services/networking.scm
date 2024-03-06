@@ -567,9 +567,10 @@ restrict source notrap nomodify noquery\n"))
            (stop #~(make-kill-destructor))))))
 
 (define %ntp-accounts
-  (list (user-account
+  (list (user-group (name "ntpd") (system? #t))
+        (user-account
          (name "ntpd")
-         (group "nogroup")
+         (group "ntpd")
          (system? #t)
          (comment "NTP daemon user")
          (home-directory "/var/empty")

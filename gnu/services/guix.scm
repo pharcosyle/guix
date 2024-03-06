@@ -184,6 +184,8 @@
                        (default guix-build-coordinator/agent-only))
   (user                guix-build-coordinator-agent-configuration-user
                        (default "guix-build-coordinator-agent"))
+  (group               guix-build-coordinator-agent-configuration-group
+                       (default "guix-build-coordinator-agent"))
   (coordinator         guix-build-coordinator-agent-configuration-coordinator
                        (default "http://localhost:8745"))
   (authentication      guix-build-coordinator-agent-configuration-authentication)
@@ -493,13 +495,18 @@
              (passwd:gid %user))))
 
 (define (guix-build-coordinator-agent-account config)
-  (list (user-account
-         (name (guix-build-coordinator-agent-configuration-user config))
-         (group "nogroup")
-         (system? #t)
-         (comment "Guix Build Coordinator agent user")
-         (home-directory "/var/empty")
-         (shell (file-append shadow "/sbin/nologin")))))
+  (match-record config <guix-build-coordinator-agent-configuration>
+    (user group)
+    (list (user-group
+           (name group)
+           (system? #t))
+          (user-account
+           (name user)
+           (group group)
+           (system? #t)
+           (comment "Guix Build Coordinator agent user")
+           (home-directory "/var/empty")
+           (shell (file-append shadow "/sbin/nologin"))))))
 
 (define guix-build-coordinator-agent-service-type
   (service-type
