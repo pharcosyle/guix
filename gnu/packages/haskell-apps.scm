@@ -651,7 +651,7 @@ and mIRC chat codes.")
                      (display
                       (string-append
                        "KERNEL==\"uinput\", MODE=\"0660\", "
-                       "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"\n")
+                       "GROUP=\"uinput\", OPTIONS+=\"static_node=uinput\"\n")
                       port)))
                  #t)))
            (add-after 'install-udev-rules 'install-documentation
@@ -699,7 +699,9 @@ Wayland, and Linux console environments alike.")
             (use-modules (guix build utils))
             (copy-recursively #$(local-file "/gnu/store/1rgj3vz33zlx06vx4q9nkrk6r92qf3ff-kmonad-0.4.1-1.a0af5b8"
                                             #:recursive? #t)
-                              #$output)))))
+                              #$output)
+            (substitute* (string-append #$output "/lib/udev/rules.d/70-kmonad.rules")
+              (("GROUP=\"input\"") "GROUP=\"uinput\""))))))
     (synopsis #f)
     (description #f)
     (home-page #f)
