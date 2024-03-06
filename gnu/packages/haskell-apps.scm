@@ -652,7 +652,7 @@ and mIRC chat codes.")
                      (display
                       (string-append
                        "KERNEL==\"uinput\", MODE=\"0660\", "
-                       "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"\n")
+                       "GROUP=\"uinput\", OPTIONS+=\"static_node=uinput\"\n")
                       port)))
                  #t)))
            (add-after 'install-udev-rules 'install-documentation
