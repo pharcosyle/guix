@@ -294,6 +294,40 @@ for videoconferencing.")
     (home-page "https://www.freedesktop.org/wiki/Software/Farstream/")
     (license license:lgpl2.1+)))
 
+(define-public libdecor
+  (package
+    (name "libdecor")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/libdecor/libdecor")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "05rxchwzhnkm91kcr30mavizkp25wgjlhb6lcraa456pw7vgb04q"))))
+    (build-system meson-build-system)
+    (arguments
+     (list #:configure-flags #~(list "-Ddemo=false")))
+    (native-inputs
+     (list pkg-config
+           wayland))
+    (inputs
+     (list cairo
+           dbus
+           gtk+
+           pango
+           wayland
+           wayland-protocols))
+    (home-page "https://gitlab.freedesktop.org/libdecor/libdecor")
+    (synopsis "Client-side decorations library for Wayland clients")
+    (description "libdecor is a library that can help Wayland clients draw
+window decorations for them. It aims to provide multiple backends that
+implements the decoration drawing.")
+    (license license:expat)))
+
 (define-public libglib-testing
   (package
     (name "libglib-testing")
