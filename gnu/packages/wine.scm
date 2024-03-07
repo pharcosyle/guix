@@ -81,7 +81,7 @@
 (define-public wine-minimal
   (package
     (name "wine-minimal")
-    (version "9.1")
+    (version "9.3")
     (source
      (origin
        (method url-fetch)
@@ -93,7 +93,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "1zwg4pda7skdb0cxjdn4f2nci5ds6yi91w987glsnp63dwdvkcq1"))))
+        (base32 "14qp7gnx82p0s30hrsc45klpchwzr4iwfdsn854a27vx2hs2x2ql"))))
     (properties '((upstream-name . "wine")))
     (build-system gnu-build-system)
     (native-inputs (list bison flex))
