@@ -1664,23 +1664,25 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public libva-utils
   (package
     (name "libva-utils")
-    (version "2.18.1")
+    (version "2.20.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/intel/libva-utils/releases/download/"
-                           version "/libva-utils-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/intel/libva-utils")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "06n123kvzk51bx5cbhf34i3cfxc8vxmksgh5azycz9fwwcz3n7rm"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "--enable-wayland"
-             "--enable-x11")))
+        (base32
+         "0nv71b8vd2h213ndmzk0cplbcymb4imj38kyhd29c1yfm629lzk5"))))
+    (build-system meson-build-system)
     (native-inputs
      (list pkg-config))
     (inputs
-     (list libdrm libva libx11 mesa wayland))
+     (list libdrm
+           libva
+           libx11
+           wayland))
     (home-page "https://github.com/intel/libva-utils")
     (synopsis "Collection of testing utilities for VA-API")
     (description
