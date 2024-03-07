@@ -2524,8 +2524,43 @@ of non binary content such as scripted extensions or graphic assets, as if they
 were traditional plugins.")
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public kpty-6
+  (package
+    (name "kpty")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1psrryrgkn9fbw81a7zlshwssr175db9kiq40ib77xx61gcnq8nz"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     ;; TODO: utempter, for managing UTMP entries
+     (list kcoreaddons-6 ki18n-6 qtbase))
+    (arguments
+     (list #:tests? #f ; FIXME: 1/1 tests fail.
+           #:phases #~(modify-phases %standard-phases
+                        (add-after 'unpack 'patch-tests
+                          (lambda _
+                            (substitute* "autotests/kptyprocesstest.cpp"
+                              (("/bin/sh")
+                               (which "bash"))))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Interfacing with pseudo terminal devices")
+    (description "This library provides primitives to interface with pseudo
+terminal devices as well as a KProcess derived class for running child processes
+and communicating with them using a pty.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public kpty
   (package
+    (inherit kpty-6)
     (name "kpty")
     (version "5.114.0")
     (source (origin
@@ -2537,27 +2572,11 @@ were traditional plugins.")
               (sha256
                (base32
                 "0fm7bfp89kvg1a64q8piiyal71p6vjnqcm13zak6r9fbfwcm0gs9"))))
-    (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list kcoreaddons ki18n
-           ;; TODO: utempter, for managing UTMP entries
-           qtbase-5))
-    (arguments
-     (list #:tests? #f ; FIXME: 1/1 tests fail.
-           #:phases #~(modify-phases %standard-phases
-                        (add-after 'unpack 'patch-tests
-                          (lambda _
-                            (substitute* "autotests/kptyprocesstest.cpp"
-                              (("/bin/bash")
-                               (which "bash"))))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Interfacing with pseudo terminal devices")
-    (description "This library provides primitives to interface with pseudo
-terminal devices as well as a KProcess derived class for running child processes
-and communicating with them using a pty.")
-    (license (list license:gpl2+ license:lgpl2.1+))))
+           qtbase-5))))
 
 (define-public kunitconversion
   (package
