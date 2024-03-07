@@ -297,7 +297,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "24.0.0") ; TODO Not a stable release, don't upstream (wait for 24.0.1).
+    (version "24.0.2")
     (source
       (origin
         (method url-fetch)
@@ -307,7 +307,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   "mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "0djc6262pgh7zdbcp286c27fidzbpls3n9kqakwlv265gc3qqznw"))))
+          "1s69asdh7cz10abr63q8qdiamdcy7cjkzd9yp398wvfhva78mqll"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; The following are in the Requires.private field of gl.pc.
