@@ -276,24 +276,6 @@ generate a GL/GLES/EGL/GLX/WGL loader tailored for specific requirements.")
 also known as DXTn or DXTC) for Mesa.")
     (license license:expat)))
 
-;;; Mesa needs LibVA headers to build its Gallium-based VA API implementation;
-;;; LibVA itself depends on Mesa.  We use the following to solve the circular
-;;; dependency.
-(define libva-without-mesa
-  ;; Delay to work around circular import problem.
-  (delay
-    (package
-      (inherit libva)
-      (name "libva-without-mesa")
-      (inputs (fold alist-delete (package-inputs libva)
-                    '("mesa" "wayland")))
-      (arguments
-       (strip-keyword-arguments
-        '(#:make-flags)
-        (substitute-keyword-arguments (package-arguments libva)
-          ((#:configure-flags flags)
-           '(list "--disable-glx"))))))))
-
 (define-public mesa
   (package
     (name "mesa")
@@ -322,7 +304,7 @@ also known as DXTn or DXTC) for Mesa.")
     (inputs
      (list elfutils                  ;libelf required for r600 when using llvm
            expat
-           (force libva-without-mesa)
+           libva-minimal
            libxml2
            libxrandr
            libxvmc
