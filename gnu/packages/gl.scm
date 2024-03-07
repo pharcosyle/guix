@@ -79,7 +79,7 @@
 (define-public glu
   (package
     (name "glu")
-    (version "9.0.2")
+    (version "9.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -88,13 +88,13 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1khxfidyglpx4yd8f3xvrj05ah823cz1ygcszhcaa4w7h9kd1lbr"))))
-    (build-system gnu-build-system)
+                "0kmzmz93qqq0kv1c680nwf8whxf0zdw68khy7ask7plb41zdbbx1"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags #~(list "-Dgl_provider=gl"))) ; 'glvnd' is the default.
     (native-inputs
-     (list pkg-config
-           autoconf
-           automake
-           libtool))
+     (list pkg-config))
     (propagated-inputs
      (list mesa)) ; according to glu.pc
     (home-page "http://www.opengl.org/archives/resources/faq/technical/glu.htm")
