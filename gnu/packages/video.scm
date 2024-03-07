@@ -1589,54 +1589,41 @@ contains a large assortment of video processing shaders, focusing on both
 quality and performance.")
     (license license:lgpl2.1+)))
 
-(define-public libva
+;;; Variant with core libraries only. It is used most prominently to break a
+;;; dependency cycle with Mesa, which needs LibVA headers to build its
+;;; Gallium-based VA API implementation while LibVA itself depends on Mesa.
+(define-public libva-minimal
   (package
-    (name "libva")
-    (version "2.19.0")
+    (name "libva-minimal")
+    (version "2.20.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/intel/libva/releases/download/"
-                           version "/libva-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/intel/libva")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0x113spshsjcqh4pk8rkqq4r8vxf1nm83ym6ppp7zpsrsncfffwn"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     (list config pkg-config))
-    (inputs
-     (list libdrm
-           libx11
-           libxext
-           libxfixes
-           mesa
-           wayland))
+        (base32
+         "0ysqjd8v76fmvnn3zzjz1n0w3g6xl7w2r6cw3lqjzggav352rl0h"))))
+    (build-system meson-build-system)
     (arguments
      (list
-      ;; Most drivers are in mesa's $prefix/lib/dri, so use that.  (Can be
-      ;; overridden at run-time via LIBVA_DRIVERS_PATH.)
-      #:configure-flags
-      #~(list (string-append "--with-drivers-path="
-                             (search-input-directory %build-inputs "lib/dri")))
-      ;; However, we can't write to mesa's store directory, so override the
-      ;; following make variable to install the dummy driver to libva's
-      ;; $prefix/lib/dri directory.
-      #:make-flags
-      #~(list (string-append "dummy_drv_video_ladir=" #$output "/lib/dri"))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'update-config-scripts
-             (lambda* (#:key native-inputs inputs #:allow-other-keys)
-               (for-each (lambda (file)
-                               (install-file
-                                 (search-input-file
-                                   (or native-inputs inputs)
-                                   (string-append "/bin/" file)) "."))
-                         '("config.guess" "config.sub"))))
-          (add-before 'build 'fix-dlopen-paths
-            (lambda _
-              (substitute* "va/drm/va_drm_auth_x11.c"
-                (("\"libva-x11\\.so\\.%d\"")
-                 (string-append "\"" #$output "/lib/libva-x11.so.%d\""))))))))
+            (lambda* (#:key native-inputs inputs #:allow-other-keys)
+              (for-each (lambda (file)
+                          (install-file
+                           (search-input-file
+                            (or native-inputs inputs)
+                            (string-append "/bin/" file)) "."))
+                        '("config.guess" "config.sub")))))))
+    (native-inputs
+     (list config
+           pkg-config))
+    (inputs
+     (list libdrm))
     (home-page "https://www.freedesktop.org/wiki/Software/vaapi/")
     (synopsis "Video acceleration library")
     (description "The main motivation for VA-API (Video Acceleration API) is
@@ -1644,6 +1631,35 @@ to enable hardware accelerated video decode/encode at various
 entry-points (VLD, IDCT, Motion Compensation etc.) for prevailing coding
 standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
     (license license:expat)))
+
+(define-public libva
+  (package
+    (inherit libva-minimal)
+    (name "libva")
+    (arguments
+     (substitute-keyword-arguments (package-arguments libva-minimal)
+       ((#:configure-flags configure-flags #~'())
+        #~(cons* (string-append
+                  ;; Most drivers are in mesa's $prefix/lib/dri, so use that.
+                  ;; (Can be overridden at run-time via LIBVA_DRIVERS_PATH.)
+                  "-Ddriverdir="
+                  (search-input-directory %build-inputs "lib/dri"))
+                 #$configure-flags))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (add-after 'unpack 'fix-dlopen-paths
+              (lambda _
+                (substitute* "va/drm/va_drm_auth_x11.c"
+                  (("\"libva-x11\\.so\\.%d\"")
+                   (string-append "\"" #$output
+                                  "/lib/libva-x11.so.%d\"")))))))))
+    (inputs
+     (modify-inputs (package-inputs libva-minimal)
+       (prepend libx11
+                libxext
+                libxfixes
+                mesa
+                wayland)))))
 
 (define-public libva-utils
   (package
