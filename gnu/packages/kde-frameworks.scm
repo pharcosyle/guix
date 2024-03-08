@@ -2921,8 +2921,36 @@ and communicating with them using a pty.")
      (list kcoreaddons ki18n
            qtbase-5))))
 
+(define-public kunitconversion-6
+  (package
+    (name "kunitconversion")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1v1inf8f6dk45qiyba3rk5pgrm5h7h0m3h6f3jrl6f8vskrfcvfz"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list ki18n-6 qtbase))
+    (arguments `(#:tests? #f)) ;; Requires network.
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Converting physical units")
+    (description "KUnitConversion provides functions to convert values in
+different physical units.  It supports converting different prefixes (e.g. kilo,
+mega, giga) as well as converting between different unit systems (e.g. liters,
+gallons).")
+    (license license:lgpl2.1+)))
+
 (define-public kunitconversion
   (package
+    (inherit kunitconversion-6)
     (name "kunitconversion")
     (version "5.114.0")
     (source (origin
@@ -2934,19 +2962,10 @@ and communicating with them using a pty.")
               (sha256
                (base32
                 "1qyqvl8fy105zwma5nrkz9zg5932w2f33daw0azhj322iffrm39n"))))
-    (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ;; Requires network.
     (native-inputs
      (list extra-cmake-modules))
     (inputs
-     (list ki18n qtbase-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Converting physical units")
-    (description "KUnitConversion provides functions to convert values in
-different physical units.  It supports converting different prefixes (e.g. kilo,
-mega, giga) as well as converting between different unit systems (e.g. liters,
-gallons).")
-    (license license:lgpl2.1+)))
+     (list ki18n qtbase-5))))
 
 (define-public syndication
   (package
