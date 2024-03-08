@@ -2025,8 +2025,37 @@ system.")
     (inputs
      (list qtbase-5 qtdeclarative-5 eudev))))
 
+(define-public sonnet-6
+  (package
+    (name "sonnet")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1zpbla0d22sd66vgi6kiqsh8mkck6fklllh8pckx0kxc4r4fng61"))))
+    (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
+    (native-inputs
+     (list extra-cmake-modules pkg-config qttools))
+    (inputs
+     (list aspell hunspell
+           ;; TODO: hspell (for Hebrew), Voikko (for Finish)
+           qtdeclarative))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Multi-language spell checker")
+    (description "Sonnet is a plugin-based spell checking library for Qt-based
+applications.  It supports several different plugins, including HSpell, Enchant,
+ASpell and HUNSPELL.")
+    (license license:lgpl2.1+)))
+
 (define-public sonnet
   (package
+    (inherit sonnet-6)
     (name "sonnet")
     (version "5.114.0")
     (source (origin
@@ -2038,21 +2067,13 @@ system.")
               (sha256
                (base32
                 "0zxi96i3gfpx759qc1nyz7jqlswg5ivgr1w9gbbsm1x5fi9ikadx"))))
-    (build-system qt-build-system)
+    (arguments '())
     (native-inputs
      (list extra-cmake-modules pkg-config qttools-5))
     (inputs
      (list aspell
            hunspell
-           ;; TODO: hspell (for Hebrew), Voikko (for Finish)
-           qtdeclarative-5
-           qtbase-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Multi-language spell checker")
-    (description "Sonnet is a plugin-based spell checking library for Qt-based
-applications.  It supports several different plugins, including HSpell, Enchant,
-ASpell and HUNSPELL.")
-    (license license:lgpl2.1+)))
+           qtdeclarative-5))))
 
 (define-public threadweaver
   (package
