@@ -1970,8 +1970,38 @@ feel.")
     ;; Mostly LGPL 2+, but many files are dual-licensed
     (license (list license:lgpl2.1+ license:gpl3+))))
 
+(define-public solid-6
+  (package
+    (name "solid")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0qj2z9na884hph0ap9481rqvn06aw3y8nm37wxz02lggb15rhjh7"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list bison dbus extra-cmake-modules flex qttools))
+    ;; TODO: Add runtime-only dependency MediaPlayerInfo
+    (inputs
+     (list `(,util-linux "lib") ;; Optional, for libmount
+           libxkbcommon
+           vulkan-headers
+           qtbase qtdeclarative eudev))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Desktop hardware abstraction")
+    (description "Solid is a device integration framework.  It provides a way of
+querying and interacting with hardware independently of the underlying operating
+system.")
+    (license license:lgpl2.1+)))
+
 (define-public solid
   (package
+    (inherit solid-6)
     (name "solid")
     (version "5.114.0")
     (source (origin
@@ -1983,7 +2013,6 @@ feel.")
               (sha256
                (base32
                 "1slxlj5jhp8g745l328932934633nl81sq3n8fd73h655hymsk4s"))))
-    (build-system cmake-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
                         (replace 'check
@@ -1994,14 +2023,7 @@ feel.")
     (native-inputs
      (list bison dbus extra-cmake-modules flex qttools-5))
     (inputs
-     (list qtbase-5 qtdeclarative-5 eudev))
-    ;; TODO: Add runtime-only dependency MediaPlayerInfo
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Desktop hardware abstraction")
-    (description "Solid is a device integration framework.  It provides a way of
-querying and interacting with hardware independently of the underlying operating
-system.")
-    (license license:lgpl2.1+)))
+     (list qtbase-5 qtdeclarative-5 eudev))))
 
 (define-public sonnet
   (package
