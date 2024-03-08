@@ -29,24 +29,28 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages m4))
 
-(define-public nettle-2
+(define-public nettle
   (package
     (name "nettle")
-    (version "2.7.1")
+    (version "3.9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/nettle/nettle-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0h2vap31yvi1a438d36lg1r1nllfx3y19r4rfxv7slrm6kafnwdw"))))
+               "1qvc1iamnvbiss0bx9c98djgn3y60zs59c5wdyyip9qc3fcgzznc"))))
     (build-system gnu-build-system)
     (arguments
      ;; 'sexp-conv' and other programs need to have their RUNPATH point to
      ;; $libdir, which is not the case by default.  Work around it.
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))
+                                              "/lib")
+                               ;; Build "fat" binaries where the right
+                               ;; implementation is chosen at run time based on
+                               ;; CPU features (starting from 3.1.)
+                               "--enable-fat")
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'move-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -78,22 +82,3 @@ fit in easily in almost any context.  It can be easily included in
 cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
-
-(define-public nettle
-  ;; This version is not API-compatible with version 2.  In particular, lsh
-  ;; cannot use it yet.  So keep it separate.
-  (package (inherit nettle-2)
-    (version "3.9.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/nettle/nettle-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1qvc1iamnvbiss0bx9c98djgn3y60zs59c5wdyyip9qc3fcgzznc"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments nettle-2)
-       ((#:configure-flags flags)
-        ;; Build "fat" binaries where the right implementation is chosen
-        ;; at run time based on CPU features (starting from 3.1.)
-        `(cons "--enable-fat" ,flags))))))
