@@ -1764,10 +1764,10 @@ information available for your modem devices, like signal, location and
 messages.")
     (license license:lgpl2.1+)))
 
-(define-public networkmanager-qt
+(define-public networkmanager-qt-6
   (package
     (name "networkmanager-qt")
-    (version "5.114.0")
+    (version "6.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1776,16 +1776,16 @@ messages.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10anjsnrzawrfjlznjvvl2sbxrajl2ddnq2kgl314b5dk7z3yk4n"))))
+                "00nkmdi9pw5y7sxjh1na6vgy9f8x7hl7whf7z3sczbw9z2spjjbf"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules dbus pkg-config))
+    (inputs (list qtbase))
     (propagated-inputs
      ;; Headers contain #include <NetworkManager.h> and
      ;;                 #include <libnm/NetworkManager.h>
-     (list network-manager))
-    (inputs
-     (list qtbase-5))
+     (list network-manager
+           qtdeclarative))
     (arguments
      (list #:phases #~(modify-phases %standard-phases
                         (replace 'check
@@ -1800,6 +1800,29 @@ features exposed on DBus.  It allows you to manage your connections and control
 your network devices and also provides a library for parsing connection settings
 which are used in DBus communication.")
     (license license:lgpl2.1+)))
+
+(define-public networkmanager-qt
+  (package
+    (inherit networkmanager-qt-6)
+    (name "networkmanager-qt")
+    (version "5.114.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "10anjsnrzawrfjlznjvvl2sbxrajl2ddnq2kgl314b5dk7z3yk4n"))))
+    (native-inputs
+     (list extra-cmake-modules dbus pkg-config))
+    (propagated-inputs
+     ;; Headers contain #include <NetworkManager.h> and
+     ;;                 #include <libnm/NetworkManager.h>
+     (list network-manager))
+    (inputs
+     (list qtbase-5))))
 
 (define-public oxygen-icons
   (package
