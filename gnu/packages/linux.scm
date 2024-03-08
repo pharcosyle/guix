@@ -9879,7 +9879,6 @@ types and interfaces and translates so that the X server can use them.")
                   libsndfile
                   libusb
                   openssl ; raop sink
-                  libva
                   pulseaudio-minimal
                   readline ; for pw-cli
                   sbc
