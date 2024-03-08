@@ -63,15 +63,6 @@
    (9 "05m1fwbs7mbs3pz3pg87gbbayandrrcgaqawzliqb6g1jbk8b61x")
    (10 "0k3vyrjs2g6y2cfs03l2gp37fhxgqpiwvxb1c7z4q88cbb32x3km")))
 
-(define %patch-series-7.0
-  (patch-series
-   "7.0"
-   (1 "0xm3sxvwmss7ddyfb11n6pgcqd1aglnpy15g143vzcf75snb7hcs")
-   (2 "0n1dxmqsbjgrfxb1hgk5c6lsraw4ncbnzxlsx7m35nym6lncjiw7")
-   (3 "1027kmymniizcy0zbdlrczxfx3clxcdln5yq05q9yzlc6y9slhwy")
-   (4 "0r3bbaf12iz8m02z6p3fzww2m365fhn71xmzab2p62gj54s6h9gr")
-   (5 "0lxpa4f72y2nsgj6fgrhjk2nmmxvccys6aciwfxwchb5f21rq5fa")))
-
 (define-public readline
   (package
     (name "readline")
@@ -122,23 +113,6 @@ features both Emacs-like and vi-like keybindings, making its usage
 comfortable for anyone.")
     (license gpl3+)
     (home-page "https://savannah.gnu.org/projects/readline/")))
-
-(define-public readline-7
-  (package (inherit readline)
-    (name "readline")
-    (version (string-append "7.0."
-                            (number->string (length %patch-series-7.0))))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/readline/readline-"
-                                  (version-major+minor version) ".tar.gz"))
-              (sha256
-               (base32
-                "0d13sg9ksf982rrrmv5mb6a2p4ys9rvg9r71d6il0vr8hmql63bm"))
-              (patches (append
-                        %patch-series-7.0
-                        (search-patches "readline-link-ncurses.patch")))
-              (patch-flags '("-p0"))))))
 
 (define-public readline-6.2
   (package (inherit readline)
