@@ -63,7 +63,7 @@
    ;; own HTML doc, nor does it change its capabilities, so we removed netpbm
    ;; from 'inputs'.
 
-   (inputs (list ghostscript))
+   ;; (inputs (list ghostscript))
 
    ;; When cross-compiling, this package depends upon a native install of
    ;; itself.
