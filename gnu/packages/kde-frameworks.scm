@@ -2690,8 +2690,37 @@ formats.")
 asynchronous jobs.")
     (license license:lgpl2.1+)))
 
+(define-public knotifications-6
+  (package
+    (name "knotifications")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1azwmj47735cz5lrvbba7hq7iv3w0d7a60q23d70klfjq55nzwq2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules pkg-config qttools))
+    (propagated-inputs (list qtdeclarative))
+    (inputs
+     (list kconfig-6
+           kcoreaddons-6
+           libcanberra
+           qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Desktop notifications")
+    (description "KNotification is used to notify the user of an event.  It
+covers feedback and persistent events.")
+    (license license:lgpl2.1+)))
+
 (define-public knotifications
   (package
+    (inherit knotifications-6)
     (name "knotifications")
     (version "5.114.0")
     (source (origin
@@ -2703,7 +2732,6 @@ asynchronous jobs.")
               (sha256
                (base32
                 "0cjd5ml9hyzprjgmrc132cmp7g9hnl0h5swlxw2ifqnxxyfkg72b"))))
-    (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules dbus pkg-config qttools-5))
     (inputs
@@ -2718,6 +2746,7 @@ asynchronous jobs.")
            qtbase-5
            qtspeech-5
            qtx11extras))
+    (propagated-inputs '())
     (arguments
      (list #:phases #~(modify-phases %standard-phases
                         (replace 'check
@@ -2726,12 +2755,7 @@ asynchronous jobs.")
                               (setenv "HOME"
                                       (getcwd))
                               (setenv "DBUS_FATAL_WARNINGS" "0")
-                              (invoke "dbus-launch" "ctest")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Desktop notifications")
-    (description "KNotification is used to notify the user of an event.  It
-covers feedback and persistent events.")
-    (license license:lgpl2.1+)))
+                              (invoke "dbus-launch" "ctest")))))))))
 
 (define-public kpackage
   (package
