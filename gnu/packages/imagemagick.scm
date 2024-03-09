@@ -47,17 +47,16 @@
   #:use-module (srfi srfi-1))
 
 ;; This is a variant of the 'imagemagick' package that is not updated often.
-;; It is intended to be used as a native-input at build-time only, e.g. by
-;; 'gtk-doc' (via 'dblatex') for generating package documentation.  This
-;; allows the main 'imagemagick' package to be freely updated on the 'master'
-;; branch without triggering an excessive number of rebuilds.
+;; It is intended to be used as a native-input at build-time only, e.g. for
+;; generating package documentation.  This allows the main 'imagemagick'
+;; package to be freely updated on the 'master' branch without triggering many
+;; rebuilds.
 ;;
-;; Normally the grafts mechanism would be used, but there are often
-;; difficulties grafting imagemagick, e.g. because upstream changes the ABI
-;; between micro version updates.  Also, the overwhelming majority of
-;; dependencies on imagemagick are via 'gtk-doc' in 'native-inputs', where
-;; grafting is ineffective.  See:
-;; <https://lists.gnu.org/archive/html/guix-devel/2021-03/msg00381.html>.
+;; Normally the grafts mechanism would be used but there are often
+;; difficulties grafting imagemagick because upstream changes the ABI between
+;; micro version updates and also because grafting is ineffective in
+;; 'native-inputs'.
+;; See: <https://lists.gnu.org/archive/html/guix-devel/2021-03/msg00381.html>.
 (define-public imagemagick/stable
   (hidden-package
    (package
