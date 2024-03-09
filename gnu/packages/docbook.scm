@@ -787,18 +787,6 @@ DB2LaTeX.")
     ;; lib/contrib/which is under an X11 license
     (license license:gpl2+)))
 
-;; This is a variant of the 'dblatex' package that is not updated often.  It
-;; is intended to be used as a native-input at build-time only, e.g. by
-;; 'gtk-doc' for generating package documentation.  This allows the main
-;; 'dblatex' and 'imagemagick' packages to be freely updated on the 'master'
-;; branch without triggering an excessive number of rebuilds.
-(define-public dblatex/stable
-  (hidden-package
-   (package/inherit dblatex
-     (inputs (modify-inputs (package-inputs dblatex)
-               (replace "imagemagick" imagemagick/stable)
-               (replace "inkscape" inkscape/stable))))))
-
 (define-public docbook-utils
   (package
     (name "docbook-utils")
