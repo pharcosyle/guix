@@ -382,7 +382,7 @@ objects!")
 (define-public autotrace
   (package
     (name "autotrace")
-    (version "0.31.9")
+    (version "0.31.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -391,20 +391,7 @@ objects!")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fsg13pg72ac51l3fkzvyf7h9mzbvfxp9vfjfiwkyvx6hbm83apj"))
-              (patches
-               (list
-                ;; https://github.com/autotrace/autotrace/pull/105
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://github.com/autotrace/autotrace/compare/"
-                        "170488e1871d50aad7a800b901e33ded7d31773a..."
-                        "c26a2a059926c595a00839c8d9961e9381206579.patch"))
-                  (file-name (string-append name "-imagemagick-7-support.patch"))
-                  (sha256
-                   (base32
-                    "04c31pch9bnsxypq07dv8d17dnckw477ych89wsxl566pd02bw8q")))))))
+                "0ai91c567c5z560s4zjgjclgca1pm61h8cb8c8q84wg3xvkhmc9x"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags #~'("--disable-static")
