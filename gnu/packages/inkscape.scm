@@ -60,8 +60,8 @@
   #:use-module (srfi srfi-1))
 
 ;;; A variant of Inkscape intended to be bumped only on core-updates, to avoid
-;;; rebuilding 2k+ packages through dblatex.  It should only be used as a
-;;; native-input since it might not receive timely security updates.
+;;; rebuilding many packages.  It should only be used as a native-input since
+;;; it might not receive timely security updates.
 (define-public inkscape/stable
   (hidden-package
    (package
