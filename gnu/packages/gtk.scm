@@ -2314,16 +2314,15 @@ with some extra work.")
       ;; Others.
       license:gpl2+))))
 
-;; This is a variant of the 'gtk-doc' package that is not updated often.  It
-;; is intended to be used as a native-input at build-time only.  This allows
-;; the main 'gtk-doc', 'dblatex' and 'imagemagick' packages to be freely
-;; updated on the 'master' branch without triggering an excessive number of
-;; rebuilds.
+;; This is a variant of the 'gtk-doc' package that is not updated often and
+;; excludes 'dblatex'.  It is intended to be used as a native-input at
+;; build-time to reduce the number of dependencies will cause mass rebuilds
+;; when changed.
 (define-public gtk-doc/stable
   (hidden-package
    (package/inherit gtk-doc
      (inputs (modify-inputs (package-inputs gtk-doc)
-               (replace "dblatex" dblatex/stable))))))
+               (delete "dblatex"))))))
 
 (define-public gtk-engines
   (package
