@@ -1616,7 +1616,7 @@ definitions.")
                     "https://github.com/fontforge/fontforge/releases/download/"
                     version "/fontforge-" version ".tar.xz"))
               (sha256
-               (base32 "1y30bk9rdya8bkw4q77y6nq5xfg7nm0qliz5miqdlk8c0r6fr0na"))
+               (base32 "2y30bk9rdya8bkw4q77y6nq5xfg7nm0qliz5miqdlk8c0r6fr0na"))
               (patches
                (list
                 (search-patch (string-append name
@@ -1706,7 +1706,7 @@ generate bitmaps.")
                     "https://github.com/fontforge/fontforge/releases/download/"
                     version "/fontforge-" version ".tar.gz"))
               (sha256
-               (base32 "0lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
+               (base32 "1lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments fontforge)

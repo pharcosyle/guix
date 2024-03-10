@@ -78,7 +78,7 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "005d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))
+               "105d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))
              (patches (search-patches "sdl-libx11-1.6.patch"))))
     (build-system gnu-build-system)
     (arguments

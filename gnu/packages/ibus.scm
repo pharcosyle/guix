@@ -212,7 +212,7 @@
            gnome-common
            gobject-introspection        ;for g-ir-compiler
            `(,gtk+ "bin")
-           gtk-doc
+           gtk-doc/stable
            perl
            pkg-config
            python-wrapper

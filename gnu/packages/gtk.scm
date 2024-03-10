@@ -902,7 +902,7 @@ is part of the GNOME accessibility project.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1nn6kks1zyvb5xikr9y2k7r9bwjy1g4b0m0s66532bclymbwfamc"))
+                "2nn6kks1zyvb5xikr9y2k7r9bwjy1g4b0m0s66532bclymbwfamc"))
               (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
                                        "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
                                        "gtk2-harden-list-store.patch"
@@ -1122,7 +1122,7 @@ application suites.")
                            (version-major+minor version)  "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "128ahzsj016vz8brd8kplhfkxg2q7wy7kndibx2qfr68yrif530l"))
+        (base32 "228ahzsj016vz8brd8kplhfkxg2q7wy7kndibx2qfr68yrif530l"))
        (patches
         (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))
        (modules '((guix build utils)))))
@@ -2183,6 +2183,79 @@ information.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
+                "1hxza8qp52lrq7s1vbilz2vh4170cail560zi8khl0zb42d706yc"))
+              (patches
+               (search-patches "gtk-doc-respect-xml-catalog.patch"
+                               "gtk-doc-skip-mkhtml-test.patch"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+         (add-after 'install 'wrap-executables
+           (lambda _
+             (let ((docbook-xsl-catalog
+                    #$(let ((docbook-xsl (this-package-input "docbook-xsl")))
+                        (file-append docbook-xsl
+                                     "/xml/xsl/" (package-name docbook-xsl)
+                                     "-" (package-version docbook-xsl)
+                                     "/catalog.xml"))))
+               (for-each (lambda (prog)
+                           (wrap-program prog
+                             `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))
+                             `("XML_CATALOG_FILES" " " suffix (,docbook-xsl-catalog))))
+                         (find-files (string-append #$output "/bin")))))))))
+    (native-inputs
+     (list gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           itstool
+           perl
+           pkg-config
+           python-wrapper))
+    (inputs
+     (list bash-minimal
+           bc
+           dblatex
+           docbook-xml-4.3
+           docbook-xsl
+           glib
+           libxml2
+           libxslt
+           python
+           python-anytree
+           python-lxml
+           python-parameterized
+           python-pygments
+           source-highlight
+           yelp-tools))
+    ;; xsltproc's search paths, to avoid propagating libxslt.
+    (native-search-paths %libxslt-search-paths)
+    (home-page "https://wiki.gnome.org/DocumentationProject/GtkDoc")
+    (synopsis "GTK+ DocBook Documentation Generator")
+    (description "GtkDoc is a tool used to extract API documentation from C-code
+like Doxygen, but handles documentation of GObject (including signals and
+properties) that makes it very suitable for GTK+ apps and libraries.  It uses
+docbook for intermediate files and can produce html by default and pdf/man-pages
+with some extra work.")
+    (license
+     (list
+      ;; Docs.
+      license:fdl1.1+
+      ;; Others.
+      license:gpl2+))))
+
+(define-public gtk-doc-asdf
+  (package
+    (name "gtk-doc")
+    (version "1.33.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
                 "0hxza8qp52lrq7s1vbilz2vh4170cail560zi8khl0zb42d706yc"))
               (patches
                (search-patches "gtk-doc-respect-xml-catalog.patch"
@@ -2251,8 +2324,8 @@ with some extra work.")
 ;; when changed.
 (define-public gtk-doc/stable
   (hidden-package
-   (package/inherit gtk-doc
-     (inputs (modify-inputs (package-inputs gtk-doc)
+   (package/inherit gtk-doc-asdf
+     (inputs (modify-inputs (package-inputs gtk-doc-asdf)
                (delete "dblatex"))))))
 
 (define-public gtk-engines

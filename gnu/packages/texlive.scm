@@ -95,7 +95,7 @@
                            %texlive-date "-source.tar.xz"))
        (sha256
         (base32
-         "1fbrkv7g9j6ipmwjx27l8l9l974rmply8bhf7c2iqc6h3q7aly1q"))
+         "2fbrkv7g9j6ipmwjx27l8l9l974rmply8bhf7c2iqc6h3q7aly1q"))
        (modules '((guix build utils)
                   (ice-9 ftw)))
        (snippet

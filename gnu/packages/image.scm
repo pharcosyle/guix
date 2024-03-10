@@ -1144,7 +1144,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0cnksimmmjngdrys302ik1385sg1sj4i0gxivzldhgwd46n7x2kh"))))
+                "1cnksimmmjngdrys302ik1385sg1sj4i0gxivzldhgwd46n7x2kh"))))
     (build-system gnu-build-system)
     (inputs (list perl))          ;package ships some perl tools
     (home-page "http://giflib.sourceforge.net/")
@@ -1164,7 +1164,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                     "/imlib2-" version ".tar.xz"))
               (sha256
                (base32
-                "0w41znjnl3axk12d4r2076vb8s0yppqnw1jd22fw8b580mm1j8b1"))))
+                "1w41znjnl3axk12d4r2076vb8s0yppqnw1jd22fw8b580mm1j8b1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--disable-static")))
@@ -1207,7 +1207,7 @@ more modular, simple, and flexible.")
                     "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
-                "01y45cdml2dr9cqgybrgxr86sd77d1qfa1gzclzy1j6bkminlfh3"))))))
+                "11y45cdml2dr9cqgybrgxr86sd77d1qfa1gzclzy1j6bkminlfh3"))))))
 
 (define-public giblib
   (package

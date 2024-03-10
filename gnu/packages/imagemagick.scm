@@ -68,7 +68,7 @@
                                    version ".tar.xz"))
                (sha256
                 (base32
-                 "1cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))
+                 "2cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))
      (build-system gnu-build-system)
      (arguments
       (list
@@ -143,7 +143,7 @@ text, lines, polygons, ellipses and Bézier curves.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))))
+                "2cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))))
 
 (define-public imagemagick-6
   (package
@@ -156,7 +156,7 @@ text, lines, polygons, ellipses and Bézier curves.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1j1chkw33vjc37509vdwss28qywfvckvs73pvscldj8d0wnwypa8"))))
+                "2j1chkw33vjc37509vdwss28qywfvckvs73pvscldj8d0wnwypa8"))))
     (arguments
      (substitute-keyword-arguments (package-arguments imagemagick/stable)
        ((#:configure-flags flags #~'())

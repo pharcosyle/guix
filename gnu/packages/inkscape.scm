@@ -76,7 +76,7 @@
                             "resources/file/"
                             "inkscape-" version ".tar.xz"))
         (sha256
-         (base32 "0sq81smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))
+         (base32 "0sq71smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))
         (modules '((guix build utils)
                    (ice-9 format)))
         (patches
@@ -319,7 +319,7 @@ as the native format.")
                            "resources/file/"
                            "inkscape-" version ".tar.xz"))
        (sha256
-        (base32 "0sq81smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))))
+        (base32 "0sq71smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))))
     (build-system cmake-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments inkscape/stable)

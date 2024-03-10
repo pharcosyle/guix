@@ -941,7 +941,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1c2y46wfg5gcipkpbfki59v1p90gyiv9njb1ycf1hxsv4yzdgcvd"))
+                "2c2y46wfg5gcipkpbfki59v1p90gyiv9njb1ycf1hxsv4yzdgcvd"))
               (patches (search-patches "mariadb-fix-ssl-test.patch"))
               (modules '((guix build utils)))
               (snippet

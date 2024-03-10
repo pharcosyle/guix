@@ -145,7 +145,7 @@
                                      status))
                             (loop)))))))))))))
     (inputs
-     (list duktape expat elogind linux-pam nspr))
+     (list duktape expat elogind-asdf linux-pam nspr))
     (propagated-inputs
      (list glib))                       ;required by polkit-gobject-1.pc
     (native-inputs

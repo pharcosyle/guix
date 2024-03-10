@@ -263,6 +263,7 @@ sound server.")
      (substitute-keyword-arguments (package-arguments pulseaudio-minimal)
        ((#:configure-flags configure-flags)
         #~(cons* (string-append "-Dudevrulesdir="
+                                (throw 'a)
                                 #$output "/lib/udev/rules.d")
                  (filter (lambda (flag)
                            (not (member flag '("-Ddoxygen=false"

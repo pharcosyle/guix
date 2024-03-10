@@ -436,7 +436,7 @@ the Core 2 Duo.")
          (commit (string-append "intel-" name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0w0119ad1x8di75hg9p2pxi2vkijg793svj86c6fk5cl2pwg9mkz"))
+        (base32 "1w0119ad1x8di75hg9p2pxi2vkijg793svj86c6fk5cl2pwg9mkz"))
        (patches
         (list
          (origin
@@ -539,7 +539,7 @@ as a joint effort between the BBC and Fluendo.")
         (string-append "https://sourceforge.net/projects/" name "/files/"
                        name "/" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "0s3kshzl3zfjw3phzv73r91fkr9z8q8kc3dhsys4f4xk6ff3alqw"))
+        (base32 "1s3kshzl3zfjw3phzv73r91fkr9z8q8kc3dhsys4f4xk6ff3alqw"))
        (patches
         (search-patches "libquicktime-ffmpeg.patch"))))
     (build-system gnu-build-system)
@@ -622,7 +622,7 @@ receiving MJPG streams.")
         (string-append "https://sourceforge.net/projects/mjpeg/files/"
                        name "/" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "16pl22ra3x2mkp8p3awslhlhj46b1nq9g89301gb0q4rgmnm705i"))))
+        (base32 "26pl22ra3x2mkp8p3awslhlhj46b1nq9g89301gb0q4rgmnm705i"))))
     (build-system gnu-build-system)
     (inputs
      (list gtk+-2 libdv libjpeg-turbo libpng libquicktime sdl))
@@ -1907,7 +1907,7 @@ audio/video codec library.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0qwhyhil805hns7yksdxagnrcc90h60al7lz1rc65kd1j2w3nf2l"))))))
+                "1qwhyhil805hns7yksdxagnrcc90h60al7lz1rc65kd1j2w3nf2l"))))))
 
 (define-public ffmpeg-4
   (package
@@ -1919,7 +1919,7 @@ audio/video codec library.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0283az1r92vpynn6xdr6dakz87ji97cab5kgyrh9102wb46kh2z8"))
+               "1283az1r92vpynn6xdr6dakz87ji97cab5kgyrh9102wb46kh2z8"))
              (patches
               (append
                (search-patches "ffmpeg-4-binutils-2.41.patch")
@@ -1951,7 +1951,7 @@ audio/video codec library.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0np0yalqdrm7rn7iykgfzz3ly4vbgigrajg48c1l6n7qrzqvfszv"))))
+               "1np0yalqdrm7rn7iykgfzz3ly4vbgigrajg48c1l6n7qrzqvfszv"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg-4)
        ((#:modules modules %default-gnu-modules)
@@ -1976,7 +1976,7 @@ audio/video codec library.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0c8m4hhv2k5fybha908wzrpnf3wqkq52hayl658jq4bah0igdfqz"))))
+                "1c8m4hhv2k5fybha908wzrpnf3wqkq52hayl658jq4bah0igdfqz"))))
     (arguments
      `(#:tests? #f               ; XXX: Enable them later, if required
        #:configure-flags

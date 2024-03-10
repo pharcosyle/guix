@@ -393,7 +393,7 @@ system, and the core design of Django is reused in Grantlee.")
               (uri (qt-url name version))
               (sha256
                (base32
-                "1fcg3kx5akvj0kqxd99h5lv3kv4pw2cj0makmpvhpw90inqnrl60"))
+                "2fcg3kx5akvj0kqxd99h5lv3kv4pw2cj0makmpvhpw90inqnrl60"))
               ;; Use TZDIR to avoid depending on package "tzdata".
               (patches (search-patches "qtbase-5-use-TZDIR.patch"
                                        "qtbase-moc-ignore-gcc-macro.patch"
@@ -660,7 +660,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (uri (qt-url name version))
               (sha256
                (base32
-                "0s8jwzdcv97dfy8n3jjm8zzvllv380l73mwdva7rs2nqnhlwgd1x"))
+                "1s8jwzdcv97dfy8n3jjm8zzvllv380l73mwdva7rs2nqnhlwgd1x"))
               (modules '((guix build utils)))
               (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3

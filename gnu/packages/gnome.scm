@@ -2453,7 +2453,7 @@ the font would look under various sizes.")
            gi-docgen
            `(,glib "bin")
            gobject-introspection
-           gtk-doc
+           gtk-doc/stable
            libxml2
            libxslt
            openssh
@@ -4923,7 +4923,7 @@ files.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1j81bgqmd55s5lxyaxcplym9n6xywcs1cm9wmvafsg2xiv9sl4q5"))))
+                "2j81bgqmd55s5lxyaxcplym9n6xywcs1cm9wmvafsg2xiv9sl4q5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests require internet connection
@@ -4954,7 +4954,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qy2291d2vprdbbxmf0sa98izk09nl3znzzv7lckwf6f1v0sarlj"))))
+                "2qy2291d2vprdbbxmf0sa98izk09nl3znzzv7lckwf6f1v0sarlj"))))
     (build-system meson-build-system)
     (arguments (substitute-keyword-arguments
                  (strip-keyword-arguments
@@ -5053,7 +5053,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "1an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))))
+                "2an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -5111,7 +5111,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "04rgv6hkyhgi7lak9865yxgbgky6gc635p7w6nhcbj64rx0prdz4"))))
+                "14rgv6hkyhgi7lak9865yxgbgky6gc635p7w6nhcbj64rx0prdz4"))))
     (arguments
      (substitute-keyword-arguments (package-arguments libsoup-minimal)
        ((#:configure-flags configure-flags)
@@ -5817,7 +5817,7 @@ faster results and to avoid unnecessary server load.")
     (native-inputs
      (list `(,glib "bin")               ; for gdbus-codegen
            gobject-introspection
-           gtk-doc
+           gtk-doc/stable
            intltool
            pkg-config
            python
@@ -12345,7 +12345,7 @@ and a high score table.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "06aqg9asq2vqi9wr29bs4v8z2bf4manhbhfghf4nvw01y2zs0jvw"))))
+         "16aqg9asq2vqi9wr29bs4v8z2bf4manhbhfghf4nvw01y2zs0jvw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
