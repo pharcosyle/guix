@@ -39,7 +39,7 @@
 (define-public netpbm
   (package
    (name "netpbm")
-   (version "11.5.1")
+   (version "11.5.2")
    (source (origin
             (method svn-fetch)
             ;; At the time of first packaging, the "super-stable" and
@@ -51,10 +51,10 @@
             ;; To determine the correct release: "svn log version.mk".
             (uri (svn-reference
                    (url "http://svn.code.sf.net/p/netpbm/code/advanced")
-                   (revision 4831)))
+                   (revision 4839)))
             (sha256
               (base32
-               "04pag1qxbmx5ssgmwwbqb8sn19yc7v6psh9z0kigi2s11hhyyin0"))
+               "1qib24g6h5b4h2g303gakhdcxbjxbmrmnlq6nfilgwbb8hc4gbxl"))
             (patches (search-patches "netpbm-CVE-2017-2586.patch"
                                      "netpbm-CVE-2017-2587.patch"))
             (file-name (string-append name "-" version "-checkout"))
