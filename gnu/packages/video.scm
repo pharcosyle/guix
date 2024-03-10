@@ -3962,48 +3962,16 @@ tools, XML authoring components, and an extensible plug-in based API.")
                (base32
                 "0nszh1fvflzb0z8bdfas743bmhwkpdqfvk85799wxx87cf5gxdyb"))))
     (build-system gnu-build-system)
-    ;; Separate graphical tools in order to save almost 1 GiB on the closure
-    ;; for the common case.
-    (outputs '("out" "gui"))
     (arguments
      '(#:configure-flags
        (list "--disable-static"
              (string-append "--with-udevdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'split
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (gui (assoc-ref outputs "gui")))
-               (mkdir-p (string-append gui "/bin"))
-               (mkdir-p (string-append gui "/share/man/man1"))
-               (mkdir-p (string-append gui "/share/applications"))
-               (for-each
-                (lambda (prog)
-                  (for-each
-                   (lambda (file)
-                     (rename-file (string-append out file)
-                                  (string-append gui file)))
-                   (list
-                    (string-append "/bin/" prog)
-                    (string-append "/share/man/man1/" prog ".1")
-                    (string-append "/share/applications/" prog ".desktop"))))
-                '("qv4l2" "qvidcap"))
-               (copy-recursively (string-append out "/share/icons")
-                                 (string-append gui "/share/icons"))
-               (delete-file-recursively (string-append out "/share/icons"))
-               (rmdir (string-append out "/share/applications"))
-               #t))))))
+                            "/lib/udev"))))
     (native-inputs
      (list perl pkg-config))
     (inputs
-     (list alsa-lib
-           glu
-           libjpeg-turbo
-           libx11
-           qtbase-5
+     (list libjpeg-turbo
            eudev))
     (synopsis "Realtime video capture utilities for Linux")
     (description "The v4l-utils provide a series of libraries and utilities to
@@ -4011,6 +3979,17 @@ be used for realtime video capture via Linux-specific APIs.")
     (home-page "https://linuxtv.org/wiki/index.php/V4l-utils")
     ;; libv4l2 is LGPL2.1+, while utilities are GPL2 only.
     (license (list license:lgpl2.1+ license:gpl2))))
+
+(define-public v4l-utils-gui
+  (package
+    (inherit v4l-utils)
+    (name "v4l-utils-gui")
+    (inputs
+     (modify-inputs (package-inputs v4l-utils)
+       (prepend alsa-lib
+                glu
+                libx11
+                qtbase-5)))))
 
 (define-public obs
   (package
