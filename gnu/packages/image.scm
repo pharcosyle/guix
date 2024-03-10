@@ -1296,6 +1296,7 @@ supplies a generic doubly-linked list and some string functions.")
           ;; presence is required for building, so we replace them with empty files.
           (add-after 'unpack 'delete-unbuildable-files
             (lambda _
+              (throw 'a)
               (for-each (lambda (file)
                           (delete-file file)
                           (close (open file O_CREAT)))

@@ -170,7 +170,7 @@ used as drop-in replacement for the non-free code from RFC 3591.")
                        "https://www.soft-switch.org/downloads/" name "/"
                        name "-" version ".tar.gz"))
        (sha256
-        (base32 "0rclrkyspzk575v8fslzjpgp4y2s4x7xk3r55ycvpi4agv33l1fc"))))
+        (base32 "1rclrkyspzk575v8fslzjpgp4y2s4x7xk3r55ycvpi4agv33l1fc"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc" "static"))   ;doc contains HTML documentation
     (arguments
