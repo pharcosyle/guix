@@ -9430,9 +9430,9 @@ types and interfaces and translates so that the X server can use them.")
                   bluez
                   dbus
                   eudev
-                  ffmpeg
-                  gst-plugins-base
-                  gstreamer
+                  ;; ffmpeg
+                  ;; gst-plugins-base
+                  ;; gstreamer
                   jack-minimal-2
                   ldacbt
                   libcamera

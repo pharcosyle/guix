@@ -379,7 +379,9 @@ them in order to efficiently transfer a minimal amount of data.")
        (sha256
         (base32 "1wq2i435p9yd7m0dgn3snzykx1716z1ara02hn4h182cdzv2chn7"))))
     (build-system meson-build-system)
-    (outputs '("out" "doc" "gst" "tools"))
+    (outputs '("out" "doc"
+               ;; "gst"
+               "tools"))
     (arguments
      (list #:glib-or-gtk? #t         ; To wrap binaries and/or compile schemas
            #:configure-flags
@@ -404,14 +406,16 @@ them in order to efficiently transfer a minimal amount of data.")
                  (lambda* (#:key outputs #:allow-other-keys)
                    (let* ((out (assoc-ref outputs "out"))
                           (doc (assoc-ref outputs "doc"))
-                          (gst (assoc-ref outputs "gst")))
+                          ;; (gst (assoc-ref outputs "gst"))
+                          )
                      (mkdir-p (string-append doc "/share"))
                      (rename-file (string-append out "/share/doc")
                                   (string-append doc "/share/doc"))
-                     (mkdir-p (string-append gst "/lib"))
-                     (rename-file
-                      (string-append out "/lib/gstreamer-1.0")
-                      (string-append gst "/lib/gstreamer-1.0"))))))))
+                     ;; (mkdir-p (string-append gst "/lib"))
+                     ;; (rename-file
+                     ;;  (string-append out "/lib/gstreamer-1.0")
+                     ;;  (string-append gst "/lib/gstreamer-1.0"))
+                     ))))))
     (native-inputs
      (list googletest
            graphviz                     ;for 'dot'
@@ -425,7 +429,7 @@ them in order to efficiently transfer a minimal amount of data.")
      (list boost
            eudev
            glib
-           gst-plugins-base
+           ;; gst-plugins-base
            gnutls
            libyaml
            openssl

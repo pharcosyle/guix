@@ -575,7 +575,7 @@ This package provides the core library and elements.")
            libx11
            libxext
            libxv
-           mesa
+           ;; mesa ; TODO temporaray, I'll want libGL
            opus
            pango
            wayland-protocols

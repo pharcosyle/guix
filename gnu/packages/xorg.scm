@@ -4999,7 +4999,7 @@ by the Xorg server.")
                            "/xserver/xorg-server-" version ".tar.xz"))
        (sha256
         (base32
-         "1vr6sc38sqipazsm61bcym2ggbgfgaamz7wf05mb31pvayyssg8x"))
+         "2vr6sc38sqipazsm61bcym2ggbgfgaamz7wf05mb31pvayyssg8x"))
        (patches
         (list
          ;; See:
@@ -5125,7 +5125,7 @@ draggable titlebars and borders.")
                             "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "1l0iaq83vbl9jr34sa7v7630c5bnp64drlw8yg6c6yn5xyib7c6f"))
+          "2l0iaq83vbl9jr34sa7v7630c5bnp64drlw8yg6c6yn5xyib7c6f"))
         (patches
          (list
           ;; See:
