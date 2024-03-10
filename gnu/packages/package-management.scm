@@ -81,7 +81,6 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hardware)
   #:use-module (gnu packages hurd)
-  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
@@ -689,7 +688,7 @@ overridden by setting the 'current-guix-package' parameter."
     (source %artwork-repository)
     (build-system trivial-build-system)
     (native-inputs
-     (list imagemagick))
+     '())
     (inputs
      '())
     (arguments
