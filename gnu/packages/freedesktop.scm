@@ -158,7 +158,8 @@
     (arguments
      (list
       #:glib-or-gtk? #t
-      #:configure-flags #~(list "-Dsystemd=false")
+      #:configure-flags #~(list "-Dsystemd=false"
+                                "-Dvapi=true")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-libstemmer
@@ -184,9 +185,10 @@
            libxslt
            pkg-config
            python-wrapper
-           gi-docgen))
+           gi-docgen
+           vala))
     (inputs
-     (list curl libsoup-minimal-2 libstemmer libxmlb libxml2 libyaml lmdb))
+     (list curl libstemmer libxmlb libxml2 libyaml))
     (propagated-inputs
      (list glib))
     (synopsis "Tools and libraries to work with AppStream metadata")
