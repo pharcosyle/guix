@@ -437,17 +437,24 @@ them in order to efficiently transfer a minimal amount of data.")
            glib
            gst-plugins-base
            gnutls
-           libtiff
            libyaml
            openssl
            python-jinja2
-           python-ply
-           qtbase-5))
+           python-ply))
     (synopsis "Camera stack and framework")
     (description "LibCamera is a complex camera support library for GNU+Linux,
 Android, and ChromeOS.")
     (home-page "https://libcamera.org/")
     (license license:lgpl2.1+)))
+
+(define-public libcamera-qcam
+  (package
+    (inherit libcamera)
+    (name "libcamera-qcam")
+    (inputs
+     (modify-inputs (package-inputs libcamera)
+       (prepend libtiff
+                qtbase-5)))))
 
 (define-public libnice
   (package
