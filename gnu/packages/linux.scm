@@ -9806,6 +9806,7 @@ types and interfaces and translates so that the X server can use them.")
                   dbus
                   eudev
                   ffmpeg
+                  glib
                   gst-plugins-base
                   gstreamer
                   jack-minimal-2
