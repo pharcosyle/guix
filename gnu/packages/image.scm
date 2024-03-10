@@ -1472,8 +1472,7 @@ language bindings to VIGRA.")
          "1x37795gpc63g1ma9kqw4q3dikwhrjklixqzjjsj6viqksa19z41"))))
     (build-system gnu-build-system)
     (inputs
-     (list freeglut
-           giflib
+     (list giflib
            libjpeg-turbo
            libpng
            libtiff))
@@ -1496,6 +1495,14 @@ with lossy compression and typically provides 3x smaller file sizes compared
 to PNG when lossy compression is acceptable for the red/green/blue color
 channels.")
     (license license:bsd-3)))
+
+(define-public libwebp-gui
+  (package
+    (inherit libwebp)
+    (name "libwebp-gui")
+    (inputs
+     (modify-inputs (package-inputs libwebp)
+       (prepend freeglut)))))
 
 (define-public libmng
   (package
