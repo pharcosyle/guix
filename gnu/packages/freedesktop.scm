@@ -1965,7 +1965,7 @@ message bus.")
      (list bash-minimal
            coreutils-minimal
            dbus
-           elogind
+           elogind-asdf
            libxcrypt-glibc
            shadow))
     (propagated-inputs
