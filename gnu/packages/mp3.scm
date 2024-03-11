@@ -237,7 +237,7 @@ a highly stable and efficient implementation.")
 (define-public taglib
   (package
     (name "taglib")
-    (version "1.13")
+    (version "1.13.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -246,7 +246,7 @@ a highly stable and efficient implementation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0059l6kzdidyy1m5vs7vqz3dg7d246gjxagh0sjwvvdzgx20n40d"))))
+                "0phliksg5r1n15prcbp391xk2z1fh2c7zlc7h0nabpwkf6j08za1"))))
     (build-system cmake-build-system)
     (arguments
       '(#:tests? #f ; Tests are not ran with BUILD_SHARED_LIBS on.
