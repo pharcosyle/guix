@@ -1,27 +1,49 @@
-Allow the configuration file to be specified via an environment variable.
+Allow the configuration file and directory to be specified via environment
+variables and remove a warning it would give us if the latter doesn't exist.
 
-diff --git a/src/gclue-config.c b/src/gclue-config.c
-index 7ab2a67..e41f3df 100644
 --- a/src/gclue-config.c
 +++ b/src/gclue-config.c
-@@ -332,6 +332,11 @@ static void
- gclue_config_init (GClueConfig *config)
- {
-         GError *error = NULL;
-+	const char *config_file_path;
+@@ -555,22 +555,30 @@
+         char *name;
+         gsize i;
+ 
++        const char *config_file_path;
++        const char *config_d_dir;
 +
-+	config_file_path = g_getenv ("GEOCLUE_CONFIG_FILE");
-+	if (!config_file_path)
-+            config_file_path = CONFIG_FILE_PATH;
- 
-         config->priv = gclue_config_get_instance_private(config);
++        config_file_path = g_getenv ("GEOCLUE_CONFIG_FILE");
++        if (!config_file_path)
++                config_file_path = CONFIG_FILE_PATH;
++        config_d_dir = g_getenv ("GEOCLUE_CONFIG_D_DIR");
++        if (!config_d_dir)
++                config_d_dir = CONFIG_D_DIRECTORY;
++
+         config->priv = gclue_config_get_instance_private (config);
          config->priv->key_file = g_key_file_new ();
-@@ -341,7 +346,7 @@ gclue_config_init (GClueConfig *config)
-                                    &error);
-         if (error != NULL) {
-                 g_critical ("Failed to load configuration file '%s': %s",
--                            CONFIG_FILE_PATH, error->message);
-+                            config_file_path, error->message);
-                 g_error_free (error);
  
-                 return;
+         /* Load config file from default path, log all missing parameters */
+-        load_config_file (config, CONFIG_FILE_PATH, TRUE);
++        load_config_file (config, config_file_path, TRUE);
+ 
+         /*
+          * Apply config overwrites from conf.d style config files,
+          * files are sorted alphabetically, example: '90-config.conf'
+          * will overwrite '50-config.conf'.
+          */
+-        dir = g_dir_open (CONFIG_D_DIRECTORY, 0, &error);
++        dir = g_dir_open (config_d_dir, 0, &error);
+ 
+         if (error != NULL) {
+-                g_warning ("Failed to open %s: %s",
+-                           CONFIG_D_DIRECTORY, error->message);
+                 goto out;
+         }
+ 
+@@ -587,7 +595,7 @@
+         for (i = 0; i < files->len; i++) {
+                 g_autofree char *path = NULL;
+ 
+-                path = g_build_filename (CONFIG_D_DIRECTORY,
++                path = g_build_filename (config_d_dir,
+                                          g_array_index (files, char *, i),
+                                          NULL);
+                 load_config_file (config, path, FALSE);
