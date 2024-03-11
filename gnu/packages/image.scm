@@ -1160,7 +1160,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.11.0")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1168,7 +1168,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                     "/imlib2-" version ".tar.xz"))
               (sha256
                (base32
-                "0w41znjnl3axk12d4r2076vb8s0yppqnw1jd22fw8b580mm1j8b1"))))
+                "0hpy1ypmbjqp3qds0nbdm5g0hxjr11ws174ccjl6h2an40d96jfc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--disable-static")))
