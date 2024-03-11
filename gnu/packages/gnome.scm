@@ -5754,7 +5754,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.6.0")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -5762,25 +5762,32 @@ output devices.")
         (string-append "https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/"
                        version "/geoclue-" version ".tar.bz2"))
        (sha256
-        (base32 "1854i8lih1jkks5w38xv8k5gs7s8629qjg3cg96ji0ffk35yzjfd"))
+        (base32 "076vlsl2ywq0qc0qcz3y3s1viz96gly1af8xd1nw8hw62i0ws92n"))
        (patches (search-patches "geoclue-config.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags (list "-Ddbus-srv-user=geoclue")))
     (native-inputs
-     (list pkg-config
-           gobject-introspection
-           modem-manager
-           libnotify
-           gtk-doc/stable
+     (list docbook-xml-4.1.2
+           docbook-xsl
            gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           gtk-doc/stable
+           modem-manager
+           pkg-config
+           python-minimal
            vala))
     (inputs
      (list avahi
-           `(,glib "bin")
            glib-networking
            json-glib
-           libsoup-minimal-2))
+           libsoup-minimal
+           ;; For the demo agent.
+           libnotify))
+    (propagated-inputs
+     ;; In 'Requires' of libgeoclue.pc
+     (list glib))
     (home-page "https://gitlab.freedesktop.org/geoclue/geoclue/-/wikis/home")
     (synopsis "Geolocation service")
     (description "Geoclue is a D-Bus service that provides location
