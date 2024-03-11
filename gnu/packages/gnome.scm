@@ -5053,7 +5053,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "2an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))))
+                "1an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))))
     (build-system meson-build-system)
     (arguments
      (list

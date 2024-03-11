@@ -461,7 +461,7 @@ editor (console only)")
     (arguments
      (substitute-keyword-arguments (package-arguments emacs)
        ((#:configure-flags flags #~'())
-        #~(cons* (throw 'a) "--with-pgtk" #$flags))))
+        #~(cons* "--with-pgtk" #$flags))))
     (synopsis "Emacs text editor with @code{pgtk} frames")
     (description "This Emacs build implements graphical UI purely in terms
 of GTK.")))
