@@ -5125,7 +5125,7 @@ draggable titlebars and borders.")
                             "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "2l0iaq83vbl9jr34sa7v7630c5bnp64drlw8yg6c6yn5xyib7c6f"))
+          "1l0iaq83vbl9jr34sa7v7630c5bnp64drlw8yg6c6yn5xyib7c6f"))
         (patches
          (list
           ;; See:

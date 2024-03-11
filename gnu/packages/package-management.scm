@@ -238,6 +238,7 @@
          #:phases (modify-phases %standard-phases
                     (replace 'bootstrap
                       (lambda _
+                        (throw 'a)
                         ;; Make sure 'msgmerge' can modify the PO files.
                         (for-each (lambda (po)
                                     (chmod po #o666))

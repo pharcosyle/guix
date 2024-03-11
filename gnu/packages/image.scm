@@ -1164,7 +1164,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                     "/imlib2-" version ".tar.xz"))
               (sha256
                (base32
-                "1w41znjnl3axk12d4r2076vb8s0yppqnw1jd22fw8b580mm1j8b1"))))
+                "0w41znjnl3axk12d4r2076vb8s0yppqnw1jd22fw8b580mm1j8b1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--disable-static")))
