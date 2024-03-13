@@ -3797,7 +3797,7 @@ user-space processes.")
                            "download/fuse-" version
                            "/fuse-" version ".tar.gz"))
        (sha256
-        (base32 "1ddlq6kzxilccgbvxjfx80jx6kamgw4sv49phks2zhlcc1frvrnh"))
+        (base32 "2ddlq6kzxilccgbvxjfx80jx6kamgw4sv49phks2zhlcc1frvrnh"))
        (patches (search-patches "fuse-overlapping-headers.patch"
                                 "fuse-glibc-2.34.patch"))))
     (build-system gnu-build-system)
