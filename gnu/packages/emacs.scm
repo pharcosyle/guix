@@ -619,6 +619,19 @@ editor (with wide ints)" )
 (define-public emacs-next-tree-sitter
   (deprecated-package "emacs-next-tree-sitter" emacs-next))
 
+(define-public (emacs-no-logind emacs)
+  (let ((base emacs))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (delete 'enable-elogind)))))
+      (inputs
+       (modify-inputs (package-inputs base)
+         (delete elogind))))))
+
 (define-public guile-emacs
   (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")
         (revision "0"))
