@@ -1266,8 +1266,35 @@ to flat and hierarchical lists.")
      (list extra-cmake-modules qttools-5))
     (arguments '())))
 
+(define-public kplotting-6
+  (package
+    (name "kplotting")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ymifg5yjjag65pqpwhcr3k5isx5fq6dgqlv9aj840xj4nbk28dv"))))
+    (build-system qt-build-system)
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (arguments (list #:qtbase qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Data plotting library")
+    (description "KPlotWidget is a QWidget-derived class that provides a virtual
+base class for easy data-plotting.  The idea behind KPlotWidget is that you only
+have to specify information in \"data units\", the natural units of the
+data being plotted.  KPlotWidget automatically converts everything to screen
+pixel units.")
+    (license license:lgpl2.1+)))
+
 (define-public kplotting
   (package
+    (inherit kplotting-6)
     (name "kplotting")
     (version "5.114.0")
     (source (origin
@@ -1279,19 +1306,9 @@ to flat and hierarchical lists.")
               (sha256
                (base32
                 "17x58pplln0plqiyhjpzdiqxngylxq5gkc5gk7b91xzm783x2k0n"))))
-    (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules qttools-5))
-    (inputs
-     (list qtbase-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Data plotting library")
-    (description "KPlotWidget is a QWidget-derived class that provides a virtual
-base class for easy data-plotting.  The idea behind KPlotWidget is that you only
-have to specify information in \"data units\", the natural units of the
-data being plotted.  KPlotWidget automatically converts everything to screen
-pixel units.")
-    (license license:lgpl2.1+)))
+    (arguments '())))
 
 (define-public ksyntaxhighlighting
   (package
