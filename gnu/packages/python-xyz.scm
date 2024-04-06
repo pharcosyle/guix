@@ -30383,6 +30383,7 @@ for YAML and JSON.")
            meson
            ninja
            patchelf
+           python-setuptools
            python-sphinx
            python-sphinx-rtd-theme
            python-tappy
