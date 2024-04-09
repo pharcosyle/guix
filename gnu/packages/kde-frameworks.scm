@@ -4099,8 +4099,66 @@ various actions and information that match the text appear as the text is being
 typed.")
     (license license:lgpl2.1+)))
 
+(define-public kservice-6
+  (package
+    (name "kservice")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "10g7bj5ks5dbrjbd4ky71jdz54k7s6h91y3n124mayf4wbyyfbpf"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list kconfig-6 kcoreaddons-6 kdoctools-6))
+    (native-inputs
+     (list bison extra-cmake-modules flex shared-mime-info))
+    (inputs
+     (list kcrash-6 kdbusaddons-6 kdoctools-6 ki18n-6 qtbase qtdeclarative))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch
+            ;; Adopted from NixOS' patches "qdiriterator-follow-symlinks" and
+            ;; "no-canonicalize-path".
+            (lambda _
+              (substitute* "src/sycoca/kbuildsycoca.cpp"
+                ;; make QDirIterator follow symlinks
+                (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                 (string-append a " | QDirIterator::FollowSymlinks" b)))
+              (substitute* "src/sycoca/vfolder_menu.cpp"
+                ;; Normalize path, but don't resolve symlinks (taken from
+                ;; NixOS)
+                (("^\\s*QString resolved = QDir\\(dir\\)\\.canonicalPath\\(\\);")
+                 "QString resolved = QDir::cleanPath(dir);"))))
+          (add-before 'check 'check-setup
+            (lambda _
+              (with-output-to-file "autotests/BLACKLIST"
+                (lambda _
+                  (for-each
+                   (lambda (name) (display (string-append "[" name "]\n*\n")))
+                   (list "extraFileInFutureShouldRebuildSycocaOnce"
+                         "testNonReadableSycoca"))))
+              (setenv "XDG_RUNTIME_DIR" (getcwd))
+              (setenv "HOME" (getcwd))
+              ;; Make Qt render "offscreen", required for tests
+              (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Plugin framework for desktop services")
+    (description "KService provides a plugin framework for handling desktop
+services.  Services can be applications or libraries.  They can be bound to MIME
+types or handled by application specific code.")
+    ;; triple licensed
+    (license (list license:gpl2+ license:gpl3+ license:lgpl2.1+))))
+
 (define-public kservice
   (package
+    (inherit kservice-6)
     (name "kservice")
     (version "5.114.0")
     (source (origin
@@ -4112,7 +4170,6 @@ typed.")
               (sha256
                (base32
                 "0jdvlplnsb9w628wh3ip6awxvhgyc097zh7ls9614ymkbnpc9xca"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list kconfig kcoreaddons kdoctools))
     (native-inputs
@@ -4141,14 +4198,7 @@ typed.")
                (setenv "HOME" (getcwd))
                (setenv "QT_QPA_PLATFORM" "offscreen")
                ;; Disable failing tests.
-               (invoke "ctest" "-E" "(kautostarttest|ksycocatest|kapplicationtradertest)")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Plugin framework for desktop services")
-    (description "KService provides a plugin framework for handling desktop
-services.  Services can be applications or libraries.  They can be bound to MIME
-types or handled by application specific code.")
-    ;; triple licensed
-    (license (list license:gpl2+ license:gpl3+ license:lgpl2.1+))))
+               (invoke "ctest" "-E" "(kautostarttest|ksycocatest|kapplicationtradertest)")))))))))
 
 (define-public ktexteditor
   (package
