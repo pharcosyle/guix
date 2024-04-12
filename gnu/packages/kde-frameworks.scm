@@ -251,12 +251,11 @@ continuous display of high-volume data.")
     (build-system cmake-build-system)
     (native-inputs
      ;; TODO: Add building the super experimental QML support
-     (list appstream extra-cmake-modules pkg-config qttools-5))
-    (inputs (list glib qtbase-5 pulseaudio))
+     (list appstream extra-cmake-modules pkg-config qttools))
+    (inputs (list qtbase qt5compat glib qtbase-5 pulseaudio))
     (arguments
      (list #:configure-flags
-           #~(list "-DCMAKE_CXX_FLAGS=-fPIC"
-                   "-DPHONON_BUILD_QT6=OFF"))) ;KDE is still using Qt 5
+           #~(list "-DCMAKE_CXX_FLAGS=-fPIC")))
     (home-page "https://community.kde.org/Phonon")
     (synopsis "KDE's multimedia library")
     (description "KDE's multimedia library.")
