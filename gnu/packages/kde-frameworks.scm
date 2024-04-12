@@ -255,17 +255,8 @@ continuous display of high-volume data.")
     (inputs (list glib qtbase-5 pulseaudio))
     (arguments
      (list #:configure-flags
-           #~'("-DCMAKE_CXX_FLAGS=-fPIC"
-               "-DPHONON_BUILD_QT6=OFF") ;KDE is still using Qt 5
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-before 'install 'patch-installdir
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let ((regex (string-append "(INSTALL DESTINATION \")"
-                                               #$(this-package-input "qtbase"))))
-                     (substitute* "cmake_install.cmake"
-                       ((regex all dest)
-                        (string-append dest #$output)))))))))
+           #~(list "-DCMAKE_CXX_FLAGS=-fPIC"
+                   "-DPHONON_BUILD_QT6=OFF"))) ;KDE is still using Qt 5
     (home-page "https://community.kde.org/Phonon")
     (synopsis "KDE's multimedia library")
     (description "KDE's multimedia library.")
