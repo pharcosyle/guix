@@ -1980,8 +1980,50 @@ libpulse.")
     ;; "any later version accepted by the membership of KDE e.V".
     (license (list license:lgpl2.1 license:lgpl3))))
 
+(define-public qqc2-desktop-style-6
+  (package
+    (name "qqc2-desktop-style")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1n922qg0kj7czykflkrjzxg7wfsaa3ybgj3xgqswm7hnz6y9l7g9"))))
+    (build-system qt-build-system)
+    (arguments
+     (list
+      #:qtbase qtbase
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (invoke "dbus-launch" "ctest"
+                                 "--rerun-failed" "--output-on-failure")))))))
+    (native-inputs
+     (list extra-cmake-modules dbus pkg-config qttools))
+    (inputs
+     (list kauth-6
+           kconfig-6 ; optional
+           kcoreaddons-6
+           kiconthemes-6 ; optional
+           kirigami-6
+           qtdeclarative
+           sonnet-6)) ; optional
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "QtQuickControls2 style that integrates with the desktop")
+    (description "This is a style for QtQuickControls2 which is using
+QWidget's QStyle to paint the controls in order to give it a native look and
+feel.")
+    ;; Mostly LGPL 2+, but many files are dual-licensed
+    (license (list license:lgpl2.1+ license:gpl3+))))
+
 (define-public qqc2-desktop-style
   (package
+    (inherit qqc2-desktop-style-6)
     (name "qqc2-desktop-style")
     (version "5.114.0")
     (source (origin
@@ -1994,6 +2036,7 @@ libpulse.")
                (base32
                 "1y5g91vybjvhwmzpfwrc70q5j7jxf5b972f9fh2vzb930jir6c8g"))))
     (build-system cmake-build-system)
+    (arguments '())
     (native-inputs
      (list extra-cmake-modules pkg-config))
     (inputs
