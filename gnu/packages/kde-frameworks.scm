@@ -1255,10 +1255,41 @@ or user activity.")
      (list libxscrnsaver ; X-Screensaver based poller, fallback mode
            qtbase-5 qtx11extras))))
 
+(define-public kirigami-6
+  (package
+    (name "kirigami")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    "kirigami-" version ".tar.xz"))
+              (sha256
+               (base32
+                "15kic2j2sq623pvm9sz5nigqwqvq6znhy0wwaxx89y3cdcc3hm1a"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (inputs
+     (list kwindowsystem-6
+           qtshadertools
+           qtbase
+           qtdeclarative
+           qtsvg
+           libxkbcommon))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "QtQuick components for mobile user interfaces")
+    (description "Kirigami is a set of high level QtQuick components looking
+and feeling well on both mobile and desktop devices.  They ease the creation
+of applications that follow the Kirigami Human Interface Guidelines.")
+    (license license:lgpl2.1+)))
+
 (define-public kirigami
   ;; Kirigami is listed as tier 1 framework, but optionally includes
   ;; plasma-framework which is tier 3.
   (package
+    (inherit kirigami-6)
     (name "kirigami")
     (version "5.114.0")
     (source (origin
@@ -1270,8 +1301,6 @@ or user activity.")
               (sha256
                (base32
                 "1bd232gs4394fa3aq31mjqrn8f3vjsghx7817szi7ryvnn6fnqkw"))))
-    (properties `((upstream-name . "kirigami2")))
-    (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules qttools-5))
     (inputs
@@ -1285,12 +1314,7 @@ or user activity.")
            qtsvg-5
            ;; Run-time dependency
            qtgraphicaleffects))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "QtQuick components for mobile user interfaces")
-    (description "Kirigami is a set of high level QtQuick components looking
-and feeling well on both mobile and desktop devices.  They ease the creation
-of applications that follow the Kirigami Human Interface Guidelines.")
-    (license license:lgpl2.1+)))
+    (properties `((upstream-name . "kirigami2")))))
 
 (define-public kitemmodels-6
   (package
