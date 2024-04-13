@@ -4267,8 +4267,47 @@ library.")
     ;; triple licensed
     (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
 
+(define-public ktextwidgets-6
+  (package
+    (name "ktextwidgets")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0lv5ddsgzqawbhh718va2plcnfw2pb61v3iypwbwq2cj3ir49kbj"))))
+    (build-system qt-build-system)
+    (propagated-inputs
+     (list ki18n-6 sonnet-6))
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (inputs
+     (list kauth-6
+           kcodecs-6
+           kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kiconthemes-6
+           kservice-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           qtbase
+           qtspeech))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Text editing widgets")
+    (description "KTextWidgets provides widgets for displaying and editing text.
+It supports rich text as well as plain text.")
+    ;; dual licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
+
 (define-public ktextwidgets
   (package
+    (inherit ktextwidgets-6)
     (name "ktextwidgets")
     (version "5.114.0")
     (source (origin
@@ -4280,7 +4319,6 @@ library.")
               (sha256
                (base32
                 "0w1wwyd3fy351rmkhf3i55is5031j2zxvswm0b1sb3pd159v888v"))))
-    (build-system qt-build-system)
     (propagated-inputs
      (list ki18n sonnet))
     (native-inputs
@@ -4297,13 +4335,7 @@ library.")
            kwidgetsaddons
            kwindowsystem
            qtbase-5
-           qtspeech-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Text editing widgets")
-    (description "KTextWidgets provides widgets for displaying and editing text.
-It supports rich text as well as plain text.")
-    ;; dual licensed
-    (license (list license:lgpl2.0+ license:lgpl2.1+))))
+           qtspeech-5))))
 
 (define-public kwallet-6
   (package
