@@ -4305,8 +4305,60 @@ It supports rich text as well as plain text.")
     ;; dual licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
 
+(define-public kwallet-6
+  (package
+    (name "kwallet")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "04s6p1sl24dd85c4n2rxj3z5kf3gc8lx5a4k1x73lr77vyxsv4ng"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests? ;; Seems to require network.
+                     (invoke "ctest" "-E"
+                             "(fdo_secrets_test)")))))))
+    (native-inputs
+     (list extra-cmake-modules kdoctools-6))
+    (inputs
+     (list gpgme
+           kauth-6
+           kcodecs-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kdbusaddons-6
+           kdoctools-6
+           kiconthemes-6
+           ki18n-6
+           knotifications-6
+           kservice-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           libgcrypt
+           phonon
+           qgpgme
+           qca-qt6
+           qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Safe desktop-wide storage for passwords")
+    (description "This framework contains an interface to KWallet, a safe
+desktop-wide storage for passwords and the kwalletd daemon used to safely store
+the passwords on KDE work spaces.")
+    (license license:lgpl2.1+)))
+
 (define-public kwallet
   (package
+    (inherit kwallet-6)
     (name "kwallet")
     (version "5.114.0")
     (source (origin
@@ -4318,15 +4370,6 @@ It supports rich text as well as plain text.")
               (sha256
                (base32
                 "1cji8bvy5m77zljyrrgipsw8pxcds1sgikxlq3sdfxymcsw2wr36"))))
-    (build-system cmake-build-system)
-    (arguments
-     (list #:phases
-       #~(modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests? ;; Seems to require network.
-               (invoke "ctest" "-E"
-                       "(fdo_secrets_test)")))))))
     (native-inputs
      (list extra-cmake-modules kdoctools))
     (inputs
@@ -4348,13 +4391,7 @@ It supports rich text as well as plain text.")
            phonon
            qgpgme
            qca
-           qtbase-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Safe desktop-wide storage for passwords")
-    (description "This framework contains an interface to KWallet, a safe
-desktop-wide storage for passwords and the kwalletd daemon used to safely store
-the passwords on KDE work spaces.")
-    (license license:lgpl2.1+)))
+           qtbase-5))))
 
 (define-public kxmlgui
   (package
