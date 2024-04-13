@@ -1772,8 +1772,45 @@ lower level classes for interaction with the X Windowing System.")
            xcb-util-keysyms
            xcb-util-wm))))
 
+(define-public modemmanager-qt-6
+  (package
+    (name "modemmanager-qt")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0w29bzmqb3fl7kws4lm9wrl76aw4y67783y6sij8l341ppsswfw5"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules dbus pkg-config))
+    (propagated-inputs
+     ;; Headers contain #include <ModemManager/ModemManager.h>
+     (list modem-manager))
+    (inputs
+     (list qtbase))
+    (arguments
+     (list #:phases #~(modify-phases %standard-phases
+                        (replace 'check
+                          (lambda* (#:key tests? #:allow-other-keys)
+                            (when tests?
+                              (setenv "DBUS_FATAL_WARNINGS" "0")
+                              (invoke "dbus-launch" "ctest")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Qt wrapper for ModemManager DBus API")
+    (description "ModemManagerQt provides access to all ModemManager features
+exposed on DBus.  It allows you to manage modem devices and access to
+information available for your modem devices, like signal, location and
+messages.")
+    (license license:lgpl2.1+)))
+
 (define-public modemmanager-qt
   (package
+    (inherit modemmanager-qt-6)
     (name "modemmanager-qt")
     (version "5.114.0")
     (source (origin
@@ -1792,21 +1829,7 @@ lower level classes for interaction with the X Windowing System.")
      ;; Headers contain #include <ModemManager/ModemManager.h>
      (list modem-manager))
     (inputs
-     (list qtbase-5))
-    (arguments
-     (list #:phases #~(modify-phases %standard-phases
-                        (replace 'check
-                          (lambda* (#:key tests? #:allow-other-keys)
-                            (when tests?
-                              (setenv "DBUS_FATAL_WARNINGS" "0")
-                              (invoke "dbus-launch" "ctest")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Qt wrapper for ModemManager DBus API")
-    (description "ModemManagerQt provides access to all ModemManager features
-exposed on DBus.  It allows you to manage modem devices and access to
-information available for your modem devices, like signal, location and
-messages.")
-    (license license:lgpl2.1+)))
+     (list qtbase-5))))
 
 (define-public networkmanager-qt-6
   (package
