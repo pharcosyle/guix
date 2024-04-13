@@ -2717,8 +2717,53 @@ by applications to write metadata.")
     (description "This library provides tools to annotate images.")
     (license license:lgpl3+)))
 
+(define-public kimageformats-6
+  (package
+    (name "kimageformats")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0pn9zjx18jmbdbpdskchwy0vi9clra4jls6d3dz6bjdli82zlcxh"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules pkg-config))
+    (inputs
+     (list karchive-6 ; for Krita and OpenRaster images
+           openexr ; for OpenEXR high dynamic-range images
+           qtbase
+           libjxl
+           libraw
+           libavif
+           ;; see https://bugs.kde.org/show_bug.cgi?id=468288,
+           ;; kimageformats-read-psd test need QTiffPlugin
+           qtimageformats
+           ;; FIXME: make openexr propagate two package
+           imath zlib))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda _
+              ;; make Qt render "offscreen", required for tests
+              (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Plugins to allow QImage to support extra file formats")
+    (description "This framework provides additional image format plugins for
+QtGui.  As such it is not required for the compilation of any other software,
+but may be a runtime requirement for Qt-based software to support certain image
+formats.")
+    (license license:lgpl2.1+)))
+
 (define-public kimageformats
   (package
+    (inherit kimageformats-6)
     (name "kimageformats")
     (version "5.114.0")
     (source (origin
@@ -2736,7 +2781,8 @@ by applications to write metadata.")
     (inputs
      (list karchive ; for Krita and OpenRaster images
            openexr-2 ; for OpenEXR high dynamic-range images
-           qtbase-5))
+           qtbase-5
+           qtimageformats-5))
     (arguments
      (list
       #:phases
@@ -2744,18 +2790,7 @@ by applications to write metadata.")
           (add-before 'check 'check-setup
             (lambda _
               ;; make Qt render "offscreen", required for tests
-              (setenv "QT_QPA_PLATFORM" "offscreen")
-              (setenv "QT_PLUGIN_PATH"
-                      (string-append (getcwd) "/bin:"
-                                     (getenv "QT_PLUGIN_PATH")))))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (setenv "HOME"
-                        (getcwd))
-                ;; FIXME: I guess kde's qt no this fail.
-                ;; see https://invent.kde.org/frameworks/kimageformats/-/jobs/1046283
-                (invoke "ctest" "-E" "kimageformats-read-psd")))))
+              (setenv "QT_QPA_PLATFORM" "offscreen"))))
       ;; FIXME: The header files of ilmbase (propagated by openexr) are not
       ;; found when included by the header files of openexr, and an explicit
       ;; flag needs to be set.
