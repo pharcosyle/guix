@@ -4425,8 +4425,68 @@ the passwords on KDE work spaces.")
            qca
            qtbase-5))))
 
+(define-public kxmlgui-6
+  (package
+    (name "kxmlgui")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "03fgqr6c9v9icjr4dyni9gqw4dhhidf2k0sm7bhirg6amlma0nw2"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list kconfig-6 kconfigwidgets-6))
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (inputs
+     (list attica-6
+           kauth-6
+           kcodecs-6
+           kcolorscheme
+           kcoreaddons-6
+           kglobalaccel-6
+           kguiaddons-6
+           kiconthemes-6
+           kitemviews-6
+           ki18n-6
+           ktextwidgets-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           qtbase
+           qtdeclarative
+           sonnet-6))
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'check 'check-setup
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (with-output-to-file "autotests/BLACKLIST"
+                     (lambda _
+                       (for-each
+                        (lambda (name)
+                          (display (string-append "[" name "]\n*\n")))
+                        (list "testSpecificApplicationLanguageQLocale"
+                              "testToolButtonStyleNoXmlGui"
+                              "testToolButtonStyleXmlGui"))))
+                   (setenv "HOME" (getcwd))
+                   (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Framework for managing menu and toolbar actions")
+    (description "KXMLGUI provides a framework for managing menu and toolbar
+actions in an abstract way.  The actions are configured through a XML description
+and hooks in the application code.  The framework supports merging of multiple
+descriptions for integrating actions from plugins.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public kxmlgui
   (package
+    (inherit kxmlgui-6)
     (name "kxmlgui")
     (version "5.114.0")
     (source (origin
@@ -4438,7 +4498,6 @@ the passwords on KDE work spaces.")
               (sha256
                (base32
                 "0gvjf32ssc0r0bdpb1912ldsr5rjls8vrscwy5gm9g5gw504hmmr"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list kconfig kconfigwidgets))
     (native-inputs
@@ -4460,21 +4519,13 @@ the passwords on KDE work spaces.")
            sonnet))
     (arguments
      (list #:phases
-       #~(modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (setenv "HOME" (getcwd))
-               (setenv "QT_QPA_PLATFORM" "offscreen") ;; These tests fail
-               (invoke "ctest" "-E" "(ktoolbar_unittest|kxmlgui_unittest)")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Framework for managing menu and toolbar actions")
-    (description "KXMLGUI provides a framework for managing menu and toolbar
-actions in an abstract way.  The actions are configured through a XML description
-and hooks in the application code.  The framework supports merging of multiple
-descriptions for integrating actions from plugins.")
-    ;; dual licensed
-    (license (list license:gpl2+ license:lgpl2.1+))))
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (setenv "HOME" (getcwd))
+                     (setenv "QT_QPA_PLATFORM" "offscreen") ;; These tests fail
+                     (invoke "ctest" "-E" "(ktoolbar_unittest|kxmlgui_unittest)")))))))))
 
 (define-public kxmlrpcclient
   (package
