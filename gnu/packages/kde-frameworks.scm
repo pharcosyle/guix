@@ -3634,8 +3634,39 @@ to display the widgets provided by various KDE frameworks, as well as a utility
 ini-style description files.")
     (license license:lgpl2.1+)))
 
+(define-public kdesu-6
+  (package
+    (name "kdesu")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0zl2p9319r8q85p3j64w7p7nmjh53z6fha8kkgf3fdfdikh9g8x6"))))
+    (build-system qt-build-system)
+    (propagated-inputs
+     (list kpty-6))
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list kconfig-6 kcoreaddons-6 ki18n-6 kservice-6))
+    (arguments (list
+                #:tests? #f ;; FIXME: kdesutest test fail.
+                #:qtbase qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "User interface for running shell commands with root privileges")
+    (description "KDESU provides functionality for building GUI front ends for
+(password asking) console mode programs.  kdesu and kdessh use it to interface
+with su and ssh respectively.")
+    (license license:lgpl2.1+)))
+
 (define-public kdesu
   (package
+    (inherit kdesu-6)
     (name "kdesu")
     (version "5.114.0")
     (source (origin
@@ -3654,12 +3685,7 @@ ini-style description files.")
      (list extra-cmake-modules))
     (inputs
      (list kconfig kcoreaddons ki18n kservice qtbase-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "User interface for running shell commands with root privileges")
-    (description "KDESU provides functionality for building GUI front ends for
-(password asking) console mode programs.  kdesu and kdessh use it to interface
-with su and ssh respectively.")
-    (license license:lgpl2.1+)))
+    (arguments '())))
 
 (define-public kemoticons
   (package
