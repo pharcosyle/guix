@@ -3287,8 +3287,53 @@ by which applications, and what documents have been linked to which activity.")
     ;; triple licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+ license:lgpl3+))))
 
+(define-public kbookmarks-6
+  (package
+    (name "kbookmarks")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0is75mhvfahay0xbbckwsa7jwlf4j6c7gdxl6i4fiqy12wr5cqxp"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list kwidgetsaddons-6))
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (inputs
+     (list kauth-6
+           kcodecs-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kiconthemes-6
+           kcolorscheme
+           kxmlgui-6
+           qtdeclarative
+           qtbase))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda _
+              (setenv "HOME" (getcwd))
+              ;; make Qt render "offscreen", required for tests
+              (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Bookmarks management library")
+    (description "KBookmarks lets you access and manipulate bookmarks stored
+using the XBEL format.")
+    (license license:lgpl2.1+)))
+
 (define-public kbookmarks
   (package
+    (inherit kbookmarks-6)
     (name "kbookmarks")
     (version "5.114.0")
     (source (origin
@@ -3300,7 +3345,6 @@ by which applications, and what documents have been linked to which activity.")
               (sha256
                (base32
                 "06lnsyjhh80mdcqjww40glinmrjydbmkhv27a267vf34r7kam9rc"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list kwidgetsaddons))
     (native-inputs
@@ -3313,20 +3357,7 @@ by which applications, and what documents have been linked to which activity.")
            kcoreaddons
            kiconthemes
            kxmlgui
-           qtbase-5))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda _
-             (setenv "HOME" (getcwd))
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Bookmarks management library")
-    (description "KBookmarks lets you access and manipulate bookmarks stored
-using the XBEL format.")
-    (license license:lgpl2.1+)))
+           qtbase-5))))
 
 (define-public kcmutils
   (package
