@@ -3573,8 +3573,41 @@ that offer bindings to some of the Frameworks.")
     ;; dual licensed
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public kded-6
+  (package
+    (name "kded")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "18cv25xyhs5b31mvh3k6vvzm163893ra6nvfjbd1jp4r6vr0x3di"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules kdoctools-6))
+    (inputs
+     (list kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kdoctools-6
+           kservice-6
+           qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Central daemon of KDE work spaces")
+    (description "KDED stands for KDE Daemon.  KDED runs in the background and
+performs a number of small tasks.  Some of these tasks are built in, others are
+started on demand.")
+    ;; dual licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
+
 (define-public kded
   (package
+    (inherit kded-6)
     (name "kded")
     (version "5.114.0")
     (source (origin
@@ -3586,7 +3619,6 @@ that offer bindings to some of the Frameworks.")
               (sha256
                (base32
                 "00n4isc4ahii0ldrg761lkmnq27kmrfqs9zkmpvmgbg57259mvc3"))))
-    (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
     (inputs
@@ -3596,14 +3628,7 @@ that offer bindings to some of the Frameworks.")
            kdbusaddons
            kdoctools
            kservice
-           qtbase-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Central daemon of KDE work spaces")
-    (description "KDED stands for KDE Daemon.  KDED runs in the background and
-performs a number of small tasks.  Some of these tasks are built in, others are
-started on demand.")
-    ;; dual licensed
-    (license (list license:lgpl2.0+ license:lgpl2.1+))))
+           qtbase-5))))
 
 (define-public kdesignerplugin
   (package
