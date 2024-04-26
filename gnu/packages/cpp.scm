@@ -775,6 +775,41 @@ intuitive syntax and trivial integration.")
 (define-public json-modern-cxx
   (deprecated-package "json-modern-cxx" nlohmann-json))
 
+(define-public tomlplusplus
+  (package
+   (name "tomlplusplus")
+   (version "3.4.0")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/marzer/tomlplusplus")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "1hvbifzcc97r9jwjzpnq31ynqnj5y93cjz4frmgddnkg8hxmp6w7"))))
+   (build-system meson-build-system)
+   (arguments
+    (list #:configure-flags
+          #~(list "-Dbuild_tests=true")
+          #:phases
+          #~(modify-phases %standard-phases
+              (add-after 'unpack 'set-test-locales
+                (lambda _
+                  (substitute* "tests/meson.build"
+                    (("foreach locale : test_locales" all)
+                     (format #f "test_locales = ['C', ~{'~a.utf8', ~}]~%~a"
+                             ;; %default-utf8-locales in (gnu packages base).
+                             '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR")
+                             all))))))))
+   (native-inputs (list cmake-minimal))
+   (home-page "https://marzer.github.io/tomlplusplus/")
+   (synopsis "Header-only TOML config file parser and serializer for C++17")
+   (description
+    "This package provides header-only TOML config file parser and serializer
+for C++17.")
+   (license license:expat)))
+
 (define-public xtl
   (package
     (name "xtl")
@@ -3049,25 +3084,3 @@ ordered erase operations.")
 the std::optional for C++11/14/17, with support for monadic operations added in
 C++23.")
     (license license:cc0)))
-
-(define-public tomlplusplus
-  (package
-    (name "tomlplusplus")
-    (version "3.4.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/marzer/tomlplusplus")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1hvbifzcc97r9jwjzpnq31ynqnj5y93cjz4frmgddnkg8hxmp6w7"))))
-    (build-system meson-build-system)
-    (native-inputs
-     (list cmake-minimal))
-    (home-page "https://github.com/marzer/tomlplusplus")
-    (synopsis "TOML config file parser and serializer for C++")
-    (description
-     "Header-only TOML config file parser and serializer for C++17.")
-    (license license:expat)))
