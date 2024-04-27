@@ -5553,7 +5553,7 @@ it won't take longer to install 15 machines than it would to install just 2.")
 (define-public greetd
   (package
     (name "greetd")
-    (version "0.9.0")
+    (version "0.10.0")
     (home-page "https://git.sr.ht/~kennylevinsen/greetd")
     (source (origin
               (method git-fetch)
@@ -5562,11 +5562,11 @@ it won't take longer to install 15 machines than it would to install just 2.")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1b79lb0vikh5vwpdlyga6zwzm11gpsd7ghp8zb0q2m6mlqlj5by3"))))
+               (base32 "130jar3fpzcfba720ddlk7xqc4zbmddm1adjvrdf030prvjl8p20"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-nix" ,rust-nix-0.26)
+       (("rust-nix" ,rust-nix-0.27)
         ("rust-pam-sys" ,rust-pam-sys-0.5)
         ("rust-rpassword" ,rust-rpassword-5)
         ("rust-users" ,rust-users-0.11)
