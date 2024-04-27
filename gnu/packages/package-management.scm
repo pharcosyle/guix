@@ -1982,7 +1982,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2023.5")
+    (version "2024.4")
     (source
      (origin
        (method url-fetch)
@@ -1990,7 +1990,7 @@ for packaging and deployment of cross-compiled Windows applications.")
              "https://github.com/ostreedev/ostree/releases/download/v"
              (version-major+minor version) "/libostree-" version ".tar.xz"))
        (sha256
-        (base32 "056v7bz40dx8k2j2pfypc4shl6ijzvx1gy8r0kaw66py67xklndw"))))
+        (base32 "1jwzkmccca2rrd2gnknzryymxck64x63x4hd7qvwffik4441kjb3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2017,13 +2017,13 @@ for packaging and deployment of cross-compiled Windows applications.")
            docbook-xml
            docbook-xsl
            e2fsprogs
-           fuse-2
+           fuse
            glib
            gpgme
            libarchive
-           libsoup-minimal-2 ; needs libsoup-2.4
+           libsoup-minimal
            util-linux))
-    (home-page "https://ostree.readthedocs.io/en/latest/")
+    (home-page "https://ostreedev.github.io/ostree")
     (synopsis "Operating system and container binary deployment and upgrades")
     (description
      "@code{libostree} is both a shared library and suite of command line
