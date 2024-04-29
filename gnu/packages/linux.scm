@@ -9464,7 +9464,7 @@ of Linux application development.")
 (define-public wireplumber
   (package
     (name "wireplumber")
-    (version "0.4.90")
+    (version "0.5.2")
     (source
      (origin
        (method git-fetch)
@@ -9474,7 +9474,7 @@ of Linux application development.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1302zg5mnlhndv2nzrfvd76infhg5fwdqh3vkwk90cav698k1788"))))
+        (base32 "1bxq452mljmkl0y3whhga86gn22y1zxyaxpgayh8rq71p10wfwj9"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dsystemd=disabled"
