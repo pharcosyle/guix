@@ -383,8 +383,45 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
                 "0gkdsm1vyyyxxyl4rni9s2bdz5w6zphzjl58fddjl899da06hqfq"))))
     (inputs (list qtbase-5))))
 
+(define-public bluez-qt-6
+  (package
+    (name "bluez-qt")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1fwfrmqsiakfz5agjxd9vnnqip86d9hz86li0r7igy07bvqlwhpr"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list dbus extra-cmake-modules))
+    (inputs
+     (list qtdeclarative
+           qtbase))
+    (arguments
+     (list #:configure-flags
+           #~(list (string-append
+                    "-DUDEV_RULES_INSTALL_DIR=" #$output "/lib/udev/rules.d"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (setenv "DBUS_FATAL_WARNINGS" "0")
+                     (invoke "dbus-launch" "ctest" "-E" "bluezqt-qmltests")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "QML wrapper for BlueZ")
+    (description "bluez-qt is a Qt-style library for accessing the bluez
+Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
+    (license (list license:lgpl2.1+ license:lgpl3+))))
+
 (define-public bluez-qt
   (package
+    (inherit bluez-qt-6)
     (name "bluez-qt")
     (version "5.114.0")
     (source (origin
@@ -401,23 +438,7 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
      (list dbus extra-cmake-modules))
     (inputs
      (list qtdeclarative-5
-           qtbase-5))
-    (arguments
-     (list #:configure-flags
-           #~(list (string-append
-                    "-DUDEV_RULES_INSTALL_DIR=" #$output "/lib/udev/rules.d"))
-	#:phases
-        #~(modify-phases %standard-phases
-            (replace 'check
-              (lambda* (#:key tests? #:allow-other-keys)
-                (when tests?
-                  (setenv "DBUS_FATAL_WARNINGS" "0")
-                  (invoke "dbus-launch" "ctest" "-E" "bluezqt-qmltests")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "QML wrapper for BlueZ")
-    (description "bluez-qt is a Qt-style library for accessing the bluez
-Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
-    (license (list license:lgpl2.1+ license:lgpl3+))))
+           qtbase-5))))
 
 (define-public breeze-icons
   (package
