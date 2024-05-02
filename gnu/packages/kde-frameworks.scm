@@ -3380,8 +3380,57 @@ using the XBEL format.")
            kxmlgui
            qtbase-5))))
 
+(define-public kcmutils-6
+  (package
+    (name "kcmutils")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "11iaxhaq7dj8sa9a8kji3xx1m69l990y0nqy6ninwqz6iad9n5rx"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list kconfigwidgets-6
+           kcoreaddons-6
+           qtdeclarative))
+    (native-inputs
+     (list extra-cmake-modules
+           gettext-minimal
+           qttools
+           ;; required by kcmloadtest test
+           kirigami-6))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda _
+              (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (inputs
+     (list kio-6
+           kcompletion-6
+           kguiaddons-6
+           kiconthemes-6
+           kitemviews-6
+           ki18n-6
+           kcolorscheme
+           kwidgetsaddons-6
+           kxmlgui-6
+           qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Utilities for KDE System Settings modules")
+    (description "KCMUtils provides various classes to work with KCModules.
+KCModules can be created with the KConfigWidgets framework.")
+    (license license:lgpl2.1+)))
+
 (define-public kcmutils
   (package
+    (inherit kcmutils-6)
     (name "kcmutils")
     (version "5.114.0")
     (source (origin
@@ -3393,7 +3442,6 @@ using the XBEL format.")
               (sha256
                (base32
                 "1pblf3c60m0gn3vhdprw28f8y54kij02jwz91r2vnmng8d1xkrp9"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list kconfigwidgets kservice))
     (native-inputs
@@ -3434,12 +3482,7 @@ using the XBEL format.")
            kwidgetsaddons
            kxmlgui
            qtbase-5
-           qtdeclarative-5))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Utilities for KDE System Settings modules")
-    (description "KCMUtils provides various classes to work with KCModules.
-KCModules can be created with the KConfigWidgets framework.")
-    (license license:lgpl2.1+)))
+           qtdeclarative-5))))
 
 (define-public kconfigwidgets-6
   (package
