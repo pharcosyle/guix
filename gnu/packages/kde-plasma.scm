@@ -675,7 +675,7 @@ computer's hardware.")
 (define-public kmenuedit
   (package
     (name "kmenuedit")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -683,18 +683,19 @@ computer's hardware.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0n60z44wbsjinrcrhs5cfnjs9szpsv2wzva2fiwwgh36j6zz5av7"))))
+                "1j75srgppf2489p366gkbacm6p5qn6x5iqbnknxqyh7hp98w2i9d"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules kdoctools))
-    (inputs (list ki18n
-                  kxmlgui
-                  kdbusaddons
-                  kiconthemes
-                  kio
-                  kitemviews
-                  sonnet
-                  kglobalaccel
-                  kwindowsystem))
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules kdoctools-6))
+    (inputs (list ki18n-6
+                  kxmlgui-6
+                  kdbusaddons-6
+                  kiconthemes-6
+                  kio-6
+                  kitemviews-6
+                  sonnet-6
+                  kglobalaccel-6
+                  kwindowsystem-6))
     (synopsis "Menu Editor for Plasma Workspaces")
     (description "This package provides menu editor for Plasma Workspaces.")
     (home-page "https://invent.kde.org/plasma/kmenuedit")
