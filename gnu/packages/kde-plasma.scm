@@ -779,7 +779,7 @@ PipeWire in Qt projects.")
 (define-public kscreen
   (package
     (name "kscreen")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -787,31 +787,32 @@ PipeWire in Qt projects.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "03qa2qrwdjgb6va7akhwpdvzky608sq2lnwj3b1f310mn3hmbmrq"))))
+                "0040ry6lzwkamjxahmp2im7qfl80px4yy5v4dhwmkgc5na5kvl38"))))
     (build-system cmake-build-system)
     (arguments
      ;; TODO: All tests fail
      (list #:tests? #f))
-    (native-inputs (list extra-cmake-modules qttools-5 pkg-config))
-    (inputs (list kconfig
-                  kdbusaddons
-                  kdeclarative
-                  kglobalaccel
-                  ki18n
-                  kwindowsystem
-                  kiconthemes
-                  kcoreaddons
-                  kcmutils
-                  kxmlgui
+    (native-inputs (list extra-cmake-modules qttools pkg-config))
+    (inputs (list kconfig-6
+                  kdbusaddons-6
+                  kdeclarative-6
+                  kglobalaccel-6
+                  ki18n-6
+                  kwindowsystem-6
+                  kiconthemes-6
+                  kcoreaddons-6
+                  kcmutils-6
+                  kxmlgui-6
                   layer-shell-qt
                   libkscreen
                   libxi
+                  libxkbcommon
+                  ksvg
                   plasma-wayland-protocols
-                  qtsensors-5
-                  qtbase-5
-                  qtx11extras
-                  xcb-util))
-    (propagated-inputs (list plasma-framework))
+                  qtsensors
+                  qtbase
+                  xcb-util
+                  libplasma))
     (home-page "https://invent.kde.org/plasma/kscreen")
     (synopsis "Screen management software")
     (description "This package provides the screen management software for
