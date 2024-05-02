@@ -4363,8 +4363,53 @@ notifications which can be embedded in your application.")
            qtbase-5
            solid))))
 
+(define-public kparts-6
+  (package
+    (name "kparts")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "078hjla0f3lhng70mg5mffyp1iamm6hd7lxsih1sfzzyskijgjnz"))))
+    (build-system qt-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'disable-partloader-test
+                 (lambda _
+                   (substitute* "autotests/CMakeLists.txt"
+                     ;; XXX: PartLoaderTest wants to create a .desktop file
+                     ;; in the common locations and test that MIME types work.
+                     ;; The setup required for this is extensive, skip for now.
+                     (("partloadertest\\.cpp") "")))))))
+    (propagated-inputs
+     (list kio-6 kservice-6 kxmlgui-6))
+    (native-inputs
+     (list extra-cmake-modules shared-mime-info))
+    (inputs
+     (list
+      kcompletion-6
+      kconfig-6
+      kcoreaddons-6
+      kitemviews
+      ki18n-6
+      kjobwidgets-6
+      kwidgetsaddons-6
+      qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Plugin framework for user interface components")
+    (description "This library implements the framework for KDE parts, which are
+widgets with a user-interface defined in terms of actions.")
+    (license license:lgpl2.1+)))
+
 (define-public kparts
   (package
+    (inherit kparts-6)
     (name "kparts")
     (version "5.114.0")
     (source (origin
@@ -4376,16 +4421,6 @@ notifications which can be embedded in your application.")
               (sha256
                (base32
                 "1rrf765p554r7l8j23gx5zxdq6wimh0v91qdkwz7ilm2qr16vd5v"))))
-    (build-system qt-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'disable-partloader-test
-                    (lambda _
-                      (substitute* "autotests/CMakeLists.txt"
-                        ;; XXX: PartLoaderTest wants to create a .desktop file
-                        ;; in the common locations and test that MIME types work.
-                        ;; The setup required for this is extensive, skip for now.
-                        (("partloadertest\\.cpp") "")))))))
     (propagated-inputs
      (list kio ktextwidgets kxmlgui))
     (native-inputs
@@ -4406,12 +4441,7 @@ notifications which can be embedded in your application.")
            kwidgetsaddons
            qtbase-5
            solid
-           sonnet))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Plugin framework for user interface components")
-    (description "This library implements the framework for KDE parts, which are
-widgets with a user-interface defined in terms of actions.")
-    (license license:lgpl2.1+)))
+           sonnet))))
 
 (define-public kpeople-6
   (package
