@@ -4866,6 +4866,29 @@ types or handled by application specific code.")
                ;; Disable failing tests.
                (invoke "ctest" "-E" "(kautostarttest|ksycocatest|kapplicationtradertest)")))))))))
 
+(define-public kstatusnotifieritem
+  (package
+    (name "kstatusnotifieritem")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "057gzljgl0qkz3gls66v05bl078nbcgbhv5ab60cwk0dlz5ckqlk"))))
+    (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules qttools))
+    (inputs (list kwindowsystem-6 libxkbcommon))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Implementation of Status Notifier Items")
+    (description "This package provides a Implementation of Status Notifier
+Items.")
+    (license (list license:cc0 license:lgpl2.0+))))
+
 (define-public ktexteditor-6
   (package
     (name "ktexteditor")
