@@ -742,25 +742,33 @@ the schedule and venue information.")
 (define-public kpipewire
   (package
     (name "kpipewire")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10j7sa8vv530c388z5rzafkdr4sx3agjqczlnkh7412whyw77lha"))))
+                "0dk8yjibgcrz6216y2rdvavs9aci0zdbjn01w56ib7vi9zxl4x51"))))
     (build-system cmake-build-system)
     (native-inputs (list extra-cmake-modules pkg-config))
-    (propagated-inputs (list libepoxy pipewire qtbase-5 qtdeclarative-5))
-    (inputs (list ffmpeg
-                  kcoreaddons
-                  ki18n
-                  kwayland
+    (propagated-inputs (list qtbase qtdeclarative
+                             ;; include/KPipeWire/dmabufhandler.h include it.
+                             libepoxy))
+    (inputs (list libxkbcommon
+                  libva
+                  pipewire
+                  ffmpeg
+                  kcoreaddons-6
+                  ki18n-6
+                  kwayland-6
                   plasma-wayland-protocols
-                  qtwayland-5
+                  qtwayland
                   wayland
                   wayland-protocols))
+    (arguments
+     ;; The only test require run pipewire.
+     (list #:tests? #f))
     (home-page "https://invent.kde.org/plasma/kpipewire")
     (synopsis "Components relating to pipewire use in Plasma")
     (description "This package offers a set of convenient classes to use
