@@ -667,7 +667,7 @@ expression library, that is used in Krita.")
 (define-public kcolorchooser
   (package
     (name "kcolorchooser")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
@@ -675,14 +675,15 @@ expression library, that is used in Krita.")
                            "/src/kcolorchooser-" version ".tar.xz"))
        (sha256
         (base32
-         "1ripvn2li74rwngicay9c78j0slia1rpsi1f43rbb36p9af02lwq"))))
+         "1b05h0ckj4zcmacyw148yirjh1afjk865srblwkzc358zmxpq7bz"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
+    (arguments (list #:qtbase qtbase))
     (inputs
-     (list kcoreaddons
-           ki18n
-           kxmlgui))
+     (list kcoreaddons-6
+           ki18n-6
+           kxmlgui-6))
     (home-page "https://apps.kde.org/de/kcolorchooser/")
     (synopsis "Color selector utility")
     (description "KColorChooser is a utility to select a color.")
