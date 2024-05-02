@@ -5395,10 +5395,10 @@ script engines.")
                                             "|dialognativetest)"))))))))
     (home-page "https://community.kde.org/Frameworks")))
 
-(define-public purpose
+(define-public purpose-6
   (package
     (name "purpose")
-    (version "5.114.0")
+    (version "6.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5407,20 +5407,26 @@ script engines.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lj67f0x4gvbh9by3c3crbbwwnx7b9ifjna9ggziya4m6zj0m4z1"))))
+                "13hr46gci5kzz142xndpp2b3zxjzizx3xpjb5x19c9sirvsgy4j6"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list extra-cmake-modules))
+     (list extra-cmake-modules gettext-minimal))
     (inputs
-     (list ;;TODO: ("kaccounts" ,kaccounts)
-           kconfig
-           kcoreaddons
-           knotifications
-           ki18n
-           kio
-           kirigami
-           qtbase-5
-           qtdeclarative-5))
+     (list
+      ;;TODO: kaccounts
+      kconfig-6
+      kcoreaddons-6
+      knotifications-6
+      ki18n-6
+      kio-6
+      kirigami-6
+      kwidgetsaddons-6
+      kitemviews-6
+      kcompletion-6
+      kservice-6
+      qtbase
+      qtdeclarative
+      prison-6))
     (arguments
      (list #:tests? #f ;; seem to require network; don't find QTQuick components
            #:configure-flags #~'("-DBUILD_TESTING=OFF"))) ; not run anyway
@@ -5433,6 +5439,37 @@ alternatives to execute given the requested action type and will facilitate
 components so that all the plugins can receive all the information they
 need.")
     (license license:lgpl2.1+)))
+
+(define-public purpose
+  (package
+    (inherit purpose-6)
+    (name "purpose")
+    (version "5.114.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lj67f0x4gvbh9by3c3crbbwwnx7b9ifjna9ggziya4m6zj0m4z1"))))
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list ;;TODO: kaccounts
+      kconfig
+      kcoreaddons
+      knotifications
+      ki18n
+      kio
+      kirigami
+      qtbase-5
+      qtdeclarative-5))
+    (arguments
+     (list #:tests? #f ;; seem to require network; don't find QTQuick components
+           ;; not run anyway
+           #:configure-flags #~'("-DBUILD_TESTING=OFF")))))
 
 ;; This version of kdbusaddons does not use kinit as an input, and is used to
 ;; build kinit-bootstrap, as well as bootstrap versions of all kinit
