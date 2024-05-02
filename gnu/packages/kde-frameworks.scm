@@ -4840,8 +4840,61 @@ types or handled by application specific code.")
                ;; Disable failing tests.
                (invoke "ctest" "-E" "(kautostarttest|ksycocatest|kapplicationtradertest)")))))))))
 
+(define-public ktexteditor-6
+  (package
+    (name "ktexteditor")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    "ktexteditor-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1px916dj5ngfgk4km2dyq281a6yka8cd15f2in3gwmsyxx0qz89v"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list kparts-6
+           ksyntaxhighlighting-6))
+    (native-inputs
+     (list extra-cmake-modules pkg-config))
+    (inputs
+     (list editorconfig-core-c
+           karchive-6
+           kauth-6
+           kcompletion-6
+           kconfigwidgets-6
+           kcolorscheme
+           kguiaddons-6
+           kitemviews-6
+           ki18n-6
+           ktextwidgets-6
+           kwidgetsaddons-6
+           kxmlgui-6
+           qtbase
+           qtdeclarative
+           qtspeech
+           sonnet-6))
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests? ;; Maybe locale issues with tests?
+                     (setenv "QT_QPA_PLATFORM" "offscreen")
+                     (invoke "ctest" "-E" "(kateview_test|movingrange_test)")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Full text editor component")
+    (description "KTextEditor provides a powerful text editor component that you
+can embed in your application, either as a KPart or using the KF5::TextEditor
+library.")
+    ;; triple licensed
+    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+
 (define-public ktexteditor
   (package
+    (inherit ktexteditor-6)
     (name "ktexteditor")
     (version "5.114.0")
     (source (origin
@@ -4853,7 +4906,6 @@ types or handled by application specific code.")
               (sha256
                (base32
                 "06amzk6290imi2gj3v1k3f56zdlad7zbz4wwlf34v4iibj9mfgw8"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list kparts
            ksyntaxhighlighting))
@@ -4890,32 +4942,25 @@ types or handled by application specific code.")
            sonnet))
     (arguments
      (list #:phases
-       #~(modify-phases %standard-phases
-         (add-after 'unpack 'setup
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "XDG_DATA_DIRS" ; FIXME build phase doesn't find parts.desktop
-                     (string-append #$(this-package-input "kparts") "/share"))))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests? ;; Maybe locale issues with tests?
-               (setenv "QT_QPA_PLATFORM" "offscreen")
-               (invoke "ctest" "-E" "(kateview_test|movingrange_test)"))))
-         (add-after 'install 'add-symlinks
-           ;; Some package(s) (e.g. plasma-sdk) refer to these service types
-           ;; by the wrong name.  I would prefer to patch those packages, but
-           ;; I cannot find the files!
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((kst5 (string-append #$output
-                                        "/share/kservicetypes5/")))
-               (symlink (string-append kst5 "ktexteditorplugin.desktop")
-                        (string-append kst5 "ktexteditor-plugin.desktop"))))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Full text editor component")
-    (description "KTextEditor provides a powerful text editor component that you
-can embed in your application, either as a KPart or using the KF5::TextEditor
-library.")
-    ;; triple licensed
-    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'setup
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (setenv "XDG_DATA_DIRS" ; FIXME build phase doesn't find parts.desktop
+                           (string-append #$(this-package-input "kparts") "/share"))))
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests? ;; Maybe locale issues with tests?
+                     (setenv "QT_QPA_PLATFORM" "offscreen")
+                     (invoke "ctest" "-E" "(kateview_test|movingrange_test)"))))
+               (add-after 'install 'add-symlinks
+                 ;; Some package(s) (e.g. plasma-sdk) refer to these service types
+                 ;; by the wrong name.  I would prefer to patch those packages, but
+                 ;; I cannot find the files!
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((kst5 (string-append #$output
+                                              "/share/kservicetypes5/")))
+                     (symlink (string-append kst5 "ktexteditorplugin.desktop")
+                              (string-append kst5 "ktexteditor-plugin.desktop"))))))))))
 
 (define-public ktextwidgets-6
   (package
