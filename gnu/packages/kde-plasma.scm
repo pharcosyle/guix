@@ -1044,39 +1044,44 @@ installed.")
 (define-public libkscreen
   (package
     (name "libkscreen")
-    (version "5.27.7")
+    (version "6.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/plasma/" version "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "1ary7qavz8vkzbvjx2mxv09h61hxa7i4f7rfgbykldbc83ripdc6"))))
+        (base32 "0mxbnngniws7za3857cig1h14zmnixg41r68nxm5xwh35gd2hsa0"))))
     (build-system qt-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (setenv "HOME" (getcwd))
-               (setenv "QT_QPA_PLATFORM" "offscreen")
-               (setenv "WAYLAND_DISPLAY" "libkscreen-test-wayland-backend-0")
-               (invoke "ctest" "-E"
-                       (string-append "(kscreen-testedid"
-                                      "|kscreen-testqscreenbackend"
-                                      "|kscreen-testkwaylandbackend"
-                                      "|kscreen-testkwaylandconfig"
-                                      "|kscreen-testkwaylanddpms)"))))))))
+     (list
+      #:qtbase qtbase
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'check-env-setup
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (setenv "HOME" (getcwd))
+                (with-output-to-file "autotests/BLACKLIST"
+                  (lambda _
+                    (for-each
+                     (lambda (name)
+                       (display (string-append "[" name "]\n*\n")))
+                     (list
+                      "verifyOutputs"
+                      ;; also fail on upstream
+                      "testEdidParser"
+                      "testEnv"))))))))))
     (native-inputs
      (list extra-cmake-modules
            pkg-config
-           qttools-5
+           qttools
            ;; For testing.
            dbus))
     (inputs
-     (list kconfig kwayland libxrandr plasma-wayland-protocols
-           qtbase-5 qtwayland-5 wayland qtx11extras))
+     (list kwayland-6 libxrandr plasma-wayland-protocols qtwayland
+           wayland
+           libxkbcommon))
     (home-page "https://community.kde.org/Solid/Projects/ScreenManagement")
     (synopsis "KDE's screen management software")
     (description "KScreen is the new screen management software for KDE Plasma
