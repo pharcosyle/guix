@@ -1101,52 +1101,50 @@ basic needs and easy to configure for those who want special setups.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.27.7")
+    (version "6.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/plasma/" version
                            "/libksysguard-" version ".tar.xz"))
-       (patches (search-patches "libksysguard-qdiriterator-follow-symlinks.patch"))
        (sha256
-        (base32 "066bjar4105bfyry6ni7nnikz66bqzy5nvssz6vm4np3aa996ak8"))))
+        (base32 "1sldz8xm0clylmjnydnvqdaacvmhcd36vali48mqj4ihc3qc4sjn"))))
     (native-inputs
-     (list bash-minimal extra-cmake-modules pkg-config qttools-5))
+     (list bash-minimal extra-cmake-modules pkg-config qttools))
     (inputs
-     (list kauth
-           kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kdeclarative
-           kglobalaccel
-           ki18n
-           kiconthemes
-           kio
-           knewstuff
-           kservice
-           kwidgetsaddons
-           kwindowsystem
+     (list kauth-6
+           kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kdeclarative-6
+           kglobalaccel-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           kservice-6
+           kwidgetsaddons-6
+           kwindowsystem-6
            libnl
            libcap
            libpcap
            `(,lm-sensors "lib")
-           plasma-framework
-           qtbase-5
-           qtdeclarative-5
-           qtscript
-           qtwebchannel-5
-           qtwebengine-5
-           qtx11extras
+           libplasma
+           qtdeclarative
+           qtwebchannel
+           qtwebengine
            zlib))
     (build-system qt-build-system)
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
-                        (add-after 'unpack 'fix-test
-                          (lambda* _
-                            (substitute* "autotests/processtest.cpp"
-                              (("/bin/sh")
-                               (which "bash"))))))))
+     (list
+      #:qtbase qtbase
+      #:phases #~(modify-phases %standard-phases
+                   (add-after 'unpack 'fix-test
+                     (lambda* _
+                       (substitute* "autotests/processtest.cpp"
+                         (("/bin/sh")
+                          (which "bash"))))))))
     (home-page "https://userbase.kde.org/KSysGuard")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
