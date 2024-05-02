@@ -4347,8 +4347,46 @@ notifications which can be embedded in your application.")
 widgets with a user-interface defined in terms of actions.")
     (license license:lgpl2.1+)))
 
+(define-public kpeople-6
+  (package
+    (name "kpeople")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0qhxirbxmm2a0c3i1lz9cb20vqi8mw0m5acmxijsvadicwp2xym5"))))
+    (build-system qt-build-system)
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list kconfig-6
+           kcoreaddons-6
+           kitemviews-6
+           ki18n-6
+           kservice-6
+           kcontacts-6
+           kwidgetsaddons-6
+           qtdeclarative))
+    (arguments
+     (list #:qtbase qtbase
+           #:tests? #f))                    ; FIXME: 1/3 tests fail.
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Provides access to all contacts and aggregates them by person")
+    (description "KPeople offers unified access to our contacts from different
+sources, grouping them by person while still exposing all the data.  KPeople
+also provides facilities to integrate the data provided in user interfaces by
+providing QML and Qt Widgets components.  The sources are plugin-based, allowing
+to easily extend the contacts collection.")
+    (license license:lgpl2.1+)))
+
 (define-public kpeople
   (package
+    (inherit kpeople-6)
     (name "kpeople")
     (version "5.114.0")
     (source (origin
@@ -4360,7 +4398,6 @@ widgets with a user-interface defined in terms of actions.")
               (sha256
                (base32
                 "04v0s3amn6lbb16qvp1r6figckva6xk8z7djk8jda8fbnx8dx2r1"))))
-    (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
@@ -4373,15 +4410,8 @@ widgets with a user-interface defined in terms of actions.")
            qtbase-5
            qtdeclarative-5))
     (arguments
-     `(#:tests? #f)) ; FIXME: 1/3 tests fail.
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Provides access to all contacts and aggregates them by person")
-    (description "KPeople offers unified access to our contacts from different
-sources, grouping them by person while still exposing all the data.  KPeople
-also provides facilities to integrate the data provided in user interfaces by
-providing QML and Qt Widgets components.  The sources are plugin-based, allowing
-to easily extend the contacts collection.")
-    (license license:lgpl2.1+)))
+     ;; FIXME: 1/3 tests fail.
+     `(#:tests? #f))))
 
 (define-public krunner
   (package
