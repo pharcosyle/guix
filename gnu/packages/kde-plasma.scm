@@ -86,29 +86,33 @@
 (define-public bluedevil
   (package
     (name "bluedevil")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ddzcarn06rvhbmvm9x737ba9ycxcvg030892nh6izgfrjlaxhfb"))))
+                "133y1zak92wq725srs7zn0yngxk2kbq3mnmycfvc08zb7zgicmlc"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules pkg-config qttools-5))
-    (inputs (list kcoreaddons
-                  kcmutils
-                  kwidgetsaddons
-                  kdbusaddons
-                  knotifications
-                  kwindowsystem
-                  plasma-framework
-                  ki18n
-                  kio
-                  kdeclarative
-                  bluez-qt
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules pkg-config qttools))
+    (inputs (list kcoreaddons-6
+                  kcmutils-6
+                  kirigami-6
+                  kwidgetsaddons-6
+                  kdbusaddons-6
+                  kjobwidgets-6
+                  ksvg
+                  knotifications-6
+                  kwindowsystem-6
+                  libplasma
+                  ki18n-6
+                  kio-6
+                  kdeclarative-6
+                  bluez-qt-6
                   shared-mime-info
-                  qtdeclarative-5))
+                  qtdeclarative))
     (synopsis "Manage the Bluetooth settings from Plasma")
     (description
      "This package provides Bluetooth manager for Plasma Shell.")
