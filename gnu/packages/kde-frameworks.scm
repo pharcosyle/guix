@@ -3984,8 +3984,120 @@ consumption.")
     ;; dual licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
 
+(define-public kio-6
+  (package
+    (name "kio")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lpzi6h0y1biv855dnl0nnfdkirbn7sjjydaw8g9r3x3ihjh1js7"))
+              (patches (search-patches "kio-search-smbd-on-PATH.patch"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list acl
+           kbookmarks-6
+           kconfig-6
+           kcompletion-6
+           kcoreaddons-6
+           kitemviews-6
+           kjobwidgets-6
+           kservice-6
+           kwindowsystem-6
+           solid-6))
+    (native-inputs
+     (list extra-cmake-modules dbus kdoctools-6 qttools))
+    (inputs (list karchive-6
+                  kauth-6
+                  kcodecs-6
+                  kconfigwidgets-6
+                  kcrash-6
+                  kdbusaddons-6
+                  kded-6
+                  kguiaddons-6
+                  kiconthemes-6
+                  ki18n-6
+                  kwallet-6
+                  kwidgetsaddons-6
+                  libxml2
+                  libxslt
+                  qt5compat
+                  qtbase
+                  qtdeclarative
+                  libxkbcommon
+                  sonnet-6
+                  `(,util-linux "lib")  ; libmount
+                  zlib))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch
+            (lambda _
+              ;; Better error message (taken from NixOS)
+              (substitute* "src/kiod/kiod_main.cpp"
+                (("(^\\s*qCWarning(KIOD_CATEGORY) << \
+\"Error loading plugin:\")( << loader.errorString();)" _ a b)
+                 (string-append a "<< name" b)))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (setenv "HOME" (getcwd))
+                (setenv "XDG_RUNTIME_DIR" (getcwd))
+                (setenv "QT_QPA_PLATFORM" "offscreen")
+                (setenv "DBUS_FATAL_WARNINGS" "0")
+                (invoke "dbus-launch" "ctest"
+                        "--rerun-failed" "--output-on-failure"
+                        "-E"
+
+                        (string-append
+                         "(kiogui-favicontest"
+                         "|kiocore-filefiltertest"
+                         "|kpasswdservertest"
+                         "|kiowidgets-kfileitemactionstest"
+                         "|kiofilewidgets-kfileplacesmodeltest"
+                         ;; The following tests fail or are flaky (see:
+                         ;; https://bugs.kde.org/show_bug.cgi?id=440721).
+                         "|kiocore-jobtest"
+                         "|kiocore-kmountpointtest"
+                         "|kiowidgets-kdirlistertest"
+                         "|kiocore-kfileitemtest"
+                         "|kiocore-ktcpsockettest"
+                         "|kiocore-mimetypefinderjobtest"
+                         "|kiocore-krecentdocumenttest"
+                         "|kiocore-http_jobtest"
+                         "|kiogui-openurljobtest"
+                         "|kioslave-httpheaderdispositiontest"
+                         "|applicationlauncherjob_forkingtest"
+                         "|applicationlauncherjob_scopetest"
+                         "|applicationlauncherjob_servicetest"
+                         "|commandlauncherjob_forkingtest"
+                         "|commandlauncherjob_scopetest"
+                         "|commandlauncherjob_servicetest"
+                         "|kiowidgets-kdirmodeltest"
+                         "|kiowidgets-kurifiltertest-colon-separator"
+                         "|kiofilewidgets-kfilewidgettest"
+                         "|kiowidgets-kurifiltertest-space-separator"
+                         "|kioworker-httpheaderdispositiontest)"))))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Network transparent access to files and data")
+    (description "This framework implements a lot of file management functions.
+It supports accessing files locally as well as via HTTP and FTP out of the box
+and can be extended by plugins to support other protocols as well.  There is a
+variety of plugins available, e.g. to support access via SSH.  The framework can
+also be used to bridge a native protocol to a file-based interface.  This makes
+the data accessible in all applications using the KDE file dialog or any other
+KIO enabled infrastructure.")
+    (license license:lgpl2.1+)))
+
 (define-public kio
   (package
+    (inherit kio-6)
     (name "kio")
     (version "5.114.0")
     (source (origin
@@ -3998,7 +4110,6 @@ consumption.")
                (base32
                 "0nwmxbfhvfw69q07vxvflri7rkdczyc89xv4ll3nrzrhgf15kb2z"))
               (patches (search-patches "kio-search-smbd-on-PATH.patch"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list acl
            kbookmarks
@@ -4088,17 +4199,7 @@ consumption.")
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((kst5 (string-append #$output "/share/kservicetypes5/")))
                 (symlink (string-append kst5 "kfileitemactionplugin.desktop")
-                         (string-append kst5 "kfileitemaction-plugin.desktop"))))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Network transparent access to files and data")
-    (description "This framework implements a lot of file management functions.
-It supports accessing files locally as well as via HTTP and FTP out of the box
-and can be extended by plugins to support other protocols as well.  There is a
-variety of plugins available, e.g. to support access via SSH.  The framework can
-also be used to bridge a native protocol to a file-based interface.  This makes
-the data accessible in all applications using the KDE file dialog or any other
-KIO enabled infrastructure.")
-    (license license:lgpl2.1+)))
+                         (string-append kst5 "kfileitemaction-plugin.desktop"))))))))))
 
 (define-public knewstuff
   (package
