@@ -4201,8 +4201,53 @@ KIO enabled infrastructure.")
                 (symlink (string-append kst5 "kfileitemactionplugin.desktop")
                          (string-append kst5 "kfileitemaction-plugin.desktop"))))))))))
 
+(define-public knewstuff-6
+  (package
+    (name "knewstuff")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0grx7gz1vca21llk8ykihh12hd1gpq1fn7pz3h18902k21j0fshw"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list attica-6
+           kcoreaddons-6))
+    (native-inputs
+     (list extra-cmake-modules qttools))
+    (inputs
+     (list karchive-6
+           kconfig-6
+           kirigami-6
+           ki18n-6
+           kpackage-6
+           kwidgetsaddons-6
+           qtbase
+           qtdeclarative
+           syndication-6))
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'check 'check-setup
+                 (lambda _ ; XDG_DATA_DIRS isn't set
+                   (setenv "HOME" (getcwd))
+                   ;; make Qt render "offscreen", required for tests
+                   (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Framework for downloading and sharing additional application data")
+    (description "The KNewStuff library implements collaborative data sharing
+for applications.  It uses libattica to support the Open Collaboration Services
+specification.")
+    (license license:lgpl2.1+)))
+
 (define-public knewstuff
   (package
+    (inherit knewstuff-6)
     (name "knewstuff")
     (version "5.114.0")
     (source (origin
@@ -4214,7 +4259,6 @@ KIO enabled infrastructure.")
               (sha256
                (base32
                 "15xmx7rnnrsz2cj044aviyr4hi9h8r0nnva9qzcjcq2hkkgj7wjj"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list attica kservice kxmlgui))
     (native-inputs
@@ -4239,21 +4283,7 @@ KIO enabled infrastructure.")
            qtbase-5
            qtdeclarative-5
            solid
-           sonnet))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda _ ; XDG_DATA_DIRS isn't set
-             (setenv "HOME" (getcwd))
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Framework for downloading and sharing additional application data")
-    (description "The KNewStuff library implements collaborative data sharing
-for applications.  It uses libattica to support the Open Collaboration Services
-specification.")
-    (license license:lgpl2.1+)))
+           sonnet))))
 
 (define-public knotifyconfig-6
   (package
