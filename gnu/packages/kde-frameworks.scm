@@ -2308,8 +2308,42 @@ decode RAW picture files.")
 ;; Tier 2 frameworks additionally depend on tier 1 frameworks, but still have
 ;; easily manageable dependencies.
 
+(define-public plasma-activities
+  (package
+    (name "plasma-activities")
+    (version "6.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/"
+                                  version "/" name "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0vfzg6z5jn8hlg56y83yhiyf4544vzsb666psdpa0sqr36kw6f68"))))
+    (build-system qt-build-system)
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list boost
+           kconfig-6
+           kcoreaddons-6
+           kwindowsystem-6
+           qtdeclarative
+           solid-6))
+    (arguments (list #:qtbase qtbase))
+    (home-page "https://invent.kde.org/plasma/plasma-activities")
+    (synopsis "Core components for the KDE Activity System")
+    (description "KActivities provides the infrastructure needed to manage a
+user's activities, allowing them to switch between tasks, and for applications
+to update their state to match the user's current activity.  This includes a
+daemon, a library for interacting with that daemon, and plugins for integration
+with other frameworks.")
+    ;; triple licensed
+    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+
 (define-public kactivities
   (package
+    (inherit plasma-activities)
     (name "kactivities")
     (version "5.114.0")
     (source (origin
@@ -2343,15 +2377,14 @@ decode RAW picture files.")
            qtbase-5
            qtdeclarative-5
            solid))
+    (arguments '())
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Core components for the KDE Activity concept")
     (description "KActivities provides the infrastructure needed to manage a
 user's activities, allowing them to switch between tasks, and for applications
 to update their state to match the user's current activity.  This includes a
 daemon, a library for interacting with that daemon, and plugins for integration
-with other frameworks.")
-    ;; triple licensed
-    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+with other frameworks.")))
 
 (define-public kauth-6
   (package
