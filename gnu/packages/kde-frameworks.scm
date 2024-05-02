@@ -4635,8 +4635,52 @@ to easily extend the contacts collection.")
      ;; FIXME: 1/3 tests fail.
      `(#:tests? #f))))
 
+(define-public krunner-6
+  (package
+    (name "krunner")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1m30czh0hfzrjccc112fz5yv1kkpip7kqxacsjg6b1lq1nciz8ps"))))
+    (build-system qt-build-system)
+    (propagated-inputs
+     (list kcoreaddons-6))
+    (native-inputs
+     (list extra-cmake-modules
+           ;; For tests.
+           dbus))
+    (inputs
+     (list kconfig-6
+           kitemmodels-6
+           ki18n-6
+           qtdeclarative))
+    (arguments
+     (list
+      #:qtbase qtbase
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (setenv "HOME" (getcwd))
+                (invoke "dbus-launch" "ctest")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Framework for Plasma runners")
+    (description "The Plasma workspace provides an application called KRunner
+which, among other things, allows one to type into a text area which causes
+various actions and information that match the text appear as the text is being
+typed.")
+    (license license:lgpl2.1+)))
+
 (define-public krunner
   (package
+    (inherit krunner-6)
     (name "krunner")
     (version "5.114.0")
     (source (origin
@@ -4648,7 +4692,6 @@ to easily extend the contacts collection.")
               (sha256
                (base32
                 "1rjs9b87bi4f6pdm9fwnha2sj2mrq260l80iz2jq1zah83p546sw"))))
-    (build-system qt-build-system)
     (propagated-inputs
      (list plasma-framework))
     (native-inputs
@@ -4694,14 +4737,7 @@ to easily extend the contacts collection.")
               (when tests?
                 (setenv "HOME" (getcwd))
                 (setenv "QT_QPA_PLATFORM" "offscreen")
-                (invoke "dbus-launch" "ctest")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Framework for Plasma runners")
-    (description "The Plasma workspace provides an application called KRunner
-which, among other things, allows one to type into a text area which causes
-various actions and information that match the text appear as the text is being
-typed.")
-    (license license:lgpl2.1+)))
+                (invoke "dbus-launch" "ctest")))))))))
 
 (define-public kservice-6
   (package
