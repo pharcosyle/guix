@@ -1143,7 +1143,7 @@ with a ksysguardd daemon, which may also run on a remote system.")
 (define-public kwallet-pam
   (package
     (name "kwallet-pam")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1151,12 +1151,14 @@ with a ksysguardd daemon, which may also run on a remote system.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1ac0hqpzqivg40jq7pfr2s1zydl600a3nyzfv97wc20i9myzafrb"))))
+                "10d9m7az9r0ikfw2s3wnzfgz2kdn4990zkrc3q0bfy8wvb88nsl0"))))
     (build-system qt-build-system)
     (arguments
-     (list #:tests? #f)) ;no tests
+     (list
+      #:qtbase qtbase
+      #:tests? #f)) ;no tests
     (native-inputs (list extra-cmake-modules pkg-config))
-    (inputs (list linux-pam kwallet libgcrypt socat))
+    (inputs (list linux-pam kwallet-6 libgcrypt socat))
     (synopsis "PAM Integration with KWallet")
     (description "Provide PAM Integration with KWallet to unlock KWallet when
 you login.")
