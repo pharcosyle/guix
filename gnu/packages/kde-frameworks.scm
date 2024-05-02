@@ -5934,8 +5934,46 @@ offers abstract functionality to deal with scripts.")
     (license (list license:lgpl2.0+ license:lgpl2.1+
                    license:lgpl2.0 license:gpl3+))))
 
+(define-public kdav-6
+  (package
+    (name "kdav")
+    (version "6.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0ascb54d20h0m49j7ym2mjhi61mwn29d0hpr5aw4yl8xb3md6i34"))))
+    (build-system qt-build-system)
+    (native-inputs
+     (list extra-cmake-modules))
+    (propagated-inputs (list kcoreaddons-6))
+    (inputs
+     (list ki18n-6 kio-6))
+    (arguments
+     (list
+      #:qtbase qtbase
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         ;; Seems to require network.
+                         (invoke "ctest" "-E"
+                                 "(kdav-davcollectionsmultifetchjobtest|\
+kdav-davitemfetchjob)")))))))
+    (home-page "https://invent.kde.org/frameworks/kdav")
+    (synopsis "DAV protocol implementation with KJobs")
+    (description "This is a DAV protocol implementation with KJobs.  Calendars
+and todos are supported, using either GroupDAV or CalDAV, and contacts are
+supported using GroupDAV or CardDAV.")
+    (license ;; GPL for programs, LGPL for libraries
+     (list license:gpl2+ license:lgpl2.0+))))
+
 (define-public kdav
   (package
+    (inherit kdav-6)
     (name "kdav")
     (version "5.114.0")
     (source
@@ -5946,24 +5984,8 @@ offers abstract functionality to deal with scripts.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32 "11959fxz24snk2l31kw8w96wah0s2fjimimrxh6xhppiy5qp2fp2"))))
-    (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list kcoreaddons ki18n kio qtbase-5 qtxmlpatterns))
-    (arguments
-     (list #:phases #~(modify-phases %standard-phases
-                        (replace 'check
-                          (lambda* (#:key tests? #:allow-other-keys)
-                            (when tests?
-                               ;; Seems to require network.
-                              (invoke "ctest" "-E"
-                                      "(kdav-davcollectionsmultifetchjobtest|\
-kdav-davitemfetchjob)")))))))
-    (home-page "https://invent.kde.org/frameworks/kdav")
-    (synopsis "DAV protocol implementation with KJobs")
-    (description "This is a DAV protocol implementation with KJobs.  Calendars
-and todos are supported, using either GroupDAV or CalDAV, and contacts are
-supported using GroupDAV or CardDAV.")
-    (license ;; GPL for programs, LGPL for libraries
-     (list license:gpl2+ license:lgpl2.0+))))
+    (propagated-inputs '())))
