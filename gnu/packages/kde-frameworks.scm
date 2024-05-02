@@ -3531,8 +3531,43 @@ their settings.")
                         (getcwd))
                 (invoke "ctest" "-E" "kstandardactiontest")))))))))
 
+(define-public kdeclarative-6
+  (package
+    (name "kdeclarative")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "00n7h6cgm6sd5vjaj2agzr052bmddy9sl4vnyc95hd8p5vb3hhgr"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list kconfig-6 qtdeclarative))
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list kglobalaccel-6
+           kguiaddons-6
+           ki18n-6
+           kwidgetsaddons-6
+           qtshadertools
+           qtbase))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Integration of QML and KDE work spaces")
+    (description "KDeclarative provides integration of QML and KDE work spaces.
+It's comprises two parts: a library used by the C++ part of your application to
+intergrate QML with KDE Frameworks specific features, and a series of QML imports
+that offer bindings to some of the Frameworks.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public kdeclarative
   (package
+    (inherit kdeclarative-6)
     (name "kdeclarative")
     (version "5.114.0")
     (source (origin
@@ -3544,7 +3579,6 @@ their settings.")
               (sha256
                (base32
                 "0w98pj8acxb4m9645963rzq5vja1fbih5czz24mf9zdqlg2dkz8g"))))
-    (build-system cmake-build-system)
     (propagated-inputs
      (list kconfig kpackage qtdeclarative-5))
     (native-inputs
@@ -3584,15 +3618,7 @@ their settings.")
                              (getcwd))
                      (setenv "QT_QPA_PLATFORM" "offscreen")
                      (setenv "DBUS_FATAL_WARNINGS" "0")
-                     (invoke "dbus-launch" "ctest")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Integration of QML and KDE work spaces")
-    (description "KDeclarative provides integration of QML and KDE work spaces.
-It's comprises two parts: a library used by the C++ part of your application to
-intergrate QML with KDE Frameworks specific features, and a series of QML imports
-that offer bindings to some of the Frameworks.")
-    ;; dual licensed
-    (license (list license:gpl2+ license:lgpl2.1+))))
+                     (invoke "dbus-launch" "ctest")))))))))
 
 (define-public kded-6
   (package
