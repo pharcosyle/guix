@@ -4255,8 +4255,51 @@ for applications.  It uses libattica to support the Open Collaboration Services
 specification.")
     (license license:lgpl2.1+)))
 
+(define-public knotifyconfig-6
+  (package
+    (name "knotifyconfig")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "11zyc7h1iiifm3ki41h9ylg55295mxjzcxiivw3a6w04a12mms6z"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules))
+    (inputs
+     (list kauth-6
+           kbookmarks-6
+           kcodecs-6
+           kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kio-6
+           kitemviews-6
+           ki18n-6
+           kjobwidgets-6
+           knotifications-6
+           kservice-6
+           kwidgetsaddons-6
+           kxmlgui-6
+           phonon
+           qtbase
+           solid-6))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Configuration dialog for desktop notifications")
+    (description "KNotifyConfig provides a configuration dialog for desktop
+notifications which can be embedded in your application.")
+    ;; dual licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
+
 (define-public knotifyconfig
   (package
+    (inherit knotifyconfig-6)
     (name "knotifyconfig")
     (version "5.114.0")
     (source (origin
@@ -4268,7 +4311,6 @@ specification.")
               (sha256
                (base32
                 "049n64qlr69zv1dc1dhgbsca37179hp06xfsxnhg97lblz3p3gds"))))
-    (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
@@ -4289,13 +4331,7 @@ specification.")
            kxmlgui
            phonon
            qtbase-5
-           solid))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Configuration dialog for desktop notifications")
-    (description "KNotifyConfig provides a configuration dialog for desktop
-notifications which can be embedded in your application.")
-    ;; dual licensed
-    (license (list license:lgpl2.0+ license:lgpl2.1+))))
+           solid))))
 
 (define-public kparts
   (package
