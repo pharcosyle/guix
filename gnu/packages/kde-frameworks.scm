@@ -1612,8 +1612,44 @@ protocols used in KDE Plasma.")
                    license:lgpl2.1+
                    license:expat))))
 
+(define-public kwayland-6
+  (package
+    (name "kwayland")
+    (version "6.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/"
+                                  version "/" name "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0yp75fwg472v1g326vx92x8wrxp5zakqzx4z9s2rgff48hk2whs2"))))
+    (build-system qt-build-system)
+    (native-inputs
+     (list extra-cmake-modules pkg-config
+           ;; for wayland-scanner
+           wayland))
+    (inputs
+     (list libxkbcommon
+           plasma-wayland-protocols
+           qtwayland
+           wayland
+           wayland-protocols))
+    (arguments
+     (list #:qtbase qtbase))
+    (home-page "https://invent.kde.org/plasma/kwayland")
+    (synopsis "Qt-style API to interact with the wayland client and server")
+    (description "As the names suggest they implement a Client respectively a
+Server API for the Wayland protocol.  The API is Qt-styled removing the needs to
+interact with a for a Qt developer uncomfortable low-level C-API.  For example
+the callback mechanism from the Wayland API is replaced by signals, data types
+are adjusted to be what a Qt developer expects - two arguments of int are
+represented by a QPoint or a QSize.")
+    (license license:lgpl2.1+)))
+
 (define-public kwayland
   (package
+    (inherit kwayland-6)
     (name "kwayland")
     (version "5.114.0")
     (source (origin
@@ -1625,7 +1661,6 @@ protocols used in KDE Plasma.")
               (sha256
                (base32
                 "1lzmlbv5vl656cigjj07hbc0gj6g1i2xqanvnhxj360109kzilf1"))))
-    (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules pkg-config))
     (inputs
@@ -1658,16 +1693,7 @@ protocols used in KDE Plasma.")
                             ;; The 'kwayland-testXdgForeign' may fail on
                             ;; powerpc64le with a 'Subprocess aborted' error.
                             "kwayland-testXdgForeign") "|")
-                         ")"))))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Qt-style API to interact with the wayland client and server")
-    (description "As the names suggest they implement a Client respectively a
-Server API for the Wayland protocol.  The API is Qt-styled removing the needs to
-interact with a for a Qt developer uncomfortable low-level C-API.  For example
-the callback mechanism from the Wayland API is replaced by signals, data types
-are adjusted to be what a Qt developer expects - two arguments of int are
-represented by a QPoint or a QSize.")
-    (license license:lgpl2.1+)))
+                         ")"))))))))))
 
 (define-public kwidgetsaddons-6
   (package
