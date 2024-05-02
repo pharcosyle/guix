@@ -5544,8 +5544,56 @@ applications.")
 ;; functionality or platform integration to existing frameworks (including
 ;; Qt).
 
+(define-public kde-frameworkintegration-6
+  (package
+    (name "kde-frameworkintegration")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    "frameworkintegration-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1s24j63nz6vf3yx14ibarn2jn34ip9sff6r5ksyhai5rg2kkifs7"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     (list extra-cmake-modules pkg-config))
+    (inputs (list packagekit-qt6
+                  appstream-qt6
+                  kconfig-6
+                  kconfigwidgets-6
+                  kcoreaddons-6
+                  ki18n-6
+                  kiconthemes-6
+                  kitemviews-6
+                  knewstuff-6
+                  knotifications-6
+                  kpackage-6
+                  kwidgetsaddons-6
+                  qtbase))
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'check 'check-setup
+                 (lambda _
+                   (setenv "HOME" (getcwd))
+                   ;; Make Qt render "offscreen", required for tests
+                   (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Frameworks 6 workspace and cross-framework integration plugins")
+    (description "Framework Integration is a set of plugins responsible for
+better integration of Qt applications when running on a KDE Plasma
+workspace.")
+    ;; This package is distributed under either LGPL2 or LGPL3, but some
+    ;; files are explicitly LGPL2+.
+    (license (list license:lgpl2.0 license:lgpl3 license:lgpl2.0+))
+    (properties `((upstream-name . "frameworkintegration")))))
+
 (define-public kde-frameworkintegration
   (package
+    (inherit kde-frameworkintegration-6)
     (name "kde-frameworkintegration")
     (version "5.114.0")
     (source (origin
@@ -5557,7 +5605,6 @@ applications.")
               (sha256
                (base32
                 "1dqgzhhh8gnvl8jsvh2i6pjn935d61avh63b4z9kpllhvp9a2lnd"))))
-    (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules pkg-config))
     ;; TODO: Optional packages not yet in Guix: packagekitqt5, AppStreamQt
@@ -5572,24 +5619,7 @@ applications.")
                   kpackage
                   kwidgetsaddons
                   qtbase-5
-                  qtx11extras))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda _
-             (setenv "HOME" (getcwd))
-             ;; Make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "KDE Frameworks 5 workspace and cross-framework integration plugins")
-    (description "Framework Integration is a set of plugins responsible for
-better integration of Qt applications when running on a KDE Plasma
-workspace.")
-    ;; This package is distributed under either LGPL2 or LGPL3, but some
-    ;; files are explicitly LGPL2+.
-    (license (list license:lgpl2.0 license:lgpl3 license:lgpl2.0+))
-    (properties `((upstream-name . "frameworkintegration")))))
+                  qtx11extras))))
 
 
 ;; Porting Aids
