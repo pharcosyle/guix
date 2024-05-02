@@ -1860,7 +1860,7 @@ activities effectively, without being distracting.")
 (define-public plasma-disks
   (package
     (name "plasma-disks")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1868,18 +1868,32 @@ activities effectively, without being distracting.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0jwjv20ra1mhwl2cm7x2jz8pasmkc58fd57qxhzzf84l4sgbda9v"))))
+                "1h2grn3pydphgz8zk8crv1za6010s3r18xgh5v56w5630cimsbzx"))))
     (build-system qt-build-system)
+    (arguments (list
+                #:qtbase qtbase
+                #:phases
+                #~(modify-phases %standard-phases
+                    (add-after 'unpack 'set-smartctl-path
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "src/helper.cpp"
+                          (("\"smartctl\"")
+                           (string-append
+                            "\""
+                            (search-input-file
+                             inputs "/sbin/smartctl")
+                            "\""))))))))
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kcoreaddons
-                  kdbusaddons
-                  knotifications
-                  ki18n
-                  solid
-                  kservice
-                  kio
-                  kauth
-                  kdeclarative
+    (inputs (list kcoreaddons-6
+                  kdbusaddons-6
+                  knotifications-6
+                  ki18n-6
+                  kcmutils-6
+                  solid-6
+                  kservice-6
+                  kio-6
+                  kauth-6
+                  kdeclarative-6
                   smartmontools))
     (synopsis "Monitors S.M.A.R.T. capable devices for imminent failure")
     (description "This package provides interface to S.M.A.R.T. data of disks.")
