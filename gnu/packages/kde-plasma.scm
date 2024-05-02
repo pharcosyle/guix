@@ -1889,7 +1889,7 @@ activities effectively, without being distracting.")
 (define-public plasma-firewall
   (package
     (name "plasma-firewall")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1897,16 +1897,18 @@ activities effectively, without being distracting.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1n5ljkydhcx6qapwrshslq835zaf02gssp2zvzi3vwfy4asc7ind"))))
+                "1bj32bq3x3azcbxi1bi4n6lnv53x2xkkx1kj66771kx58pp1fbxx"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules))
     (inputs (list iproute
-                  kcoreaddons
-                  kcmutils
-                  ki18n
-                  kdeclarative
+                  kauth-6
+                  kcoreaddons-6
+                  kcmutils-6
+                  ki18n-6
+                  kdeclarative-6
                   python
-                  qtdeclarative-5))
+                  qtdeclarative))
     (synopsis "Control Panel for system firewall")
     (description "This package provides interface to system firewall.")
     (home-page "https://invent.kde.org/plasma/plasma-firewall")
