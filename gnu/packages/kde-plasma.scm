@@ -1981,22 +1981,25 @@ integration of Qt applications when running on a KDE Plasma workspace.")
 (define-public plasma-nano
   (package
     (name "plasma-nano")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
                                   version "/plasma-nano-" version ".tar.xz"))
               (sha256
                (base32
-                "14wc76bxnwd0z51gz4zb88p5h9n2711ifr1wpx9lrj9r7y1llank"))))
+                "0vvg07xpnx545k4qvrzr7v83567bzdkbwlbysz1vwgcmh05vak2r"))))
     (build-system cmake-build-system)
     (native-inputs (list extra-cmake-modules pkg-config qttools))
-    (inputs (list qtbase-5
-                  qtdeclarative-5
-                  plasma-framework
-                  kwindowsystem
-                  kwayland
-                  ki18n))
+    (inputs (list qtbase
+                  qtdeclarative
+                  qtsvg
+                  libplasma
+                  kservice-6
+                  kitemmodels-6
+                  kwindowsystem-6
+                  kwayland-6
+                  ki18n-6))
     (home-page "https://plasma-mobile.org/")
     (synopsis "Minimal Plasma Shell package")
     (description
