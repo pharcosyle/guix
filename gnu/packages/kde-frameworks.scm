@@ -2742,8 +2742,59 @@ from DocBook files.")
                 (symlink (string-append xsl "pt_br.xml")
                          (string-append xsl "pt-BR.xml"))))))))))
 
+(define-public kfilemetadata-6
+  (package
+    (name "kfilemetadata")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1jmi7fmi8dnq4rrf3c8wzszy9dszjzqpda1cj4rdmrgaahn7hanm"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "ctest" "-E" "exiv2extractortest")))))))
+    (native-inputs (list extra-cmake-modules pkg-config))
+    (inputs
+     (list attr
+           ebook-tools
+           kcodecs-6
+           libplasma
+           karchive-6
+           kconfig-6
+           kcoreaddons-6
+           kdegraphics-mobipocket
+           ki18n-6
+           qtmultimedia
+           qtbase
+           ;; Required run-time packages
+           catdoc
+           ;; Optional run-time packages
+           exiv2
+           ffmpeg
+           poppler-qt6
+           taglib))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Extract metadata from different fileformats")
+    (description "KFileMetaData provides a simple library for extracting the
+text and metadata from a number of different files.  This library is typically
+used by file indexers to retrieve the metadata.  This library can also be used
+by applications to write metadata.")
+    (license (list license:lgpl2.0 license:lgpl2.1 license:lgpl3))))
+
 (define-public kfilemetadata
   (package
+    (inherit kfilemetadata-6)
     (name "kfilemetadata")
     (version "5.114.0")
     (source (origin
@@ -2755,7 +2806,6 @@ from DocBook files.")
               (sha256
                (base32
                 "15va29chlsrxii02w1ax718hp1b14ym59lcfyzh7w30zlf681560"))))
-    (build-system cmake-build-system)
     (arguments
      (list
       #:phases
@@ -2785,14 +2835,7 @@ taglibextractortest)")))))))
            exiv2
            ffmpeg
            poppler-qt5
-           taglib))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Extract metadata from different fileformats")
-    (description "KFileMetaData provides a simple library for extracting the
-text and metadata from a number of different files.  This library is typically
-used by file indexers to retrieve the metadata.  This library can also be used
-by applications to write metadata.")
-    (license (list license:lgpl2.0 license:lgpl2.1 license:lgpl3))))
+           taglib))))
 
 (define-public kimageannotator
   (package
