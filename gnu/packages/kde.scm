@@ -1687,19 +1687,20 @@ PO template files.")
 (define-public kdegraphics-mobipocket
   (package
     (name "kdegraphics-mobipocket")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "13hn6dh5d4vsblvg6wyyvbmcyl0yyqr8srilik86wilp58qbsrdv"))))
+        (base32 "0amxdi0vr5awrxzpmgd6w3w30ql903ry738i4qq2zh2a1qb5c4ci"))))
     (build-system cmake-build-system)
+    (arguments (list #:configure-flags #~(list "-DQT_MAJOR_VERSION=6")))
     (native-inputs
      (list extra-cmake-modules))
     (inputs
-     (list kio qtbase-5))
+     (list kio-6 qtbase qt5compat))
     (home-page "https://apps.kde.org/en/kdegraphics_mobipocket")
     (synopsis "KDE thumbnailer for Mobipocket files")
     (description "This package provides a KDE plugin that shows thumbnails of
