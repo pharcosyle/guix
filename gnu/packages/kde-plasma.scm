@@ -334,7 +334,7 @@ games, and tools.")
 (define-public kactivitymanagerd
   (package
     (name "kactivitymanagerd")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -342,19 +342,18 @@ games, and tools.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1d7vz8gwqa7nhfn62dsqircm0qbp9ryass82k2891mqj0qrlbwid"))))
+                "0bxc6fdg8r76wd7qqy9b8843gpggsiwh24qil3xas8kkcw26mk9c"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules))
     (inputs (list boost
-                  kconfig
-                  kcoreaddons
-                  kwindowsystem
-                  kglobalaccel
-                  kio
-                  kxmlgui
-                  kdbusaddons
-                  ki18n
-                  kcrash))
+                  kcompletion-6
+                  kglobalaccel-6
+                  kio-6
+                  kxmlgui-6
+                  kdbusaddons-6
+                  ki18n-6
+                  kcrash-6))
     (synopsis "System service to manage user's activities")
     (description "This package provides components for managing the KDE Activity
 concept.")
