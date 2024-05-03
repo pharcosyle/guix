@@ -124,14 +124,14 @@
 (define-public breeze
   (package
     (name "breeze")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1wfclkg4d3wraz19kwpm87vwp9327s5y8n1a42qgrdh980qwzzdz"))))
+                "0xjwbvyl54k2zhhf8lwr7fa8yrcc42891q0r68rmqfcij647j6ci"))))
     (build-system qt-build-system)
     ;; TODO: Warning at /gnu/store/…-kpackage-5.34.0/…/KF5PackageMacros.cmake:
     ;;   warnings during generation of metainfo for org.kde.breezedark.desktop:
@@ -153,15 +153,25 @@
            kde-frameworkintegration ; optional
            kdecoration
            kguiaddons
-           ki18n
            kirigami
-           kiconthemes ; for optional kde-frameworkintegration
+           kiconthemes
            kpackage
-           kwayland ; optional
            kwindowsystem
            qtbase-5
+           qtbase
            qtdeclarative-5 ; optional
-           qtx11extras))
+           qtx11extras
+
+           kcoreaddons-6
+           kcolorscheme
+           kconfig-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kwindowsystem-6
+           kirigami-6
+           kde-frameworkintegration-6 ; optional
+           kcmutils-6))
     (home-page "https://invent.kde.org/plasma/breeze")
     (synopsis "Default KDE Plasma theme")
     (description "Artwork, styles and assets for the Breeze visual style for
