@@ -1217,7 +1217,7 @@ you login.")
 (define-public kwayland-integration
   (package
     (name "kwayland-integration")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1225,25 +1225,8 @@ you login.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1fvf64vx5m3h5v8h697ixkcifhva6a14wlz75kv6759ji9l9fy8y"))))
+                "1shmksq8f17kl6y4al26xaj11npkanln7xrn64sgk80g0v9dn0z2"))))
     (build-system qt-build-system)
-    (arguments
-     (list #:phases #~(modify-phases %standard-phases
-                        (delete 'check)
-                        (add-after 'install 'check-after-install
-                          (lambda* (#:key tests? #:allow-other-keys)
-                            (when tests?
-                              (setenv "HOME" (getcwd))
-                              (setenv "XDG_RUNTIME_DIR" (getcwd))
-                              (setenv "QT_QPA_PLATFORM" "offscreen")
-                              ;; https://bugs.gentoo.org/668872
-                              (invoke "ctest" "-E" "(idleTest-kwayland-test)"))))
-                        (add-before 'check-after-install 'check-setup
-                          (lambda* (#:key outputs #:allow-other-keys)
-                            (setenv "QT_PLUGIN_PATH"
-                                    (string-append #$output
-                                                   "/lib/qt5/plugins:"
-                                                   (getenv "QT_PLUGIN_PATH"))))))))
     (native-inputs (list extra-cmake-modules wayland-protocols pkg-config))
     (inputs (list kguiaddons
                   kidletime
@@ -1252,6 +1235,7 @@ you login.")
                   libxkbcommon
                   wayland
                   qtbase-5
+                  plasma-wayland-protocols
                   qtwayland-5))
     (synopsis "KWayland runtime integration plugins")
     (description "This package provides Wayland integration plugins for various
