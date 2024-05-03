@@ -398,35 +398,37 @@ concept.")
 (define-public kde-gtk-config
   (package
     (name "kde-gtk-config")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kde-gtk-config-" version ".tar.xz"))
               (sha256
                (base32
-                "13qwj3gdfvs0l6k01n8hf25kzrsksi3qi0b1rzpshcj1ix31wamf"))))
+                "1gax53ny0mr8l87zbr2w11jhjb2g6rzsqq8n9qhdr1z8n3192m7x"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'unpack 'patch-gsettings-schemas-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "cmake/modules/FindGSettingSchemas.cmake"
-                     (("\\$\\{PC_GLIB2_PREFIX\\}")
-                      (assoc-ref inputs "gsettings-desktop-schemas"))))))))
+     (list
+      #:qtbase qtbase
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-gsettings-schemas-path
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "cmake/modules/FindGSettingSchemas.cmake"
+                (("\\$\\{PC_GLIB2_PREFIX\\}")
+                 (assoc-ref inputs "gsettings-desktop-schemas"))))))))
     (native-inputs
-     (list extra-cmake-modules pkg-config qtsvg-5 sassc))
+     (list extra-cmake-modules pkg-config qtsvg sassc))
     (inputs
      (list gsettings-desktop-schemas
            gtk+
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kguiaddons
-           kdbusaddons
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kguiaddons-6
+           kdbusaddons-6
            kdecoration
-           kwindowsystem
+           kwindowsystem-6
            xsettingsd))
     (home-page "https://invent.kde.org/plasma/kde-gtk-config")
     (synopsis "Sync of KDE settings to GTK applications")
