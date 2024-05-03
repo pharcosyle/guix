@@ -600,6 +600,45 @@ KDE Frameworks 5 to better interact with the system.")
     (home-page "https://invent.kde.org/plasma/kgamma5")
     (license license:gpl2+)))
 
+(define-public kglobalacceld
+  (package
+    (name "kglobalacceld")
+    (version "6.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/"
+                                  version "/" name "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1ll5kgfd7s47rxdphq2ywih2fqd3fshiidg4acv4x39g5hkvyiwi"))))
+    (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase
+                     #:phases
+                     #~(modify-phases %standard-phases
+                         (add-before 'check 'setenv
+                           (lambda _
+                             (setenv "HOME" (getcwd)))))))
+    (native-inputs (list extra-cmake-modules))
+    (inputs (list kconfig-6
+                  kcoreaddons-6
+                  kcrash-6
+                  kdbusaddons-6
+                  kwindowsystem-6
+                  kglobalaccel-6
+                  kservice-6
+                  kio-6
+                  kjobwidgets-6
+                  xcb-util-keysyms
+                  libxkbcommon))
+    (synopsis "Daemon providing Global Keyboard Shortcut (Accelerator)
+functionality")
+    (description
+     "This package provides a Daemon providing Global Keyboard Shortcut
+(Accelerator) functionality.")
+    (home-page "https://invent.kde.org/plasma/kglobalacceld")
+    (license license:gpl2+)))
+
 (define-public khotkeys
   (package
     (name "khotkeys")
