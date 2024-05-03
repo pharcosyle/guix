@@ -3332,8 +3332,63 @@ between feed formats.")
 ;; Tier 3 frameworks are generally more powerful, comprehensive packages, and
 ;; consequently have more complex dependencies.
 
+(define-public baloo-6
+  (package
+    (name "baloo")
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ancb5y7ypbhcw204paiy53bpj3q20y7appb38zin68jvk223n2l"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     (list kcoreaddons-6 kfilemetadata-6))
+    (native-inputs
+     (list dbus extra-cmake-modules))
+    (inputs
+     (list kbookmarks-6
+           kcompletion-6
+           kconfig-6
+           kcrash-6
+           kdbusaddons-6
+           kidletime-6
+           kio-6
+           kitemviews-6
+           ki18n-6
+           kjobwidgets-6
+           kservice-6
+           kwidgetsaddons-6
+           kxmlgui-6
+           lmdb
+           qtbase
+           qtdeclarative
+           solid-6))
+    (arguments
+     (list #:phases #~(modify-phases %standard-phases
+                        (replace 'check
+                          (lambda* (#:key tests? #:allow-other-keys)
+                            (when tests?
+                              (setenv "DBUS_FATAL_WARNINGS" "0")
+                              (setenv "HOME"
+                                      (getcwd))
+                              (invoke "dbus-launch" "ctest" "-E"
+                                      ;; this require udisks2.
+                                      "filewatchtest")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "File searching and indexing")
+    (description "Baloo provides file searching and indexing.  It does so by
+maintaining an index of the contents of your files.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public baloo
   (package
+    (inherit baloo-6)
     (name "baloo")
     (version "5.114.0")
     (source (origin
@@ -3376,13 +3431,7 @@ between feed formats.")
                               (setenv "DBUS_FATAL_WARNINGS" "0")
                               (setenv "HOME"
                                       (getcwd))
-                              (invoke "dbus-launch" "ctest")))))))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "File searching and indexing")
-    (description "Baloo provides file searching and indexing.  It does so by
-maintaining an index of the contents of your files.")
-    ;; dual licensed
-    (license (list license:gpl2+ license:lgpl2.1+))))
+                              (invoke "dbus-launch" "ctest")))))))))
 
 (define-public plasma-activities-stats
   (package
