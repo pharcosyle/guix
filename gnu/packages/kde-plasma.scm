@@ -991,17 +991,18 @@ an elegant and intuitive experience for your tasks and plasmoids.")
 (define-public kscreenlocker
   (package
     (name "kscreenlocker")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kscreenlocker-" version ".tar.xz"))
               (sha256
                (base32
-                "11y3ksd29p8hdn8chaf8vscnc7fbh8xkjdsbakrb056p1r8kn0f2"))))
+                "1mgb5p1wfkq08cny3i8rfyarq6l5bhnamsxw5kf83w0d4rnsh61w"))))
     (build-system qt-build-system)
     (arguments
      (list #:tests? #f ;TODO: make tests pass
+           #:qtbase qtbase
            #:phases #~(modify-phases %standard-phases
                         (add-before 'check 'check-setup
                           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1016,32 +1017,31 @@ an elegant and intuitive experience for your tasks and plasmoids.")
                                   (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
                                   (invoke "dbus-launch" "ctest"))))))))
     (native-inputs (list extra-cmake-modules pkg-config
+                         ;; for WaylandScanner
+                         wayland
                          ;; For tests.
                          dbus xorg-server-for-tests))
-    (inputs (list kcmutils
-                  kconfig
-                  kcrash
-                  kdeclarative
-                  kglobalaccel
-                  ki18n
-                  kio
-                  kidletime
-                  knotifications
-                  ktextwidgets
-                  kwayland
-                  kwindowsystem
-                  kxmlgui
+    (inputs (list kcmutils-6
+                  kconfig-6
+                  kcrash-6
+                  kglobalaccel-6
+                  ki18n-6
+                  kio-6
+                  kidletime-6
+                  knotifications-6
+                  kwayland-6
+                  kwindowsystem-6
+                  kxmlgui-6
+                  ksvg
                   layer-shell-qt
                   libkscreen
-                  libseccomp ;for sandboxing the look'n'feel package
-                  libxcursor ;missing in CMakeList.txt
+                  libplasma
                   libxi ;XInput, required for grabbing XInput2 devices
                   linux-pam
+                  libxkbcommon
                   elogind ;optional loginctl support
-                  qtbase-5
-                  qtdeclarative-5
-                  qtx11extras
-                  solid
+                  qtdeclarative
+                  solid-6
                   wayland
                   xcb-util-keysyms))
     (home-page "https://invent.kde.org/plasma/kscreenlocker")
