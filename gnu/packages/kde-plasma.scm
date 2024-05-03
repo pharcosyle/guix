@@ -76,6 +76,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages vpn)
   #:use-module (gnu packages vulkan)
+  #:use-module (gnu packages wm)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xdisorg)
@@ -1297,18 +1298,19 @@ KDE Frameworks components.")
 (define-public kwin
   (package
     (name "kwin")
-    (version "5.27.7")
+    (version "6.0.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://kde/stable/plasma/" version "/"
+              (uri (string-append "mirror://kde/stable/plasma/6.0.4/"
                                   name "-" version ".tar.xz"))
               (patches (search-patches "kwin-unwrap-executable-name-for-dot-desktop-search.patch"))
               (sha256
                (base32
-                "0bssp76lzqqlan5pfg6wjf4z9c6pl6p66ri8p82vqqw406x5bzyb"))))
+                "0dnb9fy67w11g5070zdcardi08bbiy2wd6alxicg043fldzv7zsn"))))
     (build-system qt-build-system)
     (arguments
      (list
+      #:qtbase qtbase
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch
@@ -1326,8 +1328,8 @@ KDE Frameworks components.")
                  (string-append
                   "setProgram(QByteArrayLiteral(\"" (which "glxgears") "\")")))
               (substitute*
-                  '("src/wayland/tests/renderingservertest.cpp"
-                    "src/wayland/tests/waylandservertest.cpp")
+                  '("tests/renderingservertest.cpp"
+                    "tests/waylandservertest.cpp")
                 (("QByteArrayLiteral\\(\"Xwayland\"\\)")
                  (string-append
                   "QByteArrayLiteral(\"" (which "Xwayland") "\")")))
@@ -1344,14 +1346,6 @@ KDE Frameworks components.")
               (substitute* '("cmake/modules/Findhwdata.cmake")
                 (("/usr/share")
                  (string-append #$(this-package-input "hwdata") "/share")))))
-          (add-after 'install 'add-symlinks
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((kst5 (string-append #$output
-                                         "/share/kservicetypes5/")))
-                (symlink (string-append kst5 "kwineffect.desktop")
-                         (string-append kst5 "kwin-effect.desktop"))
-                (symlink (string-append kst5 "kwinscript.desktop")
-                         (string-append kst5 "kwin-script.desktop")))))
           (replace 'check
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
@@ -1362,7 +1356,7 @@ KDE Frameworks components.")
                                        (getenv "XDG_DATA_DIRS")))
                 (setenv "QT_PLUGIN_PATH"
                         (string-append #$output
-                                       "/lib/qt5/plugins:"
+                                       "/lib/qt6/plugins:"
                                        (getenv "QT_PLUGIN_PATH")))
                 (setenv "DISPLAY" ":1")
                 (system "Xvfb :1 &")
@@ -1371,56 +1365,65 @@ KDE Frameworks components.")
                         "ctest"
                         "-E"
                         (string-join
-                         (list "kwin-testXkb"
-                               "kwin-testPointerInput"
-                               "kwin-testXdgShellWindow"
-                               "kwin-testXdgShellWindow-waylandonly"
-                               "kwin-testSceneOpenGLES"
-                               "kwin-testSceneOpenGLES-waylandonly"
-                               "kwin-testNightColor"
-                               "kwin-testNightColor-waylandonly"
-                               "kwin-testScriptedEffects"
-                               "kwayland-testWaylandSurface")
+                         (list
+                          "kwin-testDrm" ;; require Drm
+                          "kwin-testInputMethod"
+                          "kwin-testPlasmaWindow" ;; require plasma-workspace qml module.
+                          "kwin-testPointerInput"
+                          "kwin-testXdgShellWindow"
+                          "kwin-testXdgShellWindow-waylandonly"
+                          "kwin-testSceneOpenGLES"
+                          "kwin-testSceneOpenGLES-waylandonly"
+                          "kwin-testNightColor"
+                          "kwin-testNightColor-waylandonly"
+                          "kwin-testScriptedEffects"
+                          "kwayland-testServerSideDecoration"
+                          "kwayland-testWaylandSurface")
                          "|"))))))))
     (native-inputs (list extra-cmake-modules
                          dbus
-                         kdoctools
+                         kdoctools-6
                          mesa-utils
                          pkg-config
-                         qttools-5
+                         qttools
                          wayland-protocols
-                         xorg-server-for-tests))
+                         xorg-server-for-tests
+                         python-minimal))
     (inputs (list breeze
                   eudev
                   fontconfig
                   freetype
                   `(,hwdata "pnp")
-                  kactivities
-                  kcmutils
-                  kcompletion
-                  kconfig
-                  kconfigwidgets
-                  kcoreaddons
-                  kcrash
-                  kdbusaddons
-                  kdeclarative
+                  plasma-activities
+                  kcmutils-6
+                  kcompletion-6
+                  kconfig-6
+                  kconfigwidgets-6
+                  kcoreaddons-6
+                  kcrash-6
+                  kdbusaddons-6
+                  kdeclarative-6
                   kdecoration
-                  kglobalaccel
-                  ki18n
-                  kiconthemes
-                  kidletime
-                  kio
-                  kirigami
-                  knewstuff
-                  knotifications
-                  kpackage
-                  krunner
+                  kglobalaccel-6
+                  kglobalacceld
+                  ki18n-6
+                  kiconthemes-6
+                  kidletime-6
+                  kio-6
+                  kirigami-6
+                  knewstuff-6
+                  knotifications-6
+                  kpackage-6
+                  krunner-6
                   kscreenlocker
-                  ktextwidgets
-                  kwayland
-                  kwindowsystem
-                  kxmlgui
-                  libqaccessibilityclient
+                  ktextwidgets-6
+                  kwayland-6
+                  kwindowsystem-6
+                  kxmlgui-6
+                  ksvg
+                  kauth-6
+                  kguiaddons-6
+                  libqaccessibilityclient-qt6
                   lcms
                   libcap
                   libepoxy
@@ -1428,13 +1431,13 @@ KDE Frameworks components.")
                   libinput
                   libxkbcommon
                   pipewire
-                  plasma-framework
+                  libplasma
                   plasma-wayland-protocols
-                  qtbase-5
-                  qtdeclarative-5
-                  qtmultimedia-5
-                  qtwayland-5
-                  qtx11extras
+                  qt5compat
+                  qtdeclarative
+                  qtmultimedia
+                  qtwayland
+                  qtsensors
                   wayland
                   xcb-util ;fails at build time without this
                   xcb-util-cursor
@@ -1443,6 +1446,7 @@ KDE Frameworks components.")
                   xcmsdb
                   xinput ;XXX: Says disabled in configure phase
                   xorg-server-xwayland
+                  libdisplay-info
                   zlib))
     ;; Runtime-only dependency needed for mapping monitor hardware vendor IDs to full names
     ;; * QtQuick.Controls-QMLModule, QML module 'QtQuick.Controls' is a runtime dependency.
