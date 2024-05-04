@@ -242,7 +242,7 @@ Breeze is the default theme for the KDE Plasma desktop.")
 (define-public discover
   (package
     (name "discover")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -254,10 +254,11 @@ Breeze is the default theme for the KDE Plasma desktop.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0025g1whq8z1s5915jhq83xsiz4klzqpayfzqkar8c6gni5s3v59"))))
+                "1a0ssp40s67n5irvq9sm5pdm0s35wjms3xa38z7ifbkni7dv0mm0"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases
+     (list #:qtbase qtbase
+           #:phases
            #~(modify-phases %standard-phases
                (add-before 'configure 'set-LDFLAGS
                  (lambda _
@@ -268,30 +269,31 @@ Breeze is the default theme for the KDE Plasma desktop.")
                    (when tests?
                      (invoke "ctest" "-E" "knsbackendtest")))))))
     (native-inputs (list extra-cmake-modules pkg-config))
-    (inputs (list appstream-qt
-                  attica
+    (inputs (list appstream-qt6
+                  attica-6
                   fwupd ; optional
                   flatpak ; optional
-                  kcoreaddons
-                  kconfig
-                  kcrash
-                  kdbusaddons
-                  ki18n
-                  karchive
-                  kxmlgui
-                  kirigami
+                  kauth-6
+                  kstatusnotifieritem
+                  kcoreaddons-6
+                  kconfig-6
+                  kcrash-6
+                  kdbusaddons-6
+                  ki18n-6
+                  karchive-6
+                  kxmlgui-6
+                  kirigami-6
+                  kirigami-addons
                   kuserfeedback
-                  knewstuff
-                  knotifications
-                  kio
-                  kdeclarative
-                  kcmutils
-                  kidletime
-                  packagekit-qt5
-                  purpose
-                  qtdeclarative-5
-                  qtgraphicaleffects
-                  qtquickcontrols2-5))
+                  knewstuff-6
+                  knotifications-6
+                  kio-6
+                  kdeclarative-6
+                  kcmutils-6
+                  kidletime-6
+                  packagekit-qt6
+                  purpose-6
+                  qtdeclarative))
     ;; -- The following features have been disabled:
     ;; * Ostree, Library to manage ostree repository. Required to build the rpm-ostree backend
     ;; * RpmOstree, rpm-ostree binary to manage the system. Required to build the rpm-ostree backend
