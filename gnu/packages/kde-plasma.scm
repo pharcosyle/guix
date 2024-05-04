@@ -2472,7 +2472,7 @@ sensors, process information and other system resources.")
 (define-public plasma-welcome
   (package
     (name "plasma-welcome")
-    (version  "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -2481,31 +2481,34 @@ sensors, process information and other system resources.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0nz1hxz5nvgl3sbm6k3a76s0l3fy3j38i4plly2zhp5xqdk0ks1x"))))
+                "0lhqkjz0nmsqd0wavf6lrqccsbcjs63n4bl48lz3bfjwsx4qgjkb"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules pkg-config))
     (inputs
-     (list kcoreaddons
-           kdbusaddons
-           kdeclarative
-           ki18n
-           kio
-           kirigami
-           knotifications
-           kservice
-           knewstuff
+     (list kcoreaddons-6
+           kdbusaddons-6
+           kdeclarative-6
+           ki18n-6
+           kio-6
+           kconfigwidgets-6
+           kcmutils-6
+           ksvg
+           kirigami-6
+           kirigami-addons
+           knotifications-6
+           kservice-6
+           knewstuff-6
            kaccounts-integration
-           signond
+           signond-qt6
            kuserfeedback
-           libaccounts-qt
-           kwindowsystem
-           networkmanager-qt
-           plasma-framework
-           qtdeclarative-5
-           qtgraphicaleffects
-           qtsvg-5
-           qtquickcontrols2-5))
+           libaccounts-qt6
+           kwindowsystem-6
+           networkmanager-qt-6
+           libplasma
+           qtdeclarative
+           qtsvg))
+    (arguments (list #:qtbase qtbase))
     (synopsis "Plasma welcome screen")
     (description
      "This package provides a wizard for Plasma to configure settings.")
