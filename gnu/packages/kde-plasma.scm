@@ -2042,7 +2042,7 @@ activities effectively, without being distracting.")
 (define-public plasma-integration
   (package
     (name "plasma-integration")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -2050,7 +2050,7 @@ activities effectively, without being distracting.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ahzckvc69wk2rx73sl40h0in1y7ny0vm0i7lbrrcggv1v36dwp3"))))
+                "04w9ffr4yjiilk1aj8gr3kw7m5ns6hmmv916841s3vrywhgc5xgf"))))
     (build-system qt-build-system)
     (arguments
      (list #:tests? #f                  ;TODO: Failing tests
@@ -2073,6 +2073,8 @@ activities effectively, without being distracting.")
                   kconfigwidgets
                   kiconthemes
                   knotifications
+                  kwayland
+                  kguiaddons
                   libxcb
                   libxcursor
                   plasma-wayland-protocols
@@ -2080,7 +2082,22 @@ activities effectively, without being distracting.")
                   qtquickcontrols2-5
                   qtwayland-5
                   qtx11extras
-                  wayland))
+                  wayland
+
+                  qtbase
+                  qtdeclarative
+                  qtwayland
+                  kconfig-6
+                  kconfigwidgets-6
+                  ki18n-6
+                  kiconthemes-6
+                  kio-6
+                  knotifications-6
+                  kwindowsystem-6
+                  kguiaddons-6
+                  kxmlgui-6
+                  kstatusnotifieritem
+                  libxkbcommon))
     (home-page "https://invent.kde.org/plasma/plasma-integration")
     (synopsis
      "Qt Platform Theme integration plugins for the Plasma workspaces")
