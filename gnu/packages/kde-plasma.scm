@@ -937,7 +937,7 @@ call it if it is not associated to a terminal.")
 (define-public ksystemstats
   (package
     (name "ksystemstats")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -945,23 +945,24 @@ call it if it is not associated to a terminal.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1fx5b566xx32q7gxi8qnnx6vny7ip5r65zi2znnx3azmwsc8jgvw"))))
+                "1yl7nc9pfbkdhfv224ywsvm5pj253k0a7d7rsh1lnyzf685a58d4"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
+     (list #:qtbase qtbase
+           #:phases #~(modify-phases %standard-phases
                         (replace 'check
                           (lambda* (#:key tests? #:allow-other-keys)
                             (when tests?
                               (invoke "ctest" "-E" "ksystemstatstest")))))))
     (native-inputs (list extra-cmake-modules pkg-config))
     (inputs (list glib
-                  kcoreaddons
-                  kdbusaddons
-                  solid
-                  networkmanager-qt
-                  kiconthemes
-                  kio
-                  ki18n
+                  kcoreaddons-6
+                  kdbusaddons-6
+                  solid-6
+                  networkmanager-qt-6
+                  kiconthemes-6
+                  kio-6
+                  ki18n-6
                   libksysguard
                   libnl
                   eudev
