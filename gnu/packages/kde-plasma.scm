@@ -533,17 +533,18 @@ KDE Frameworks 5 to better interact with the system.")
 (define-public kdeplasma-addons
   (package
     (name "kdeplasma-addons")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0l7g4lx6y10xfabfcgvh7zb7h08clj0g9yx8ajyg7rzwfa43visi"))))
+                "061vdfc5ckfyf3sfszia44d63z5ikbgdff5l8fdr79jvfzs6sbbd"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
+     (list #:qtbase qtbase
+           #:phases #~(modify-phases %standard-phases
                         (replace 'check
                           (lambda* (#:key tests? inputs #:allow-other-keys)
 
@@ -554,24 +555,28 @@ KDE Frameworks 5 to better interact with the system.")
                               (invoke "ctest" "-E"
                                       "(converterrunnertest)")))))))
     (native-inputs (list extra-cmake-modules tzdata-for-tests))
-    (inputs (list karchive
-                  kconfig
-                  kcoreaddons
-                  kdeclarative
-                  kholidays
-                  ki18n
-                  kio
-                  kcmutils
-                  knotifications
-                  krunner
-                  kservice
-                  kunitconversion
-                  knewstuff
-                  plasma-framework
-                  purpose
-                  sonnet
-                  ;; qtwebengine-5 ; Optional for online dictionary
-                  qtdeclarative-5))
+    (inputs (list karchive-6
+                  kconfig-6
+                  kcoreaddons-6
+                  kdeclarative-6
+                  kholidays-6
+                  ki18n-6
+                  kio-6
+                  kcmutils-6
+                  kglobalaccel-6
+                  kxmlgui-6
+                  knotifications-6
+                  krunner-6
+                  kservice-6
+                  kunitconversion-6
+                  knewstuff-6
+                  libplasma
+                  plasma5support
+                  purpose-6
+                  sonnet-6
+                  qt5compat
+                  ;; qtwebengine ; Optional for online dictionary
+                  qtdeclarative))
     (synopsis "Add-ons to improve your Plasma experience")
     (description
      "This package provides multiple addons for the Plasma Desktop.")
