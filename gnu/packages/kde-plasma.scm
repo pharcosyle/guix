@@ -1517,7 +1517,7 @@ and minimalistic.")
 (define-public milou
   (package
     (name "milou")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1525,18 +1525,20 @@ and minimalistic.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0lq8m72nwink8x46m8qd5zdkadym1kc70ipnkb04b16mr7zhnsc1"))))
+                "1zz17i1dqfm14adn515vdc1yckg0qykfl1grgk3wf3g19423x30w"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kcoreaddons
-                  ki18n
-                  kdeclarative
-                  kitemmodels
-                  kservice
-                  plasma-framework
-                  kwindowsystem
-                  krunner
-                  qtdeclarative-5))
+    (inputs (list kcoreaddons-6
+                  ki18n-6
+                  kdeclarative-6
+                  kitemmodels-6
+                  kservice-6
+                  libplasma
+                  kwindowsystem-6
+                  krunner-6
+                  ksvg
+                  qtdeclarative))
+    (arguments (list #:qtbase qtbase))
     (synopsis "Dedicated search application built on top of Baloo")
     (description "This package provides a dedicated search application built
 on top of Baloo.")
