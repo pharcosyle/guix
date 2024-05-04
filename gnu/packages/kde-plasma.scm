@@ -2516,65 +2516,71 @@ sensors, process information and other system resources.")
 (define-public plasma-workspace
   (package
     (name "plasma-workspace")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pyf5vc466mfgicxpp76igdz58lpa0n7x2cl2hhaq4zmrlfr8hh6"))))
+                "0ry51pvb3l8bf1lkzsdxlr6hpq2galdcnfynw9fnvrk6r5qjhb3z"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules kdoctools pkg-config qtsvg-5
-                         qttools-5
-                         xorg-server-for-tests))
+    (native-inputs (list extra-cmake-modules kdoctools-6 pkg-config qtsvg
+                         qttools
+                         xorg-server-for-tests
+                         python-minimal))
     (inputs (list appmenu-gtk-module
-                  appstream-qt
-                  baloo
+                  appstream-qt6
+                  baloo-6
                   breeze
                   breeze-icons
                   dbus
                   fontconfig
                   icu4c
                   iso-codes
-                  kactivities
-                  kactivities-stats
-                  karchive
-                  kcmutils
-                  kcoreaddons
-                  kcrash
-                  kdbusaddons
-                  kdeclarative
-                  kded
-                  kdesu
-                  kglobalaccel
-                  kguiaddons
-                  kholidays
-                  ki18n
-                  kiconthemes
-                  kidletime
-                  kinit
-                  kio
+                  plasma-activities
+                  plasma-activities-stats
+                  karchive-6
+                  kauth-6
+                  ksvg
+                  kstatusnotifieritem
+                  kcmutils-6
+                  kcoreaddons-6
+                  kcrash-6
+                  kdbusaddons-6
+                  kdeclarative-6
+                  kded-6
+                  kdesu-6
+                  kglobalaccel-6
+                  kglobalacceld
+                  kguiaddons-6
+                  kholidays-6
+                  ki18n-6
+                  kiconthemes-6
+                  kidletime-6
+                  kio-6
+                  xdotool
+                  qqc2-desktop-style-6
                   kio-extras
-                  kio-fuse
-                  kitemmodels
-                  kirigami
-                  knewstuff
-                  knotifications
-                  knotifyconfig
-                  kquickcharts
-                  kpackage
-                  kpeople
+                  kitemmodels-6
+                  kirigami-6
+                  kirigami-addons
+                  knewstuff-6
+                  knotifications-6
+                  knotifyconfig-6
+                  kquickcharts-6
+                  kpackage-6
+                  kpeople-6
                   kpipewire
-                  kquickcharts
-                  krunner
+                  kquickcharts-6
+                  krunner-6
                   kscreenlocker
-                  ktexteditor
-                  ktextwidgets
-                  kunitconversion
+                  ktexteditor-6
+                  ktextwidgets-6
+                  kunitconversion-6
                   kuserfeedback
-                  kwallet
-                  kwayland
+                  kwallet-6
+                  kwayland-6
                   kwin
                   layer-shell-qt
                   libkscreen
@@ -2582,25 +2588,26 @@ sensors, process information and other system resources.")
                   libqalculate
                   gmp
                   mpfr
+                  eudev
                   libsm
                   libxft
                   libxkbcommon
                   libxrender
                   libxtst
-                  networkmanager-qt
+                  networkmanager-qt-6
                   phonon
                   pipewire
-                  plasma-framework
+                  libplasma
+                  plasma5support
                   plasma-workspace-wallpapers
                   plasma-wayland-protocols
-                  prison
-                  qtbase-5
-                  qtdeclarative-5
-                  qtquickcontrols2-5
-                  qttools-5
-                  qtwayland-5
-                  qtgraphicaleffects
-                  qtx11extras
+                  prison-6
+                  qt5compat
+                  qtsvg
+                  qtshadertools
+                  qtdeclarative
+                  qttools
+                  qtwayland
                   wayland
                   wayland-protocols
                   xcb-util
@@ -2609,7 +2616,7 @@ sensors, process information and other system resources.")
                   xrdb
                   xmessage
                   xsetroot
-                  polkit-qt
+                  polkit-qt6
                   ucd
 
                   libxcursor
@@ -2618,12 +2625,20 @@ sensors, process information and other system resources.")
                   zlib
 
                   ;; qml dependency
-                  qtquickcontrols-5
                   plasma-nm
                   plasma-pa
                   kscreen))
     (arguments
-     (list #:phases
+     (list #:qtbase qtbase
+           #:configure-flags
+           #~(list
+              ;; libkmpris/autotests/CMakeLists.txt find it from
+              ;; KDE_INSTALL_FULL_LIBEXECDIR, But we are install to itself prefix.
+              ;; so we set it.
+              (string-append "-Dkglobalacceld_PATH="
+                             #$(this-package-input "kglobalacceld")
+                             "/libexec/kglobalacceld"))
+           #:phases
            #~(modify-phases %standard-phases
                (add-after 'unpack 'patch-wallpaper
                  (lambda* (#:key inputs #:allow-other-keys)
@@ -2637,24 +2652,15 @@ sensors, process information and other system resources.")
                    (let ((xmessage (search-input-file inputs "/bin/xmessage"))
                          (xsetroot (search-input-file inputs "/bin/xsetroot"))
                          (xrdb (search-input-file inputs "/bin/xrdb"))
-                         (kinit #$(this-package-input "kinit"))
                          (qttools #$(this-package-input "qttools")))
                      (substitute* "startkde/startplasma.cpp"
-                       (("xmessage") xmessage)
+                       (("xmessage") xmessage))
+                     (substitute* "kcms/krdb/krdb.cpp"
                        (("xsetroot") xsetroot))
                      (substitute* (list "kcms/fonts/fontinit.cpp"
                                         "kcms/fonts/fonts.cpp"
                                         "kcms/krdb/krdb.cpp")
                        (("xrdb") xrdb))
-                     (substitute* "startkde/plasma-session/startup.cpp"
-                       (("CMAKE_INSTALL_FULL_LIBEXECDIR_KF5..")
-                        (string-append "\"" kinit
-                                       "/libexec/kf5")))
-                     (substitute* (list
-                                   "startkde/startplasma-wayland.cpp"
-                                   "startkde/startplasma-x11.cpp")
-                       (("kdeinit5_shutdown")
-                        (string-append kinit "/bin/kdeinit5_shutdown")))
                      ;; QT_INSTALL_BINS refers to qtbase, but qdbus is in
                      ;; qttools.
                      (substitute* "CMakeLists.txt"
@@ -2673,18 +2679,19 @@ sensors, process information and other system resources.")
                      (setenv "QT_QPA_PLATFORM" "offscreen")
                      (setenv "QT_PLUGIN_PATH"
                              (string-append #$output
-                                            "/lib/qt5/plugins:"
+                                            "/lib/qt6/plugins:"
                                             (getenv "QT_PLUGIN_PATH")))
-                     (setenv "QML2_IMPORT_PATH"
+                     (setenv "QML_IMPORT_PATH"
                              (string-append #$output
-                                            "/lib/qt5/qml:"
-                                            (getenv "QML2_IMPORT_PATH")))
+                                            "/lib/qt6/qml:"
+                                            (getenv "QML_IMPORT_PATH")))
                      (invoke "dbus-launch" "ctest"
                              "--output-on-failure"
                              "--rerun-failed"
                              "-E"
-                             "(appstreamtest|tasksmodeltest|shelltest|\
-testimagefinder|systemtraymodeltest|testimagelistmodel|\
+                             "(tasktoolstest|fetchinitialplayertest|mprisdeclarativetest|\
+appstreamtest|locationsrunnertest|testimagefrontend|mediakeystest|\
+tasksmodeltest|shelltest|testimagefinder|systemtraymodeltest|testimagelistmodel|\
 testpackageimagelistmodel|testimageproxymodel|testslidemodel|testdesktop)")))))))
     (home-page "https://invent.kde.org/plasma/plasma-workspace")
     (synopsis "Plasma workspace components")
