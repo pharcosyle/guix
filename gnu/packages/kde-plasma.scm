@@ -676,14 +676,14 @@ are pressed.")
 (define-public kinfocenter
   (package
     (name "kinfocenter")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "15hm828ifrrzsbkvknqwf0l3qxr45pdi49z823cw421z45r8ivkj"))))
+                "13i692d57pl6sjsv871szzfng86z2gllxg9p2li9aky5smzspwas"))))
     (build-system cmake-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
@@ -702,9 +702,9 @@ are pressed.")
                                                   (string-append "/bin/" cmd))
                                                  "\""))))))
                               (substitute* "CMakeLists.txt"
-                                (("\\$\\{KDE_INSTALL_FULL_BINDIR\\}/systemsettings5")
+                                (("\\$\\{KDE_INSTALL_FULL_BINDIR\\}/systemsettings")
                                  (search-input-file inputs
-                                                    "/bin/.systemsettings5-real")))
+                                                    "/bin/.systemsettings-real")))
                               (substitute* "Modules/kwinsupportinfo/kcm_kwinsupportinfo.json.in"
                                 (("@QtBinariesDir@/qdbus")
                                  (search-input-file inputs "/bin/qdbus")))
@@ -726,34 +726,34 @@ are pressed.")
                                          "Modules/egl/main.cpp") "eglinfo")
                               (replace '("Modules/xserver/kcm_xserver.json"
                                          "Modules/xserver/main.cpp") "xdpyinfo")))))))
-    (native-inputs (list aha extra-cmake-modules kdoctools pkg-config))
+    (native-inputs (list aha extra-cmake-modules kdoctools-6 pkg-config qttools))
     ;; * vulkaninfo
     ;; Wayland KCM
     (inputs (list dmidecode
                   ;; fwupdmgr ;; Packaged on master branch already
-                  kconfig
-                  kconfigwidgets
-                  kcoreaddons
-                  kirigami
-                  ki18n
-                  kcmutils
-                  kio
-                  kservice
+                  kauth-6
+                  kconfig-6
+                  kconfigwidgets-6
+                  kcoreaddons-6
+                  kirigami-6
+                  ki18n-6
+                  kcmutils-6
+                  kio-6
+                  kservice-6
                   libusb
-                  kwidgetsaddons
-                  kdeclarative
-                  kpackage
-                  kwayland
+                  kwidgetsaddons-6
+                  kdeclarative-6
+                  kpackage-6
+                  kwayland-6
                   mesa-utils
                   pciutils
-                  plasma-framework
-                  qtbase-5
-                  solid
+                  libplasma
+                  qtbase
+                  solid-6
                   util-linux
                   vulkan-tools
                   wayland-utils
                   xdpyinfo
-                  qttools-5
                   clinfo))
     (propagated-inputs (list system-settings))
     (home-page "https://invent.kde.org/plasma/kinfocenter")
