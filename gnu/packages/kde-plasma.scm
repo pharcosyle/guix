@@ -2789,42 +2789,50 @@ UI for Plasma")
 (define-public powerdevil
   (package
     (name "powerdevil")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "151qhpf5j33jk3jhhxsr4zaf0z3f8xlnw8inmzf2a8lficiq9060"))))
+                "0n951xmr81c6kafmlhxx137hjsp9v3ys6hci9k93364hh4hvcwqp"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules qttools-5 pkg-config))
-    (inputs (list bluez-qt
+    (native-inputs (list extra-cmake-modules qttools pkg-config))
+    (inputs (list bluez-qt-6
                   glib
-                  kauth
-                  kactivities
-                  kcmutils
+                  kauth-6
+                  plasma-activities
+                  kcmutils-6
                   kscreen
-                  kidletime
-                  kconfig
-                  kdbusaddons
-                  solid
-                  ki18n
-                  kcrash
-                  knotifyconfig
-                  networkmanager-qt
-                  kio
-                  kwayland
-                  kglobalaccel
-                  kcrash
-                  knotifications
-                  kirigami
+                  kidletime-6
+                  kconfig-6
+                  kdbusaddons-6
+                  kxmlgui-6
+                  kitemmodels-6
+                  layer-shell-qt
+                  solid-6
+                  ki18n-6
+                  kcrash-6
+                  knotifyconfig-6
+                  networkmanager-qt-6
+                  kio-6
+                  kwayland-6
+                  kglobalaccel-6
+                  kcrash-6
+                  knotifications-6
+                  kirigami-6
                   libcap
                   libkscreen
                   network-manager
                   plasma-workspace
                   eudev
-                  qtx11extras))
+                  libxkbcommon))
+    (arguments (list #:qtbase qtbase
+                     #:phases #~(modify-phases %standard-phases
+                                  (add-before 'check 'setenv
+                                    (lambda _
+                                      (setenv "HOME" (getcwd)))))))
     (synopsis "Manage power consumption")
     (description "This package provides the power consumption settings
 of a Plasma shell.")
