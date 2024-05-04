@@ -2112,7 +2112,7 @@ integration of Qt applications when running on a KDE Plasma workspace.")
 (define-public plasma-nm
   (package
     (name "plasma-nm")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -2120,39 +2120,42 @@ integration of Qt applications when running on a KDE Plasma workspace.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1w9zclih2mh8gqwahsmbbm0nrg1b6gcr5w2w02szlw30iq8k92j8"))))
+                "1py6i0wc1vx1lzid1dkjqbyjh3jidz60hiwwgdfgid7w0nfrslb4"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
+     (list #:qtbase qtbase
+           #:phases #~(modify-phases %standard-phases
                         (replace 'check
                           (lambda* (#:key tests? #:allow-other-keys)
                             (when tests?
                               (invoke "ctest" "-E" "mobileproviderstest")))))))
     (native-inputs (list extra-cmake-modules pkg-config))
     (home-page "https://invent.kde.org/plasma/plasma-nm")
-    (inputs (list kconfigwidgets
-                  kcompletion
-                  kcoreaddons
-                  kcmutils
-                  kdeclarative
-                  kdbusaddons
-                  kio
-                  ki18n
-                  networkmanager-qt
-                  knotifications
-                  kirigami
-                  plasma-framework
-                  modemmanager-qt
+    (inputs (list kconfigwidgets-6
+                  kcompletion-6
+                  kcoreaddons-6
+                  kcmutils-6
+                  kdeclarative-6
+                  kdbusaddons-6
+                  kio-6
+                  ki18n-6
+                  networkmanager-qt-6
+                  knotifications-6
+                  kirigami-6
+                  libplasma
+                  modemmanager-qt-6
                   network-manager
-                  qca
-                  kservice
-                  solid
-                  prison
-                  kwallet
-                  kwidgetsaddons
-                  kwindowsystem
+                  qca-qt6
+                  kservice-6
+                  solid-6
+                  prison-6
+                  kwallet-6
+                  kwidgetsaddons-6
+                  kwindowsystem-6
+                  ksvg
+                  qcoro-qt6
                   openconnect
-                  qtdeclarative-5))
+                  qtdeclarative))
     (synopsis "Plasma applet for managing network connections")
     (description "This package provides Plasma applet for managing network
 connections.")
