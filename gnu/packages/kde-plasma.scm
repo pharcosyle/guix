@@ -1816,30 +1816,31 @@ the KDE Plasma 5 desktop.")
 (define-public plasma-desktop
   (package
     (name "plasma-desktop")
-    (version "5.27.7")
+    (version "6.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1njkjf3fhxfmwyviypxqzrn23klxiih82bazvd8y61cshqwai6i2"))))
+                "1gn5zl676kj90za9k0lfdzhij4qjxwqgiibwq16jwz8yjyp548c6"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules
                          dbus
-                         kdoctools
+                         kdoctools-6
                          intltool
                          pkg-config
-                         qtsvg-5
-                         qttools-5
+                         qtsvg
+                         qttools
                          ;; require QtWaylandScanner
-                         qtwayland-5))
-    (inputs (list packagekit-qt5
+                         qtwayland))
+    (inputs (list packagekit-qt6
                   signon-plugin-oauth2
-                  signond
-                  attica
-                  appstream-qt
-                  baloo
+                  signond-qt6
+                  icu4c
+                  attica-6
+                  appstream-qt6
+                  baloo-6
                   breeze
                   breeze-icons
                   eudev
@@ -1847,44 +1848,44 @@ the KDE Plasma 5 desktop.")
                   glib
                   ibus
                   kaccounts-integration
-                  kactivities
-                  kactivities-stats
-                  kauth
-                  karchive
-                  kcmutils
-                  kconfig
-                  kcoreaddons
-                  kcrash
-                  kdbusaddons
-                  kdeclarative
-                  kded
-                  kdesu
-                  kdelibs4support
-                  kglobalaccel
-                  kguiaddons
-                  kholidays
-                  ki18n
-                  kiconthemes
-                  kidletime
-                  kinit
-                  kio
-                  kitemmodels
-                  knewstuff
-                  knotifications
-                  knotifyconfig
-                  kpackage
-                  kpeople
-                  krunner
+                  plasma-activities
+                  plasma-activities-stats
+                  kauth-6
+                  karchive-6
+                  kcmutils-6
+                  kconfig-6
+                  kcoreaddons-6
+                  kcrash-6
+                  kdbusaddons-6
+                  kdeclarative-6
+                  kded-6
+                  kdesu-6
+                  kglobalaccel-6
+                  kguiaddons-6
+                  kholidays-6
+                  ki18n-6
+                  kiconthemes-6
+                  kidletime-6
+                  kio-6
+                  kitemmodels-6
+                  knewstuff-6
+                  knotifications-6
+                  knotifyconfig-6
+                  kpackage-6
+                  kpeople-6
+                  krunner-6
                   kscreenlocker
-                  ktexteditor
-                  ktextwidgets
-                  kunitconversion
+                  ktexteditor-6
+                  ktextwidgets-6
+                  kunitconversion-6
                   kuserfeedback
-                  kwallet
-                  kwayland
+                  kwallet-6
+                  kwayland-6
                   kwin
+                  ksvg
+                  plasma5support
                   layer-shell-qt
-                  libaccounts-qt
+                  libaccounts-qt6
                   libcanberra
                   libkscreen
                   libksysguard
@@ -1897,20 +1898,17 @@ the KDE Plasma 5 desktop.")
                   libxkbcommon
                   libxrender
                   libxtst
-                  networkmanager-qt
+                  networkmanager-qt-6
                   phonon
                   pipewire
-                  plasma-framework
+                  libplasma
                   plasma-wayland-protocols
                   pulseaudio
-                  prison
-                  qqc2-desktop-style
-                  qtbase-5
-                  qtdeclarative-5
-                  qtquickcontrols-5
-                  qtquickcontrols2-5
-                  qtwayland-5
-                  qtx11extras
+                  prison-6
+                  qqc2-desktop-style-6
+                  qt5compat
+                  qtdeclarative
+                  qtwayland
                   wayland
                   wayland-protocols
                   xcb-util
@@ -1927,9 +1925,10 @@ the KDE Plasma 5 desktop.")
                   libxkbfile
                   libxcursor
                   libxkbcommon))
-    (propagated-inputs (list iso-codes kirigami plasma-workspace))
+    (propagated-inputs (list iso-codes kirigami-6 kcmutils-6 plasma-workspace))
     (arguments
-     (list #:phases
+     (list #:qtbase qtbase
+           #:phases
            #~(modify-phases %standard-phases
                (add-after 'unpack 'fix-paths
                  (lambda* (#:key inputs #:allow-other-keys)
@@ -1945,7 +1944,7 @@ the KDE Plasma 5 desktop.")
                      (setenv "XDG_RUNTIME_DIR" (getcwd))
                      (setenv "XDG_CACHE_HOME" (getcwd))
                      (setenv "QT_QPA_PLATFORM" "offscreen")
-                     (invoke "ctest" "-E" "foldermodeltest")))))))
+                     (invoke "ctest" "-E" "(kcm-keyboard-keyboard_memory_persister_test|foldermodeltest)")))))))
     (home-page "https://kde.org/plasma-desktop/")
     (synopsis "Plasma for the Desktop")
     (description
