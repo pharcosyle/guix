@@ -553,7 +553,7 @@ KDSoap.")
 (define-public kio-extras
   (package
     (name "kio-extras")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -561,7 +561,7 @@ KDSoap.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ygxfq62idpgf1dlic1245y5gf0fnkrpbqxd230xmxi7a35za8qd"))))
+                "1is3jiwwnasc7f0qyr100qsg4lwnwrqd0ld4bxnw6qf1c7s62yps"))))
     (build-system cmake-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
@@ -571,24 +571,27 @@ KDSoap.")
                               (setenv "HOME" (getcwd))
                               (setenv "TMPDIR" (getcwd))
                               (invoke "ctest" "-E" "(thumbnailtest|testkioarchive)")))))))
-    (native-inputs (list extra-cmake-modules dbus kdoctools pkg-config qttools-5))
-    ;; TODO: libappimage, kdsoap-ws-discovery-client
+    (native-inputs (list extra-cmake-modules dbus kdoctools-6 pkg-config qttools))
+    ;; TODO: libappimage
     (inputs (list gperf
                   imath
-                  kactivities
-                  kactivities-stats
-                  karchive
-                  kbookmarks
-                  kconfig
-                  kconfigwidgets
-                  kcoreaddons
-                  kdnssd
-                  kdbusaddons
-                  kdsoap
-                  kguiaddons
-                  ki18n
-                  kio
-                  ksyntaxhighlighting
+                  plasma-activities
+                  plasma-activities-stats
+                  karchive-6
+                  kbookmarks-6
+                  kcmutils-6
+                  kconfig-6
+                  kconfigwidgets-6
+                  kcoreaddons-6
+                  kdnssd-6
+                  kdbusaddons-6
+                  kdsoap-qt6
+                  kdsoap-ws-discovery-client
+                  kguiaddons-6
+                  ktextwidgets-6
+                  ki18n-6
+                  kio-6
+                  ksyntaxhighlighting-6
                   libimobiledevice
                   libkexiv2
                   libmtp
@@ -597,11 +600,13 @@ KDSoap.")
                   libtirpc
                   openexr
                   phonon
-                  qtbase-5
-                  qtsvg-5
+                  qtbase
+                  qt5compat
+                  qcoro-qt6
+                  qtsvg
                   samba
                   shared-mime-info
-                  solid
+                  solid-6
                   taglib
                   zlib))
     (home-page "https://community.kde.org/Frameworks")
