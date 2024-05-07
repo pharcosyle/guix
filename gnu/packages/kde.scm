@@ -1447,23 +1447,27 @@ unmount drives and view them in a file manager.")
 (define-public ktimer
   (package
     (name "ktimer")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/ktimer-" version ".tar.xz"))
               (sha256
                (base32
-                "1n5az5cgb0q28lz5f7afqjlfga32q232g836nkl1sfq8n5whj5z5"))))
+                "0hh9mjnxf57vy20mji5i0z874jfhrx637xk7yimcva52nc5v0wj8"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules
-           kdoctools))
+           kdoctools-6))
     (inputs
-     (list kdbusaddons
-           ki18n
-           kio
-           knotifications))
+     (list kdbusaddons-6
+           ki18n-6
+           kio-6
+           knotifications-6
+           kconfigwidgets-6
+           kstatusnotifieritem
+           qt5compat))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://kde.org/applications/utilities/ktimer")
     (synopsis "Countdown Launcher")
     (description "KTimer is a little tool to execute programs after some time.
