@@ -246,26 +246,26 @@ well as CD-ROM images.")
 (define-public filelight
   (package
     (name "filelight")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/filelight-" version ".tar.xz"))
               (sha256
                (base32
-                "1mwl1dkknvqw9hd5jsh4cdx1zd8f6rxca0vyq01wrx44q9p6dn1n"))))
+                "13mvd21p4m1kd2mamvdxx34yzvzr71hmlgb5qqs44zpwwzyvsl8m"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kirigami
-                  kquickcharts
-                  kxmlgui
-                  kio
-                  ki18n
-                  kdeclarative
-                  qqc2-desktop-style
-                  qtgraphicaleffects
-                  qtquickcontrols2-5
-                  qtsvg-5))
+    (inputs (list kirigami-6
+                  kirigami-addons
+                  kquickcharts-6
+                  kxmlgui-6
+                  kio-6
+                  ki18n-6
+                  kdeclarative-6
+                  qqc2-desktop-style-6
+                  qtsvg))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://apps.kde.org/filelight/")
     (synopsis "Visualize the disk usage")
     (description "Filelight is an application to visualize the disk usage on
