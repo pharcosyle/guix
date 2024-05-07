@@ -409,7 +409,7 @@ Kate's features include:
 (define-public kdebugsettings
   (package
     (name "kdebugsettings")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -417,17 +417,18 @@ Kate's features include:
                                   ".tar.xz"))
               (sha256
                (base32
-                "02igg8ry1cxa83pdj6pgwzw7hpjwfrfk57d9ybgfvy2x08d5kvqz"))))
+                "0h5srx78dqym260saz4bv1dv8gkfnsgvfqnbd0hq32xm1h8sbw0g"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kcoreaddons
-                  kconfig
-                  kdbusaddons
-                  ki18n
-                  kwidgetsaddons
-                  kitemviews
-                  kcompletion
-                  kxmlgui))
+    (inputs (list kcoreaddons-6
+                  kconfig-6
+                  kdbusaddons-6
+                  ki18n-6
+                  kwidgetsaddons-6
+                  kitemviews-6
+                  kcompletion-6
+                  kxmlgui-6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/utilities/kdebugsettings")
     (synopsis "Choose which QLoggingCategory are displayed")
     (description
