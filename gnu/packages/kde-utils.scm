@@ -1217,30 +1217,30 @@ Features:
 (define-public sweeper
   (package
     (name "sweeper")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/sweeper-" version ".tar.xz"))
        (sha256
-        (base32 "19b382cgdcd4qh4ppdmbhsacvcc9nlbs7spcg8ii02bdpx6qw9b7"))))
+        (base32 "1pddglzvkqvv0qf0pd7w1cy2q1bdygjwfdahcmbqqbn1ws15hx8k"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kactivities-stats
-           kbookmarks
-           kcrash
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           ki18n
-           kio
-           ktextwidgets
-           kxmlgui
+     (list plasma-activities-stats
+           kbookmarks-6
+           kcrash-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           ki18n-6
+           kio-6
+           ktextwidgets-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5))
+           qtbase))
     (home-page "https://apps.kde.org/sweeper/")
     (synopsis "Temporary file and history cleaner")
     (description "
