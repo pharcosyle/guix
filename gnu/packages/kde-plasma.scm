@@ -1615,44 +1615,45 @@ on top of Baloo.")
 (define-public plasma
   (package
     (name "plasma")
-    (version "5.27.7")
+    (version "6.0.4")
     (source #f)
     (build-system trivial-build-system)
     (arguments
      (list #:builder #~(begin
                          (mkdir #$output))))
     ;; TODO: cleanup, check what is no need
-    (propagated-inputs (list kdeclarative ;; require by sddm breeze theme
-                             qqc2-desktop-style ; qtquickcontrols2 theme
-                             baloo
+    (propagated-inputs (list kdeclarative-6 ;; require by sddm breeze theme
+                             plasma5support ;; require by sddm breeze theme
+                             qt5compat ;; require by sddm breeze theme
+                             kiconthemes-6 ;; require by sddm breeze theme
+                             ksvg ;; require by sddm breeze theme
+                             qqc2-desktop-style-6 ; qtquickcontrols2 theme
+                             ocean-sound-theme
+                             qtdeclarative
+                             qtsvg ;; for svg support
+                             qtbase ;; why?
+                             baloo-6
                              breeze-icons ; default mouse icon
                              breeze
                              breeze-gtk
+                             layer-shell-qt
                              drkonqi
                              kactivitymanagerd ; require this run dbus
                              kde-cli-tools
                              kdecoration
                              kdeplasma-addons
-                             kgamma
-                             khotkeys
-                             ktexteditor
-
+                             ktexteditor-6
                              kscreen
                              libkscreen
-
                              ksystemstats
                              kwallet-pam
                              kwin
-                             kinit
-
+                             plasma-workspace-wallpapers
                              libksysguard
                              milou
-                             ;; oxygen
                              oxygen-sounds
-
+                             qqc2-breeze-style
                              kde-gtk-config
-                             kdesu
-                             krunner
                              kinfocenter
                              kscreenlocker
                              ksshaskpass
@@ -1678,16 +1679,14 @@ on top of Baloo.")
                               (resolve-interface
                                '(gnu packages kde-systemtools))
                               'spectacle)
-
-                             kwayland-integration
                              plasma-firewall
                              plasma-integration
                              plasma-nm
                              plasma-pa
                              plasma-systemmonitor
                              ;; plasma-thunderbolt ;; waiting for bolt
-
-                             kglobalaccel
+                             kglobalaccel-6
+                             kglobalacceld
                              plasma-vault
                              plasma-workspace
                              powerdevil))
