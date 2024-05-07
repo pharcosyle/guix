@@ -379,17 +379,18 @@ This package is part of the KDE administration module.")
 (define-public spectacle
   (package
     (name "spectacle")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/spectacle-" version ".tar.xz"))
        (sha256
-        (base32 "1fyklcvz0zndxabflkka75rham6768rp01as7m5dv0ic4lipkf9m"))))
+        (base32 "0li1fhhvqk5y1j0jpazhjw1qh5mnwzn4dkl85bmlsn5hbqszf621"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases
+     (list #:qtbase qtbase
+           #:phases
            #~(modify-phases %standard-phases
                (replace 'check
                  (lambda* (#:key tests? #:allow-other-keys)
@@ -397,33 +398,33 @@ This package is part of the KDE administration module.")
                      (invoke "ctest" "-E"
                              "filename_test")))))))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kconfig
-           kcoreaddons
-           kdbusaddons
-           kglobalaccel
-           kguiaddons
-           ki18n
-           kio
-           kirigami
-           knotifications
+     (list kconfig-6
+           kcoreaddons-6
+           kdbusaddons-6
+           kglobalaccel-6
+           kguiaddons-6
+           ki18n-6
+           kio-6
+           kirigami-6
+           knotifications-6
            kpipewire
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
-           libxcb
-           purpose
-           qtdeclarative-5
-           qtquickcontrols2-5
-           qtwayland-5
-           qtx11extras
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
+           purpose-6
+           layer-shell-qt
+           qtdeclarative
+           qtmultimedia
+           qtwayland
            wayland
            wayland-protocols
            plasma-wayland-protocols
            xcb-util
            xcb-util-cursor
-           xcb-util-image))
+           xcb-util-image
+           libxkbcommon))
     (home-page "https://apps.kde.org/spectacle/")
     (synopsis "Screenshot capture utility for KDE")
     (description "Spectacle is a screenshot taking utility for the KDE.")
