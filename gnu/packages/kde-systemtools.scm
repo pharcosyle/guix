@@ -193,48 +193,46 @@ document meta data file.")
 (define-public konsole
   (package
     (name "konsole")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/konsole-" version ".tar.xz"))
        (sha256
-        (base32 "1k68y1i3g3bsz1dz81jhkx1q2fb13rbm5ywh632bcyln0c6l0vz0"))))
+        (base32 "0bzf83jflh3s0ivpdn2i0g25088axyik3bdw29fdzmrnclrpwik6"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools zlib))
+     (list extra-cmake-modules kdoctools-6 zlib))
     (inputs
-     (list kbookmarks
-           kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kguiaddons
-           ki18n
-           kiconthemes
-           kinit
-           kio
-           knewstuff
-           kglobalaccel
-           knotifications
-           knotifyconfig
-           kparts
-           kpty
-           kservice
-           ktextwidgets
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+     (list kbookmarks-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           kglobalaccel-6
+           knotifications-6
+           knotifyconfig-6
+           kparts-6
+           kpty-6
+           kservice-6
+           ktextwidgets-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5
-           qtscript
-           qtmultimedia-5
+           qt5compat
+           qtmultimedia
            icu4c))
     (arguments
-     `(#:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
+     (list #:qtbase qtbase
+           #:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
     (home-page "https://www.kde.org/")
     (synopsis "Terminal emulator similar for KDE")
     (description "Konsole is a terminal emulator, similar to xterm, built on
