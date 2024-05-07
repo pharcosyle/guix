@@ -605,24 +605,26 @@ management system and its Plasma integration components.")
 (define-public kaccounts-providers
   (package
     (name "kaccounts-providers")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lrmj6r09ypnpl2s586i4rd3fk3760qlxyrhh91k43wkb8i6m8f0"))))
+                "064wfjisyx1bcpk8a15p28d7pncgdikzzy00kyqimdjghn56wbsf"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules intltool))
     (inputs (list kaccounts-integration
-                  kcoreaddons
-                  kdeclarative
-                  ki18n
-                  kio
-                  libaccounts-qt
-                  qtwebengine-5
-                  signond))
+                  kcoreaddons-6
+                  kdeclarative-6
+                  kpackage-6
+                  ki18n-6
+                  kio-6
+                  libaccounts-qt6
+                  qtwebengine
+                  signond-qt6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/network/kaccounts-providers")
     (synopsis "Online account providers for the KAccounts system")
     (description "This package provides online account providers for the
