@@ -438,26 +438,29 @@ Kate's features include:
 (define-public kbackup
   (package
     (name "kbackup")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kbackup-" version ".tar.xz"))
               (sha256
                (base32
-                "121w54ivmq8qnxc97g47i8vq4nkivypp84pqs9rs5bid4cpfvh9p"))))
+                "0n3i4lvxs4bh72rswydwljfszmlr8jmkd6bsiy14895j5rr1srq2"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kguiaddons
-                  knotifications
-                  ki18n
-                  kio
-                  kxmlgui
-                  kiconthemes
-                  karchive
-                  kwidgetsaddons
+    (inputs (list kguiaddons-6
+                  knotifications-6
+                  ki18n-6
+                  kio-6
+                  kxmlgui-6
+                  kiconthemes-6
+                  karchive-6
+                  kwidgetsaddons-6
+                  kstatusnotifieritem
                   libarchive
-                  shared-mime-info))
+                  shared-mime-info
+                  qt5compat))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://apps.kde.org/kbackup/")
     (synopsis "Backup program with an easy-to-use interface")
     (description
