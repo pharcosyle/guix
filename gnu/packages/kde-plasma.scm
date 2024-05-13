@@ -1592,6 +1592,26 @@ on top of Baloo.")
     (description "This package provides Oxygen sounds for the KDE desktop.")
     (license license:lgpl3+)))
 
+(define-public ocean-sound-theme
+  (package
+    (name "ocean-sound-theme")
+    (version "6.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/"
+                                  version "/ocean-sound-theme"  "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1689lirh4q6gfs3c31q6hibazk0a9m1091m6zqj6ixsv04v9f29s"))))
+    (build-system cmake-build-system)
+    (native-inputs (list extra-cmake-modules))
+    (inputs (list qtbase))
+    (home-page "https://invent.kde.org/plasma/ocean-sound-theme")
+    (synopsis "Ocean Sound Theme for Plasma")
+    (description "This package provides Ocean Sound Theme for Plasma.")
+    (license license:lgpl3+)))
+
 (define-public plasma
   (package
     (name "plasma")
