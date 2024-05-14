@@ -135,10 +135,6 @@
            ;; bootstrapping (for genptl.py), not when building from a release.
            #~(list "PYTHON=true")
 
-           ;; With GCC 12 there are danging pointer warnings that become
-           ;; errors and fail the build.
-           "--disable-werror"
-
            ;; GRUB fails to load modules stripped with --strip-unneeded.
            #:strip-flags
            #~(list "--strip-debug" "--enable-deterministic-archives")
