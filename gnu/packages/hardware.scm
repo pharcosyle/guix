@@ -380,7 +380,6 @@ Notable features include:
            upower
            usbutils
            util-linux
-           wireless-tools
            vdpauinfo
            vulkan-tools
            xdpyinfo
