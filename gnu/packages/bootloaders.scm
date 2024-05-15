@@ -237,8 +237,8 @@
        ;; file system will be readable by GRUB without rebooting.
        ,@(if (member (or (%current-target-system)
                          (%current-system))
-                     (package-supported-systems fuse-2))
-             `(("fuse" ,fuse-2))
+                     (package-supported-systems fuse))
+             `(("fuse" ,fuse))
              '())
 
        ("freetype" ,freetype)
