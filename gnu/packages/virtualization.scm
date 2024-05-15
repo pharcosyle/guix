@@ -477,8 +477,8 @@ exec smbd $@")))
            perl
            pkg-config
            python-wrapper
-           python-sphinx
-           python-sphinx-rtd-theme
+           ;; python-sphinx
+           ;; python-sphinx-rtd-theme
            texinfo
            ;; The following static libraries are required to build
            ;; the static output of QEMU.
