@@ -8034,7 +8034,6 @@ interface in sysfs, which can be accomplished with the included udev rules.")
        ("sed" ,sed)
        ("usbutils" ,usbutils)
        ("util-linux" ,util-linux)
-       ("wireless-tools" ,wireless-tools)
        ,@(if (let ((system (or (%current-target-system)
                                (%current-system))))
                (or (string-prefix? "i686-" system)
@@ -8114,8 +8113,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                                                "hdparm"
                                                "iw"
                                                "pciutils"
-                                               "rfkill"
-                                               "wireless-tools"))))))
+                                               "rfkill"))))))
                          bin-files)))))))
     (home-page "https://linrunner.de/en/tlp/tlp.html")
     (synopsis "Power management tool for Linux")
