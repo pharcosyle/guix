@@ -960,9 +960,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
         iproute
         wget
 	nss-certs
-        ;; wireless-tools is deprecated in favor of iw, but it's still what
-        ;; many people are familiar with, so keep it around.
-        iw wireless-tools))
+        iw))
 
 (define-deprecated %base-packages-disk-utilities #f '())
 
