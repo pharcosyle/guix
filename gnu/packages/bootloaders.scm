@@ -307,20 +307,18 @@ menu to select one of the installed operating systems.")
         '(list "PYTHON=true"))
        ((#:tests? _ #t)
         #f)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (replace 'patch-stuff
-             (lambda* (#:key native-inputs inputs #:allow-other-keys)
-               (substitute* "grub-core/Makefile.in"
-                 (("/bin/sh") (which "sh")))
+       ((#:phases phases #~%standard-phases)
+        #~(modify-phases #$phases
+            (replace 'patch-stuff
+              (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                (substitute* "grub-core/Makefile.in"
+                  (("/bin/sh") (which "sh")))
 
-               ;; Make the font visible.
-               (copy-file (assoc-ref (or native-inputs inputs)
-                                     "unifont")
-                          "unifont.bdf.gz")
-               (system* "gunzip" "unifont.bdf.gz")
-
-               #t))))))))
+                ;; Make the font visible.
+                (copy-file (assoc-ref (or native-inputs inputs)
+                                      "unifont")
+                           "unifont.bdf.gz")
+                (system* "gunzip" "unifont.bdf.gz")))))))))
 
 (define-public grub-coreboot
   (package
@@ -328,64 +326,64 @@ menu to select one of the installed operating systems.")
     (name "grub-coreboot")
     (synopsis "GRand Unified Boot loader (Coreboot payload version)")
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments grub)
-           ((#:phases phases '%standard-phases)
-            `(modify-phases ,phases
-               (add-before 'check 'disable-broken-tests
-                 (lambda _
-                   (setenv "DISABLE_HARD_ERRORS" "1")
-                   (setenv
-                    "XFAIL_TESTS"
-                    (string-join
-                     ;; TODO: All the tests below use grub shell
-                     ;; (tests/util/grub-shell.in), and here grub-shell uses
-                     ;; QEMU and a Coreboot image to run the tests. Since we
-                     ;; don't have a Coreboot package in Guix yet these tests
-                     ;; are disabled. See the Guix bug #64667 for more details
-                     ;; (https://debbugs.gnu.org/cgi/bugreport.cgi?bug=64667).
-                     (list
-                      "pata_test"
-                      "ahci_test"
-                      "uhci_test"
-                      "ehci_test"
-                      "example_grub_script_test"
-                      "ohci_test"
-                      "grub_script_eval"
-                      "grub_script_echo1"
-                      "grub_script_test"
-                      "grub_script_leading_whitespace"
-                      "grub_script_echo_keywords"
-                      "grub_script_vars1"
-                      "grub_script_for1"
-                      "grub_script_while1"
-                      "grub_script_if"
-                      "grub_script_comments"
-                      "grub_script_functions"
-                      "grub_script_continue"
-                      "grub_script_break"
-                      "grub_script_shift"
-                      "grub_script_blockarg"
-                      "grub_script_return"
-                      "grub_script_setparams"
-                      "grub_cmd_date"
-                      "grub_cmd_sleep"
-                      "grub_cmd_regexp"
-                      "grub_script_not"
-                      "grub_cmd_echo"
-                      "grub_script_expansion"
-                      "grub_script_gettext"
-                      "grub_script_escape_comma"
-                      "help_test"
-                      "grub_script_strcmp"
-                      "test_sha512sum"
-                      "grub_cmd_tr"
-                      "test_unset"
-                      "file_filter_test")
-                     " "))))))
-           ((#:configure-flags flags
-             ''())
-            `(cons* "--with-platform=coreboot"
-                    ,flags)))))))
+     (substitute-keyword-arguments (package-arguments grub)
+       ((#:phases phases #~%standard-phases)
+        #~(modify-phases #$phases
+            (add-before 'check 'disable-broken-tests
+              (lambda _
+                (setenv "DISABLE_HARD_ERRORS" "1")
+                (setenv
+                 "XFAIL_TESTS"
+                 (string-join
+                  ;; TODO: All the tests below use grub shell
+                  ;; (tests/util/grub-shell.in), and here grub-shell uses
+                  ;; QEMU and a Coreboot image to run the tests. Since we
+                  ;; don't have a Coreboot package in Guix yet these tests
+                  ;; are disabled. See the Guix bug #64667 for more details
+                  ;; (https://debbugs.gnu.org/cgi/bugreport.cgi?bug=64667).
+                  (list
+                   "pata_test"
+                   "ahci_test"
+                   "uhci_test"
+                   "ehci_test"
+                   "example_grub_script_test"
+                   "ohci_test"
+                   "grub_script_eval"
+                   "grub_script_echo1"
+                   "grub_script_test"
+                   "grub_script_leading_whitespace"
+                   "grub_script_echo_keywords"
+                   "grub_script_vars1"
+                   "grub_script_for1"
+                   "grub_script_while1"
+                   "grub_script_if"
+                   "grub_script_comments"
+                   "grub_script_functions"
+                   "grub_script_continue"
+                   "grub_script_break"
+                   "grub_script_shift"
+                   "grub_script_blockarg"
+                   "grub_script_return"
+                   "grub_script_setparams"
+                   "grub_cmd_date"
+                   "grub_cmd_sleep"
+                   "grub_cmd_regexp"
+                   "grub_script_not"
+                   "grub_cmd_echo"
+                   "grub_script_expansion"
+                   "grub_script_gettext"
+                   "grub_script_escape_comma"
+                   "help_test"
+                   "grub_script_strcmp"
+                   "test_sha512sum"
+                   "grub_cmd_tr"
+                   "test_unset"
+                   "file_filter_test")
+                  " "))))))
+       ((#:configure-flags flags
+         ''())
+        #~(cons* "--with-platform=coreboot"
+                 #$flags))))))
 
 (define-public grub-efi
   (package
@@ -396,43 +394,58 @@ menu to select one of the installed operating systems.")
      (modify-inputs (package-inputs grub)
        (prepend efibootmgr mtools)))
     (native-inputs
-     ;; The tests are skipped in this package so we remove some test dependencies.
      (modify-inputs (package-native-inputs grub)
-       (delete "parted" "qemu" "xorriso")))
+       (prepend (match (or (%current-target-system) (%current-system))
+                  ((? target-x86?) ovmf)
+                  ((? target-arm32?) ovmf-arm)
+                  ((? target-aarch64?) ovmf-aarch64)))))
     (arguments
-     `(;; TODO: Tests need a UEFI firmware for qemu. There is one at
-       ;; https://github.com/tianocore/edk2/tree/master/OvmfPkg .
-       ;; Search for 'OVMF' in "tests/util/grub-shell.in".
-       ,@(substitute-keyword-arguments (package-arguments grub)
-           ((#:tests? _ #f) #f)
-           ((#:configure-flags flags ''())
-            `(cons* "--with-platform=efi"
-                    ,@(if (string-prefix? "x86_64"
-                                          (or (%current-target-system)
-                                              (%current-system)))
-                          '("--enable-stack-protector") ; EFI-only for now
-                          '())
-                    ,flags))
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (add-after 'patch-stuff 'use-absolute-efibootmgr-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "grub-core/osdep/unix/platform.c"
-                     (("efibootmgr")
-                      (search-input-file inputs
-                                         "/sbin/efibootmgr")))))
-               (add-after 'patch-stuff 'use-absolute-mtools-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((mtools (assoc-ref inputs "mtools")))
-                     (substitute* "util/grub-mkrescue.c"
-                       (("\"mformat\"")
-                        (string-append "\"" mtools
-                                       "/bin/mformat\"")))
-                     (substitute* "util/grub-mkrescue.c"
-                       (("\"mcopy\"")
-                        (string-append "\"" mtools
-                                       "/bin/mcopy\"")))
-                     #t))))))))))
+     (substitute-keyword-arguments (package-arguments grub)
+       ((#:configure-flags flags ''())
+        `(cons* "--with-platform=efi"
+                ,@(if (string-prefix? "x86_64"
+                                      (or (%current-target-system)
+                                          (%current-system)))
+                      '("--enable-stack-protector") ; EFI-only for now
+                      '())
+                ,flags))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (add-after 'patch-stuff 'use-absolute-efibootmgr-path
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "grub-core/osdep/unix/platform.c"
+                  (("efibootmgr")
+                   (search-input-file inputs
+                                      "/sbin/efibootmgr")))))
+            (add-after 'patch-stuff 'use-abolute-ovmf-path
+              (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                #$(match-let
+                      (((str . replacement)
+                        (match (or (%current-target-system) (%current-system))
+                          ((? target-x86-32?)
+                           '("OVMF-ia32.fd" . "ovmf_ia32.bin"))
+                          ((? target-x86-64?)
+                           '("OVMF.fd" . "ovmf_x64.bin"))
+                          ((? target-arm32?)
+                           '("/usr/share/ovmf-arm/QEMU_EFI.fd" . "ovmf_arm.bin"))
+                          ((? target-aarch64?)
+                           '("/usr/share/qemu-efi/QEMU_EFI.fd" . "ovmf_aarch64.bin")))))
+                    #~(substitute* "tests/util/grub-shell.in"
+                        ((#$str)
+                         (search-input-file
+                          (or native-inputs inputs)
+                          (string-append "/share/firmware/" #$replacement)))))))
+            (add-after 'patch-stuff 'use-absolute-mtools-path
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((mformat (search-input-file inputs "/bin/mformat"))
+                      (mcopy (search-input-file inputs "/bin/mcopy")))
+                  (substitute* "util/grub-mkrescue.c"
+                    (("\"mformat\"")
+                     (string-append "\"" mformat "\"")))
+                  (substitute* "util/grub-mkrescue.c"
+                    (("\"mcopy\"")
+                     (string-append "\"" mcopy "\""))))))))))
+    (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux" "aarch64-linux"))))
 
 (define-public grub-efi32
   (package
@@ -440,17 +453,24 @@ menu to select one of the installed operating systems.")
     (name "grub-efi32")
     (synopsis "GRand Unified Boot loader (UEFI 32bit version)")
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments grub-efi)
-           ((#:configure-flags flags ''())
-            `(cons*
-              ,@(cond ((target-x86?) '("--target=i386"))
-                      ((target-aarch64?)
-                       (list "--target=arm"
-                             (string-append "TARGET_CC="
-                                            (cc-for-target "arm-linux-gnueabihf"))))
-                      ((target-arm?) '("--target=arm"))
-                      (else '()))
-              ,flags)))))
+     (substitute-keyword-arguments
+         (parameterize ((%current-target-system
+                         (match (or (%current-target-system) (%current-system))
+                           ((? target-x86?)
+                            "i686-linux")
+                           ((? target-arm?)
+                            "arm-linux-gnueabihf"))))
+           (package-arguments grub-efi))
+       ((#:configure-flags flags ''())
+        `(cons*
+          ,@(cond ((target-x86?) '("--target=i386"))
+                  ((target-aarch64?)
+                   (list "--target=arm"
+                         (string-append "TARGET_CC="
+                                        (cc-for-target "arm-linux-gnueabihf"))))
+                  ((target-arm?) '("--target=arm"))
+                  (else '()))
+          ,flags))))
     (native-inputs
      (if (target-aarch64?)
          (modify-inputs (package-native-inputs grub-efi)
@@ -476,22 +496,20 @@ menu to select one of the installed operating systems.")
      (substitute-keyword-arguments (package-arguments grub-efi)
        ((#:modules modules `((guix build utils) (guix build gnu-build-system)))
         `((ice-9 ftw) ,@modules))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'install 'install-non-efi
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((input-dir (search-input-directory inputs
-                                                        "/lib/grub"))
-                     (output-dir (string-append (assoc-ref outputs "out")
-                                                "/lib/grub")))
-                 (for-each
-                  (lambda (basename)
-                    (if (not (or (string-prefix? "." basename)
-                                 (file-exists? (string-append output-dir "/" basename))))
-                        (symlink (string-append input-dir "/" basename)
-                                 (string-append output-dir "/" basename))))
-                  (scandir input-dir))
-                 #t)))))))))
+       ((#:phases phases #~%standard-phases)
+        #~(modify-phases #$phases
+            (add-after 'install 'install-non-efi
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let ((input-dir (search-input-directory inputs
+                                                         "/lib/grub"))
+                      (output-dir (string-append #$output "/lib/grub")))
+                  (for-each
+                   (lambda (basename)
+                     (if (not (or (string-prefix? "." basename)
+                                  (file-exists? (string-append output-dir "/" basename))))
+                         (symlink (string-append input-dir "/" basename)
+                                  (string-append output-dir "/" basename))))
+                   (scandir input-dir)))))))))))
 
 (define-public (make-grub-efi-netboot name subdir)
   "Make a grub-efi-netboot package named NAME, which will be able to boot over
