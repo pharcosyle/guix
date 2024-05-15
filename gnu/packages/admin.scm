@@ -3405,14 +3405,14 @@ rules is done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.93")
+    (version "7.95")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0lb6s4nmmicfnc221mzgx2w51dcd4b2dhx22pabcqnp2jd3zxg2m"))
+                "0y2p3ixdpgdrqmax48lf8xmzxn4wz33vm8n8y64gsnkvwhqbajp1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3465,17 +3465,18 @@ rules is done with the @code{auditctl} utility.")
                (invoke "make"
                        "check-nse"
                        "check-ndiff"
-                       "check-dns")))))
+                       "check-nmap")))))
        ;; Nmap can't cope with out-of-source building.
        #:out-of-source? #f))
     (inputs
      (list bash-minimal                 ;for wrap-program
            libpcap
-           lua
+           lua-5.4                      ; at the time of this writing: requires
+                                        ; 5.4 but the Guix default is  5.3.
            openssl-3
-           pcre
+           pcre2
            zlib                         ; for NSE compression
-           python-2))                   ; for ndiff
+           python))                     ; for ndiff
     (home-page "https://nmap.org/")
     (synopsis "Network discovery and security auditing tool")
     (description
