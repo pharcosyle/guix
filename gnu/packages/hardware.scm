@@ -317,7 +317,6 @@ sets, and tools to deal with register databases.")
            upower
            usbutils
            util-linux
-           wireless-tools
            vdpauinfo
            vulkan-tools
            xdpyinfo
