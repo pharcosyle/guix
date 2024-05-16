@@ -686,7 +686,7 @@ StartupWMClass=Navigator"))
                   mesa
                   mit-krb5
                   nspr
-                  nss/fixed
+                  nss
                   pango
                   pciutils
                   pipewire
