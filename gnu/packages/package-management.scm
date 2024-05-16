@@ -492,7 +492,7 @@ $(prefix)/etc/openrc\n")))
                        ("graphviz" ,graphviz-minimal)
                        ("font-ghostscript" ,font-ghostscript) ;fonts for 'dot'
                        ("help2man" ,help2man)
-                       ("po4a" ,po4a)))
+                       ("po4a" ,po4a-minimal)))
       (inputs
        `(("bash-minimal", bash-minimal)
          ("bzip2" ,bzip2)
