@@ -17551,19 +17551,17 @@ developed separately, both serve the same purpose: provide Python bindings for
 libmagic.")))
 
 (define-public python-pydevd
-  ;; Use the latest commit, which includes cleanups that removes Python 2
-  ;; syntax that would fail to build.
-  (let ((revision "0")
-        (commit "47e298499ef19563bb2ef5941a57046a35ae6868"))
     (package
       (name "python-pydevd")
-      (version (git-version "2.8.0" revision commit))
+      (version "2.9.6")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/fabioz/PyDev.Debugger")
-               (commit commit)))
+               (commit (string-append
+                        "pydev_debugger_"
+                        (string-join (string-split version #\.) "_")))))
          (modules '((guix build utils)))
          (snippet '(begin
                      ;; Delete pre-built binaries.
@@ -17573,7 +17571,7 @@ libmagic.")))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1yd017dh6xgxrqcyf8kk8jrr0a3zw895yfjih0z5jghyf0rck38q"))))
+           "1niqb6l3m03arfjh14k9k5i5bi56m8qmc3pyi1qkbvqqp5bkydac"))))
       (build-system pyproject-build-system)
       (arguments
        (list
@@ -17585,18 +17583,14 @@ libmagic.")))
                  ;; Python 3.10:
                  ;; <https://github.com/fabioz/PyDev.Debugger/issues/222>.
                  "not test_set_pydevd_break_01 "
-                 ;; This one fails for unknown reasons.
-                 "and not test_completion_sockets_and_messages "
                  ;; the GUI event loop requires an X server.
                  "and not test_gui_event_loop_custom "
                  ;; This test validates that 'pydevd' is not in the
                  ;; exception message, but it is due to being part
                  ;; of the build file name present in the message.
                  "and not test_evaluate_exception_trace "
-                 ;; These fail on systems with YAMA LSM’s ptrace
-                 ;; scope > 0. Upstream issue:
-                 ;; https://github.com/fabioz/PyDev.Debugger/issues/218
-                 "and not test_attach_to_pid"))
+                 ;; This test fail with TimeoutError, no message on stderr.
+                 "and not test_soft_terminate "))
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'fix-tests
@@ -17659,7 +17653,7 @@ libmagic.")))
       (synopsis "Python debugger")
       (description "PyDev.Debugger is a capable Python debugger used in PyDev
 and other @acronym{IDEs, Integrated Development Environments}.")
-      (license license:epl1.0))))
+      (license license:epl1.0)))
 
 (define-public python-debugpy
   (package
