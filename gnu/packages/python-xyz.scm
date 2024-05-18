@@ -17574,9 +17574,29 @@ libmagic.")))
          (sha256
           (base32
            "1yd017dh6xgxrqcyf8kk8jrr0a3zw895yfjih0z5jghyf0rck38q"))))
-      (build-system python-build-system)
+      (build-system pyproject-build-system)
       (arguments
        (list
+        #:test-flags
+        #~(list "-n" (number->string (parallel-job-count))
+                "-k"
+                (string-append
+                 ;; The two "break_01" tests have been failing on
+                 ;; Python 3.10:
+                 ;; <https://github.com/fabioz/PyDev.Debugger/issues/222>.
+                 "not test_set_pydevd_break_01 "
+                 ;; This one fails for unknown reasons.
+                 "and not test_completion_sockets_and_messages "
+                 ;; the GUI event loop requires an X server.
+                 "and not test_gui_event_loop_custom "
+                 ;; This test validates that 'pydevd' is not in the
+                 ;; exception message, but it is due to being part
+                 ;; of the build file name present in the message.
+                 "and not test_evaluate_exception_trace "
+                 ;; These fail on systems with YAMA LSM’s ptrace
+                 ;; scope > 0. Upstream issue:
+                 ;; https://github.com/fabioz/PyDev.Debugger/issues/218
+                 "and not test_attach_to_pid"))
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'fix-tests
@@ -17615,30 +17635,10 @@ libmagic.")))
                 (invoke #+(cxx-for-target) "-shared" "-o" "attach.so"
                         "-fPIC" "-nostartfiles"
                         "pydevd_attach_to_process/linux_and_mac/attach.cpp")))
-            (replace 'check
+            (add-before 'check 'pre-check
               (lambda* (#:key tests? #:allow-other-keys)
                 (when tests?
-                  (setenv "PYDEVD_USE_CYTHON" "YES")
-                  (invoke "pytest" "-vv"
-                          "-n" (number->string (parallel-job-count))
-                          "-k"
-                          (string-append
-                           ;; The two "break_01" tests have been failing on
-                           ;; Python 3.10:
-                           ;; <https://github.com/fabioz/PyDev.Debugger/issues/222>.
-                           "not test_set_pydevd_break_01 "
-                           ;; This one fails for unknown reasons.
-                           "and not test_completion_sockets_and_messages "
-                           ;; the GUI event loop requires an X server.
-                           "and not test_gui_event_loop_custom "
-                           ;; This test validates that 'pydevd' is not in the
-                           ;; exception message, but it is due to being part
-                           ;; of the build file name present in the message.
-                           "and not test_evaluate_exception_trace "
-                           ;; These fail on systems with YAMA LSM’s ptrace
-                           ;; scope > 0. Upstream issue:
-                           ;; https://github.com/fabioz/PyDev.Debugger/issues/218
-                           "and not test_attach_to_pid")))))
+                  (setenv "PYDEVD_USE_CYTHON" "YES"))))
             (add-after 'install 'install-attach-binary
               (lambda _
                 (install-file "attach.so"
