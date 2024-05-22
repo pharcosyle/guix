@@ -7970,10 +7970,8 @@ set the screen to be pitch black at a value of 0 (or higher).
     (license license:gpl3+)))
 
 (define-public brightnessctl
-  ;; No official release in years but there are minor yet worthwhile
-  ;; improvements in recent commits (nicer build, optional basu as the dbus
-  ;; provider for users who want that).
-  (let ((commit "61ea40e088d9c6166e87743ba4d7dd2baae25025")
+  ;; Author is weirdly delinquent in creating versioned releases.
+  (let ((commit "3152968fee82796e5d3bac3b49d81e1dd9787850")
         (revision "1"))
     (package
       (name "brightnessctl")
@@ -7987,7 +7985,7 @@ set the screen to be pitch black at a value of 0 (or higher).
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1qzfy3cx6hxwghzs0d67wgn1iqiwmln1xddlv1z9zwkzz7arg2d7"))))
+           "1ayn1qd35l9ssl3pg2bsyd20ya3kfj8il4iddmqpzkbyf41j2fnc"))))
       (build-system gnu-build-system)
       (arguments
        (list
