@@ -61,14 +61,14 @@
   (hidden-package
    (package
      (name "imagemagick")
-     (version "7.1.1-25")
+     (version "7.1.1-32")
      (source (origin
                (method url-fetch)
                (uri (string-append "mirror://imagemagick/ImageMagick-"
                                    version ".tar.xz"))
                (sha256
                 (base32
-                 "1cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))
+                 "1llpi11vxlldkrgmph5qfniw2b160bq7478y3d7hyssy227vk9p7"))))
      (build-system gnu-build-system)
      (arguments
       (list
@@ -136,19 +136,19 @@ text, lines, polygons, ellipses and Bézier curves.")
     (inherit imagemagick/stable)
     (outputs '("out" "doc"))    ; 11 MiB of HTML documentation
     (properties (alist-delete 'hidden? (package-properties imagemagick/stable)))
-    (version "7.1.1-25")
+    (version "7.1.1-32")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://imagemagick/ImageMagick-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1cd6psgs5kfdwk74iv8l4z17abl5cwy3xna6isln9ircyva46ijf"))))))
+                "1llpi11vxlldkrgmph5qfniw2b160bq7478y3d7hyssy227vk9p7"))))))
 
 (define-public imagemagick-6
   (package
     (inherit imagemagick)
-    (version "6.9.13-5")
+    (version "6.9.13-10")
     (source (origin
               (inherit (package-source imagemagick))
               (method url-fetch)
@@ -156,7 +156,7 @@ text, lines, polygons, ellipses and Bézier curves.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1j1chkw33vjc37509vdwss28qywfvckvs73pvscldj8d0wnwypa8"))))
+                "1skfh7sam7af7z1m1xmna5vp39z06crbharbf08drfcv7xhfzrhy"))))
     (arguments
      (substitute-keyword-arguments (package-arguments imagemagick/stable)
        ((#:configure-flags flags #~'())
