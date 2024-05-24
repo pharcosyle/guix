@@ -1701,42 +1701,6 @@ generate bitmaps.")
     (license license:gpl3+)
     (home-page "https://fontforge.github.io")))
 
-;; This is the last version that supports Python 2, which is needed for
-;; GNU FreeFont.  Remove once no longer required.
-(define-public fontforge-20190801
-  (package
-    (inherit fontforge)
-    (version "20190801")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/fontforge/fontforge/releases/download/"
-                    version "/fontforge-" version ".tar.gz"))
-              (sha256
-               (base32 "0lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
-    (build-system gnu-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments fontforge)
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (delete 'do-not-override-RPATH)))))
-    (inputs
-     (modify-inputs (package-inputs fontforge)
-       (prepend libuninameslist)
-       (replace "python" python-2)
-       (replace "gettext-minimal"
-         ;; Fails to build with gettext 0.22+
-         (package
-           (inherit gettext-minimal)
-           (version "0.21.1")
-           (source (origin
-                     (method url-fetch)
-                     (uri (string-append "mirror://gnu/gettext/gettext-"
-                                         version ".tar.gz"))
-                     (sha256
-                      (base32
-                       "0ibdcinjgky0an2yw4aspmc31y0x5hw44mim9xf8gvlc3l76bhz8"))))))))))
-
 (define-public python-statmake
   (package
     (name "python-statmake")
