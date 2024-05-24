@@ -1713,7 +1713,7 @@ generate bitmaps.")
                     "https://github.com/fontforge/fontforge/releases/download/"
                     version "/fontforge-" version ".tar.gz"))
               (sha256
-               (base32 "1lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
+               (base32 "0lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments fontforge)
