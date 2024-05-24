@@ -1629,12 +1629,12 @@ definitions.")
            fontconfig                   ;dlopen'd
            freetype
            gettext-minimal
+           giflib
            libjpeg-turbo
            libltdl
            libpng
            libspiro
            libtiff
-           libungif
            libxml2
            potrace
            python
@@ -1681,7 +1681,7 @@ definitions.")
                     ,(map (lambda (input)
                             (string-append (assoc-ref inputs input)
                                            "/lib"))
-                          '("libtiff" "libjpeg-turbo" "libpng" "libungif"
+                          '("libtiff" "libjpeg-turbo" "libpng" "giflib"
                             "libxml2" "zlib" "libspiro" "freetype"
                             "fontconfig-minimal" "gtk+")))
                   ;; Checks for potrace program at runtime
