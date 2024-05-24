@@ -1636,12 +1636,12 @@ definitions.")
     (inputs
      (list bash-minimal ; for wrap-program
            freetype
+           giflib
            glib
            libjpeg-turbo
            libpng
            libspiro
            libtiff
-           libungif
            libxml2
            potrace
            python
