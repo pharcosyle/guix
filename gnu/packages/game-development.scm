@@ -2265,7 +2265,7 @@ scripted in a Python-like language.")
            enet
            eudev
            fontconfig
-           freetype-with-brotli
+           freetype
            glew
            glslang
            glu
