@@ -92,9 +92,9 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
-(define-public freetype
+(define-public freetype-bootstrap
   (package
-    (name "freetype")
+    (name "freetype-bootstrap")
     (version "2.13.2")
     (source
      (origin
@@ -119,8 +119,6 @@
                   _ store target)
                  "pkg-config")))))))
     (native-inputs (list pkg-config))
-    ;; XXX: Not adding harfbuzz here, as it would introduce a dependency
-    ;; cycle.
     (propagated-inputs (list libpng zlib))
     (synopsis "Font rendering library")
     (description
@@ -131,6 +129,17 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
     (license license:freetype)          ; some files have other licenses
     (home-page "https://freetype.org/")))
+
+(define-public freetype
+  (package
+    (inherit freetype-bootstrap)
+    (name "freetype")
+    (inputs
+     (modify-inputs (package-inputs freetype-bootstrap)
+       (prepend freetype-bootstrap))) ; For harfbuzz.
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs freetype-bootstrap)
+       (prepend harfbuzz)))))
 
 ;; TODO: Make this change directly in freetype in the next large rebuild cycle
 ;; and remove this package.
@@ -1451,7 +1460,7 @@ applications should be.")
    (native-inputs
     (list python python-fonttools-minimal))
    (inputs
-    (list freetype))
+    (list freetype-bootstrap))
    (arguments
     (if (system-hurd?)
         (list
