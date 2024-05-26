@@ -2902,7 +2902,6 @@ weight.")
     (build-system gnu-build-system)
     (native-inputs
      (list fontforge
-           `(,harfbuzz "bin")
            python-brotli
            python-fonttools-minimal
            python-minimal))
@@ -2910,7 +2909,8 @@ weight.")
      (list #:make-flags #~(list "PY=python3"
                                 (string-append "DESTDIR=" #$output)
                                 "fontpath=/share/fonts/truetype")
-           #:test-target "test"
+           #:tests? #f ; Test target is for manual examination, not
+                       ; distro packaging.
            #:phases #~(modify-phases %standard-phases
                         (delete 'configure))))
     (home-page "https://gitlab.com/smc/meera-inimai")
