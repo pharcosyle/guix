@@ -281,7 +281,7 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
 (define-public harfbuzz
   (package
     (name "harfbuzz")
-    (version "8.3.0")
+    (version "8.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/harfbuzz/harfbuzz"
@@ -289,7 +289,7 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0izq2lpqxrf1l755nxrxkkiarywkx5j43asznankxplbxgm0358h"))))
+                "09yw3nj7qjrxxa41k5n3w5b9j9wnzcr6hgmmi23vz1ixizwzgr3p"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "bin"))
