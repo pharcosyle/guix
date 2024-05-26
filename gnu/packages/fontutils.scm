@@ -119,7 +119,7 @@
                   _ store target)
                  "pkg-config")))))))
     (native-inputs (list pkg-config))
-    (propagated-inputs (list brotli libpng zlib))
+    (propagated-inputs (list brotli bzip2 libpng zlib))
     (synopsis "Font rendering library")
     (description
      "Freetype is a library that can be used by applications to access the
