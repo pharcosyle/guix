@@ -119,7 +119,7 @@
                   _ store target)
                  "pkg-config")))))))
     (native-inputs (list pkg-config))
-    (propagated-inputs (list libpng zlib))
+    (propagated-inputs (list brotli libpng zlib))
     (synopsis "Font rendering library")
     (description
      "Freetype is a library that can be used by applications to access the
@@ -140,16 +140,6 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
     (propagated-inputs
      (modify-inputs (package-propagated-inputs freetype-bootstrap)
        (prepend harfbuzz)))))
-
-;; TODO: Make this change directly in freetype in the next large rebuild cycle
-;; and remove this package.
-(define-public freetype-with-brotli
-  (package
-    (inherit freetype)
-    (name "freetype-with-brotli")
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs freetype)
-       (prepend brotli)))))
 
 (define-public opentype-sanitizer
   (package
