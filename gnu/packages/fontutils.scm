@@ -1256,8 +1256,7 @@ Font Format (WOFF).")
      (build-system gnu-build-system)
      ;; In Requires or Requires.private of fontconfig.pc.
      (propagated-inputs `(("expat" ,expat)
-                          ("freetype" ,freetype)
-                          ("libuuid" ,util-linux "lib")))
+                          ("freetype" ,freetype)))
      (inputs
       ;; We use to use 'font-ghostscript' but they are not recognized by newer
       ;; versions of Pango, causing many applications to fail to find fonts
