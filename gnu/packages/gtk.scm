@@ -292,9 +292,11 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
                 "0izq2lpqxrf1l755nxrxkkiarywkx5j43asznankxplbxgm0358h"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "bin"))                  ;160K, only hb-view depend on cairo
+               "bin"))
     (inputs
-     (list cairo))
+     ;; Freetype should be propagated too (it's in Requires.private) but I
+     ;; don't think propagating the bootstrap variant is a good idea.
+     (list freetype-bootstrap))
     (propagated-inputs
      ;; There are all in the Requires or Requires.private field of '.pc'.
      (list glib graphite2 icu4c))
