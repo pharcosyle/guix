@@ -336,15 +336,10 @@ please install the @code{flyer-composer-gui} package.")))
                  nss                              ;for 'pdfsig'
                  openjpeg
                  poppler-data
-                 zlib
-                 ;; To build poppler-glib (as needed by Evince), we need Cairo and
-                 ;; GLib.  But of course, that Cairo must not depend on Poppler.
-                 cairo-sans-poppler))
+                 zlib))
    (propagated-inputs
-    ;; As per poppler-cairo and poppler-glib.pc.
-    ;; XXX: Ideally we'd propagate Cairo too, but that would require a
-    ;; different solution to the circular dependency mentioned above.
-    (list glib))
+    (list cairo
+          glib))
    (native-inputs
     (append
       (list pkg-config
