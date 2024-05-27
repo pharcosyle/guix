@@ -4804,27 +4804,57 @@ is to provide a backend to GSettings on platforms that don't already have
 configuration storage systems.")
     (license license:lgpl2.1+)))
 
-(define-public json-glib-minimal
+(define-public json-glib
   (package
-    (name "json-glib-minimal")
+    (name "json-glib")
     (version "1.8.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/json-glib/"
-                                  (version-major+minor version)
-                                  "/json-glib-" version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "0m4l665msybhf6z0g4vqj93ydapi6dkg0r8asnd064d85jwmxvwp"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     (list #:glib-or-gtk? #t            ;to wrap binaries, compile schemas
-           #:configure-flags #~(list "-Dgtk_doc=disabled")))
-    (native-inputs
      (list
-      gettext-minimal
-      `(,glib "bin")                     ;for glib-mkenums and glib-genmarshal
-      pkg-config))
+      #:glib-or-gtk? #t            ;to wrap binaries, compile schemas
+      #:configure-flags
+      #~(list "-Dman=true"
+              #$@(if (%current-target-system)
+                     ;; If enabled, gtkdoc-scangobj will try to execute a
+                     ;; cross-compiled binary.
+                     #~("-Dgtk_doc=disabled"
+                        ;; Trying to build introspection data when
+                        ;; cross-compiling causes errors during linking.
+                        "-Dintrospection=disabled")
+                     #~("-Dgtk_doc=enabled"
+                        "-Dintrospection=enabled")))
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; When cross-compiling, there are no docs to move.
+          #$@(if (%current-target-system)
+                 #~((add-after 'install 'stub-docs
+                      (lambda _
+                        ;; The daemon doesn't like empty output paths.
+                        (mkdir #$output:doc))))
+                 #~((add-after 'install 'move-docs
+                      (lambda _
+                        (mkdir-p (string-append #$output:doc "/share"))
+                        (rename-file
+                         (string-append #$output "/share/doc")
+                         (string-append #$output:doc
+                                        "/share/doc")))))))))
+    (native-inputs
+     (append (list gettext-minimal
+                   `(,glib "bin")       ;for glib-mkenums and glib-genmarshal
+                   pkg-config)
+             (if (%current-target-system)
+                 '()
+                 (list gi-docgen
+                       gobject-introspection))))
     (inputs
      (list bash-minimal))
     (propagated-inputs
@@ -4835,45 +4865,6 @@ configuration storage systems.")
 described by RFC 4627.  It implements a full JSON parser and generator using
 GLib and GObject, and integrates JSON with GLib data types.")
     (license license:lgpl2.1+)))
-
-(define-public json-glib
-  (package/inherit json-glib-minimal
-    (name "json-glib")
-    (outputs (cons "doc" (package-outputs json-glib-minimal)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments json-glib-minimal)
-       ((#:configure-flags _)
-        #~(list "-Dman=true"
-                #$@(if (%current-target-system)
-                       ;; If enabled, gtkdoc-scangobj will try to execute a
-                       ;; cross-compiled binary.
-                       #~("-Dgtk_doc=disabled"
-                          ;; Trying to build introspection data when cross-compiling
-                          ;; causes errors during linking.
-                          "-Dintrospection=disabled")
-                       #~("-Dgtk_doc=enabled"
-                          "-Dintrospection=enabled"))))
-       ((#:phases phases '%standard-phases)
-        #~(modify-phases #$phases
-            ;; When cross-compiling, there are no docs to move.
-            #$@(if (%current-target-system)
-                   #~((add-after 'install 'stub-docs
-                        (lambda _
-                          ;; The daemon doesn't like empty output paths.
-                          (mkdir #$output:doc))))
-                   #~((add-after 'install 'move-docs
-                        (lambda _
-                          (mkdir-p (string-append #$output:doc "/share"))
-                          (rename-file
-                           (string-append #$output "/share/doc")
-                           (string-append #$output:doc
-                                          "/share/doc"))))))))))
-    (native-inputs
-     (if (%current-target-system)
-         ;; No docs, no additional inputs.
-         (package-native-inputs json-glib-minimal)
-         (modify-inputs (package-native-inputs json-glib-minimal)
-                        (prepend gi-docgen gobject-introspection))))))
 
 (define-public libxklavier
   (package
