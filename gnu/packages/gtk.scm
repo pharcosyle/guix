@@ -385,23 +385,23 @@ applications.")
               (uri (string-append "mirror://gnome/sources/pango/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "pango-skip-libthai-test.patch"))
               (sha256
                (base32
                 "1n0y5l5wfq2a86dimraazvz1v9dvqdjkmpqgzkbk9rqy09syv7la"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'disable-cantarell-tests
-                    (lambda _
-                      (substitute* "tests/meson.build"
-                        ;; XXX FIXME: These tests require "font-abattis-cantarell", but
-                        ;; adding it here would introduce a circular dependency.
-                        (("\\[ 'test-layout'.*") "")
-                        (("\\[ 'test-itemize'.*") "")
-                        (("\\[ 'test-font'.*") "")
-                        (("\\[ 'test-harfbuzz'.*") "")))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-tests
+           (lambda _
+             ;; Known test failures:
+             ;; - https://gitlab.gnome.org/GNOME/pango/-/issues/778
+             ;; - https://gitlab.gnome.org/GNOME/pango/-/issues/682
+             (substitute* "tests/test-font.c"
+               (("g_test_add_func.*/pango/font/scale-font.*") "")
+               (("g_test_add_func.*/pango/font/roundtrip/plain.*") "")
+               (("g_test_add_func.*/pango/font/roundtrip/small-caps.*") "")))))))
     (propagated-inputs
      ;; These are all in Requires or Requires.private of the '.pc' files.
      (list cairo
@@ -416,10 +416,10 @@ applications.")
            libxft
            libxrender))
     (inputs
-     (list bash-minimal
-           zlib))
+     (list bash-minimal))
     (native-inputs
-     (append (list `(,glib "bin"))      ;glib-mkenums, etc.
+     (append (list `(,glib "bin")       ;glib-mkenums, etc.
+                   glibc-locales)       ;some tests are skipped without these
              (if (target-hurd?)
                  '()
                  (list gobject-introspection)) ;g-ir-compiler, etc.
@@ -474,7 +474,6 @@ handling for GTK+-2.x.")
               (uri (string-append "mirror://gnome/sources/pango/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "pango-skip-libthai-test.patch"))
               (sha256
                (base32
                 "1zqif72jxa819bwi4jv2vgac574qas3w37f7qvn8l31rm1jgjf7i"))
