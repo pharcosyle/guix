@@ -1060,7 +1060,7 @@ application suites.")
            wayland
            wayland-protocols))
     (inputs
-     (list colord-minimal               ;to prevent a cycle with inkscape
+     (list colord
            cups
            graphene
            harfbuzz
