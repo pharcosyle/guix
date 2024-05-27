@@ -1060,7 +1060,7 @@ application suites.")
            graphene
            harfbuzz
            iso-codes
-           json-glib-minimal
+           json-glib
            libxml2))
     (native-inputs
      (list docbook-xml-4.3
