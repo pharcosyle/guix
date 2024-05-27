@@ -3885,7 +3885,7 @@ on the screen and which then writes out the necessary C code for it.")
     (inputs (list libevdev
                   libinput
                   gtk
-                  json-glib-minimal
+                  json-glib
                   cairo
                   pango
                   libxkbcommon
