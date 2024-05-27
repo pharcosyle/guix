@@ -5029,7 +5029,7 @@ libxml to ease remote use of the RESTful API.")
     (inputs (list json-glib))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs rest)
-       (replace "libsoup-minimal" libsoup)
+       (replace "libsoup" libsoup)
        (append json-glib)))))
 
 (define-public libshumate
@@ -5088,23 +5088,23 @@ libxml to ease remote use of the RESTful API.")
 as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
     (license license:lgpl2.1+)))
 
-;;; A minimal version of libsoup used to prevent a cycle with Inkscape.
-(define-public libsoup-minimal
+(define-public libsoup
   (package
-    (name "libsoup-minimal")
+    (name "libsoup")
     (version "3.5.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/libsoup/"
+              (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
-                                  "libsoup-" version ".tar.xz"))
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "1fpp650ax5l9qmx4mbgsx45ac7z2rzr49m9p3wkmrlrjk2wczmy1"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
      (list
-      #:configure-flags #~(list "-Ddocs=disabled")
+      #:configure-flags #~(list "-Ddocs=enabled")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'adjust-tests
@@ -5113,9 +5113,16 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
               ;; "Unexpected status 200 OK (expected 301 Moved Permanently)"
               ;; (see: https://gitlab.gnome.org/GNOME/libsoup/-/issues/239).
               (substitute* "tests/hsts-db-test.c"
-                ((".*/hsts-db/subdomains.*") "")))))))
+                ((".*/hsts-db/subdomains.*") ""))))
+          (add-after 'install 'move-doc
+            (lambda _
+              (mkdir-p (string-append #$output:doc "/share"))
+              (rename-file (string-append #$output "/share/doc")
+                           (string-append #$output:doc "/share/doc")))))))
     (native-inputs
-     (list `(,glib "bin") ;for glib-mkenums
+     (list gettext-minimal
+           `(,glib "bin") ;for glib-mkenums
+           gi-docgen
            gobject-introspection
            pkg-config
            python-wrapper
@@ -5143,10 +5150,13 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
 and the GLib main loop, to integrate well with GNOME applications.")
     (license license:lgpl2.0+)))
 
+;; TODO: Rename globally and remove this alias.
+(define-public libsoup-minimal libsoup)
+
 ;;; An older variant kept to build the 'rest' package.
-(define-public libsoup-minimal-2
+(define-public libsoup-2
   (package
-    (inherit libsoup-minimal)
+    (inherit libsoup)
     (version "2.74.3")
     (source (origin
               (method url-fetch)
@@ -5156,12 +5166,13 @@ and the GLib main loop, to integrate well with GNOME applications.")
               (sha256
                (base32
                 "04rgv6hkyhgi7lak9865yxgbgky6gc635p7w6nhcbj64rx0prdz4"))))
+    (outputs (delete "doc" (package-outputs libsoup)))
     (arguments
-     (substitute-keyword-arguments (package-arguments libsoup-minimal)
+     (substitute-keyword-arguments (package-arguments libsoup)
        ((#:configure-flags configure-flags)
         ;; The option name changed between libsoup 2 and libsoup 3.
         #~(cons "-Dgtk_doc=false"
-                (delete "-Ddocs=disabled" #$configure-flags)))
+                (delete "-Ddocs=enabled" #$configure-flags)))
        ((#:phases phases)
         #~(modify-phases #$phases
             (replace 'adjust-tests
@@ -5169,27 +5180,15 @@ and the GLib main loop, to integrate well with GNOME applications.")
                 ;; Disable the SSL test, failing since 2.68 and resolved in
                 ;; libsoup 3.
                 (substitute* "tests/meson.build"
-                  (("[ \t]*\\['ssl', true, \\[\\]\\],") ""))))))))))
+                  (("[ \t]*\\['ssl', true, \\[\\]\\],") ""))))
+            (delete 'move-doc)))))
+    (native-inputs
+     (modify-inputs (package-native-inputs libsoup)
+       (delete gettext-minimal
+               gi-docgen)))))
 
-(define-public libsoup
-  (package/inherit libsoup-minimal
-    (name "libsoup")
-    (outputs (cons "doc" (package-outputs libsoup-minimal)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments libsoup-minimal)
-       ((#:configure-flags configure-flags)
-        #~(cons "-Ddocs=enabled"
-                ;; The default value is 'auto', meaning it could be skipped.
-                (delete "-Ddocs=disabled" #$configure-flags)))
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (add-after 'install 'move-doc
-              (lambda _
-                (mkdir-p (string-append #$output:doc "/share"))
-                (rename-file (string-append #$output "/share/doc")
-                             (string-append #$output:doc "/share/doc"))))))))
-    (native-inputs (modify-inputs (package-native-inputs libsoup-minimal)
-                     (prepend gettext-minimal gi-docgen)))))
+;; TODO: Rename globally and remove this alias.
+(define-public libsoup-minimal-2 libsoup-2)
 
 (define-public libsecret
   (package
