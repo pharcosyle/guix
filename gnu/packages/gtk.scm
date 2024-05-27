@@ -1674,7 +1674,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.50.1")
+    (version "2.50.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1682,7 +1682,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "054jglmnbig14fs99qqi5y174z9j90r6dprpyszw42742cs95jfc"))))
+                "1yx9a2mwzxqwf61rv3r8qggywv5kv8k84cb81mc44118ld7api8v"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
