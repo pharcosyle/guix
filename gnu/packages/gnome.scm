@@ -5679,7 +5679,7 @@ file.")
     (inputs
      (list dbus-glib
            gobject-introspection
-           gusb-minimal
+           gusb
            libgudev
            libusb
            polkit
@@ -7114,9 +7114,9 @@ GVFS comes with a set of backends, including trash support, SFTP, SMB, HTTP,
 DAV, and others.")
     (license license:lgpl2.0+)))
 
-(define-public gusb-minimal
+(define-public gusb
   (package
-    (name "gusb-minimal")
+    (name "gusb")
     (version "0.4.9")
     (source (origin
               (method git-fetch)
@@ -7132,7 +7132,6 @@ DAV, and others.")
      `(#:tests? #f ; Tests try to access USB.
        #:configure-flags
        (cons* "-Dtests=false"
-              "-Ddocs=false"
               (string-append "-Dusb_ids="
                              (assoc-ref %build-inputs "hwdata")
                              "/share/hwdata/usb.ids")
@@ -7143,7 +7142,7 @@ DAV, and others.")
                     "-Dvapi=false")
                   '()))))
     (native-inputs
-     (list gobject-introspection hwdata pkg-config python vala))
+     (list gi-docgen gobject-introspection hwdata pkg-config python vala))
     (propagated-inputs
      ;; All of these are required by gusb.pc.
      (list glib libusb json-glib))
@@ -7155,17 +7154,6 @@ asynchronous control, bulk and interrupt transfers with proper cancellation
 and integration into a mainloop.  This makes it easy to integrate low level
 USB transfers with your high-level application or system daemon.")
     (license license:lgpl2.1+)))
-
-(define-public gusb
-  (package/inherit gusb-minimal
-    (name "gusb")
-    (arguments
-     (substitute-keyword-arguments (package-arguments gusb-minimal)
-       ((#:configure-flags flags)
-        `(delete "-Ddocs=false" ,flags))))
-    (native-inputs
-     (modify-inputs (package-native-inputs gusb-minimal)
-       (prepend gi-docgen)))))
 
 (define-public simple-scan
   (package
