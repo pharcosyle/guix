@@ -286,7 +286,7 @@ endif()~%~%"
             bash-minimal
             boost
             freetype
-            gdl-minimal
+            gdl
             gsl
             gspell
             gtk+
