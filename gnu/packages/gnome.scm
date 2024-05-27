@@ -5610,15 +5610,15 @@ application.  You can come back to your work even if you've never saved it to a
 file.")
     (license license:gpl3+)))
 
-(define-public colord-minimal
+(define-public colord
   (package
-    (name "colord-minimal")
+    (name "colord")
     (version "1.4.7")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
-                           "colord-" version ".tar.xz"))
+       (uri (string-append "https://www.freedesktop.org/software/" name
+                           "/releases/" name "-" version ".tar.xz"))
        (sha256
         (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))
        (patches
@@ -5635,12 +5635,14 @@ file.")
      (list
       #:glib-or-gtk? #t
       #:configure-flags #~(list "-Dargyllcms_sensor=false" ;requires spotread
-                                "-Dbash_completion=false"
+                                "-Dbash_completion=true"
                                 "-Ddaemon_user=colord"
-                                "-Ddocs=false"
+                                "-Ddocs=true"
                                 "-Dlocalstatedir=/var"
-                                "-Dman=false"
-                                "-Dsystemd=false") ;no systemd
+                                "-Dman=true"
+                                "-Dsane=true"
+                                "-Dsystemd=false"  ;no systemd
+                                "-Dvapi=true")
       ;; Apparently the tests are known to fail on big-endian systems.
       #:tests? (not (or (%current-target-system)
                         (not (target-little-endian?))))
@@ -5653,6 +5655,13 @@ file.")
               ;; (see: https://github.com/hughsie/colord/issues/97).
               (substitute* "lib/colord/meson.build"
                 ((".*test\\('colord-test-private'.*") ""))))
+          (add-after 'unpack 'fix-bash-completion-dir
+              (lambda _
+                (substitute* "data/meson.build"
+                  (("bash_completion.get_pkgconfig_variable\
+\\('completionsdir'\\)")
+                   (string-append "'" #$output
+                                  "/etc/bash_completion.d'")))))
           (add-before 'configure 'patch-build-system
             (lambda _
               (substitute* "rules/meson.build"
@@ -5667,10 +5676,15 @@ file.")
                  (format #f "~s" (search-input-file inputs
                                                     "bin/sqlite3")))))))))
     (native-inputs
-     (list `(,glib "bin")               ; for glib-compile-resources, etc.
+     (list bash-completion
+           `(,glib "bin")               ; for glib-compile-resources, etc.
+           docbook-xsl
            gettext-minimal
+           gtk-doc/stable
+           libxslt
            pkg-config
-           vala))
+           sane-backends
+           vala))                       ; for VAPI, needed by simple-scan
     (propagated-inputs
      ;; colord.pc refers to all these.
      (list glib
@@ -5691,57 +5705,6 @@ file.")
 install and generate color profiles to accurately color manage input and
 output devices.")
     (license license:gpl2+)))
-
-(define-public colord
-  (package/inherit colord-minimal
-    (name "colord")
-    (version "1.4.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
-                           "colord-" version ".tar.xz"))
-       (sha256
-        (base32 "0lx6c4irz2mkz6s56m134wf723s59r0yqp2q8yaibbil0s8xj0ny"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri "https://github.com/hughsie/colord/pull/168.patch")
-           (file-name (string-append name "-backport-test-fix.patch"))
-           (sha256
-            (base32
-             "11xbmc34lhi8s3mnw54ccgqwzbs7ynhdhrk5r50r38mzb0kcpdxy")))))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments colord-minimal)
-       ((#:configure-flags flags)
-        #~(begin
-            (use-modules (srfi srfi-1))
-            (append '("-Dbash_completion=true"
-                      "-Ddocs=true"
-                      "-Dman=true"
-                      "-Dsane=true"
-                      "-Dvapi=true")
-                    (fold delete #$flags '("-Dbash_completion=false"
-                                           "-Ddocs=false"
-                                           "-Dman=false")))))
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (add-after 'unpack 'fix-bash-completion-dir
-              (lambda _
-                (substitute* "data/meson.build"
-                  (("bash_completion.get_pkgconfig_variable\
-\\('completionsdir'\\)")
-                   (string-append "'" #$output
-                                  "/etc/bash_completion.d'")))))))))
-    (native-inputs
-     (modify-inputs (package-native-inputs colord-minimal)
-       (append bash-completion
-               docbook-xsl
-               gtk-doc/stable
-               libxslt
-               sane-backends
-               vala)))))                ;for VAPI, needed by simple-scan
 
 (define-public geoclue
   (package
