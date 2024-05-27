@@ -1954,7 +1954,7 @@ work well with other GTK+ desktop environments.")
      (modify-inputs (package-inputs fontmanager)
        ;; This `delete' form is only working right when passed string
        ;; arguents. Weird.
-       (delete "libsoup-minimal"
+       (delete "libsoup"
                "webkitgtk-with-libsoup2")))))
 
 (define-public fntsample
