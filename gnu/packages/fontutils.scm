@@ -70,6 +70,7 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
@@ -1642,14 +1643,13 @@ definitions.")
                     "1crrp345ylqppbl1dm4ln3dlmdhkjg7ngf691jnp59g899mq78li")))))))
     (build-system cmake-build-system)
     (native-inputs
-     (list pkg-config))
+     (list gettext-minimal
+           pkg-config))
     (inputs
-     (list bash-minimal
-           fontconfig                   ;dlopen'd
+     (list bash-minimal ; for wrap-program
            freetype
-           gettext-minimal
+           glib
            libjpeg-turbo
-           libltdl
            libpng
            libspiro
            libtiff
@@ -1657,19 +1657,14 @@ definitions.")
            libxml2
            potrace
            python
-           zlib
-           gtk+)) ; For the GUI.
+           readline
+           woff2
+           zlib))
     (arguments
      (list
+      #:configure-flags #~(list "-DENABLE_GUI=OFF")
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'do-not-override-RPATH
-            (lambda _
-              ;; Do not attempt to set a default RPATH, as our ld-wrapper
-              ;; already does the right thing.
-              (substitute* "CMakeLists.txt"
-                (("^set_default_rpath\\(\\)")
-                 ""))))
           (add-after 'unpack 'do-not-use-msgfmt--check
             (lambda _
               ;; msgfmt --check from gettext-0.23 fails on fr.po:
@@ -1695,21 +1690,11 @@ definitions.")
                                         test-target))
                               (format #t "test suite not run~%"))))))
                  #~())
-          (add-after 'install 'set-library-path
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out"))
-                    (potrace (dirname
+          (add-after 'install 'wrap-fontforge-exe
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((potrace (dirname
                               (search-input-file inputs "bin/potrace"))))
-                (wrap-program (string-append out "/bin/fontforge")
-                  ;; Fontforge dynamically opens libraries.
-                  `("LD_LIBRARY_PATH" ":" prefix
-                    ,(map (lambda (input)
-                            (string-append (assoc-ref inputs input)
-                                           "/lib"))
-                          '("libtiff" "libjpeg-turbo" "libpng" "libungif"
-                            "libxml2" "zlib" "libspiro" "freetype"
-                            "fontconfig-minimal" "gtk+")))
-                  ;; Checks for potrace program at runtime
+                (wrap-program (string-append #$output "/bin/fontforge")
                   `("PATH" ":" prefix (,potrace)))))))))
     (synopsis "Outline font editor")
     (description
@@ -1718,6 +1703,18 @@ opentype fonts.  You can save fonts in many different outline formats, and
 generate bitmaps.")
     (license license:gpl3+)
     (home-page "https://fontforge.github.io")))
+
+(define-public fontforge-gui
+  (package
+    (inherit fontforge)
+    (name "fontforge-gui")
+    (arguments
+     (substitute-keyword-arguments (package-arguments fontforge)
+       ((#:configure-flags configure-flags  #~'())
+        #~(delete "-DENABLE_GUI=OFF" #$configure-flags))))
+    (inputs
+     (modify-inputs (package-inputs fontforge)
+       (prepend gtk+)))))
 
 (define-public python-statmake
   (package
