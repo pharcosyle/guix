@@ -180,41 +180,41 @@ such as mate-panel and xfce4-panel.")
         (base32 "0r0by563s75xyzz0d0j1nmjqmdrk2x9agk7r57p3v8vqp4v0ffi4"))))
     (build-system meson-build-system)
     (arguments
-     `(#:tests? #f ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
-       #:glib-or-gtk? #t
-       #:configure-flags
-       (list "-Dtests=disabled")))
+     (list #:configure-flags
+           #~(list
+              ;; Testing requires additional dependencies: libspectre,
+              ;; ghostscript, poppler, and librsvg. The latter two introduce
+              ;; cyles and the tests still fail. A few run (successfully) even
+              ;; with this flag disabled so don't also set the build tests
+              ;; argument to false.
+              "-Dtests=disabled")))
     (native-inputs
-     `(,@(if (target-hurd?)
-             '()
-             `(("gobject-introspection" ,gobject-introspection)))
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
-    (inputs
-     `(("bash-minimal" ,bash-minimal)   ;for glib-or-gtk-wrap
-       ,@(if (target-hurd?)
-             '()
-             `(("drm" ,libdrm)))
-       ("ghostscript" ,ghostscript)
-       ("libspectre" ,libspectre)
-       ,@(if (target-hurd?)
-             '()
-             `(("poppler" ,poppler)))))
+     (list pkg-config
+           python))
     (propagated-inputs
-     `(("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("glib" ,glib)
-       ("libpng" ,libpng)
-       ("pixman" ,pixman)
-       ("x11" ,libx11)
-       ("xcb" ,libxcb)
-       ("xext" ,libxext)
-       ("xrender" ,libxrender)))
+     (list
+      ;; Font backends (required)
+      fontconfig
+      freetype
+      ;; "Standard" surface backends
+      libpng
+      pixman
+      zlib
+      ;; "Platform" surface backends
+      libx11
+      libxcb
+      libxext
+      libxrender
+      ;; GObject support
+      glib
+      ;; Optional CairoScript interpreter dependency (let's leave it off,
+      ;; it doesn't seem super useful)
+      ;; lzo
+      ))
     (synopsis "Multi-platform 2D graphics library")
     (description "Cairo is a 2D graphics library with support for multiple output
-devices.  Currently supported output targets include the X Window System (via
-both Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file
-output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
+devices.  Currently supported output targets include the X Window System, XCB,
+Quartz, Win32, image buffers, PostScript, PDF, and SVG file output.")
     (home-page "https://cairographics.org/")
     (license
      ;; This project is dual-licensed.
@@ -248,18 +248,10 @@ output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.")
                 ;; This directory is now empty so remove it.
                 (rmdir (string-append #$output "/share"))))))))))
 
-(define-public cairo-sans-poppler
-  ;; Variant used to break the dependency cycle between Poppler and Cairo.
-  (package/inherit cairo
-    (inputs (alist-delete "poppler" (package-inputs cairo)))))
-
 (define-public cairo-xcb
   (package/inherit cairo
     (properties (alist-delete 'hidden? (package-properties cairo)))
     (name "cairo-xcb")
-    (inputs
-     `(("mesa" ,mesa)
-       ,@(package-inputs cairo)))
     (arguments
      (substitute-keyword-arguments (package-arguments cairo)
        ((#:configure-flags flags ''())
