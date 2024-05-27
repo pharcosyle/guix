@@ -362,30 +362,44 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
-;;; Minimal variant, used to break a cycle with Inkscape.
-(define-public libcloudproviders-minimal
+(define-public libcloudproviders
   (package
-    (name "libcloudproviders-minimal")
+    (name "libcloudproviders")
     (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "mirror://gnome/sources/libcloudproviders/"
+        (string-append "mirror://gnome/sources/" name "/"
                        (version-major+minor version)
-                       "/libcloudproviders-" version ".tar.xz"))
+                       "/" name "-" version ".tar.xz"))
        (sha256
         (base32 "1dvlbsh5pfrnj745dlb1w0m4s1gy063y8h54qp2z9pjg785i2x9v"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
-       #:configure-flags (list "-Dintrospection=false"
-                               "-Denable-gtk-doc=false"
-                               "-Dvapigen=false")))
+     (list
+      #:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
+      #:configure-flags #~(list "-Denable-gtk-doc=true") ;false by default
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'move-doc
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc")))
+                (mkdir-p (string-append doc "/share"))
+                (rename-file
+                 (string-append out "/share/gtk-doc")
+                 (string-append doc "/share/gtk-doc"))))))))
     (native-inputs
-     (list `(,glib "bin") pkg-config vala))
+     (list `(,glib "bin")
+           gobject-introspection
+           gtk-doc/stable
+           pkg-config
+           vala))
     (inputs
-     (list glib glib-networking))
+     (list glib
+           glib-networking))
     (synopsis "Cloudproviders Integration API")
     (description "Libcloudproviders is a DBus API that allows cloud storage sync
 clients to expose their services.  Clients such as file managers and desktop
@@ -393,30 +407,6 @@ environments can then provide integrated access to the cloud providers
 services.")
     (home-page "https://csorianognome.wordpress.com/2015/07/07/cloud-providers/")
     (license license:lgpl3+)))
-
-(define-public libcloudproviders
-  (package/inherit libcloudproviders-minimal
-    (name "libcloudproviders")
-    (outputs (cons "doc" (package-outputs libcloudproviders-minimal)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments libcloudproviders-minimal)
-       ((#:configure-flags _)
-        '(list "-Denable-gtk-doc=true")) ;false by default
-       ((#:phases phases '%standard-phases)
-        `(modify-phases %standard-phases
-           (add-after 'install 'move-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (doc (assoc-ref outputs "doc")))
-                 (mkdir-p (string-append doc "/share"))
-                 (rename-file
-                  (string-append out "/share/gtk-doc")
-                  (string-append doc "/share/gtk-doc")))))))))
-    (native-inputs
-     (append
-         `(("gobject-introspection" ,gobject-introspection)
-           ("gtk-doc" ,gtk-doc/stable))
-         (package-native-inputs libcloudproviders-minimal)))))
 
 (define-public libgrss
   (package
