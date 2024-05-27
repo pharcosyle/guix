@@ -1042,7 +1042,7 @@ application suites.")
            freetype
            (librsvg-for-system)
            glib
-           libcloudproviders-minimal
+           libcloudproviders
            libepoxy
            libx11
            libxcomposite
