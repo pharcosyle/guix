@@ -260,7 +260,7 @@ endif()~%~%"
       (list aspell
             autotrace
             bash-minimal
-            gdl-minimal
+            gdl
             gtkmm-3
             gtk+
             gtkspell3
