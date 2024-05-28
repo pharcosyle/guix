@@ -2237,8 +2237,18 @@ information.")
                (base32
                 "0746lwxgybc5ss3hzdd0crjjghk0ck0x9jbmz73iig405arp42xj"))
               (patches
-               (search-patches "gtk-doc-respect-xml-catalog.patch"
-                               "gtk-doc-skip-mkhtml-test.patch"))))
+               (append
+                (search-patches "gtk-doc-respect-xml-catalog.patch")
+                (list
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "https://gitlab.gnome.org/GNOME/gtk-doc/-/commit"
+                         "/951743698610eaaa0cc9030f7d7d02437419ac24.patch"))
+                   (file-name (string-append name "-mkhtml-test-fix.patch"))
+                   (sha256
+                    (base32
+                     "0lwhbbsy4f4k0qjkd0hrfbzrr8z4dzcabz5yr8qyffb5px1w7z7b"))))))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -2259,28 +2269,21 @@ information.")
                          (find-files (string-append #$output "/bin")))))))))
     (native-inputs
      (list gettext-minimal
-           `(,glib "bin")
-           gobject-introspection
            itstool
-           perl
+           glib
            pkg-config
-           python-wrapper))
+           python-wrapper
+           python-parameterized
+           yelp-tools))
     (inputs
      (list bash-minimal
-           bc
            dblatex
            docbook-xml-4.3
            docbook-xsl
-           glib
-           libxml2
            libxslt
            python
-           python-anytree
            python-lxml
-           python-parameterized
-           python-pygments
-           source-highlight
-           yelp-tools))
+           python-pygments))
     ;; xsltproc's search paths, to avoid propagating libxslt.
     (native-search-paths %libxslt-search-paths)
     (home-page "https://wiki.gnome.org/DocumentationProject/GtkDoc")
