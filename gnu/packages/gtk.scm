@@ -2234,6 +2234,9 @@ application and the status bar which provides the user with current
 information.")
     (license license:zlib)))
 
+;; Keep tests, manual generation, and PDF output capabilities via dblatex out
+;; of the base variant to avoid some truly horrific dependency cycles. Use
+;; `gtk-doc-full' if you need any of those.
 (define-public gtk-doc
   (package
     (name "gtk-doc")
@@ -2247,21 +2250,12 @@ information.")
                (base32
                 "0746lwxgybc5ss3hzdd0crjjghk0ck0x9jbmz73iig405arp42xj"))
               (patches
-               (append
-                (search-patches "gtk-doc-respect-xml-catalog.patch")
-                (list
-                 (origin
-                   (method url-fetch)
-                   (uri (string-append
-                         "https://gitlab.gnome.org/GNOME/gtk-doc/-/commit"
-                         "/951743698610eaaa0cc9030f7d7d02437419ac24.patch"))
-                   (file-name (string-append name "-mkhtml-test-fix.patch"))
-                   (sha256
-                    (base32
-                     "0lwhbbsy4f4k0qjkd0hrfbzrr8z4dzcabz5yr8qyffb5px1w7z7b"))))))))
+               (search-patches "gtk-doc-respect-xml-catalog.patch"))))
     (build-system meson-build-system)
     (arguments
      (list
+      #:configure-flags #~(list "-Dtests=false"
+                                "-Dyelp_manual=false")
       #:phases
       #~(modify-phases %standard-phases
          (add-after 'install 'wrap-executables
@@ -2280,14 +2274,10 @@ information.")
     (native-inputs
      (list gettext-minimal
            itstool
-           glib
            pkg-config
-           python-wrapper
-           python-parameterized
-           yelp-tools))
+           python-wrapper))
     (inputs
      (list bash-minimal
-           dblatex
            docbook-xml-4.3
            docbook-xsl
            libxslt
@@ -2310,15 +2300,44 @@ with some extra work.")
       ;; Others.
       license:gpl2+))))
 
-;; This is a variant of the 'gtk-doc' package that is not updated often and
-;; excludes 'dblatex'.  It is intended to be used as a native-input at
-;; build-time to reduce the number of dependencies will cause mass rebuilds
-;; when changed.
-(define-public gtk-doc/stable
-  (hidden-package
-   (package/inherit gtk-doc
-     (inputs (modify-inputs (package-inputs gtk-doc)
-               (delete "dblatex"))))))
+;; TODO: Rename globally and remove this alias.
+(define-public gtk-doc/stable gtk-doc)
+
+(define-public gtk-doc-full
+  (package
+    (inherit gtk-doc)
+    (name "gtk-doc-full")
+    (source
+     (origin
+       (inherit (package-source gtk-doc))
+       (patches
+        (append
+         (origin-patches (package-source gtk-doc))
+         (list
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gitlab.gnome.org/GNOME/gtk-doc/-/commit"
+                  "/951743698610eaaa0cc9030f7d7d02437419ac24.patch"))
+            (file-name (string-append name "-mkhtml-test-fix.patch"))
+            (sha256
+             (base32
+              "0lwhbbsy4f4k0qjkd0hrfbzrr8z4dzcabz5yr8qyffb5px1w7z7b"))))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments gtk-doc)
+       ((#:configure-flags configure-flags  #~'())
+        #~(filter (lambda (flag)
+                    (not (member flag '("-Dtests=false"
+                                        "-Dyelp_manual=false"))))
+                  #$configure-flags))))
+    (native-inputs
+     (modify-inputs (package-native-inputs gtk-doc)
+       (prepend glib
+                python-parameterized
+                yelp-tools)))
+    (inputs
+     (modify-inputs (package-inputs gtk-doc)
+       (prepend dblatex)))))
 
 (define-public gtk-engines
   (package
