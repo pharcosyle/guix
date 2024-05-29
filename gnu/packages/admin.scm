@@ -4690,14 +4690,14 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
 (define-public python-pyudev
   (package
     (name "python-pyudev")
-    (version "0.22.0")
+    (version "0.24.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyudev" version))
         (sha256
           (base32
-            "0xmj6l08iih2js9skjqpv4w7y0dhxyg91zmrs6v5aa65gbmipfv9"))))
+            "0w8ln0wb6yng23agl77gqg5a69p5qnfgvw511mdw8nlg44vlvrbm"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; Tests require /sys
@@ -4707,19 +4707,27 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((eudev (assoc-ref inputs "eudev")))
                (substitute* "src/pyudev/core.py"
-                (("'udev'")
+                (("\"udev\"")
                  (string-append "'" eudev "/lib/libudev.so'")))
                (substitute* "src/pyudev/_ctypeslib/utils.py"
                 ;; Use absolute paths instead of keys.
                 (("= find_library") "= "))
-               #t))))))
+               #t)))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "py.test" "-v")))))))
     (inputs
      (list eudev))
     (propagated-inputs
      (list python-six))
     (native-inputs
-     (list python-docutils python-hypothesis python-mock python-pytest
-           python-sphinx))
+     (list
+      ;; For tests.
+      python-docutils
+      python-hypothesis
+      python-mock
+      python-pytest))
     (home-page "https://pyudev.readthedocs.io/")
     (synopsis "Python udev binding")
     (description "This package provides @code{udev} bindings for Python.")
