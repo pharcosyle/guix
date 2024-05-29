@@ -1483,8 +1483,7 @@ Escape key when Left Control is pressed and released on its own.")
            python-pytest
            python-pyudev))
     (inputs
-     (list gtk+
-           eudev
+     (list eudev
            libxml2
            python
            python-libevdev
