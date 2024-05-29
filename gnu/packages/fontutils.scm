@@ -1241,60 +1241,80 @@ Font Format (WOFF).")
     (license license:expat)))
 
 (define-public fontconfig
-  (hidden-package
-   (package
-     (name "fontconfig-minimal")
-     (version "2.15.0")
-     (source (origin
-               (method url-fetch)
-               (uri (string-append
-                     "https://www.freedesktop.org/software/"
-                     "fontconfig/release/fontconfig-" version ".tar.xz"))
-               (sha256 (base32
-                        "03kwblrx7q4xqfa2m81f41c1zwh4xxc2ni86c64gmq061s6nb833"))
-               (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
-     (build-system gnu-build-system)
-     ;; In Requires or Requires.private of fontconfig.pc.
-     (propagated-inputs `(("expat" ,expat)
-                          ("freetype" ,freetype)))
-     (inputs
-      ;; We use to use 'font-ghostscript' but they are not recognized by newer
-      ;; versions of Pango, causing many applications to fail to find fonts
-      ;; otherwise.
-      (list font-dejavu))
-     (native-inputs
-      `(("gperf" ,gperf)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python-minimal)))    ;to avoid a cycle through tk
-     (arguments
-      `(#:configure-flags
-        (list "--disable-docs"
-              "--with-cache-dir=/var/cache/fontconfig"
-              ;; register the default fonts
-              (string-append "--with-default-fonts="
-                             (assoc-ref %build-inputs "font-dejavu")
-                             "/share/fonts"))
-        #:phases
-        (modify-phases %standard-phases
-          (add-before 'check 'skip-problematic-tests
-            (lambda _
-              ;; SOURCE_DATE_EPOCH doesn't make sense when ignoring mtime
-              (unsetenv "SOURCE_DATE_EPOCH")
+  (package
+    (name "fontconfig")
+    (version "2.15.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.freedesktop.org/software/"
+                    "fontconfig/release/fontconfig-" version ".tar.xz"))
+              (sha256 (base32
+                       "03kwblrx7q4xqfa2m81f41c1zwh4xxc2ni86c64gmq061s6nb833"))
+              (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    ;; In Requires or Requires.private of fontconfig.pc.
+    (propagated-inputs `(("expat" ,expat)
+                         ("freetype" ,freetype)))
+    (inputs
+     ;; We use to use 'font-ghostscript' but they are not recognized by newer
+     ;; versions of Pango, causing many applications to fail to find fonts
+     ;; otherwise.
+     (list font-dejavu))
+    (native-inputs
+     `(("docbook-utils" ,docbook-utils)
+       ("gperf" ,gperf)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-minimal)))    ;to avoid a cycle through tk
+    (arguments
+     `(#:configure-flags
+       (list "--with-cache-dir=/var/cache/fontconfig"
+             ;; register the default fonts
+             (string-append "--with-default-fonts="
+                            (assoc-ref %build-inputs "font-dejavu")
+                            "/share/fonts"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'no-pdf-doc
+           (lambda _
+             ;; Don't build documentation as PDF.
+             (substitute* "doc/Makefile.in"
+               (("^PDF_FILES = .*")
+                "PDF_FILES =\n"))))
+         (add-before 'check 'skip-problematic-tests
+           (lambda _
+             ;; SOURCE_DATE_EPOCH doesn't make sense when ignoring mtime
+             (unsetenv "SOURCE_DATE_EPOCH")
 
-              (substitute* "test/run-test.sh"
-                ;; The crbug1004254 test attempts to fetch fonts from the
-                ;; network.
-                (("\\[ -x \"\\$BUILDTESTDIR\"/test-crbug1004254 \\]")
-                 "false"))))
-          (replace 'install
-            (lambda _
-              ;; Don't try to create /var/cache/fontconfig.
-              (invoke "make" "install"
-                      "fc_cachedir=$(TMPDIR)"
-                      "RUN_FC_CACHE_TEST=false"))))))
-     (synopsis "Library for configuring and customizing font access")
-     (description
-      "Fontconfig can discover new fonts when installed automatically;
+             (substitute* "test/run-test.sh"
+               ;; The crbug1004254 test attempts to fetch fonts from the
+               ;; network.
+               (("\\[ -x \"\\$BUILDTESTDIR\"/test-crbug1004254 \\]")
+                "false"))))
+         (replace 'install
+           (lambda _
+             ;; Don't try to create /var/cache/fontconfig.
+             (invoke "make" "install"
+                     "fc_cachedir=$(TMPDIR)"
+                     "RUN_FC_CACHE_TEST=false")))
+         (add-after 'install 'move-man-sections
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
+             ;; "out" for convenience.
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (for-each (lambda (section)
+                           (let ((source (string-append out "/share/man/"
+                                                        section))
+                                 (target (string-append doc "/share/man/"
+                                                        section)))
+                             (copy-recursively source target)
+                             (delete-file-recursively source)))
+                         '("man3" "man5"))))))))
+    (synopsis "Library for configuring and customizing font access")
+    (description
+     "Fontconfig can discover new fonts when installed automatically;
 perform font name substitution, so that appropriate alternative fonts can
 be selected if fonts are missing;
 identify the set of fonts required to completely cover a set of languages;
@@ -1303,55 +1323,15 @@ efficiently and quickly find needed fonts among the set of installed fonts;
 be used in concert with the X Render Extension and FreeType to implement
 high quality, anti-aliased and subpixel rendered text on a display.")
                                         ; The exact license is more X11-style than BSD-style.
-     (license (license:non-copyleft "file://COPYING"
-                                    "See COPYING in the distribution."))
-     (native-search-paths
-      ;; Since version 2.13.94, fontconfig knows to find fonts from
-      ;; XDG_DATA_DIRS.
-      (list (search-path-specification
-             (variable "XDG_DATA_DIRS")
-             (files '("share")))))
-     (home-page "https://www.freedesktop.org/wiki/Software/fontconfig"))))
-
-;;; The documentation of fontconfig is built in a separate package, as it
-;;; causes a dramatic increase in the size of the closure of fontconfig.  This
-;;; is intentionally named 'fontconfig', as it's intended as the user-facing
-;;; fontconfig package.
-(define-public fontconfig-with-documentation
-  (package
-    (inherit fontconfig)
-    (name "fontconfig")
-    (outputs (cons "doc" (package-outputs fontconfig)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments fontconfig)
-       ((#:configure-flags configure-flags)
-        `(delete "--disable-docs" ,configure-flags))
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'no-pdf-doc
-             (lambda _
-               ;; Don't build documentation as PDF.
-               (substitute* "doc/Makefile.in"
-                 (("^PDF_FILES = .*")
-                  "PDF_FILES =\n"))))
-           (add-after 'install 'move-man-sections
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
-               ;; "out" for convenience.
-               (let ((out (assoc-ref outputs "out"))
-                     (doc (assoc-ref outputs "doc")))
-                 (for-each (lambda (section)
-                             (let ((source (string-append out "/share/man/"
-                                                          section))
-                                   (target (string-append doc "/share/man/"
-                                                          section)))
-                               (copy-recursively source target)
-                               (delete-file-recursively source)))
-                           '("man3" "man5")))))))))
-    (native-inputs
-     (append (package-native-inputs fontconfig)
-             `(("docbook-utils" ,docbook-utils))))
-    (properties (alist-delete 'hidden? (package-properties fontconfig)))))
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))
+    (native-search-paths
+     ;; Since version 2.13.94, fontconfig knows to find fonts from
+     ;; XDG_DATA_DIRS.
+     (list (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))))
+    (home-page "https://www.freedesktop.org/wiki/Software/fontconfig")))
 
 (define-public t1lib
   (package
