@@ -123,11 +123,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match)
-  ;; Export cairo to break a dependency cycle, as gtk-doc is needed to build
-  ;; the documentation.  Use cairo for other packages and
-  ;; cairo-with-documentation as the public package.
-  #:export (cairo))
+  #:use-module (ice-9 match))
 
 (define-public appmenu-gtk-module
   (package
@@ -166,7 +162,7 @@ such as mate-panel and xfce4-panel.")
     (home-page "https://gitlab.com/vala-panel-project/vala-panel-appmenu")
     (license (list license:lgpl3))))
 
-(define cairo
+(define-public cairo
   (package
     (name "cairo")
     (version "1.18.0")
@@ -179,31 +175,41 @@ such as mate-panel and xfce4-panel.")
        (sha256
         (base32 "0r0by563s75xyzz0d0j1nmjqmdrk2x9agk7r57p3v8vqp4v0ffi4"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
      (list
       #:configure-flags
       #~(list
+         "-Dgtk_doc=true"
          ;; Testing requires additional dependencies: libspectre,
          ;; ghostscript, poppler, and librsvg. The latter two introduce
          ;; cyles and the tests still fail. A few run (successfully) even
          ;; with this flag disabled so don't also set the build tests
          ;; argument to false.
          "-Dtests=disabled")
-      #$@(if (%current-target-system)
-             (list
-              #:phases
-              #~(modify-phases %standard-phases
-                  (add-after 'unpack 'fix-cross-compilation
-                    (lambda _
-                      ;; XXX: Let meson-build-system customize the property
-                      (substitute* "meson.build"
-                        (("'ipc_rmid_deferred_release', 'auto'")
-                         ;; see https://github.com/NixOS/nixpkgs/blob/df51f2293e935e85f6a2e69bcf89a40cb31bbc3d/pkgs/development/libraries/cairo/default.nix#L65
-                         ;; XXX: check it on hurd.
-                         "'ipc_rmid_deferred_release', 'true'"))))))
-             '())))
+      #:phases
+      #~(modify-phases %standard-phases
+          #$@(if (%current-target-system)
+                 #~((add-after 'unpack 'fix-cross-compilation
+                      (lambda _
+                        ;; XXX: Let meson-build-system customize the property
+                        (substitute* "meson.build"
+                          (("'ipc_rmid_deferred_release', 'auto'")
+                           ;; see https://github.com/NixOS/nixpkgs/blob/df51f2293e935e85f6a2e69bcf89a40cb31bbc3d/pkgs/development/libraries/cairo/default.nix#L65
+                           ;; XXX: check it on hurd.
+                           "'ipc_rmid_deferred_release', 'true'")))))
+                 #~())
+          (add-after 'install 'move-doc
+            (lambda* (#:key outputs #:allow-other-keys)
+              (mkdir-p (string-append #$output:doc "/share"))
+              (rename-file
+               (string-append #$output "/share/gtk-doc")
+               (string-append #$output:doc "/share/gtk-doc"))
+              ;; This directory is now empty so remove it.
+              (rmdir (string-append #$output "/share")))))))
     (native-inputs
-     (list pkg-config
+     (list gtk-doc
+           pkg-config
            python))
     (propagated-inputs
      (list
@@ -234,33 +240,7 @@ Quartz, Win32, image buffers, PostScript, PDF, and SVG file output.")
      ;; This project is dual-licensed.
      (list
       license:lgpl2.1+
-      license:mpl1.1))
-    ;; Hide and have cairo-with-documentation public.
-    (properties '((hidden? . #t)))))
-
-(define-public cairo-with-documentation
-  ;; cairo's docs must be built in a separate package since it requires
-  ;; gtk-doc, which in turn depends on cairo.
-  (package/inherit cairo
-    (properties (alist-delete 'hidden? (package-properties cairo)))
-    (outputs (cons "doc" (package-outputs cairo)))
-    (native-inputs
-     (modify-inputs (package-native-inputs cairo)
-       (prepend gtk-doc)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments cairo)
-       ((#:configure-flags flags ''())
-        #~(cons "-Dgtk_doc=true" #$flags))
-       ((#:phases phases '%standard-phases)
-        #~(modify-phases #$phases
-            (add-after 'install 'move-doc
-              (lambda* (#:key outputs #:allow-other-keys)
-                (mkdir-p (string-append #$output:doc "/share"))
-                (rename-file
-                 (string-append #$output "/share/gtk-doc")
-                 (string-append #$output:doc "/share/gtk-doc"))
-                ;; This directory is now empty so remove it.
-                (rmdir (string-append #$output "/share"))))))))))
+      license:mpl1.1))))
 
 (define-public cairo-xcb
   (package/inherit cairo
