@@ -502,7 +502,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
 
            ;; Documentation
            docbook-xml-4.2
-           docbook-xml
+           docbook-xml-4.5
            docbook-xsl
            gtk-doc
            libxml2
