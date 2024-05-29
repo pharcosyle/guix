@@ -1483,12 +1483,13 @@ Escape key when Left Control is pressed and released on its own.")
            python-pytest
            python-pyudev))
     (inputs
-     (list gtk+
-           eudev
+     (list eudev
            libxml2
-           python
-           python-libevdev
-           python-pyudev))
+           ;; TODO upstream added these when (bumping from 2.11.0 to 2.12.1), are they necessary?
+           ;; python
+           ;; python-libevdev
+           ;; python-pyudev
+           ))
     (propagated-inputs
      ;; libwacom.pc 'Requires' these:
      (list glib libevdev libgudev))
