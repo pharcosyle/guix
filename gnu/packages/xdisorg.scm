@@ -1459,7 +1459,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "2.6.0")
+    (version "2.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1467,7 +1467,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.xz"))
               (sha256
                (base32
-                "13x978gzyw28cqd985m5smiqgza0xp3znb1s0msmn8vmjjlwqxi3"))))
+                "0i0k333kfc6ai4vxqijjybj38s9j1hly2x327113lm1cr0g9jgxh"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1476,15 +1476,14 @@ Escape key when Left Control is pressed and released on its own.")
      (list pkg-config
            ;; For tests.
            python
-           python-evdev
            python-libevdev
            python-pytest
            python-pyudev))
     (inputs
-     (list gtk+ eudev libxml2))
+     (list eudev libxml2))
     (propagated-inputs
      ;; libwacom.pc 'Requires' these:
-     (list glib libgudev))
+     (list glib libevdev libgudev))
     (home-page "https://linuxwacom.github.io/")
     (synopsis "Helper library for graphics tablet settings")
     (description
