@@ -1006,7 +1006,7 @@ DrRacket IDE, are not included.")
                                      (G_ "missing input '~a' to the 'racket' package")
                                      name)))))
                                '("cairo"
-                                 "fontconfig-minimal" ;; aka fontconfig
+                                 "fontconfig"
                                  "glib"
                                  "glu"
                                  "gmp"
