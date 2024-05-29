@@ -991,9 +991,7 @@ application suites.")
          "1ymna7b8p668wxbca1pgjqpw02ya4p86yaa9pja7l27kg9463nj7"))
        (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                 "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
-    ;; There is no "doc" output, because adding gtk-doc here would introduce a
-    ;; dependency cycle with itself.
-    (outputs '("out" "bin"))
+    (outputs '("out" "bin" "doc"))
     (build-system meson-build-system)
     (propagated-inputs
      (list at-spi2-core
@@ -1034,6 +1032,7 @@ application suites.")
            gettext-minimal
            `(,glib "bin")
            gobject-introspection
+           gtk-doc
            hicolor-icon-theme
            pkg-config
            python-wrapper
@@ -1054,6 +1053,7 @@ application suites.")
       #~(list "-Dcloudproviders=true"   ;for cloud-providers support
               "-Dcolord=yes"            ;for color printing support
               "-Dbroadway_backend=true"
+              "-Dgtk_doc=true"
               "-Dman=true")
       ;; Use the same test options as upstream uses for their CI (see the
       ;; .gitlab-ci/run-tests.sh file).
