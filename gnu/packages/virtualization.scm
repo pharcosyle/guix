@@ -2212,7 +2212,7 @@ Machine Protocol.")
                                         "nettle"
                                         "mesa"
                                         "wayland"
-                                        "fontconfig-minimal"
+                                        "fontconfig"
                                         "freetype"
                                         "libx11"
                                         "libxfixes"
