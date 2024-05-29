@@ -1022,9 +1022,7 @@ application suites.")
          "1qkp4c8xxqi58ylpizgn97qyb06kifgp2nfppc0xvm4ja1hrzy2h"))
        (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                 "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
-    ;; There is no "doc" output, because adding gtk-doc here would introduce a
-    ;; dependency cycle with itself.
-    (outputs '("out" "bin"))
+    (outputs '("out" "bin" "doc"))
     (build-system meson-build-system)
     (propagated-inputs
      (list at-spi2-core
@@ -1065,6 +1063,7 @@ application suites.")
            gettext-minimal
            `(,glib "bin")
            gobject-introspection
+           gtk-doc
            hicolor-icon-theme
            pkg-config
            python-wrapper
@@ -1085,6 +1084,7 @@ application suites.")
       #~(list "-Dcloudproviders=true"   ;for cloud-providers support
               "-Dcolord=yes"            ;for color printing support
               "-Dbroadway_backend=true"
+              "-Dgtk_doc=true"
               "-Dman=true")
       ;; Use the same test options as upstream uses for their CI (see the
       ;; .gitlab-ci/run-tests.sh file).
@@ -1115,13 +1115,18 @@ application suites.")
               (setenv "XDG_RUNTIME_DIR" (getcwd))
               ;; For missing '/etc/machine-id'.
               (setenv "DBUS_FATAL_WARNINGS" "0")))
-          (add-after 'install 'move-desktop-files
-            ;; Move desktop files into 'bin' to avoid cycle references.
+          (add-after 'install 'move-files
             (lambda* (#:key outputs #:allow-other-keys)
-              (mkdir-p (string-append #$output:bin "/share"))
+              (for-each mkdir-p
+                        (list
+                         (string-append #$output:bin "/share/applications")
+                         (string-append #$output:doc "/share/gtk-doc")))
+              ;; Move desktop files into 'bin' to avoid cycle references.
               (rename-file (string-append #$output "/share/applications")
-                           (string-append #$output:bin
-                                          "/share/applications")))))))
+                           (string-append #$output:bin "/share/applications"))
+              ;; Move HTML documentation to output 'doc'.
+              (rename-file (string-append #$output "/share/gtk-doc")
+                           (string-append #$output:doc "/share/gtk-doc")))))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUIX_GTK3_PATH")
