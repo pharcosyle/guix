@@ -843,8 +843,9 @@ DB2LaTeX.")
     ;; Propagated for convenience.  All these tools are used at run time to
     ;; provide the complete functionality of the docbook-utils commands.
     (propagated-inputs
-     (list texlive-jadetex
-           docbook-sgml-3.1
+     ;; Keep PDF output via textlive-jadetex out of this package to avoid a
+     ;; heavy dependency burden. Create a variant if you need this capability.
+     (list docbook-sgml-3.1
            docbook-dsssl
            openjade
            opensp
