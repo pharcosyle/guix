@@ -2031,6 +2031,11 @@ applications needing access to be root.")
                    (name "xlock")
                    (program (file-append xlockmore "/bin/xlock"))))
 
+         ;; Add libinput's udev rules that enable any special device-specifc
+         ;; settings for the current hardware. Libinput is default input
+         ;; library in Guix for Xorg (see `%default-xorg-modules') and only
+         ;; input library for Wayland so assume for all desktops here.
+         (simple-service 'libinput udev-service-type (list libinput-minimal))
          ;; Add udev rules for MTP devices so that non-root users can access
          ;; them.
          (simple-service 'mtp udev-service-type (list libmtp))
