@@ -755,12 +755,11 @@ other applications that need to directly deal with input devices.")
     (name "libinput-minimal")
     (inputs
      (fold alist-delete (package-inputs libinput)
-           '("cairo" "glib" "gtk+" "libwacom")))
+           '("cairo" "glib" "gtk+")))
     (arguments
      (substitute-keyword-arguments (package-arguments libinput)
       ((#:configure-flags flags ''())
-       `(cons* "-Dlibwacom=false"
-               "-Ddebug-gui=false"    ;requires gtk+@3
+       `(cons* "-Ddebug-gui=false"    ;requires gtk+@3
                ,flags))))))
 
 (define-public libei
