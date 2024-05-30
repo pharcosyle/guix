@@ -1533,6 +1533,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgeotiff-fix-tests-with-proj-9.3.0.patch	\
   %D%/packages/patches/libgeotiff-fix-tests-with-proj-9.3.1.patch	\
   %D%/packages/patches/libgeotiff-fix-tests-on-i386.patch	\
+  %D%/packages/patches/libinput-udev-program-absolute-path.patch	\
   %D%/packages/patches/libobjc2-unbundle-robin-map.patch	\
   %D%/packages/patches/librime-fix-build-with-gcc10.patch	\
   %D%/packages/patches/libvirt-add-install-prefix.patch	\

@@ -712,7 +712,9 @@ freedesktop.org project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nzz76lgjkj8la5icmv9zm43gb3d12ygjcilc4nqh25ywpj58qbk"))))
+                "0nzz76lgjkj8la5icmv9zm43gb3d12ygjcilc4nqh25ywpj58qbk"))
+              (patches
+               (search-patches "libinput-udev-program-absolute-path.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")
