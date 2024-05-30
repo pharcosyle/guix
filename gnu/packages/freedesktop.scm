@@ -706,7 +706,6 @@ freedesktop.org project.")
     (license license:expat)))
 
 (define-public libinput
-  ;; Updating this will rebuild over 700 packages through libinput-minimal.
   (package
     (name "libinput")
     (version "1.26.0")
@@ -729,7 +728,8 @@ freedesktop.org project.")
       ;; hangs, and the comments around it suggests that we should be using this
       ;; Meson target anyway.
       #:build-type "release"
-      #:configure-flags #~(list (string-append "--libexecdir="
+      #:configure-flags #~(list "-Ddebug-gui=false"
+                                (string-append "--libexecdir="
                                                #$output:bin "/libexec"))
       #:phases
       #~(modify-phases %standard-phases
@@ -748,10 +748,7 @@ freedesktop.org project.")
                (list pkg-config-for-build)
                '())))
     (inputs
-     (append (list cairo
-                   glib
-                   gtk ; Both GTK 3/4 supported, use the newer one by default.
-                   libevdev
+     (append (list libevdev
                    libwacom
                    mtdev
                    ;; For tools.
@@ -771,17 +768,22 @@ freedesktop.org project.")
 other applications that need to directly deal with input devices.")
     (license license:x11)))
 
-(define-public libinput-minimal
+;; TODO: Rename globally and remove this alias.
+(define-public libinput-minimal libinput)
+
+(define-public libinput-gui
   (package/inherit libinput
-    (name "libinput-minimal")
+    (name "libinput-gui")
     (inputs
-     (fold alist-delete (package-inputs libinput)
-           '("cairo" "glib" "gtk")))
+     (modify-inputs (package-inputs libinput)
+       (prepend cairo
+                glib
+                gtk))) ; Both GTK 3/4 supported, use the newer one by default.
     (arguments
      (substitute-keyword-arguments (package-arguments libinput)
       ((#:configure-flags flags #~'())
-       #~(cons* "-Ddebug-gui=false"
-                #$flags))))))
+       #~(delete "-Ddebug-gui=false"
+                 #$flags))))))
 
 (define-public libei
   (package
