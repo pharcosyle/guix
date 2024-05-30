@@ -1865,6 +1865,19 @@ applications needing access to be root.")
 
 
 ;;;
+;;; Libinput
+;;;
+(define-public libinput-service-type
+  (service-type
+   (name 'libinput)
+   (extensions
+    (list (service-extension udev-service-type list)))
+   (default-value libinput-minimal)
+   (description
+    "Install libinput udev rules.")))
+
+
+;;;
 ;;; The default set of desktop services.
 ;;;
 
@@ -1944,6 +1957,8 @@ applications needing access to be root.")
 
          (service pulseaudio-service-type)
          (service alsa-service-type)
+
+         (service libinput-service-type)
 
          %base-services))
 
