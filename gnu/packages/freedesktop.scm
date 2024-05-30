@@ -722,13 +722,26 @@ freedesktop.org project.")
               (patches
                (search-patches "libinput-udev-program-absolute-path.patch"))))
     (build-system meson-build-system)
+    (outputs '("out" "bin"))
     (arguments
-     `(#:configure-flags '("-Ddocumentation=false")
-
-       ;; XXX: Using 'debug' or 'debugoptimized' pulls in an additional test that
-       ;; hangs, and the comments around it suggests that we should be using this
-       ;; Meson target anyway.
-       #:build-type "release"))
+     (list
+      ;; XXX: Using 'debug' or 'debugoptimized' pulls in an additional test that
+      ;; hangs, and the comments around it suggests that we should be using this
+      ;; Meson target anyway.
+      #:build-type "release"
+      #:configure-flags #~(list (string-append "--libexecdir="
+                                               #$output:bin "/libexec"))
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Not all of the tools are python scripts but let's wrap them all so
+          ;; this package can remain ignorant of that implementation detail.
+          (add-after 'install 'wrap-tools
+            (lambda _
+              (for-each
+               (lambda (prog)
+                 (wrap-program prog
+                   `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
+               (find-files (string-append #$output:bin "/libexec"))))))))
     (native-inputs
      (append (list check pkg-config python-minimal-wrapper python-pytest)
              (if (%current-target-system)
@@ -737,10 +750,14 @@ freedesktop.org project.")
     (inputs
      (append (list cairo
                    glib
-                   gtk+
+                   gtk ; Both GTK 3/4 supported, use the newer one by default.
                    libevdev
                    libwacom
-                   mtdev)
+                   mtdev
+                   ;; For tools.
+                   python-minimal
+                   python-libevdev
+                   python-pyudev)
              (if (%current-target-system)
                (list check)
                '())))
@@ -759,12 +776,12 @@ other applications that need to directly deal with input devices.")
     (name "libinput-minimal")
     (inputs
      (fold alist-delete (package-inputs libinput)
-           '("cairo" "glib" "gtk+")))
+           '("cairo" "glib" "gtk")))
     (arguments
      (substitute-keyword-arguments (package-arguments libinput)
-      ((#:configure-flags flags ''())
-       `(cons* "-Ddebug-gui=false"    ;requires gtk+@3
-               ,flags))))))
+      ((#:configure-flags flags #~'())
+       #~(cons* "-Ddebug-gui=false"
+                #$flags))))))
 
 (define-public libei
   (package
