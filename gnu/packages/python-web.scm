@@ -2221,7 +2221,6 @@ is Python’s.")
            python-wrapt))
     (native-inputs
      (list python-bump2version
-           python-pre-commit
            python-pytest
            python-pytest-mock
            python-pytest-socket
