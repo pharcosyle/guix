@@ -1694,14 +1694,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "6.1.1")
+    (version "7.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0s7r2qv8gh2a3w568n9xxgcz0q8j5ww1jdsci1hm9f4l1yqg9146"))))
+                "1zz4n2zqazl5nlvil31aikf90hhvlq8pgwxij0iriy3yy6qfxsdw"))))
     (outputs '("out" "debug"))
     (build-system gnu-build-system)
     (inputs
@@ -1894,6 +1894,18 @@ operate properly.")
 convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
+
+(define-public ffmpeg-6
+  (package
+    (inherit ffmpeg)
+    (version "6.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0s7r2qv8gh2a3w568n9xxgcz0q8j5ww1jdsci1hm9f4l1yqg9146"))))))
 
 (define-public ffmpeg-5
   (package
