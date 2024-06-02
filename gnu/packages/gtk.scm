@@ -2674,6 +2674,8 @@ printed to standard output.")
         #:configure-flags
         #~(list "--sysconfdir=/etc"
                 "--localstatedir=/var"
+                "--with-gtk=3"
+                "--disable-dumper"
                 ;; The shebang of the generated test files should be patched
                 ;; before enabling tests.
                 "--disable-tests")
@@ -2708,8 +2710,7 @@ printed to standard output.")
                 (setenv "HAVE_VALGRIND_FALSE" "#"))))))
       (inputs
        (list glib
-             gtk+
-             gtk+-2))
+             gtk+))
       (native-inputs
        (list autoconf
              automake
