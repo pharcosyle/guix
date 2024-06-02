@@ -632,7 +632,7 @@ receiving MJPG streams.")
     ;; Avoid a dependency on the legacy GTK+ 2.
     (arguments (list #:configure-flags #~(list "--without-gtk")))
     (inputs
-     (list libdv libjpeg-turbo libpng libquicktime sdl))
+     (list libdv libjpeg-turbo libpng))
     (native-inputs
      (list pkg-config))
     (synopsis "Tools for handling MPEG")
