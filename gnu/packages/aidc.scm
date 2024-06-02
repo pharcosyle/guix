@@ -162,7 +162,7 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
 (define-public zbar
   (package
     (name "zbar")
-    (version "0.23.92")
+    (version "0.23.93")
     (source
      (origin
        (method git-fetch)
@@ -172,7 +172,7 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k3g0ql2m4dnflppp9r3k804d927g7zslczblzcrbvhp02g6n5an"))))
+        (base32 "0x71clkkm4w765c2d5h3svr29w08dj03r6785f9jwqx5r4ral0za"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      (list
@@ -181,16 +181,7 @@ C/C++ programs to use its capabilities without restrictions or overhead.")
                                "--with-python=auto"
                                (string-append "--with-dbusconfdir="
                                               (assoc-ref %outputs "out")
-                                              "/etc"))
-       #:phases
-       (modify-phases %standard-phases
-         ;; Taken from https://github.com/mchehab/zbar/commit/9bb0cc43.
-         ;; This can probably be removed on the next version update.
-         (add-after 'unpack 'python-3.11-fix
-           (lambda _
-             (substitute* "python/enum.c"
-               (("Py_SIZE\\(&self->val\\) = Py_SIZE\\(longval\\);")
-                "Py_SET_SIZE(&self->val, Py_SIZE(longval));")))))))
+                                              "/etc"))))
     (native-inputs
      (list autoconf
            automake
