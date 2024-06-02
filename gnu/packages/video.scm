@@ -1693,7 +1693,7 @@ These tools require a supported graphics chip, driver, and VA-API back end to
 operate properly.")
     (license license:expat)))
 
-(define-public ffmpeg-7
+(define-public ffmpeg
   (package
     (name "ffmpeg")
     (version "7.0.2")
@@ -1910,9 +1910,9 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
-(define-public ffmpeg
+(define-public ffmpeg-6
   (package
-    (inherit ffmpeg-7)
+    (inherit ffmpeg)
     (version "6.1.1")
     (source (origin
               (method url-fetch)
