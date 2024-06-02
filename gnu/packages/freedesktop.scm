@@ -746,6 +746,79 @@ other applications that need to directly deal with input devices.")
                "-Ddebug-gui=false"    ;requires gtk+@3
                ,flags))))))
 
+(define-public libei
+  (package
+    (name "libei")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.freedesktop.org/libinput/libei.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1dbgc2my0r7bzb8ilbcv0d4k1j8fmm7w2r5c94y1djk5n39c4zzj"))
+              (snippet
+               #~(begin
+                   (use-modules (guix build utils))
+                   (substitute* "test/meson.build"
+                     (("subproject\\('munit'")
+                      "# subproject('munit'")
+                     ((", fallback: \\['munit', 'munit_dep'\\]")
+                      ""))
+                   (delete-file-recursively "subprojects")))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://gitlab.freedesktop.org/libinput/libei/-/commit"
+                        "/33b4a6199535868dba8446e5191223e83ea3fe0f.patch"))
+                  (file-name (string-append name "-test-fix.patch"))
+                  (sha256
+                   (base32
+                    "17lizqkc7aax96shcsv6wh8n8fv2vpbfa7mwpa9hj2z5i68arlws")))))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     (list
+      #:configure-flags #~'("-Ddocumentation=api" ;protocol requires hugo
+                            "-Dsd-bus-provider=libelogind")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-doc
+            (lambda _
+              (copy-recursively
+               "doc/html"
+               (string-append #$output:doc "/share/doc/"
+                              #$name "-" #$version "/api")))))))
+    (inputs
+     (list libevdev
+           libxkbcommon))
+    (propagated-inputs
+     ;; liboeffis-1.0.pc requires.private libelogind
+     (list elogind))
+    (native-inputs
+     (list dbus ; Needed for 'dbus-monitor' in a test.
+           doxygen
+           libxml2
+           munit
+           pkg-config
+           python
+           python-attrs
+           python-dbusmock
+           python-jinja2
+           python-pytest
+           python-structlog
+           python-pyyaml
+           python-pytest-xdist))
+    (home-page "https://libinput.pages.freedesktop.org/libei/")
+    (synopsis "Emulated Input protocol implementation")
+    (description
+     "Libei provides a client and server implementation of the @acronym{EI,Emulated
+Input} protocol for Wayland compositors.")
+    (license license:x11)))
+
 (define-public libxdg-basedir
   (package
     (name "libxdg-basedir")
