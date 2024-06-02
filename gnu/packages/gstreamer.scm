@@ -141,25 +141,31 @@ and for middleware components.")
 (define-public libdc1394
   (package
     (name "libdc1394")
-    (version "2.2.6")
+    (version "2.2.7")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://sourceforge.net/projects/" name "/files/"
                               name "-2" "/" version "/" name "-" version ".tar.gz"))
               (sha256
-               (base32 "1v8gq54n1pg8izn7s15yylwjf8r1l1dmzbm2yvf6pv2fmb4mz41b"))))
+               (base32 "17v0wqchx2vmsdmhwli5y22wzknij5hifjiz30d2gvrwvmwfnz2k"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     (list
+      #:configure-flags #~(list "--enable-doxygen-html")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'build 'docs
+            (lambda _
+              (invoke "make" "doc")
+              (copy-recursively "doc"
+                                (string-append #$output:doc "/share/doc")))))))
     (native-inputs
      (list doxygen perl pkg-config))
     (inputs
-     (list glu
-           libraw1394
-           libusb
-           libxv
-           mesa
-           sdl
-           v4l-utils))
+     (list libraw1394
+           libusb))
     (synopsis "1394-Based Digital Camera Control Library")
     (description "LibDC1394 is a library that provides functionality to control
 any camera that conforms to the 1394-Based Digital Camera Specification written
