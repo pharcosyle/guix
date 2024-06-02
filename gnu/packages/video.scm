@@ -303,7 +303,19 @@ user has installed.")
        (sha256
         (base32 "14ha9xjsjrj131f35jd56z5v1jb4rbsrj1nril5shqnxw3c74khy"))
        (patches
-        (search-patches "transcode-ffmpeg.patch"))))
+        (append
+         (search-patches "transcode-ffmpeg.patch")
+         (list
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://aur.archlinux.org/cgit/aur.git/plain"
+                  "/transcode-imagemagick7.patch""?h=transcode"
+                  "&id=886650489ee52d3f8d77efb720c4258d2f686744"))
+            (file-name (string-append name "-use-imagemagick-7.patch"))
+            (sha256
+             (base32
+              "0ldcqqw31wn3sc21wgbpwkkligrhw7fi4b1kmia2k4x61ra1bpjf"))))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -361,7 +373,7 @@ user has installed.")
      (list alsa-lib
            ffmpeg-4
            freetype
-           imagemagick-6
+           imagemagick
            lame
            liba52
            libdv
