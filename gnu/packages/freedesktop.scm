@@ -3369,16 +3369,18 @@ supporting behavior like @samp{ssh -X}.")
               (base32
                "05rxchwzhnkm91kcr30mavizkp25wgjlhb6lcraa456pw7vgb04q"))))
     (build-system meson-build-system)
-    (native-inputs (list cmake pkg-config))
-    (inputs (list cairo
-                  dbus
-                  egl-wayland
-                  gtk+
-                  libglvnd
-                  libxkbcommon
-                  pango
-                  wayland
-                  wayland-protocols))
+    (arguments
+     (list #:configure-flags #~(list "-Ddemo=false")))
+    (native-inputs
+     (list pkg-config
+           wayland)) ; For wayland-scanner.
+    (inputs
+     (list cairo
+           dbus
+           gtk+
+           pango
+           wayland
+           wayland-protocols))
     (home-page "https://gitlab.freedesktop.org/libdecor/libdecor")
     (synopsis "Client-side decorations library for Wayland clients")
     (description "libdecor is a library that can help Wayland clients draw
