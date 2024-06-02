@@ -2300,6 +2300,8 @@ with some extra work.")
      (inputs (modify-inputs (package-inputs gtk-doc-asdf)
                (delete "dblatex"))))))
 
+(define-public gtk-doc gtk-doc/stable)
+
 (define-public gtk-engines
   (package
     (name "gtk-engines")
