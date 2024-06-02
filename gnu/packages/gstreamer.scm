@@ -315,12 +315,8 @@ applications that want audio visualisation and audio visualisation plugins.")
            pkg-config))
     (inputs
      (list alsa-lib
-           esound
-           (librsvg-for-system)
            gtk+
-           jack-2
-           libx11
-           libxext))
+           jack-2))
     (propagated-inputs (list libvisual))
     (synopsis "Audio visualisation library")
     (description "Libvisual is a library that acts as a middle layer between
