@@ -81,7 +81,7 @@
 (define-public ibus-minimal
   (package
     (name "ibus")
-    (version "1.5.28")
+    (version "1.5.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -89,7 +89,7 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "0rsnfq4f11i901kl6468k1rfnrz4gvs30q1q9wk62gbcaykz77vc"))))
+                "15jv1wcicrd63n399wgnz9faapbcivg5lvjrc7hsr7qk8m54vf05"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -195,6 +195,7 @@
            gtk+
            iso-codes
            json-glib
+           libdbusmenu
            libnotify
            libx11
            libxkbcommon
