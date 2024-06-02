@@ -430,7 +430,7 @@ the Core 2 Duo.")
 (define-public mediasdk
   (package
     (name "mediasdk")
-    (version "22.5.4")
+    (version "23.2.2")
     (source
      (origin
        (method git-fetch)
@@ -440,7 +440,7 @@ the Core 2 Duo.")
          (commit (string-append "intel-" name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0w0119ad1x8di75hg9p2pxi2vkijg793svj86c6fk5cl2pwg9mkz"))
+        (base32 "12if7ylhz1r8mpj2q2n7nw8nnsglm90jg8lqpl3zhajjyrmkfyn2"))
        (patches
         (list
          (origin
