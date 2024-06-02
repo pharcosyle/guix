@@ -1094,7 +1094,7 @@ application suites.")
                            (version-major+minor version)  "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "228ahzsj016vz8brd8kplhfkxg2q7wy7kndibx2qfr68yrif530l"))
+        (base32 "128ahzsj016vz8brd8kplhfkxg2q7wy7kndibx2qfr68yrif530l"))
        (patches
         (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))
        (modules '((guix build utils)))))

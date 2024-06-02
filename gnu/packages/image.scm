@@ -1144,7 +1144,7 @@ Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1cnksimmmjngdrys302ik1385sg1sj4i0gxivzldhgwd46n7x2kh"))))
+                "0cnksimmmjngdrys302ik1385sg1sj4i0gxivzldhgwd46n7x2kh"))))
     (build-system gnu-build-system)
     (inputs (list perl))          ;package ships some perl tools
     (home-page "http://giflib.sourceforge.net/")

@@ -436,7 +436,7 @@ the Core 2 Duo.")
          (commit (string-append "intel-" name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w0119ad1x8di75hg9p2pxi2vkijg793svj86c6fk5cl2pwg9mkz"))
+        (base32 "0w0119ad1x8di75hg9p2pxi2vkijg793svj86c6fk5cl2pwg9mkz"))
        (patches
         (list
          (origin
@@ -539,7 +539,7 @@ as a joint effort between the BBC and Fluendo.")
         (string-append "https://sourceforge.net/projects/" name "/files/"
                        name "/" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1s3kshzl3zfjw3phzv73r91fkr9z8q8kc3dhsys4f4xk6ff3alqw"))
+        (base32 "0s3kshzl3zfjw3phzv73r91fkr9z8q8kc3dhsys4f4xk6ff3alqw"))
        (patches
         (search-patches "libquicktime-ffmpeg.patch"))))
     (build-system gnu-build-system)
@@ -622,7 +622,7 @@ receiving MJPG streams.")
         (string-append "https://sourceforge.net/projects/mjpeg/files/"
                        name "/" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "26pl22ra3x2mkp8p3awslhlhj46b1nq9g89301gb0q4rgmnm705i"))))
+        (base32 "16pl22ra3x2mkp8p3awslhlhj46b1nq9g89301gb0q4rgmnm705i"))))
     (build-system gnu-build-system)
     (inputs
      (list gtk+-2 libdv libjpeg-turbo libpng libquicktime sdl))
