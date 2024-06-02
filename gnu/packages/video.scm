@@ -956,13 +956,6 @@ shared library and encoder and decoder command-line executables.")
               (sha256
                (base32
                 "1m3i322n2fwgrvbs1yck7g5md1dbg22bhq5xdqmjpz5m7j4jxqny"))))
-    (inputs
-     (list libx11
-           libxext
-           libxv
-           libsm
-           libice
-           sdl))
     (build-system gnu-build-system)
     (home-page "https://libmpeg2.sourceforge.net/")
     (synopsis "MPEG1 and MPEG2 video decoder library")
