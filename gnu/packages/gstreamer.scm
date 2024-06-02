@@ -234,7 +234,7 @@ and very fast.")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
+        (base32 "02xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -279,7 +279,7 @@ applications that want audio visualisation and audio visualisation plugins.")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
+        (base32 "02xwakwkqjsznc03pjlb6hcv1li1gw3r8xvyswqsm4msix5xq18a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -570,12 +570,12 @@ This package provides the core library and elements.")
            libogg
            libpng
            libtheora
-           ;; libvisual
+           libvisual
            libvorbis
            libx11
            libxext
            libxv
-           ;; mesa ; TODO temporaray, I'll want libGL
+           mesa
            opus
            pango
            wayland-protocols
@@ -844,7 +844,7 @@ model to base your own plug-in on, here it is.")
            xorg-server-for-tests))
     (inputs
      (append
-      ;; (if (target-x86?) (list mediasdk) '())
+      (if (target-x86?) (list mediasdk) '())
       ;; Note: svt-hevc cannot be used, as it would break the package for
       ;; older x86_64 CPUs that lack AVX2, such as the Core 2 Duo (see:
       ;; https://github.com/OpenVisualCloud/SVT-HEVC/issues/573#issuecomment-680678144).
@@ -854,7 +854,7 @@ model to base your own plug-in on, here it is.")
             ;; ccextractor
             chromaprint
             curl
-            ;; directfb
+            directfb
             ;; dssim
             faad2
             flite
@@ -907,7 +907,7 @@ model to base your own plug-in on, here it is.")
             lrdf
             lv2
             mesa
-            ;; mjpegtools
+            mjpegtools
             neon
             nettle
             openal
@@ -928,7 +928,7 @@ model to base your own plug-in on, here it is.")
             spandsp
             srt
             tinyalsa
-            ;; transcode
+            transcode
             usrsctp
             v4l-utils
             vo-aacenc
