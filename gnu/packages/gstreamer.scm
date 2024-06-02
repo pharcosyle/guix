@@ -870,7 +870,6 @@ model to base your own plug-in on, here it is.")
             ;; ccextractor
             chromaprint
             curl
-            directfb
             ;; dssim
             faad2
             flite
@@ -944,7 +943,6 @@ model to base your own plug-in on, here it is.")
             spandsp
             srt
             tinyalsa
-            transcode
             usrsctp
             v4l-utils
             vo-aacenc
@@ -956,7 +954,7 @@ model to base your own plug-in on, here it is.")
             webrtc-audio-processing
             wildmidi
             wpebackend-fdo
-            zbar
+            ;; zbar
             zxing-cpp)))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Plugins for the GStreamer multimedia library")
