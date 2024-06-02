@@ -4098,3 +4098,34 @@ helpers for writing tests.")
 command line filters to process a subunit stream and language bindings for
 Python, C, C++ and shell.  Bindings are easy to write for other languages.")
     (license (list license:asl2.0 license:bsd-3)))) ;user can pick
+
+(define-public munit
+  (package
+    (name "munit")
+    ;; No release for years, https://github.com/nemequ/munit/issues/95
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nemequ/munit")
+                    (commit "fbbdf1467eb0d04a6ee465def2e529e4c87f2118")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13725v4pps2bpndniksa58nqi9gvx0f0900k0rqvp95bxw5z8vda"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-installability
+            ;; See https://github.com/nemequ/munit/pull/67
+            (lambda _
+              (substitute* "meson.build"
+                (("install: meson.is_subproject\\(\\)")
+                 "install: not meson.is_subproject()")))))))
+    (synopsis "Small unit testing framework for C")
+    (description
+     "µnit is a small testing framework for C.")
+    (home-page "https://nemequ.github.io/munit/")
+    (license license:x11)))
