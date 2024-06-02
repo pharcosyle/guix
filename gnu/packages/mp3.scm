@@ -59,6 +59,7 @@
   #:use-module (gnu packages video)               ;ffmpeg
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system copy)
@@ -644,23 +645,68 @@ command-line tool.")
   (package
     (name "chromaprint")
     (version "1.5.1")
-    (source (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://github.com/acoustid/chromaprint/releases/download/v"
-            version "/chromaprint-" version ".tar.gz"))
-      (sha256
-       (base32 "072y6c7ijkm6r674f6z089rbdazrmxzpdcsm6y6vf64b7gxdiam1"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/acoustid/chromaprint/releases/download/v"
+             version "/chromaprint-" version ".tar.gz"))
+       (sha256
+        (base32 "072y6c7ijkm6r674f6z089rbdazrmxzpdcsm6y6vf64b7gxdiam1"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://gitlab.archlinux.org/archlinux/packaging/packages"
+                 "/chromaprint/-/raw/5d175d283bf709d0009c0decb19c833d6479ee17"
+                 "/8ccad693.patch"))
+           (file-name (string-append name "-use-ffmpeg-5.patch"))
+           (sha256
+            (base32
+             "1m77i8vw8jnbhb87xnbb6qdzmshyskb3brkbkp7qwgs1zx1a0khb")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/acoustid/chromaprint/commit/"
+                 "aa67c95b9e486884a6d3ee8b0c91207d8c2b0551.patch"))
+           (file-name (string-append name "-ffmpeg-5-fix.patch"))
+           (sha256
+            (base32
+             "0y23cwy6j7wfpc40kk4cyzy62kbmn8c0bilnlslh1mqmxn9qvv4j")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://gitlab.archlinux.org/archlinux/packaging/packages"
+                 "/chromaprint/-/raw/74ae4c7faea2114f2d70a57755f714e348476d28"
+                 "/ffmpeg-7.patch"))
+           (file-name (string-append name "-use-ffmpeg-7.patch"))
+           (sha256
+            (base32
+             "1p0b1m9dn0rll6hkmc4ywikm9xk9zikdc55b1kiffgizp7dld72y")))))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; tests require googletest *sources*
-       ;;#:configure-flags '("-DBUILD_TESTS=ON") ; for building the tests
-       #:configure-flags '("-DBUILD_TOOLS=ON") ; for fpcalc
-       #:test-target "check"))
+     (list
+      #:configure-flags #~(list "-DBUILD_TOOLS=ON" ; for fpcalc
+                                "-DBUILD_TESTS=ON"
+                                (string-append "-DGTEST_SOURCE_DIR="
+                                               (search-input-directory
+                                                %build-inputs
+                                                "googletest")))
+      #:test-target "check"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'dont-set-c++-standard
+            (lambda _
+              ;; Googletest requires at least version 14 (at the time of this
+              ;; writing).
+              (substitute* "CMakeLists.txt"
+                ((".*CMAKE_CXX_STANDARD 11.*") "")))))))
+    (native-inputs
+     (list (package-source googletest)))
     (inputs
-     ;; requires one of FFmpeg (prefered), FFTW3 or vDSP
-     ;; use the same ffmpeg version as for acoustid-fingerprinter
-     (list ffmpeg-4 boost))
+     ;; requires one of FFmpeg (preferred), FFTW3 or vDSP
+     (list ffmpeg))
     (home-page "https://acoustid.org/chromaprint")
     (synopsis "Audio fingerprinting library")
     (description "Chromaprint is a library for calculating audio
