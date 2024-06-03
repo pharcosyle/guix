@@ -1912,7 +1912,7 @@ generated list of fallback fonts are checked.")
 (define-public fontmanager
   (package
    (name "fontmanager")
-   (version "0.8.8")
+   (version "0.8.9")
    (source
     (origin
       (method git-fetch)
@@ -1921,7 +1921,7 @@ generated list of fallback fonts are checked.")
             (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "06jvrzh7lmsv5sz04pv674aw18w26c6vyr77nqs1falwvpsx0p9k"))))
+       (base32 "1m77y4mrvkzl1wzx9lr4n4zlp283mbk2ib8v2l4mggd3l35jpi1f"))))
    (build-system meson-build-system)
    (arguments
     (list #:glib-or-gtk? #t
@@ -1941,8 +1941,7 @@ generated list of fallback fonts are checked.")
           json-glib
           sqlite
           ;; For googlefonts.
-          libsoup-minimal-2
-          webkitgtk-with-libsoup2))
+          webkitgtk-for-gtk3))
    (home-page "https://fontmanager.github.io/")
    (synopsis "Simple font management for GTK+ desktop environments")
    (description "Font Manager is intended to provide a way for users to
