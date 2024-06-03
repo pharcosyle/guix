@@ -21092,19 +21092,30 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
             (add-after 'unpack 'patch-executable-paths
               (lambda* (#:key inputs #:allow-other-keys)
                 (emacs-substitute-variables "dirvish-widgets.el"
-                  ("dirvish-convert-program" (search-input-file inputs "/bin/convert"))
-                  ("dirvish-ffmpegthumbnailer-program" (search-input-file inputs "/bin/ffmpegthumbnailer"))
-                  ("dirvish-mediainfo-program" (search-input-file inputs "/bin/mediainfo"))
-                  ;; ("dirvish-epub-thumbnailer-program" (search-input-file inputs "/bin/epub-thumbnailer"))
-                  ("dirvish-pdfinfo-program" (search-input-file inputs "/bin/pdfinfo"))
-                  ("dirvish-pdftoppm-program" (search-input-file inputs "/bin/pdftoppm"))
-                  ("dirvish-zipinfo-program" (search-input-file inputs "/bin/zipinfo"))
-                  ("dirvish-tar-program" (search-input-file inputs "/bin/tar")))
+                  ("dirvish-convert-program"
+                   (search-input-file inputs "/bin/convert"))
+                  ("dirvish-ffmpegthumbnailer-program"
+                   (search-input-file inputs "/bin/ffmpegthumbnailer"))
+                  ("dirvish-mediainfo-program"
+                   (search-input-file inputs "/bin/mediainfo"))
+                  ;; ("dirvish-epub-thumbnailer-program"
+                  ;;  (search-input-file inputs "/bin/epub-thumbnailer"))
+                  ("dirvish-pdfinfo-program"
+                   (search-input-file inputs "/bin/pdfinfo"))
+                  ("dirvish-pdftoppm-program"
+                   (search-input-file inputs "/bin/pdftoppm"))
+                  ("dirvish-zipinfo-program"
+                   (search-input-file inputs "/bin/zipinfo"))
+                  ("dirvish-tar-program"
+                   (search-input-file inputs "/bin/tar")))
                 (emacs-substitute-variables "extensions/dirvish-fd.el"
-                  ("dirvish-fd-program" (search-input-file inputs "/bin/fd"))
-                  ("dirvish-fd-ls-program" (search-input-file inputs "/bin/ls")))
+                  ("dirvish-fd-program"
+                   (search-input-file inputs "/bin/fd"))
+                  ("dirvish-fd-ls-program"
+                   (search-input-file inputs "/bin/ls")))
                 (emacs-substitute-variables "extensions/dirvish-yank.el"
-                  ("dirvish-rsync-program" (search-input-file inputs "/bin/rsync")))))
+                  ("dirvish-rsync-program"
+                   (search-input-file inputs "/bin/rsync")))))
             ;; Move the extensions source files to the top level, which
             ;; is included in the EMACSLOADPATH.
             (add-after 'patch-executable-paths 'move-source-files
@@ -21114,15 +21125,15 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
                               (rename-file f (basename f)))
                             el-files)))))))
       (inputs
-       (list imagemagick
-             ffmpegthumbnailer
-             mediainfo
-             ;; epub-thumbnailer ; TODO: Not packaged in Guix yet.
-             poppler
-             unzip
-             tar
+       (list ;; epub-thumbnailer ; TODO: Not packaged in Guix yet.
              fd
-             rsync))
+             ffmpegthumbnailer
+             imagemagick
+             mediainfo
+             poppler
+             rsync
+             tar
+             unzip))
       (propagated-inputs
        (list emacs-pdf-tools))
       (home-page "https://github.com/alexluigit/dirvish")
