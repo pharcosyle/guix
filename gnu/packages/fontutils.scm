@@ -1961,10 +1961,7 @@ work well with other GTK+ desktop environments.")
         #~(cons* "-Dwebkit=false" #$configure-flags))))
     (inputs
      (modify-inputs (package-inputs fontmanager)
-       ;; This `delete' form is only working right when passed string
-       ;; arguents. Weird.
-       (delete "libsoup-minimal"
-               "webkitgtk-with-libsoup2")))))
+       (delete "webkitgtk-for-gtk3")))))
 
 (define-public fntsample
   (package
