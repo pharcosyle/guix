@@ -664,6 +664,9 @@ def contents() -> str:
             (variable "PYTHONTZPATH")
             (files (list "share/zoneinfo")))))))
 
+;; Add this for now so upstream code further down doesn't break.
+(define-public python-3.10 python-3.11)
+
 (define-public python-3.12
   (package
     (name "python-next")
