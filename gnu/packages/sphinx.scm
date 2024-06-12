@@ -47,6 +47,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -107,38 +109,39 @@
 
            ;; The Sphinx LaTeX library '\RequirePackage' or \\usepackage
            ;; these:
-           texlive-amsfonts             ;amsmath, amssymb, amstext
-           texlive-amsmath
+           texlive-scheme-basic         ;for a valid TeX Live tree
+           texlive-anyfontsize
            texlive-capt-of
-           texlive-carlisle             ;remreset
+           texlive-cm-super
            texlive-cmap
            texlive-etoolbox
-           texlive-fancyhdr
            texlive-fancyvrb
            texlive-float
            texlive-fncychap
+           texlive-fontspec
            texlive-framed
-           texlive-geometry
-           texlive-hyperref
-           texlive-kvoptions
-           texlive-latex-bin
-           texlive-ltxcmds
+           texlive-luatex85
+           texlive-luatexbase
            texlive-needspace
-           texlive-oberdiek             ;hypcap
            texlive-parskip
+           texlive-polyglossia
            texlive-preview
            texlive-tabulary
+           texlive-tex-gyre
            texlive-titlesec
-           texlive-tools                ;multicol, longtable
            texlive-upquote
            texlive-varwidth
            texlive-wrapfig
            texlive-xcolor))
     (native-inputs
-     (list imagemagick                  ;for "convert"
+     (list fontconfig
+           font-gnu-freefont
+           imagemagick                  ;for "convert"
            python-cython
            python-html5lib
-           python-pytest))
+           python-pytest
+           (texlive-updmap.cfg
+            (list texlive-cm-super texlive-tex-gyre))))
     (home-page "https://www.sphinx-doc.org")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
