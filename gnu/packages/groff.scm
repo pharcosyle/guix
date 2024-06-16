@@ -75,8 +75,7 @@
                     ("psutils" ,psutils)
                     ("texinfo" ,texinfo)))
    (arguments
-    `(#:parallel-build? #f   ; parallel build fails
-      ,@(if (%current-target-system)
+    `(,@(if (%current-target-system)
             `(#:make-flags
               ;; In groff-minimal package, that inherits from this package,
               ;; we'll need to locate "groff" instead of "self".
@@ -145,7 +144,7 @@ is usually the formatter of \"man\" documentation pages.")
     (arguments
      `(#:disallowed-references (,perl)
 
-       #:configure-flags '("--with-doc=no")
+       #:configure-flags '("--docdir=/tmp/trash/doc")
 
        ,@(substitute-keyword-arguments (package-arguments groff)
            ((#:phases phases)
