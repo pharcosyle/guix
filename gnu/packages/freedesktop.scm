@@ -749,7 +749,7 @@ other applications that need to directly deal with input devices.")
 (define-public libei
   (package
     (name "libei")
-    (version "1.1.0")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -757,7 +757,7 @@ other applications that need to directly deal with input devices.")
                     (commit version)))
               (sha256
                (base32
-                "0j1xplvi81h5lmg7qxm7vazh76b3k68vnbpv1iag1b4ps7cmkdkr"))
+                "1dbgc2my0r7bzb8ilbcv0d4k1j8fmm7w2r5c94y1djk5n39c4zzj"))
               (snippet
                #~(begin
                    (use-modules (guix build utils))
@@ -768,17 +768,43 @@ other applications that need to directly deal with input devices.")
                       ""))
                    (delete-file-recursively "subprojects")))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
      (list
       #:configure-flags #~'("-Ddocumentation=api" ;protocol requires hugo
-                            "-Dsd-bus-provider=libelogind")))
+                            "-Dsd-bus-provider=libelogind")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-doc
+            (lambda _
+              (copy-recursively
+               "doc/html"
+               (string-append #$output:doc "/share/doc/"
+                              #$name "-" #$version "/api")))))))
     (inputs
-     (list elogind libevdev libxkbcommon))
+     (list libevdev
+           libxkbcommon))
     (propagated-inputs
      ;; liboeffis-1.0.pc requires.private libelogind
      (list elogind))
     (native-inputs
-     (list doxygen libxml2 munit pkg-config python python-attrs python-black python-dbusmock python-jinja2 python-pytest python-structlog valgrind/interactive))
+     (append
+      (list doxygen
+            libxml2
+            munit
+            pkg-config
+            python
+            python-attrs
+            python-black
+            python-dbusmock
+            python-jinja2
+            python-pytest
+            ;; python-ruff      ; Not packaged in Guix yet.
+            python-structlog)
+      (if (member (%current-system)
+                  (package-supported-systems valgrind))
+          (list valgrind/interactive)
+          '())))
     (home-page "https://libinput.pages.freedesktop.org/libei/")
     (synopsis "Emulated Input protocol implementation")
     (description
