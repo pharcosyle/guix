@@ -783,7 +783,7 @@ other applications that need to directly deal with input devices.")
     (arguments
      (list
       #:configure-flags #~'("-Ddocumentation=api" ;protocol requires hugo
-                            "-Dsd-bus-provider=libelogind")
+                            "-Dsd-bus-provider=basu")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'install 'install-doc
@@ -796,8 +796,8 @@ other applications that need to directly deal with input devices.")
      (list libevdev
            libxkbcommon))
     (propagated-inputs
-     ;; liboeffis-1.0.pc requires.private libelogind
-     (list elogind))
+     ;; liboeffis-1.0.pc requires.private basu
+     (list basu))
     (native-inputs
      (list dbus ; Needed for 'dbus-monitor' in a test.
            doxygen
