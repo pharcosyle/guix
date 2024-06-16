@@ -1353,7 +1353,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
           #:configuration-file kernel-config
           #:extra-options
           (append %bpf-extra-linux-options
-                  (default-extra-linux-options linux-libre-6.8-version)))))
+                  (default-extra-linux-options linux-libre-version)))))
     (package
       (inherit base-linux-libre)
       (inputs (modify-inputs (package-inputs base-linux-libre)
