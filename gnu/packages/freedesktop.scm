@@ -800,12 +800,12 @@ other applications that need to directly deal with input devices.")
     (arguments
      (list
       #:configure-flags #~'("-Ddocumentation=api" ;protocol requires hugo
-                            "-Dsd-bus-provider=libelogind")))
+                            "-Dsd-bus-provider=basu")))
     (inputs
      (list elogind libevdev libxkbcommon))
     (propagated-inputs
-     ;; liboeffis-1.0.pc requires.private libelogind
-     (list elogind))
+     ;; liboeffis-1.0.pc requires.private basu
+     (list basu))
     (native-inputs
      (list doxygen
            libxml2
