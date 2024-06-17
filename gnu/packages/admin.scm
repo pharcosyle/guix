@@ -2039,7 +2039,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.9.14p3")
+    (version "1.9.15p5")
     (source (origin
               (method url-fetch)
               (uri
@@ -2049,7 +2049,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0qibg30d30gy85g83fj6gsg59g1sj3i9mkfl0k0851dwqjqii0x0"))
+                "0n75i0x1xj6vf440pjxknppplns0qizb19vzzawv67wrl6wi13am"))
               (modules '((guix build utils)))
               (snippet
                #~(delete-file-recursively "lib/zlib"))))
@@ -2069,18 +2069,10 @@ system administrator.")
                              "\\\""
                              (search-input-file %build-inputs "bin/mv")
                              "\\\""))
-      ;; Avoid non-determinism; see <http://bugs.gnu.org/21918>.
-      #:parallel-build? #f
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'configure 'pre-configure
             (lambda _
-              (substitute* "src/sudo_usage.h.in"
-                ;; Do not capture 'configure' arguments since we would
-                ;; unduly retain references, and also because the
-                ;; CPPFLAGS above would close the string literal
-                ;; prematurely.
-                (("@CONFIGURE_ARGS@") "\"\""))
               (substitute* (find-files "." "Makefile\\.in")
                 ;; Allow installation as non-root.
                 (("-o [[:graph:]]+ -g [[:graph:]]+")
@@ -2096,12 +2088,7 @@ system administrator.")
                  "$(DESTDIR)/$(docdir)/examples")
                 ;; Don't try to create /var/db/sudo.
                 (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
-                 "$(TMPDIR)/dummy"))
-              ;; ‘Checking existing [/etc/]sudoers file for syntax errors’ is
-              ;; not the task of the build system, and fails.
-              (substitute* "plugins/sudoers/Makefile.in"
-                (("^pre-install:" match)
-                 (string-append match "\ndisabled-" match))))))
+                 "$(TMPDIR)/dummy")))))
       ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
       ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
       #:tests? #f))
