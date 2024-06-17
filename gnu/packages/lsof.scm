@@ -51,7 +51,7 @@
     (build-system gnu-build-system)
     (native-inputs (list automake
                          autoconf
-                         groff ;for soelim
+                         groff-minimal ;for soelim
                          libtool
                          perl
                          pkg-config
