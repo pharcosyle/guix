@@ -30,6 +30,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -114,19 +115,41 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.47.0")
+    (version "1.48.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "0r99vpbxcz4gwzxqpyax0j00wdf11pxciikkjj3hf8bslx67mhr0"))))
+                "1ysr3mav7zrgdfpch41rlybhc4p5bzmc3fk3y6xd32cd6snbh7bz"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--disable-static")
-       ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
-       #:tests? #f))
+     (list
+      #:configure-flags #~'("--disable-static")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'pre-check
+            (lambda _
+              (let ((disable-test
+                     (lambda (test)
+                       (substitute* "test/test-list.h"
+                         ;; Delete any TEST_ENTRY or TEST_DECLARE lines for the
+                         ;; test, that should take care of it.
+                         (("\\s*(TEST_ENTRY|TEST_DECLARE)\\s*\\((.*)\\)"
+                           all _ candidate)
+                          (if (string=? test candidate)
+                              "" all))))))
+                (for-each
+                 disable-test
+                 (list
+                  ;; Maybe this fails because of the lack of an '/etc/passwd'
+                  ;; in the build environment, but then why would 'get_passwd'
+                  ;; pass?
+                  "get_passwd2"
+                  ;; Fails with 'EAI_AGAIN', don't know why.
+                  "getnameinfo_basic_ip6")))
+              )))))
     (native-inputs (list autoconf automake libtool
                          ;; libuv.pc is installed only when pkg-config is found.
                          pkg-config))
