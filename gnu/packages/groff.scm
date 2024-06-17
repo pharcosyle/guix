@@ -122,8 +122,8 @@ is usually the formatter of \"man\" documentation pages.")
    (license gpl3+)))
 
 (define-public groff-minimal
-  ;; Minimialist groff for use by man-db.  Its closure size is less than half
-  ;; that of the full-blown groff.
+  ;; Minimialist groff.  Its closure size is less than half that of the
+  ;; full-blown groff.
   (package/inherit groff
     (name "groff-minimal")
     (outputs (delete "doc" (package-outputs groff)))
@@ -135,39 +135,33 @@ is usually the formatter of \"man\" documentation pages.")
         #~(cons "--docdir=/tmp/trash/doc" #$flags))
        ((#:phases phases)
         #~(modify-phases #$phases
-            (add-after 'install 'remove-non-essential-programs
+            (add-after 'install 'remove-non-essentials
               (lambda _
-                ;; Keep only the programs that man-db needs at run time,
-                ;; and make sure we don't pull in Perl.
-                (let ((kept '("eqn" "neqn" "pic" "tbl" "refer" "preconv"
-                              "nroff" "groff" "troff" "grotty")))
+                ;; Omit programs that pull in Perl.
+                (let ((omit '("afmtodit"
+                              "chem"
+                              "glilypond"
+                              "gperl"
+                              "gpinyin"
+                              "grog"
+                              "gropdf"
+                              "mmroff"
+                              "pdfmom")))
                   (for-each (lambda (file)
-                              (unless (member (basename file) kept)
+                              (when (member (basename file) omit)
                                 (delete-file file)))
-                            (find-files (string-append #$output "/bin")))
-                  ;; Remove a bunch of unneeded Perl scripts.
-                  (for-each delete-file
-                            (find-files #$output "\\.pl$"))
-                  (for-each delete-file
-                            (find-files #$output "BuildFoundries"))
-                  ;; Remove ~3 MiB from share/groff/X.Y/font/devBACKEND
-                  ;; corresponding to the unused backends.
-                  (for-each delete-file-recursively
-                            (find-files #$output "^dev(dvi|ps|pdf|html|lj4)$"
-                                        #:directories? #t)))))))))
+                            (find-files (string-append #$output "/bin"))))))))))
     ;; Omit the DVI, PS, PDF, and HTML backends.
     (native-inputs
      (let ((native-inputs (modify-inputs (package-native-inputs groff)
-                            (delete psutils
-                                    texinfo))))
+                            (delete "psutils"))))
        (if (%current-target-system)
            (modify-inputs native-inputs
              (replace "groff" this-package))
            native-inputs)))
     (inputs
      (modify-inputs (package-inputs groff)
-       (delete ghostscript)))
-    (synopsis "Minimalist variant of Groff for use by man-db")))
+       (delete "ghostscript")))))
 
 ;; There are no releases, so we take the latest commit.
 (define-public roffit
