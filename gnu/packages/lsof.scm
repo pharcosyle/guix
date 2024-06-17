@@ -46,7 +46,7 @@
        (patches (search-patches "lsof-fatal-test-failures.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     (list groff ; for soelim
+     (list groff-minimal ; for soelim
            perl))
     (arguments
      `(#:phases

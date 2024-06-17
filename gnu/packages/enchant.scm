@@ -103,7 +103,7 @@ dictionaries.")
      `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("unittest-cpp" ,unittest-cpp)
-       ("groff" ,groff)))
+       ("groff-minimal" ,groff-minimal)))
     (synopsis "Multi-backend spell-checking library wrapper")
     (description
       "On the surface, Enchant appears to be a generic spell checking library.

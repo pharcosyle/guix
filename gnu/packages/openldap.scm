@@ -87,7 +87,7 @@
                 "1489li52sjxm1f97v927jxaxzfk6v9sa32ixrw30qhvq07jh85ym"))))
     (build-system gnu-build-system)
     (inputs (list bdb-5.3 cyrus-sasl gnutls libgcrypt zlib))
-    (native-inputs (list libtool groff bdb-5.3))
+    (native-inputs (list libtool groff-minimal bdb-5.3))
     (arguments
      (list
       #:tests? #f

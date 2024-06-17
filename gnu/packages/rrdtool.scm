@@ -59,7 +59,7 @@
            pango
            python))
     (native-inputs
-     (list groff
+     (list groff-minimal
            pkg-config
            ;; For tests.
            bc
