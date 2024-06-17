@@ -7590,7 +7590,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.5.4")
+    (version "2.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -7598,7 +7598,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "1nyb3lspc5bsirpsx89vah3n54pmwlgxrwsfaxl01kq50i004afq"))))
+                "0x9kzcjsmjf10b76vdwlksfczvxg6hn72lmgdfm5i64v9n52r2i4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")
