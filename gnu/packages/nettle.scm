@@ -20,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages nettle)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -29,44 +30,46 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages m4))
 
-(define-public nettle-2
+(define-public nettle
   (package
     (name "nettle")
-    (version "2.7.1")
+    (version "3.9.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/nettle/nettle-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0h2vap31yvi1a438d36lg1r1nllfx3y19r4rfxv7slrm6kafnwdw"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/nettle/nettle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qvc1iamnvbiss0bx9c98djgn3y60zs59c5wdyyip9qc3fcgzznc"))))
     (build-system gnu-build-system)
     (arguments
-     ;; 'sexp-conv' and other programs need to have their RUNPATH point to
-     ;; $libdir, which is not the case by default.  Work around it.
-     `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
-                                              (assoc-ref %outputs "out")
-                                              "/lib"))
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'move-static-libraries
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out"))
-                            (slib (string-append (assoc-ref outputs "static")
-                                                 "/lib")))
-                        (mkdir-p slib)
-                        (with-directory-excursion (string-append out "/lib")
-                          (for-each (lambda (ar)
-                                      (rename-file ar (string-append
-                                                       slib "/"
-                                                       (basename ar))))
-                                    (find-files
-                                     "."
-                                     ,(if (target-mingw?)
-                                          '(lambda (filename _)
-                                             (and (string-suffix? ".a" filename)
-                                                  (not (string-suffix? ".dll.a" filename))))
-                                          "\\.a$"))))
-                        #t))))))
+     (list
+      #:configure-flags
+      #~(list
+         ;; Build "fat" binaries where the right implementation is chosen
+         ;; at run time based on CPU features (starting from 3.1).
+         "--enable-fat"
+         ;; 'sexp-conv' and other programs need to have their RUNPATH point to
+         ;; $libdir, which is not the case by default.  Work around it.
+         (string-append "LDFLAGS=-Wl,-rpath=" #$output "/lib"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'move-static-libraries
+            (lambda _
+              (let ((lib  (string-append #$output "/lib"))
+                    (slib (string-append #$output:static "/lib")))
+                (mkdir-p slib)
+                (with-directory-excursion lib
+                  (for-each
+                   (lambda (ar)
+                     (rename-file ar (string-append slib "/" (basename ar))))
+                   (find-files
+                    "."
+                    #$(if (target-mingw?)
+                          #~(lambda (filename _)
+                              (and (string-suffix? ".a" filename)
+                                   (not (string-suffix? ".dll.a" filename))))
+                          "\\.a$"))))))))))
     (outputs '("out" "debug" "static"))
     (native-inputs (list m4))
     (propagated-inputs (list gmp))
@@ -79,21 +82,18 @@ cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
 
-(define-public nettle
-  ;; This version is not API-compatible with version 2.  In particular, lsh
-  ;; cannot use it yet.  So keep it separate.
-  (package (inherit nettle-2)
-    (version "3.9.1")
+(define-public nettle-2
+  (package
+    (inherit nettle)
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1qvc1iamnvbiss0bx9c98djgn3y60zs59c5wdyyip9qc3fcgzznc"))))
+                "0h2vap31yvi1a438d36lg1r1nllfx3y19r4rfxv7slrm6kafnwdw"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments nettle-2)
-       ((#:configure-flags flags)
-        ;; Build "fat" binaries where the right implementation is chosen
-        ;; at run time based on CPU features (starting from 3.1.)
-        `(cons "--enable-fat" ,flags))))))
+     (substitute-keyword-arguments (package-arguments nettle)
+       ((#:configure-flags flags #~'())
+        #~(delete "--enable-fat" #$flags))))))
