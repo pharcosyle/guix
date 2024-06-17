@@ -28,7 +28,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages m4))
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages valgrind))
 
 (define-public nettle
   (package
@@ -71,7 +72,11 @@
                                    (not (string-suffix? ".dll.a" filename))))
                           "\\.a$"))))))))))
     (outputs '("out" "debug" "static"))
-    (native-inputs (list m4))
+    (native-inputs
+     (append (list m4)
+             (if (member (%current-system) (package-supported-systems valgrind))
+                 (list valgrind)
+                 '())))
     (propagated-inputs (list gmp))
     (home-page "https://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "C library for low-level cryptographic functionality")
@@ -96,4 +101,10 @@ themselves.")
     (arguments
      (substitute-keyword-arguments (package-arguments nettle)
        ((#:configure-flags flags #~'())
-        #~(delete "--enable-fat" #$flags))))))
+        #~(delete "--enable-fat" #$flags))))
+    (native-inputs
+     (let ((native-inputs (package-native-inputs nettle)))
+       (if (member (%current-system) (package-supported-systems valgrind))
+           (modify-inputs native-inputs
+             (delete "valgrind"))
+           native-inputs)))))
