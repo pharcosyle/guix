@@ -276,7 +276,7 @@ a server that supports the SSH-2 protocol.")
                              (string-append #$output "/bin/"))
                (install-file "ssh-copy-id.1"
                              (string-append #$output "/share/man/man1/"))))))))
-   (native-inputs (list groff pkg-config))
+   (native-inputs (list groff-minimal pkg-config))
    (inputs
     (cons* libedit
            openssl

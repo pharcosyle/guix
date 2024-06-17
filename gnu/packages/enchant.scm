@@ -95,7 +95,7 @@ dictionaries.")
      ;; Required by enchant.pc.
      (list glib))
     (native-inputs
-     (list `(,glib "bin") groff pkg-config unittest-cpp))
+     (list `(,glib "bin") groff-minimal pkg-config unittest-cpp))
     (synopsis "Multi-backend spell-checking library wrapper")
     (description
      "Enchant is a library---and command-line program---that wraps a number of
