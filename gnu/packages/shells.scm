@@ -143,7 +143,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
      (list fish-foreign-env ncurses pcre2
            python))  ; for fish_config and manpage completions
     (native-inputs
-     (list doxygen groff ; for 'fish --help'
+     (list doxygen groff-minimal ; for 'fish --help'
            procps))             ; for the test suite
     (arguments
      '(#:phases
