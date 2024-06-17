@@ -192,14 +192,11 @@ a flexible and convenient way.")
                       "--with-" prog "="
                       #$(this-package-input "groff-minimal")
                       (string-append "/bin/" prog)))
-                   '("nroff" "eqn" "neqn" "tbl" "refer" "pic")))
-           ;; At run time we should refer to GROFF-MINIMAL, not GROFF (the latter
-           ;; pulls in Perl.)
-           #:disallowed-references (list groff)))
+                   '("nroff" "eqn" "neqn" "tbl" "refer" "pic")))))
     (native-inputs
      (list pkg-config flex
            ;; Groff is needed at build time for troff, grops, soelim, etc.
-           groff))
+           groff-minimal))
     (inputs
      (list gdbm
            groff-minimal
