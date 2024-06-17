@@ -64,7 +64,7 @@
      (list autoconf
            automake
            gettext-minimal
-           groff
+           groff-minimal
            libtool
            pkg-config
            ;; For tests.

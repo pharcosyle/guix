@@ -401,7 +401,7 @@ utilities.")
                 libtool
                 gettext-minimal
                 texinfo
-                groff
+                groff-minimal
                 which)))
     (inputs
      (list glib

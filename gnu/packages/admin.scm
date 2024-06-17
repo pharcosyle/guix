@@ -2276,7 +2276,7 @@ system administrator.")
            ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
            #:tests? #f))
     (native-inputs
-     (list groff))
+     (list groff-minimal))
     (inputs
      (append (list coreutils zlib)
              (if (target-hurd?)

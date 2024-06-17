@@ -89,7 +89,7 @@
                 "1zxjws0mcm9cjwhhb7v1qq6g7avqlnx7ydcr1pzhsd68x5rxrdrc"))))
     (build-system gnu-build-system)
     (inputs (list cyrus-sasl gnutls libgcrypt libsodium))
-    (native-inputs (list libtool groff))
+    (native-inputs (list libtool groff-minimal))
     (arguments
      (list
       #:configure-flags

@@ -1576,7 +1576,7 @@ collaboration using typical untrusted file hosts or services.")
              ;; since they are actually substituted into cgit source and
              ;; referenced by the built package output.
              bzip2
-             groff
+             groff-minimal
              gzip
              xz))
       (home-page "https://git.zx2c4.com/cgit/")
