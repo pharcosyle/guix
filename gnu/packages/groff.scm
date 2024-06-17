@@ -44,9 +44,11 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages web))
 
-(define-public groff
+;; Minimialist groff.  Its closure size is less than half that of the
+;; full-blown groff.
+(define-public groff-minimal
   (package
-   (name "groff")
+   (name "groff-minimal")
    (version "1.23.0")
    (source (origin
             (method url-fetch)
@@ -55,10 +57,10 @@
             (sha256 (base32
                      "04qwa5ikibih5pdzswd86yxcrgbh8pjzfspb094qnldpjbsmg5vb"))))
    (build-system gnu-build-system)
-   (outputs '("out"
-              "doc"))                    ;12MiB of PS, PDF, HTML, and examples
    (arguments
     (list
+     #:disallowed-references (list perl)
+     #:configure-flags #~(list "--docdir=/tmp/trash/doc")
      #:make-flags
      (if (%current-target-system)
          #~(let ((groff-bin (search-input-file %build-host-inputs
@@ -97,22 +99,32 @@
          (add-after 'unpack 'fix-docdir
            (lambda _         ;see https://savannah.gnu.org/bugs/index.php?55461
              (substitute* "Makefile.in"
-               (("^docdir =.*") "docdir = @docdir@\n")))))))
+               (("^docdir =.*") "docdir = @docdir@\n"))))
+         (add-after 'install 'remove-non-essentials
+           (lambda _
+             ;; Omit programs that pull in Perl.
+             (let ((omit '("afmtodit"
+                           "chem"
+                           "glilypond"
+                           "gperl"
+                           "gpinyin"
+                           "grog"
+                           "gropdf"
+                           "mmroff"
+                           "pdfmom")))
+               (for-each (lambda (file)
+                           (when (member (basename file) omit)
+                             (delete-file file)))
+                         (find-files (string-append #$output "/bin")))))))))
+   ;; Omit the DVI, PS, PDF, and HTML backends.
    (native-inputs
     (append
      (list bison
            perl
-           psutils
            texinfo)
      (if (%current-target-system)
          (list this-package)
          '())))
-   ;; Note: groff's HTML backend uses executables from netpbm when they are in
-   ;; $PATH.  In practice, not having them doesn't prevent it from install its
-   ;; own HTML doc, nor does it change its capabilities, so we removed netpbm
-   ;; from 'inputs'.
-   (inputs
-    (list ghostscript))
    (home-page "https://www.gnu.org/software/groff/")
    (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
@@ -121,47 +133,34 @@ formatted output based on formatting commands contained within the text.  It
 is usually the formatter of \"man\" documentation pages.")
    (license gpl3+)))
 
-(define-public groff-minimal
-  ;; Minimialist groff.  Its closure size is less than half that of the
-  ;; full-blown groff.
-  (package/inherit groff
-    (name "groff-minimal")
-    (outputs (delete "doc" (package-outputs groff)))
+(define-public groff
+  (package/inherit groff-minimal
+    (name "groff")
+    ;; Upwards of 12MiB of PS, PDF, HTML, and examples
+    (outputs (cons "doc" (package-outputs groff-minimal)))
     (arguments
-     (substitute-keyword-arguments (package-arguments groff)
+     (substitute-keyword-arguments (package-arguments groff-minimal)
        ((#:disallowed-references disallowed-refs '())
-        (cons perl disallowed-refs))
+        (delete perl disallowed-refs))
        ((#:configure-flags flags #~'())
-        #~(cons "--docdir=/tmp/trash/doc" #$flags))
+        #~(delete "--docdir=/tmp/trash/doc" #$flags))
        ((#:phases phases)
         #~(modify-phases #$phases
-            (add-after 'install 'remove-non-essentials
-              (lambda _
-                ;; Omit programs that pull in Perl.
-                (let ((omit '("afmtodit"
-                              "chem"
-                              "glilypond"
-                              "gperl"
-                              "gpinyin"
-                              "grog"
-                              "gropdf"
-                              "mmroff"
-                              "pdfmom")))
-                  (for-each (lambda (file)
-                              (when (member (basename file) omit)
-                                (delete-file file)))
-                            (find-files (string-append #$output "/bin"))))))))))
-    ;; Omit the DVI, PS, PDF, and HTML backends.
+            (delete 'remove-non-essentials)))))
     (native-inputs
-     (let ((native-inputs (modify-inputs (package-native-inputs groff)
-                            (delete "psutils"))))
+     (let ((native-inputs (modify-inputs (package-native-inputs groff-minimal)
+                            (prepend psutils))))
        (if (%current-target-system)
            (modify-inputs native-inputs
-             (replace "groff" this-package))
+             (replace "groff-minimal" this-package))
            native-inputs)))
+    ;; Note: groff's HTML backend uses executables from netpbm when they are in
+    ;; $PATH.  In practice, not having them doesn't prevent it from install its
+    ;; own HTML doc, nor does it change its capabilities, so we removed netpbm
+    ;; from 'inputs'.
     (inputs
-     (modify-inputs (package-inputs groff)
-       (delete "ghostscript")))))
+     (modify-inputs (package-inputs groff-minimal)
+       (prepend ghostscript)))))
 
 ;; There are no releases, so we take the latest commit.
 (define-public roffit
