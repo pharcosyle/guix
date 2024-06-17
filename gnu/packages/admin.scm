@@ -2234,20 +2234,10 @@ system administrator.")
                             "ac_cv_have_working_vsnprintf=yes")
                           '()))
 
-           ;; Avoid non-determinism; see <http://bugs.gnu.org/21918>.
-           #:parallel-build? #f
-
            #:phases
            #~(modify-phases %standard-phases
                (add-before 'configure 'pre-configure
                  (lambda _
-                   (substitute* "src/sudo_usage.h.in"
-                     ;; Do not capture 'configure' arguments since we would
-                     ;; unduly retain references, and also because the
-                     ;; CPPFLAGS above would close the string literal
-                     ;; prematurely.
-                     (("@CONFIGURE_ARGS@")
-                      "\"\""))
                    (substitute* (find-files "." "Makefile\\.in")
                      ;; Allow installation as non-root.
                      (("-o [[:graph:]]+ -g [[:graph:]]+")
@@ -2264,13 +2254,7 @@ system administrator.")
                       "$(DESTDIR)/$(docdir)/examples")
                      ;; Don't try to create /var/db/sudo.
                      (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
-                      "$(TMPDIR)/dummy"))
-
-                   ;; ‘Checking existing [/etc/]sudoers file for syntax errors’ is
-                   ;; not the task of the build system, and fails.
-                   (substitute* "plugins/sudoers/Makefile.in"
-                     (("^pre-install:" match)
-                      (string-append match "\ndisabled-" match))))))
+                      "$(TMPDIR)/dummy")))))
 
            ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
            ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
