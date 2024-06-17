@@ -157,9 +157,13 @@ is usually the formatter of \"man\" documentation pages.")
                                         #:directories? #t)))))))))
     ;; Omit the DVI, PS, PDF, and HTML backends.
     (native-inputs
-     (modify-inputs (package-native-inputs groff)
-       (delete psutils
-               texinfo)))
+     (let ((native-inputs (modify-inputs (package-native-inputs groff)
+                            (delete psutils
+                                    texinfo))))
+       (if (%current-target-system)
+           (modify-inputs native-inputs
+             (replace "groff" this-package))
+           native-inputs)))
     (inputs
      (modify-inputs (package-inputs groff)
        (delete ghostscript)))
