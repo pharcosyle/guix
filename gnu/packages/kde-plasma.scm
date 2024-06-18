@@ -813,9 +813,10 @@ the schedule and venue information.")
                 "0dk8yjibgcrz6216y2rdvavs9aci0zdbjn01w56ib7vi9zxl4x51"))))
     (build-system cmake-build-system)
     (native-inputs (list extra-cmake-modules pkg-config))
-    (propagated-inputs (list qtbase qtdeclarative))
+    (propagated-inputs (list qtbase qtdeclarative
+                             ;; include/KPipeWire/dmabufhandler.h include it.
+                             libepoxy))
     (inputs (list libxkbcommon
-                  libepoxy
                   libva
                   pipewire
                   ffmpeg
