@@ -1617,14 +1617,14 @@ creating routes by drag and drop and more.")
 (define-public okular
   (package
     (name "okular")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1vgcqkq6mzd270hzabmdqqv105iv6kr6ah2h18b15al2n9rmg0bi"))))
+        (base32 "1ph4xyp4djlr2svwffxhhw0gz78ffi8ghpv27ysm8fgc5fvkc7a3"))))
     (build-system qt-build-system)
     (arguments
      (list
@@ -1650,7 +1650,7 @@ creating routes by drag and drop and more.")
                          share ":" (getenv "XDG_DATA_DIRS")))
                 (invoke "update-desktop-database" "-v" share)))))))
     (native-inputs
-     (list extra-cmake-modules kdoctools pkg-config
+     (list extra-cmake-modules kdoctools-6 pkg-config
            ;; for test
            desktop-file-utils))
     (inputs
@@ -1658,40 +1658,41 @@ creating routes by drag and drop and more.")
            breeze-icons
            discount
            djvulibre
-           kactivities
-           khtml
+           plasma-activities
            chmlib
            kdegraphics-mobipocket
-           karchive
-           kbookmarks
-           kcompletion
-           kconfig
-           qtbase-5
+           karchive-6
+           kbookmarks-6
+           kcompletion-6
+           kconfig-6
+           qtbase
            libjpeg-turbo
            libtiff
-           kirigami
-           purpose
+           kirigami-6
+           purpose-6
            freetype
-           kiconthemes
-           kio
-           kparts
-           kpty
-           qtspeech-5
-           kwallet
-           kwindowsystem
+           kiconthemes-6
+           ki18n-6
+           threadweaver-6
+           ktextwidgets-6
+           kio-6
+           kparts-6
+           kpty-6
+           qtspeech
+           kwallet-6
+           kwindowsystem-6
            libkexiv2
            libspectre
            libzip
            phonon
-           poppler-qt5
-           qca
-           qtdeclarative-5
-           qtsvg-5
-           qtwayland-5
+           poppler-qt6
+           qca-qt6
+           qtdeclarative
+           qtsvg
+           qtwayland
+           libxkbcommon
            threadweaver
-           kcrash
-           kjs
-           qtx11extras))
+           kcrash-6))
     (home-page "https://apps.kde.org/okular/")
     (synopsis "Document viewer")
     (description
