@@ -1104,7 +1104,8 @@ development in a wide-range of areas.")
                    #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("openssl" ,openssl)))
+     `(("libxcrypt" ,libxcrypt)
+       ("openssl" ,openssl)))
     (arguments
      `(#:system ,(match (%current-system)
                    ((or "armhf-linux" "aarch64-linux")
