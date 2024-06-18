@@ -5562,6 +5562,7 @@ studio.")
            libsamplerate
            libsndfile
            libsoup
+           libxcrypt
            libxml2
            lv2
            pulseaudio
