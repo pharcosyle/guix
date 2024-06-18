@@ -4173,14 +4173,14 @@ NUMA performance on your system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.5.1")
+    (version "2.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "10s608i4blprgy9nynlid0hglfdrrgln6wwjs9rhjf56hwilbpyc"))
+                "09h9lhddgjbhrhynarhnfccynrn0jbpln26d6c57xjpcg848v7si"))
               (modules '((guix build utils)))
               (snippet
                '(begin
