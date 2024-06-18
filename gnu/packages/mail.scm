@@ -2050,6 +2050,7 @@ delivery.")
            gzip
            libnsl
            libxaw
+           libxcrypt
            libxt
            perl
            xz))
