@@ -3939,6 +3939,7 @@ operators and scripters.")
            mit-krb5
            aspell
            tcl
+           libxcrypt
            linux-pam))
     (home-page "https://repo.or.cz/alpine.git")
     (synopsis "Alternatively Licensed Program for Internet News and Email")
