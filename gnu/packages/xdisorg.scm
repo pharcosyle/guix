@@ -1800,6 +1800,7 @@ less if you are working in front of the screen at night.")
      (list pkg-config intltool))
     (inputs
      (list libx11
+           libxcrypt
            libxext
            libxi
            libxt
