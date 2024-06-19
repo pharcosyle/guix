@@ -3350,6 +3350,7 @@ to esoteric or niche requirements.")
     (inputs
      `(("libressl" ,libressl)
        ("libevent" ,libevent)
+       ("libxcrypt" ,libxcrypt)         ;required by Python.h
        ("mysql" ,mariadb "dev")
        ("opensmtpd" ,opensmtpd)
        ("postgresql" ,postgresql)
