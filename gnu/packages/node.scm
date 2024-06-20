@@ -63,7 +63,7 @@
 ;; depending on llhttp.
 (define-public node-bootstrap
   (package
-    (name "node")
+    (name "node-bootstrap")
     (version "10.24.1")
     (source (origin
               (method url-fetch)
@@ -776,6 +776,7 @@ source files.")
 (define-public node-lts
   (package
     (inherit node-bootstrap)
+    (name "node")
     (version "20.18.1")
     (source (origin
               (method url-fetch)
@@ -791,8 +792,7 @@ source files.")
                   (uri (string-append
                         "https://github.com/nodejs/node/commit/"
                         "345d16cc5064a07383c9cd0b9bc3d95741b50a75.patch"))
-                  (file-name (string-append (package-name node)
-                                            "-c-ares-test-fixes.patch"))
+                  (file-name (string-append name "-c-ares-test-fixes.patch"))
                   (sha256
                    (base32
                     "0y7smlch47yw1gvvlq7sb80a4qkdbc69i21hqih8x0wxhldjgcri")))))
@@ -1054,13 +1054,14 @@ fi"
            zlib))
     (properties (alist-delete 'hidden? (package-properties node-bootstrap)))))
 
+;; Currently Guix doesn't package a version newer than the latest LTS release.
 (define-public node node-lts)
 
 (define-public libnode
-  (package/inherit node-lts
+  (package/inherit node
     (name "libnode")
     (arguments
-     (substitute-keyword-arguments (package-arguments node-lts)
+     (substitute-keyword-arguments (package-arguments node)
        ((#:configure-flags flags ''())
         `(cons* "--shared" "--without-npm" ,flags))
        ((#:phases phases '%standard-phases)
