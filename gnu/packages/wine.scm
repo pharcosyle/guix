@@ -256,6 +256,16 @@ integrate Windows applications into your desktop.")
         )
        ((#:phases phases)
         #~(modify-phases #$phases
+            (add-after 'install 'copy-wine32-binaries
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let ((out (assoc-ref %outputs "out")))
+                  ;; Copy the 32-bit binaries needed for WoW64.
+                  (copy-file (search-input-file inputs "/bin/wine")
+                             (string-append out "/bin/wine"))
+                  ;; Copy the real 32-bit wine-preloader instead of the wrapped
+                  ;; version.
+                  (copy-file (search-input-file inputs "/bin/.wine-preloader-real")
+                             (string-append out "/bin/wine-preloader")))))
             ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
             ;; when installing to x86_64-linux so both are available.
             ;; TODO: Add more JSON files as they become available in Mesa.
@@ -281,16 +291,6 @@ integrate Windows applications into your desktop.")
                             `("VK_ICD_FILENAMES" ":" = ,icd-files)))))))
                  (_
                   `()))
-            (add-after 'install 'copy-wine32-binaries
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                (let ((out (assoc-ref %outputs "out")))
-                  ;; Copy the 32-bit binaries needed for WoW64.
-                  (copy-file (search-input-file inputs "/bin/wine")
-                             (string-append out "/bin/wine"))
-                  ;; Copy the real 32-bit wine-preloader instead of the wrapped
-                  ;; version.
-                  (copy-file (search-input-file inputs "/bin/.wine-preloader-real")
-                             (string-append out "/bin/wine-preloader")))))
             (add-after 'install 'copy-wine32-libraries
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out")))
