@@ -45,6 +45,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages image)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -71,6 +72,7 @@
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -203,7 +205,12 @@ integrate Windows applications into your desktop.")
            unixodbc
            v4l-utils
            vkd3d
-           vulkan-loader))
+           vulkan-loader
+
+           ;; For wayland support.
+           libxkbcommon
+           wayland
+           wayland-protocols))
     (arguments
      (substitute-keyword-arguments (package-arguments wine-minimal)
        ((#:phases phases)
