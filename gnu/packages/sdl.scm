@@ -71,7 +71,7 @@
 (define-public sdl2
   (package
     (name "sdl2")
-    (version "2.30.3")
+    (version "2.30.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -79,7 +79,19 @@
                               version ".tar.gz"))
               (sha256
                (base32
-                "1v0a1x8rl28sqi0bx1c74vg88nfj597i1bhxihc50nwg5w3l0142"))))
+                "09hslcfmczhygzqi8jrkk30bp783wygs52iinwiznkhdsh79vj2r"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://src.fedoraproject.org/rpms/SDL2/raw"
+                        "/4d7b2c79b842c4e046599307308d165b96259da5"
+                        "/f/SDL2-2.30.1-prefer-wayland.patch"))
+                  (file-name (string-append name "-prefer-wayland.patch"))
+                  (sha256
+                   (base32
+                    "0acj5myymz9knsk1qg4bhxgr28i1qw7n9j97v6w8gavbjmwii5sg")))))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -119,10 +131,6 @@
            mesa))
     (native-inputs (list pkg-config))
     (inputs
-     ;; SDL2 needs to be built with ibus support otherwise some systems
-     ;; experience a bug where input events are doubled.
-     ;;
-     ;; For more information, see: https://dev.solus-project.com/T1721
      (list
       libxrandr
       glu
@@ -131,7 +139,6 @@
       dbus
       eudev                             ;for discovering input devices
       glib
-      ibus-minimal
       libxkbcommon
       libxcursor                        ;enables X11 cursor support
       vulkan-loader
