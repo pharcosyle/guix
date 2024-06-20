@@ -875,7 +875,7 @@
            dbus
            expat
            flac
-           ffmpeg-4
+           ffmpeg
            fontconfig
            fp16
            freetype
