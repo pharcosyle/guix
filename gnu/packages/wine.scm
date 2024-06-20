@@ -348,7 +348,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "8.18")
+    (version %wine-devel-version)
     (source
      (origin
        (method git-fetch)
@@ -357,7 +357,7 @@ integrate Windows applications into your desktop.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qabyw5139xdfsvzbwbrn1nnqssgwk8mn88mxnq2cdkk9gbjvq56"))))
+        (base32 "1aiawcpagg6p7k6zryiibsamq80znsdh8yk2pnqm2imdqs865ady"))))
     (build-system trivial-build-system)
     (native-inputs
      (list coreutils))
@@ -386,13 +386,9 @@ integrate Windows applications into your desktop.")
 
 (define-public wine-staging
   (package
-    (inherit wine)
+    (inherit wine-devel)
     (name "wine-staging")
-    (version (package-version wine-staging-patchset-data))
-    (source
-    (inputs (modify-inputs (package-inputs wine)
-     (wine-source version
-                  "1nv06awb3hv26v64nqnks9yiz7w368scxznj77vxa3zpmhafzyih"))
+    (inputs (modify-inputs (package-inputs wine-devel)
               (prepend autoconf ; for autoreconf
                        ffmpeg
                        gtk+
@@ -402,10 +398,10 @@ integrate Windows applications into your desktop.")
                        util-linux ; for hexdump
                        wine-staging-patchset-data)))
     (native-inputs
-     (modify-inputs (package-native-inputs wine)
+     (modify-inputs (package-native-inputs wine-devel)
        (prepend python-3)))
     (arguments
-     (substitute-keyword-arguments (package-arguments wine)
+     (substitute-keyword-arguments (package-arguments wine-devel)
        ((#:phases phases)
         #~(modify-phases #$phases
             (delete 'patch-SHELL)
@@ -440,7 +436,7 @@ integrated into the main branch.")
     (inputs (modify-inputs (package-inputs wine-staging)
               (prepend wine-staging)))
     (arguments
-     (substitute-keyword-arguments (package-arguments wine64)
+     (substitute-keyword-arguments (package-arguments wine64-devel)
        ((#:phases phases)
         #~(modify-phases #$phases
             (delete 'patch-SHELL)
