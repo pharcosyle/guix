@@ -55,11 +55,14 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
-(define-public node
+;; This should be the latest version of node that still builds without
+;; depending on llhttp.
+(define-public node-bootstrap
   (package
-    (name "node")
+    (name "node-bootstrap")
     (version "10.24.1")
     (source (origin
               (method url-fetch)
@@ -354,12 +357,8 @@ devices.")
     (license license:expat)
     (properties '((max-silent-time . 7200)   ;2h, needed on ARM
                   (timeout . 21600)          ;6h
-                  (cpe-name . "node.js")))))
-
-;; This should be the latest version of node that still builds without
-;; depending on llhttp.
-(define-public node-bootstrap
-  (hidden-package node))
+                  (cpe-name . "node.js")
+                  (hidden? . #t)))))
 
 ;; Duplicate of node-semver
 (define-public node-semver-bootstrap
@@ -764,7 +763,8 @@ source files.")
 
 (define-public node-lts
   (package
-    (inherit node)
+    (inherit node-bootstrap)
+    (name "node")
     (version "18.19.0")
     (source (origin
               (method url-fetch)
@@ -780,8 +780,7 @@ source files.")
                   (uri (string-append
                         "https://github.com/nodejs/node/commit/"
                         "345d16cc5064a07383c9cd0b9bc3d95741b50a75.patch"))
-                  (file-name (string-append (package-name node)
-                                            "-c-ares-test-fixes.patch"))
+                  (file-name (string-append name "-c-ares-test-fixes.patch"))
                   (sha256
                    (base32
                     "0y7smlch47yw1gvvlq7sb80a4qkdbc69i21hqih8x0wxhldjgcri")))))
@@ -804,7 +803,7 @@ source files.")
                     (("deps/uv/uv.gyp") "")
                     (("deps/zlib/zlib.gyp") ""))))))
     (arguments
-     (substitute-keyword-arguments (package-arguments node)
+     (substitute-keyword-arguments (package-arguments node-bootstrap)
        ((#:configure-flags configure-flags)
         ''("--shared-cares"
            "--shared-libuv"
@@ -1018,13 +1017,17 @@ fi"
            brotli
            `(,nghttp2 "lib")
            openssl
-           zlib))))
+           zlib))
+    (properties (alist-delete 'hidden? (package-properties node-bootstrap)))))
+
+;; Currently Guix doesn't package a version newer than the latest LTS release.
+(define-public node node-lts)
 
 (define-public libnode
-  (package/inherit node-lts
+  (package/inherit node
     (name "libnode")
     (arguments
-     (substitute-keyword-arguments (package-arguments node-lts)
+     (substitute-keyword-arguments (package-arguments node)
        ((#:configure-flags flags ''())
         `(cons* "--shared" "--without-npm" ,flags))
        ((#:phases phases '%standard-phases)
