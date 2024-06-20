@@ -311,6 +311,28 @@ integrate Windows applications into your desktop.")
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
+(define %wine-devel-version "9.22")
+
+(define-public wine-devel
+  (package
+    (inherit wine)
+    (name "wine-devel")
+    (version %wine-devel-version)
+    (source
+     (wine-source version
+                  "10wn6ndz9l02m6z0kr22hpsgk95ac7c6x5ryxxlgfm5a8abx4l71"))))
+
+(define-public wine64-devel
+  (package
+    (inherit wine64)
+    (name "wine64-devel")
+    (version %wine-devel-version)
+    (source
+     (wine-source version
+                  "10wn6ndz9l02m6z0kr22hpsgk95ac7c6x5ryxxlgfm5a8abx4l71"))
+    (inputs (modify-inputs (package-inputs wine64)
+              (replace "wine" wine-devel)))))
+
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
