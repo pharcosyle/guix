@@ -92,8 +92,6 @@
       (sha256
        (base32 hash)))))
 
-;; This minimal build of Wine is needed to prevent a circular dependency with
-;; vkd3d.
 (define-public wine-minimal
   (package
     (name "wine-minimal")
@@ -211,7 +209,6 @@ integrate Windows applications into your desktop.")
            sdl2
            unixodbc
            v4l-utils
-           vkd3d
            vulkan-loader
 
            ;; For wayland support.
