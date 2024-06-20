@@ -481,7 +481,7 @@ shader compilation.")
            spirv-tools
            vulkan-headers
            vulkan-loader
-           wine-minimal ; Needed for 'widl'.
+           wine ; Needed for 'widl'.
            xcb-util
            xcb-util-keysyms
            xcb-util-wm))
