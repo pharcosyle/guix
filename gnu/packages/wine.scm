@@ -76,6 +76,22 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
+(define (wine-source version hash)
+  (let* ((wine-version (version-major+minor version))
+         (subdirectory (string-append
+                        (version-major version)
+                        (if (string-suffix? ".0" wine-version)
+                            ".0"
+                            ".x"))))
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://dl.winehq.org/wine/source/"
+                          subdirectory "/"
+                          "wine-" wine-version ".tar.xz"))
+      (file-name (string-append "wine-" wine-version ".tar.xz"))
+      (sha256
+       (base32 hash)))))
+
 ;; This minimal build of Wine is needed to prevent a circular dependency with
 ;; vkd3d.
 (define-public wine-minimal
@@ -83,17 +99,8 @@
     (name "wine-minimal")
     (version "9.0")
     (source
-     (origin
-       (method url-fetch)
-       (uri (let ((dir (string-append
-                        (version-major version)
-                        (if (string-suffix? ".0" (version-major+minor version))
-                            ".0/"
-                            ".x/"))))
-              (string-append "https://dl.winehq.org/wine/source/" dir
-                             "wine-" version ".tar.xz")))
-       (sha256
-        (base32 "1vm61hrkinjqicxidhbhq3j8sb1iianfypdvjmnvgxcmac50kzbw"))))
+     (wine-source version
+                  "1vm61hrkinjqicxidhbhq3j8sb1iianfypdvjmnvgxcmac50kzbw"))
     (properties '((upstream-name . "wine")))
     (build-system gnu-build-system)
     (native-inputs (list bison flex))
@@ -352,20 +359,8 @@ integrate Windows applications into your desktop.")
     (name "wine-staging")
     (version (package-version wine-staging-patchset-data))
     (source
-     (let* ((wine-version (version-major+minor version))
-            (subdirectory (string-append
-                           (version-major version)
-                           (if (string-suffix? ".0" wine-version)
-                               ".0"
-                               ".x"))))
-       (origin
-         (method url-fetch)
-         (uri (string-append "https://dl.winehq.org/wine/source/"
-                             subdirectory "/"
-                             "wine-" wine-version ".tar.xz"))
-         (file-name (string-append name "-" wine-version ".tar.xz"))
-         (sha256
-          (base32 "1vm61hrkinjqicxidhbhq3j8sb1iianfypdvjmnvgxcmac50kzbw")))))
+     (wine-source version
+                  "1nv06awb3hv26v64nqnks9yiz7w368scxznj77vxa3zpmhafzyih"))
     (inputs (modify-inputs (package-inputs wine)
               (prepend autoconf ; for autoreconf
                        ffmpeg
