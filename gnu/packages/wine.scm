@@ -314,6 +314,36 @@ integrate Windows applications into your desktop.")
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
+(define %wine-devel-version "9.11")
+
+(define-public wine-devel
+  (package
+    (inherit wine)
+    (name "wine-devel")
+    (version %wine-devel-version)
+    (source
+     (wine-source version
+                  "0h3jz1xxdss4hvgh0aj213xn3rya90z876l45b86j4d79qk0r86z"))))
+
+(define-public wine64-devel
+  (package
+    (inherit wine64)
+    (name "wine64-devel")
+    (version %wine-devel-version)
+    (source
+     (wine-source version
+                  "0h3jz1xxdss4hvgh0aj213xn3rya90z876l45b86j4d79qk0r86z"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments wine64)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (replace 'copy-wine32-manpage
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let* ((out (assoc-ref %outputs "out")))
+                  ;; Copy the missing man file for the wine binary from wine.
+                  (copy-file (search-input-file inputs "/share/man/man1/wine.1.zst")
+                             (string-append out "/share/man/man1/wine.1.zst")))))))))))
+
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
