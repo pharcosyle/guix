@@ -110,17 +110,16 @@
 (define-public zlib
   (package
     (name "zlib")
-    (version "1.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
-       (uri (list (string-append "http://zlib.net/zlib-"
-                                 version ".tar.gz")
-                  (string-append "mirror://sourceforge/libpng/zlib/"
-                                 version "/zlib-" version ".tar.gz")))
+       (uri (string-append "https://github.com/madler/zlib"
+                           "/releases/download/v" version
+                           "/zlib-" version ".tar.gz"))
        (sha256
         (base32
-         "0gjrz8p70mgkic7mxjh1vqwws4x8z7hq2fhbackvqg81jb1a82zz"))))
+         "08yzf8xz0q7vxs8mnn74xmpxsrs6wy0aan55lpmpriysvyvv54ws"))))
     (build-system gnu-build-system)
     (outputs '("out" "static"))
     (arguments
