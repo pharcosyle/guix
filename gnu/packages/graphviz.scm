@@ -66,7 +66,7 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (version "10.0.1")
+    (version "11.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/api/v4/projects/4207231"
@@ -74,7 +74,7 @@
                                   version "/graphviz-" version ".tar.xz"))
               (sha256
                (base32
-                "08gy34qdnn3w4j3n8rgxna4c2jbg4g90xfqgm9i8h5xwji50dn3v"))))
+                "08kjaxjqq51br4bywwkmxf81q5ajlv1fjqbhawb5qvw7913k96mf"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
