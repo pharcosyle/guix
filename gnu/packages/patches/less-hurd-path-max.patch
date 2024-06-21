@@ -1,36 +1,49 @@
-Avoid usage of PATH_MAX.
+From 19679de68604a7b2c103f410e50b76993e73d928 Mon Sep 17 00:00:00 2001
+From: Guillem Jover <guillem@hadrons.org>
+Date: Thu, 11 Jan 2024 02:18:07 +0100
+Subject: [PATCH] Do not assume PATH_MAX is defined
 
-Submitted to bug-less@gnu.org.
+On systems such as GNU/Hurd, PATH_MAX is not defined, because the system
+intends to impose no arbitrary limits. In other systems though it might
+be defined but to a very large value.
 
-From ef652341ed8b2c14ac40312ccd4ed329cb69fd0c Mon Sep 17 00:00:00 2001
-From: Jan Nieuwenhuizen <janneke@gnu.org>
-Date: Sat, 7 Mar 2020 14:57:19 +0100
-Subject: [PATCH] Avoid usage of PATH_MAX.
+We can use realpath() with its POSIX.1-2008 semantics, where passing a
+NULL argument will make it allocate the destination buffer, but not all
+systems support these semantics yet.
 
-* filename.c (lrealpath): Have realpath allocate the buffer.  Fixes
-compilation on the Hurd and avoids possible buffer overflow on other
-systems.
+For now, instead of complicating the code to cope with realpath()
+limitations on some systems, we simply handle the case where PATH_MAX
+is not defined, where realpath() should always support these semantics.
 ---
- filename.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ filename.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/filename.c b/filename.c
-index e420837..faa71b0 100644
+index 285a2483..1ee55477 100644
 --- a/filename.c
 +++ b/filename.c
-@@ -795,9 +795,9 @@ lrealpath(path)
- 	char *path;
- {
+@@ -777,9 +777,24 @@ public char * lrealpath(constant char *path)
+ 	if (!is_fake_pathname(path))
+ 	{
  #if HAVE_REALPATH
--	char rpath[PATH_MAX];
--	if (realpath(path, rpath) != NULL)
--		return (save(rpath));
-+	char *rpath = NULL;
-+	if ((rpath = realpath(path, rpath)) != NULL)
-+		return (rpath);
++		/*
++		 * Not all systems support the POSIX.1-2008 realpath() behavior
++		 * of allocating when passing a NULL argument. And PATH_MAX is
++		 * not required to be defined, or might contain an exceedingly
++		 * big value. We assume that if it is not defined (such as on
++		 * GNU/Hurd), then realpath() accepts NULL.
++		 */
++#ifndef PATH_MAX
++		char *rpath;
++
++		rpath = realpath(path, NULL);
++		if (rpath != NULL)
++			return (rpath);
++#else
+ 		char rpath[PATH_MAX];
+ 		if (realpath(path, rpath) != NULL)
+ 			return (save(rpath));
++#endif
  #endif
+ 	}
  	return (save(path));
- }
--- 
-2.24.0
-
