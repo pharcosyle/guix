@@ -942,8 +942,8 @@ of PROVENANCE-SERVICE-TYPE to its services."
 
 (define %base-packages-interactive
   ;; Default set of common interactive packages.
-  (list less mg nano
-        nvi
+  (list less
+        nano
         man-db
         info-reader                     ;the standalone Info reader (no Perl)
         bash-completion
