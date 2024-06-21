@@ -58,7 +58,10 @@
    (4 "1b15sndx9v5vj3x1f3h73099nlagknx4rbfpd5ldrbw2xgm2wmvr")
    (5 "16ac25jz1a1mgkpfp1sydqf6qpsfh0s0dcmrnjpqbhg5va3s6av2")
    (6 "18gmh6y3klh0vv28cyqz4is3rlb32pl7f1kf5r482kfjq3w5zd67")
-   (7 "1xmnpahs983n4w0gn3j0wr8nh1dpva33yj7fvfmhm46ph2wsa4ar")))
+   (7 "1xmnpahs983n4w0gn3j0wr8nh1dpva33yj7fvfmhm46ph2wsa4ar")
+   (8 "0smjjzhwxi2ibpdisnk53lh1pzgka6rhlqyh3662xy69v34ysxx1")
+   (9 "05m1fwbs7mbs3pz3pg87gbbayandrrcgaqawzliqb6g1jbk8b61x")
+   (10 "0k3vyrjs2g6y2cfs03l2gp37fhxgqpiwvxb1c7z4q88cbb32x3km")))
 
 (define %patch-series-7.0
   (patch-series
