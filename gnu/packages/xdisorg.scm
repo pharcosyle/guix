@@ -726,7 +726,7 @@ following the mouse.")
 (define-public pixman
   (package
     (name "pixman")
-    (version "0.42.2")
+    (version "0.43.4")
     (source
      (origin
        (method url-fetch)
@@ -735,21 +735,18 @@ following the mouse.")
          "https://www.cairographics.org/releases/pixman-"
          version ".tar.gz"))
        (sha256
-        (base32 "0pk298iqxqr64vk3z6nhjwr6vjg1971zfrjkqy5r9zd2mppq057a"))
+        (base32 "09m2hm5zcz3n5wikz3f3v13ccdywjc81baf7kyvxviw006wlsqm0"))
        (patches
         (search-patches
          "pixman-CVE-2016-5296.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       (list
-        "--disable-static"
-        "--enable-timers"
-        "--enable-gnuplot")))
+     (list #:configure-flags
+           #~(list "-Dtimers=true"
+                   "-Dgnuplot=true")))
     (native-inputs
-     (list pkg-config))
-    (inputs
-     (list libpng zlib))
+     (list pkg-config
+           libpng)) ; For tests.
     (synopsis "Low-level pixel manipulation library")
     (description "Pixman is a low-level software library for pixel
 manipulation, providing features such as image compositing and trapezoid
