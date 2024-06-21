@@ -30,14 +30,14 @@
 (define-public libbsd
   (package
     (name "libbsd")
-    (version "0.11.8")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libbsd.freedesktop.org/releases/"
                                   "libbsd-" version ".tar.xz"))
               (sha256
                (base32
-                "0cszz10li48rqhq3pnwd02qcg5zqkm5d36psjajmakgvjqkgmzam"))))
+                "050hfca2mbrqb0dqznqijwx1rfnxfkcr36d976pjlr8c7lbck35q"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags #~'("--disable-static")
@@ -59,14 +59,6 @@
                                   (("-lmd")
                                    (string-append "-L" (dirname libmd)
                                                   " -lmd")))))))
-                        (add-before 'check 'disable-pwcache-test
-                          (lambda _
-                            ;; This test expects the presence of a root
-                            ;; user and group, which do not exist in the
-                            ;; build container.
-                            (substitute* "test/Makefile"
-                              (("pwcache\\$\\(EXEEXT\\) ")
-                               ""))))
                         #$@(if (system-hurd?)
                                #~((add-after 'unpack 'skip-tests
                                   (lambda _
