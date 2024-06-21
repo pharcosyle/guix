@@ -406,7 +406,7 @@ written by Paul Haahr and Byron Rakitzis.")
                  '())
              (list autoconf perl)))
     (inputs
-     (list ncurses libxcrypt-glibc))
+     (list ncurses))
     (arguments
      (list
       #:phases

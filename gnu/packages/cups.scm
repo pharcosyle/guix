@@ -336,7 +336,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                           (if (%current-target-system)
                               (list this-package)
                               '())))
-    (inputs (list zlib gnutls libxcrypt-glibc))
+    (inputs (list zlib gnutls))
     (home-page "https://openprinting.github.io/cups")
     (synopsis "The Common Unix Printing System")
     (description

@@ -790,8 +790,7 @@ It also includes runtime support libraries for these languages.")
               (patches
                (append
                 (search-patches "gcc-12-strmov-store-file-names.patch"
-                                "gcc-5.0-libvtv-runpath.patch"
-                                "gcc-13-remove-crypt-interceptors.patch")))
+                                "gcc-5.0-libvtv-runpath.patch")))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
     ;; TODO Triggers a rebuild so maybe do this later or just get rid of it.

@@ -46,7 +46,7 @@
                (base32
                 "135kbgyfpa1mwqp5dm223yr6ddzi4vjm7cr414d7rmhys2mwdkvw"))))
     (build-system gnu-build-system)
-    (inputs (list gdbm mit-krb5 openssl libxcrypt-glibc))
+    (inputs (list gdbm mit-krb5 openssl))
     (arguments
      (list
       #:configure-flags #~(list (string-append "--with-plugindir="
