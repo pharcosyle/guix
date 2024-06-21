@@ -1040,14 +1040,25 @@ JPEG 2000 Reference Software.")
 (define-public giflib
   (package
     (name "giflib")
-    (version "5.2.1")
+    (version "5.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/giflib/giflib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1gbrg03z1b6rlrvjyc6d41bc8j1bsr7rm8206gb1apscyii5bnii"))))
+                "1yym55mvdqwfic2aks5mhfhccf381kcjym24l4mbxpnaaz8gnzxy"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/arthenica/giflib/commit"
+                        "/61f375082c80ee479eb8ff03189aea691a6a06aa.patch"))
+                  (file-name (string-append name "-man-install-fix.patch"))
+                  (sha256
+                   (base32
+                    "00hh7xx7vzxaa751cpk85373rgg911x6537xs46mrlsnrl8xr3mk")))))))
     (build-system gnu-build-system)
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
@@ -1062,22 +1073,17 @@ JPEG 2000 Reference Software.")
          (add-after 'unpack 'disable-html-doc-gen
            (lambda _
              (substitute* "doc/Makefile"
-               (("^all: allhtml manpages") ""))
+               (("^all: allhtml manpages") "all: manpages"))
              #t))
          (delete 'configure)
          (add-after 'install 'install-manpages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bin (assoc-ref outputs "bin"))
-                    (man1dir (string-append bin "/share/man/man1")))
-               (mkdir-p man1dir)
-               (for-each (lambda (file)
-                           (let ((base (basename file)))
-                             (format #t "installing `~a' to `~a'~%"
-                                     base man1dir)
-                             (copy-file file
-                                        (string-append
-                                         man1dir "/" base))))
-                         (find-files "doc" "\\.1"))
+                    (man (string-append bin "/share/man")))
+               (mkdir-p man)
+               (copy-recursively (string-append (assoc-ref outputs "out")
+                                                "/share/man")
+                                 man)
                #t))))))
     (synopsis "Tools and library for working with GIF images")
     (description
