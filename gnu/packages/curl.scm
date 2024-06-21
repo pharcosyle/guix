@@ -65,14 +65,14 @@
 (define-public curl
   (package
     (name "curl")
-    (version "8.5.0")
+    (version "8.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://curl.se/download/curl-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1sqfflilf7mcz1g03lazyr6v6pf1rsrzprrknsir10hdwawqvas2"))
+                "00243mai47br136x2ay4zjdrs36rn00mgpxkxr38l31kzjavnn0g"))
               (patches (search-patches "curl-use-ssl-cert-env.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
