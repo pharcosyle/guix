@@ -807,7 +807,7 @@ and Matrox.")
 (define-public mtdev
   (package
     (name "mtdev")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
       (origin
         (method url-fetch)
@@ -816,7 +816,7 @@ and Matrox.")
                version ".tar.bz2"))
         (sha256
          (base32
-          "1q700h9dqcm3zl6c3gj0qxxjcx6ibw2c51wjijydhwdcm26v5mqm"))))
+          "0kl13pzz55qc6k15bnlk86ams5fxl3hg1yf79b2wmzh146nss1x1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
