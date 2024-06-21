@@ -1452,7 +1452,7 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
-    (native-inputs (list pkg-config automake autoconf-2.71 libtool))
+    (native-inputs (list pkg-config automake autoconf libtool))
     (inputs
      (list freeglut
            ftgl
