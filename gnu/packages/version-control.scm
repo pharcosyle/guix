@@ -242,14 +242,14 @@ Python 3.3 and later, rather than on Python 2.")
 (define-public git-minimal
   (package
     (name "git-minimal")
-    (version "2.43.0")
+    (version "2.45.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1v3nkfm3gw8wr7595qy86qla8xyjvi85fmly4lfph4frfcz60ijl"))))
+                "1gqj5xrlmzs4amrj7xgxx7qpqj8br8f6bk4bzcnf4yk2iq538kg6"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -686,7 +686,7 @@ everything from small to very large projects with speed and efficiency.")
                                ".tar.xz"))
                          (sha256
                           (base32
-                           "1n6lqsyva1zax62saqaz0nb8k4lkw3yq394nx45wfq2a8h4xy67g"))))))))))))
+                           "1w6r2liifafsxydmc48p578z7z70ys0spm6qp5ygdd0l26mxf8p6"))))))))))))
     (native-inputs
      (modify-inputs (package-native-inputs git-minimal)
        ;; For subtree documentation.
@@ -733,14 +733,14 @@ everything from small to very large projects with speed and efficiency.")
 (define-public git-minimal/pinned
   ;; Version that rarely changes, depended on by Graphene/GTK+.
   (package/inherit git-minimal
-    (version "2.43.0")
+    (version "2.45.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1v3nkfm3gw8wr7595qy86qla8xyjvi85fmly4lfph4frfcz60ijl"))))))
+                "1gqj5xrlmzs4amrj7xgxx7qpqj8br8f6bk4bzcnf4yk2iq538kg6"))))))
 
 (define-public git2cl
   (let ((commit "1d74d4c0d933fc69ed5cec838c73502584dead05"))
