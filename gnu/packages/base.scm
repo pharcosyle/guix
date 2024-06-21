@@ -834,10 +834,10 @@ the store.")
              (base32
               "09nrwb0ksbah9k35jchd28xxp2hidilqdgz7b8v5f30pz1yd8yzp"))
             (patches (search-patches "glibc-ldd-powerpc.patch"
-                                     "glibc-2.37-ldd-x86_64.patch"
+                                     "glibc-2.38-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
                                      "glibc-2.37-versioned-locpath.patch"
-                                     ;; "glibc-2.37-allow-kernel-2.6.32.patch"
+                                     ;; "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
                                      "glibc-supported-locales.patch"
                                      "glibc-2.37-hurd-clock_t_centiseconds.patch"
