@@ -1079,7 +1079,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/clitest-grep-compat.patch		\
   %D%/packages/patches/clog-fix-shared-build.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
-  %D%/packages/patches/cmake-curl-certificates-3.24.patch	\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/cogl-fix-double-free.patch		\
   %D%/packages/patches/collectd-5.11.0-noinstallvar.patch		\
@@ -1094,6 +1093,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/coreutils-gnulib-tests.patch		\
   %D%/packages/patches/cppcheck-disable-char-signedness-test.patch	\
   %D%/packages/patches/cppdap-add-CPPDAP_USE_EXTERNAL_GTEST_PACKAGE.patch\
+  %D%/packages/patches/cpuinfo-system-libraries.patch		\
   %D%/packages/patches/cpulimit-with-glib-2.32.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crc32c-unbundle-googletest.patch		\
