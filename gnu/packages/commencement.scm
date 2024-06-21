@@ -1824,28 +1824,43 @@ exec " gcc "/bin/" program
     (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs '())
     (propagated-inputs '())
+    ;; (arguments
+    ;;  (ensure-keyword-arguments (package-arguments pkg)
+    ;;                            `(#:implicit-inputs? #f
+    ;;                              #:guile ,%bootstrap-guile
+    ;;                              #:tests? #f)))
+    ;; (arguments
+    ;;  (let ((kw-args (ensure-keyword-arguments (package-arguments pkg)
+    ;;                                           `(#:implicit-inputs? #f
+    ;;                                             #:guile ,%bootstrap-guile
+    ;;                                             #:tests? #f))))
+    ;;    (substitute-keyword-arguments kw-args
+    ;;      ((#:phases phases)
+    ;;       #~(modify-phases #$phases
+    ;;           (add-after 'unpack 'workaround-wrapper-bug
+    ;;             (lambda _
+    ;;               (substitute* "Makefile"
+    ;;                 (("-n -e 'w (.*)'" _ outfile)
+    ;;                  (string-append "> " outfile)))
+    ;;               (throw 'a))))))))
     (arguments
-     (ensure-keyword-arguments (package-arguments pkg)
-                               `(#:implicit-inputs? #f
-                                 #:guile ,%bootstrap-guile
-                                 #:tests? #f)))))
+     (substitute-keyword-arguments (package-arguments pkg)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (add-after 'unpack 'workaround-wrapper-bug
+              (lambda _
+                (substitute* "Makefile"
+                  (("-n -e 'w (.*)'" _ outfile)
+                   (string-append "> " outfile)))
+                (throw 'a)))))))
+    ))
 
 ;; These packages are needed to complete the rest of the bootstrap.
 ;; In the future, Gash et al. could handle it directly, but it's not
 ;; ready yet.
 (define bash-mesboot (mesboot-package "bash-mesboot" static-bash))
-;; Won't build with Sed 4.9 because of missing 'w' command.
-(define sed-mesboot (mesboot-package "sed-mesboot" sed-4.8))
-
-(define coreutils-mesboot
-  ;; Gash can't seem to handle coreutils newer than 9.2 yet.
-  (let ((pkg (mesboot-package "coreutils-mesboot" coreutils-9.2)))
-    (package
-      (inherit pkg)
-      (native-inputs
-       ;; "sed" from Gash-Utils lacks the 'w' command as of 0.2.0.
-       `(("sed" ,sed-mesboot)
-         ,@(package-native-inputs pkg))))))
+(define coreutils-mesboot (mesboot-package "coreutils-mesboot" coreutils))
+(define sed-mesboot (mesboot-package "sed-mesboot" sed))
 
 (define grep-mesboot
   (let ((pkg (mesboot-package "grep-mesboot" grep)))
@@ -1855,10 +1870,7 @@ exec " gcc "/bin/" program
        (substitute-keyword-arguments
          (strip-keyword-arguments
            '(#:configure-flags)
-           (package-arguments pkg))))
-      (native-inputs
-       `(("sed" ,sed-mesboot)
-         ,@(package-native-inputs pkg))))))
+           (package-arguments pkg)))))))
 
 ;; The XZ implementation in Bootar cannot decompress 'tar'.
 (define xz-mesboot
@@ -1874,8 +1886,7 @@ exec " gcc "/bin/" program
 ;; We don't strictly need Tar here, but it allows us to get rid of
 ;; Bootar and Gash-Utils and continue with the standard GNU tools.
 (define tar-mesboot
-  ;; Gash can't seem to handle tar newer than 1.34 yet.
-  (let ((pkg (mesboot-package "tar-mesboot" tar-1.34)))
+  (let ((pkg (mesboot-package "tar-mesboot" tar)))
     (package
       (inherit pkg)
       (native-inputs
@@ -1954,11 +1965,10 @@ exec " gcc "/bin/" program
        ,@(package-arguments bzip2)))))
 
 (define coreutils-boot0
-  ;; Gash can't seem to handle coreutils newer than 9.2 yet.
   (package
-    (inherit coreutils-9.2)
-    (outputs (delete "debug" (package-outputs coreutils-9.2)))
-    (source (bootstrap-origin (package-source coreutils-9.2)))
+    (inherit coreutils)
+    (outputs (delete "debug" (package-outputs coreutils)))
+    (source (bootstrap-origin (package-source coreutils)))
     (name "coreutils-boot0")
     (native-inputs `())
     (inputs
@@ -1968,7 +1978,7 @@ exec " gcc "/bin/" program
      `(#:tests? #f
        #:implicit-inputs? #f
        #:guile ,%bootstrap-guile
-       ,@(package-arguments coreutils-9.2)
+       ,@(package-arguments coreutils)
        ;; The %bootstrap-glibc for aarch64 and armhf doesn't have
        ;; $output/include/linux/prctl.h which causes some binaries
        ;; to fail to build with coreutils-9.0+.
@@ -2134,9 +2144,9 @@ exec " gcc "/bin/" program
 
 (define tar-boot0
   (package
-    (inherit tar-1.34)
+    (inherit tar)
     (name "tar-boot0")
-    (source (bootstrap-origin (package-source tar-1.34)))
+    (source (bootstrap-origin (package-source tar)))
     (native-inputs '())
     (inputs
      `(("make" ,gnu-make-boot0)
@@ -2145,7 +2155,7 @@ exec " gcc "/bin/" program
      `(#:implicit-inputs? #f
        #:tests? #f
        #:guile ,%bootstrap-guile
-       ,@(package-arguments tar-1.34)))))
+       ,@(package-arguments tar)))))
 
 (define (%boot0-inputs)
   `(,@(match (%current-system)
