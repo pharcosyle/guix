@@ -200,7 +200,7 @@ code is Valgrind-clean and unit tested.")
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.40")  ; Remember to also update libpng-apng if possible!
+   (version "1.6.43")  ; Remember to also update libpng-apng if possible!
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -213,7 +213,7 @@ code is Valgrind-clean and unit tested.")
                         "/libpng16/libpng-" version ".tar.xz")))
             (sha256
              (base32
-              "18dk04x3ypg0vdk4zgkqg7r8xyq6b592mnf67qd27zv74jdlfnsk"))))
+              "0v2ay5cwq05b4l443g8w12y0ng44201b9r9avg4xg8lj4djs0p3a"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags '("--disable-static")))
@@ -232,7 +232,7 @@ library.  It supports almost all PNG features and is extensible.")
   ;; The APNG patch is maintained separately and may lag behind upstream libpng.
   (package
     (name "libpng-apng")
-    (version "1.6.40")
+    (version "1.6.43")
     (source
      (origin
        (method url-fetch)
@@ -245,7 +245,7 @@ library.  It supports almost all PNG features and is extensible.")
                    "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
                    "/libpng16/libpng-" version ".tar.xz")))
        (sha256
-        (base32 "18dk04x3ypg0vdk4zgkqg7r8xyq6b592mnf67qd27zv74jdlfnsk"))))
+        (base32 "0v2ay5cwq05b4l443g8w12y0ng44201b9r9avg4xg8lj4djs0p3a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
