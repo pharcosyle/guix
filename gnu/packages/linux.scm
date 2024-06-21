@@ -3885,23 +3885,23 @@ or kill them altogether.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "3.10.5")
+    (version "3.16.2")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://github.com/libfuse/libfuse/releases/"
                               "download/fuse-" version
-                              "/fuse-" version ".tar.xz"))
+                              "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "0rlnnsiw614qcmgy8xz67044gqc1pbvvf2yxjv44lh27bm487qmj"))))
+                "11yfl2w2a445hllyzlakq97n32g06972vxpmh7lpbclnj9fhb5zp"))))
     (build-system meson-build-system)
     (inputs
      (list bash-minimal util-linux))
     (arguments
      `(#:configure-flags
        ,#~(list
-           (string-append "-Dudevrulesdir=" #$output "/udev/rules.d")
+           (string-append "-Dudevrulesdir=" #$output "/lib/udev/rules.d")
            "-Duseroot=false")
        #:tests? #f
        #:phases
@@ -3935,13 +3935,11 @@ or kill them altogether.")
                    "fuseconf_path = '/etc/fuse.conf'"))))
             (add-before 'configure 'set-paths
               (lambda* (#:key inputs outputs #:allow-other-keys)
-                (let ((dummy-init.d
-                       (string-append (getcwd) "/etc/init.d")))
-                  (setenv "MOUNT_FUSE_PATH"
-                          (string-append #$output "/sbin"))
-                  (setenv "UDEV_RULES_PATH"
-                          (string-append #$output
-                                         "/lib/udev/rules.d"))))))))
+                (setenv "MOUNT_FUSE_PATH"
+                        (string-append #$output "/sbin"))
+                (setenv "UDEV_RULES_PATH"
+                        (string-append #$output
+                                       "/lib/udev/rules.d")))))))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (home-page "https://github.com/libfuse/libfuse")
     (synopsis "Support file systems implemented in user space")
