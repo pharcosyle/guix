@@ -32,14 +32,14 @@
 (define-public attr
   (package
     (name "attr")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/attr/attr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1y6sibbkrcjygv8naadnsg6xmsqwfh6cwrqk01l0v2i5kfacdqds"))))
+                "11vc1il9lc56691p72ck0a5dgcs87w2h2xhrq940j7d45x2nggrr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
