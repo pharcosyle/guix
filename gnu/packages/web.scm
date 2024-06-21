@@ -7240,7 +7240,7 @@ file links.")
            cairo
            gdk-pixbuf
            gtk+
-           openssl-3.0
+           openssl-3
            pango))
     (home-page "https://git.sr.ht/~julienxx/castor")
     (synopsis "Graphical client for plain-text protocols")
