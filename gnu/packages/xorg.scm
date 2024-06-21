@@ -5302,10 +5302,11 @@ EGLStream families of extensions.")
          "1x1lmw1br3dxxfppfny1vkmk2l2vk5248i3k05smb7w1mgdphsnr"))))
     (inputs (list font-dejavu
                   dbus
-                  egl-wayland
                   eudev
                   libfontenc
+                  libdecor
                   libdrm
+                  libei
                   libepoxy
                   libgcrypt
                   libtirpc
