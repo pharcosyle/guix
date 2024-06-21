@@ -278,20 +278,6 @@ standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/tar/")))
 
-(define-public tar-1.34
-  (package
-    (inherit tar)
-    (version "1.34")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/tar/tar-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0a0x87anh9chbi2cgcyy7pmnm5hzk4yd1w2j8gm1wplwhwkbvgk3"))
-              (patches (search-patches "tar-skip-unreliable-tests.patch"
-                                       "tar-remove-wholesparse-check.patch"))))))
-
 ;;; TODO: Replace/merge with 'patch' on core-updates.
 (define-public patch/pinned
   (hidden-package
@@ -406,14 +392,14 @@ interactive means to merge two files.")
 (define-public findutils
   (package
    (name "findutils")
-   (version "4.9.0")
+   (version "4.10.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/findutils/findutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1zk2sighc26bfdsm97bv7cd1cnvq7r4gll4zqpnp0rs3kp0bigx2"))
+              "1xd4y24qfsdfp3ndz7d5j49lkhbhpzgr13wrvsmx4izjgyvf11qk"))
             (patches (search-patches "findutils-localstatedir.patch"))))
    (build-system gnu-build-system)
    (arguments
@@ -450,14 +436,14 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "9.4")
+   (version "9.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0ljy4w5h8zn0wnv5jfzw3zi1sc5xvyybn0bjj5p344j6yi63lqga"))))
+              "12hv193nj10hyzrqh39fpic1ibqjny9kqclzvrjsdxljmkg8wcnd"))))
    (build-system gnu-build-system)
    (inputs `(,acl                                 ;TODO: add SELinux
              ,attr                                ;for xattrs in ls, mv, etc
@@ -554,18 +540,6 @@ offer extended functionality beyond that which is outlined in the POSIX
 standard.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/coreutils/")))
-
-(define-public coreutils-9.2
-  (package
-    (inherit sed)
-    (version "9.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/coreutils/coreutils-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1cxh0k62kphhvznalj5ik2pxl1pladwc2s6k8zg13cndp53zz1b8"))))))
 
 (define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.
