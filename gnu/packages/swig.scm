@@ -77,7 +77,7 @@ you tailor the wrapping process to suit your application.")
   (package
     (inherit swig-prev)
     (name "swig")
-    (version "4.2.0")
+    (version "4.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
@@ -85,7 +85,7 @@ you tailor the wrapping process to suit your application.")
                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15wwh9215rdkflpr85r7zxr2nmrib03jr4bvh5i0f9lyb3bs4716"))))
+                "1n5pb77hwadjpbqgqn28i5v4cp94ar19wmv9vk6v4j6hw9a5617s"))))
     (native-inputs
      (modify-inputs (package-native-inputs swig-prev)
        (delete pcre2)))
