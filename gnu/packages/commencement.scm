@@ -2435,10 +2435,12 @@ exec " gcc "/bin/" program
               ("libc-native" ,@(assoc-ref (%boot0-inputs) "libc"))
               ,@(alist-delete "libc" (%boot0-inputs))))
 
-    ;; TODO Temporary while using GCC 14 snapshot.
-    (native-inputs (list flex-boot0))
-    ;; ;; No need for the native-inputs to build the documentation at this stage.
-    ;; (native-inputs '())
+    ;; No need for the native-inputs to build the documentation at this stage.
+    (native-inputs '())
+
+    ;; TODO had this for some reason, remove it if everything builds okay
+    ;; ;; Temporary while using GCC 14 snapshot.
+    ;; (native-inputs (list flex-boot0))
     ))
 
 (define perl-boot0
@@ -3633,9 +3635,7 @@ is the GNU Compiler Collection.")
 (define-public gcc-toolchain-aka-gcc
   ;; It's natural for users to try "guix install gcc".  This package
   ;; automatically "redirects" them to 'gcc-toolchain'.
-  (deprecated-package "gcc" gcc-toolchain-13)
-  ;; (deprecated-package "gcc" gcc-toolchain-14)
-  )
+  (deprecated-package "gcc" gcc-toolchain-14))
 
 
 (define-public gdc-toolchain-10

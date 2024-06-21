@@ -819,35 +819,26 @@ It also includes runtime support libraries for these languages.")
 (define-public gcc-14
   (package
     (inherit gcc-11)
-    ;; TODO Temporary while using GCC 14 snapshot.
-    (version "14.0.1")
-    ;; (version "14.1.0")
+    (version "14.1.0")
     (source (origin
               (method url-fetch)
-              ;; TODO Temporary while using GCC 14 snapshot.
-              (uri "https://gcc.gnu.org/pub/gcc/snapshots/14-20240204/gcc-14-20240204.tar.xz")
-              ;; (uri (string-append "mirror://gnu/gcc/gcc-"
-              ;;                     version "/gcc-" version ".tar.xz"))
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.xz"))
               (sha256
                (base32
-                "13nwf33sm5chi9nlmpg7ff08h7rvyrd6c0218dzrkcgnjnjvwr2l"))
+                "0h3889kkfp9bzw8km9w1ssh5qjskg6yw02q8v3lkvzksk1acd0z2"))
               (patches (search-patches "gcc-12-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
     (properties
-     ;; TODO
+     ;; TODO Put in the message for the commit in which I add GCC 14:
+     ;; "Enumeration of micro architectures in other GCCs is spotty, perhaps there's a logic for what to include that I'm missing? Just use GCC 13's for now."
      `((compiler-cpu-architectures
         ("aarch64" ,@%gcc-13-aarch64-micro-architectures)
         ("armhf" ,@%gcc-13-armhf-micro-architectures)
         ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
-       ,@(package-properties gcc-11))
-     ;; `((compiler-cpu-architectures
-     ;;    ("aarch64" ,@%gcc-14-aarch64-micro-architectures)
-     ;;    ("armhf" ,@%gcc-14-armhf-micro-architectures)
-     ;;    ("x86_64" ,@%gcc-14-x86_64-micro-architectures))
-     ;;   ,@(package-properties gcc-11))
-     )
+       ,@(package-properties gcc-11)))
     ;; ;; TODO Temporary while using GCC 14 snapshot. ; TODO trying without first
     ;; (native-inputs (modify-inputs (package-native-inputs gcc-11)
     ;;                  (prepend (@ (gnu packages flex) flex))))
@@ -856,8 +847,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-13)
-;; (define-public gcc gcc-14)
+(define-public gcc gcc-14)
 
 
 ;;;
