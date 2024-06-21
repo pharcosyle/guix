@@ -23,15 +23,17 @@
 (define-module (gnu packages ninja)
   #:use-module ((guix licenses) #:select (asl2.0))
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages python))
 
 (define-public ninja
   (package
     (name "ninja")
-    (version "1.11.1")
+    (version "1.12.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -40,9 +42,19 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14kshkxdn833nkz2qkzb3w531dcqj6haad90gxj70ic05lb7zx9f"))))
+                "00033jmh30z2vjxs40hjfnn74inlfwzn412l26wi2nzg63wnwgj5"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/ninja-build/ninja/commit"
+                        "/afcd4a146fb82843f6ff695f89504ce4ca65ddfd.patch"))
+                  (file-name (string-append name "-support-tests.patch"))
+                  (sha256
+                   (base32
+                    "06wlwvhai2s298a836756fcq80rvrgrqi0vn5fq1qjrzagpvvzh3")))))))
     (build-system gnu-build-system)
-    (inputs (list python-wrapper))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -53,12 +65,14 @@
              (substitute* "src/subprocess_test.cc"
                (("/bin/echo") (which "echo")))))
          (replace 'build
-           (lambda _
-             (invoke "./configure.py" "--bootstrap")))
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (invoke "./configure.py" "--bootstrap"
+                     (string-append "--gtest-source-dir="
+                                    (assoc-ref (or native-inputs inputs)
+                                               "googletest-source")))))
          (replace 'check
            (lambda _
-             (invoke "./configure.py")
-             (invoke "./ninja" "ninja_test")
+             (invoke "./ninja" "all")
              (invoke "./ninja_test")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -67,6 +81,10 @@
                     (doc (string-append out "/share/doc/ninja")))
                (install-file "ninja" bin)
                (install-file "doc/manual.asciidoc" doc)))))))
+    (native-inputs
+     `(("googletest-source" ,(package-source googletest))))
+    (inputs
+     (list python-wrapper))
     (home-page "https://ninja-build.org/")
     (synopsis "Small build system")
     (description
