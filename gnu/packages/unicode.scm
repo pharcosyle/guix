@@ -32,7 +32,7 @@
 (define-public libunibreak
   (package
     (name "libunibreak")
-    (version "5.1")
+    (version "6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -42,29 +42,15 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "147kk1r2padqnz7gspzm3vlg6qf4yfrg8r2w59bs3s4h63j16f46"))))
+                "0mhkbji89cyjg4g1rviyprchxzpv8pmlmqw4m10cvgfjwmpmwa7k"))))
     (build-system gnu-build-system)
     (native-inputs
       (list autoconf-wrapper
             automake
-            libtool
-            ucd))
+            libtool))
     (arguments
-     `(#:parallel-tests? #f  ; parallel tests cause non-deterministic
-                             ; build failures
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (for-each (lambda (file)
-                         (copy-file
-                           (search-input-file inputs
-                             (string-append "/share/ucd/auxiliary/"
-                                            file))
-                           (string-append "src/" file)))
-                       '("LineBreakTest.txt"
-                         "WordBreakTest.txt"
-                         "GraphemeBreakTest.txt")))))))
+     `(#:parallel-tests? #f)) ; parallel tests cause non-deterministic
+                              ; build failures
     (home-page "https://vimgadgets.sourceforge.net/libunibreak/")
     (synopsis "Unicode line breaking and word breaking algorithms")
     (description
@@ -150,7 +136,7 @@ Unicode Technological Standard #51.")
 (define-public unicode-cldr-common
   (package
     (name "unicode-cldr-common")
-    (version "44.0")
+    (version "45.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -159,7 +145,7 @@ Unicode Technological Standard #51.")
                            "/cldr-common-" version ".zip"))
        (sha256
         (base32
-         "1rmfwkvcrbx13x2lykh2k6hb35d0y1di95jx1zx9r6cazsnp0zxx"))))
+         "07x2jjlc061ljy7nwsmrlcas0rsnal97xajlxf2kyqpwqlp7idh3"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
