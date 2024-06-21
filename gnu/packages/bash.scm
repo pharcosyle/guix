@@ -321,7 +321,7 @@ variant logs the history to syslog.")))
 (define-public bash-completion
   (package
     (name "bash-completion")
-    (version "2.11")
+    (version "2.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -329,12 +329,10 @@ variant logs the history to syslog.")))
                     version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1b0iz7da1sgifx1a5wdyx1kxbzys53v0kyk8nhxfipllmm5qka3k"))
+                "0s71hmr6zyjyihrmj7iivxwilvx58pvikammmpb34218d3wr8x2w"))
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f))    ; Unclear how to make tests pass.
     (synopsis "Bash completions for common commands")
     (description
      "This package provides extensions that allow Bash to provide adapted
