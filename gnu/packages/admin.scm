@@ -3445,7 +3445,7 @@ rules is done with the @code{auditctl} utility.")
            libpcap
            lua-5.4                      ; at the time of this writing: requires
                                         ; 5.4 but the Guix default is  5.3.
-           openssl-3.0
+           openssl-3
            pcre2
            zlib                         ; for NSE compression
            python))                     ; for ndiff
