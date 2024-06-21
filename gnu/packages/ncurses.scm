@@ -30,6 +30,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
@@ -41,31 +42,22 @@
   #:use-module ((guix memoization) #:select (mlambda))
   #:use-module (ice-9 match))
 
-(define ncurses-rollup-patch
-  (mlambda (version hash)
-    (origin
-      (method url-fetch)
-      (uri (match (string-split (version-major+minor+point version) #\.)
-             ((major minor point)
-              (string-append "https://invisible-mirror.net/archives"
-                             "/ncurses/" major "." minor "/ncurses-"
-                             major "." minor "-" point "-patch.sh.bz2"))))
-      (sha256
-       (base32
-        hash)))))
-
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/ncurses/ncurses-"
-                                  (version-major+minor version)
-                                  ".tar.gz"))
-              (sha256
-               (base32
-                "0nc14knjp080h6n06dpwnhmn68azqz290qhbydrm0z68k8yjhcb9"))))
+    (version "6.5.20240511")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ThomasDickey/ncurses-snapshots")
+             (commit (match (string-split version #\.)
+                       ((major minor point)
+                        (string-append "v" major "_" minor "_" point))))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nv8sy2dpfa3knir2ijn9lxg5jfjmgj2fc0qpgw27f1fy1i4irhs"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                ;1 MiB of man pages
@@ -90,28 +82,6 @@
                              (cons (string-append "--host=" target)
                                    configure-flags)
                              configure-flags)))))
-           (apply-rollup-patch-phase
-            ;; Ncurses distributes "stable" patchsets to be applied on top
-            ;; of the release tarball.  These are only available as shell
-            ;; scripts(!) so we decompress and apply them in a phase.
-            ;; See <https://invisible-mirror.net/archives/ncurses/6.1/README>.
-            #~(lambda* (#:key inputs native-inputs #:allow-other-keys)
-                ;; We write the ncurses version string as
-                ;; "<major>.<minor>.<point>" (e.g. "6.2.20210619") using the
-                ;; rollup patch date stamp as point.  When point is not
-                ;; present, there's no rollup patch to get and the phase will
-                ;; be empty.
-                #$(match (string-split version #\.)
-                    ((_ _ _)
-                     (let ((rollup-patch (ncurses-rollup-patch
-                                          version
-                                          "1b6522cvi4066bgh9lp93q8lk93zcjjssvnw1512z447xvazy2y6")))
-                       #~(begin
-                           (copy-file #$rollup-patch
-                                      (string-append (getcwd) "/rollup-patch.sh.bz2"))
-                           (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
-                           (invoke "sh" "rollup-patch.sh"))))
-                    (_ #f))))
            (remove-shebang-phase
             #~(lambda _
                 ;; To avoid retaining a reference to the bootstrap Bash via the
@@ -121,8 +91,8 @@
                 (substitute* "misc/ncurses-config.in"
                   (("#!@SHELL@")
                    "# No shebang here, use /bin/sh!\n")
-                  (("@SHELL@ \\$0")
-                   "$0")
+                  (("@SHELL@ \"\\$0\"")
+                   "\"$0\"")
                   (("mandir=.*$")
                    "mandir=share/man"))))
            (post-install-phase
@@ -214,8 +184,6 @@
                  #$@(if (target-mingw?) #~("--enable-term-driver") #~()))
              #:tests? #f                          ; no "check" target
              #:phases #~(modify-phases %standard-phases
-                          (add-after 'unpack 'apply-rollup-patch
-                            #$apply-rollup-patch-phase)
                           (replace 'configure #$configure-phase)
                           (add-after 'install 'post-install
                             #$post-install-phase)
