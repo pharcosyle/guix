@@ -140,7 +140,7 @@
 (define-public appstream
   (package
     (name "appstream")
-    (version "0.16.4")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -149,15 +149,12 @@
                        "appstream/releases/"
                        "AppStream-" version ".tar.xz"))
        (sha256
-        (base32 "1val1b3dggn9g33q2r9q7wsl75a64x4lcvswvkcjjbvakkbj5xyl"))
-       (patches
-        (search-patches "appstream-force-reload-stemmer.patch"))))
+        (base32 "195snvg2jw5ywqxz02xfb570yhxvaqp9d4w5a2lpay2fck7zddjs"))))
     (build-system meson-build-system)
     (arguments
      (list
       #:glib-or-gtk? #t
-      #:configure-flags #~(list "-Dsystemd=false"
-                                "-Dvapi=true")
+      #:configure-flags #~(list "-Dsystemd=false")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-libstemmer
@@ -175,6 +172,7 @@
            docbook-xml
            docbook-xsl
            gettext-minimal
+           gi-docgen
            `(,glib "bin")
            gobject-introspection
            gperf
@@ -182,8 +180,7 @@
            itstool
            libxslt
            pkg-config
-           python-wrapper
-           vala))
+           python-wrapper))
     (inputs
      (list curl libstemmer libxmlb libxml2 libyaml))
     (propagated-inputs
