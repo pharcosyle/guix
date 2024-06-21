@@ -36,15 +36,17 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils))
 
-(define-public w3m
+;; No X11, no graphics, and no SSL support.
+;; NB: changing w3m-minimal will cause thousands of rebuilds via the reverse
+;; dependency graph of xdg-utils.
+(define-public w3m-minimal
   (package
-    (name "w3m")
-    ;; When updating, be careful not to change the derivation of w3m-for-tests,
-    ;; unless you mean to. Changing w3m-for-tests will cause thousands of
-    ;; rebuilds via the reverse dependency graph of xdg-utils.
+    (name "w3m-minimal")
     (version "0.5.3+git20230121")
     (source (origin
               (method git-fetch)
@@ -58,24 +60,18 @@
                 "0nvhxsqxgxjrr62mvxzhhfzvbvg56g19vlqcgb8mh2x1daazk5ms"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f  ; no check target
-       ;; Use $EDITOR instead of a hard-coded value.
-       #:configure-flags (list "--with-editor="
-                               "--with-imagelib=imlib2"
-                               "--enable-image=fb,x11")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-perl
-           (lambda _ (substitute* '("scripts/w3mmail.cgi.in"
-                                    "scripts/dirlist.cgi.in")
-                       (("@PERL@") (which "perl"))))))))
+     (list #:tests? #f  ; no check target
+           ;; Use $EDITOR instead of a hard-coded value.
+           #:configure-flags #~(list "--with-editor=")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'configure 'fix-perl
+                 (lambda _ (substitute* '("scripts/w3mmail.cgi.in"
+                                          "scripts/dirlist.cgi.in")
+                             (("@PERL@") (which "perl"))))))))
     (inputs
-     (list gdk-pixbuf
-           imlib2
-           libgc
-           libx11
+     (list libgc
            ncurses
-           openssl
            zlib))
     (native-inputs
      (list gettext-minimal perl pkg-config))
@@ -89,20 +85,19 @@ typesets HTML into plain text.")
     (license (x11-style "file://doc/README"
                         "See 'doc/README' in the distribution."))))
 
-;; Used in the test suite of xdg-utils
-(define-public w3m-for-tests
-  (hidden-package
-   (package
-     (inherit w3m)
-     (name "w3m")
-     (version "0.5.3+git20230121")
-     (source (origin
-               (method git-fetch)
-               ;; Debian's fork of w3m is the only one that is still maintained.
-               (uri (git-reference
-                     (url "https://salsa.debian.org/debian/w3m.git")
-                     (commit (string-append "v" version))))
-               (file-name (git-file-name name version))
-               (sha256
-                (base32
-                 "0nvhxsqxgxjrr62mvxzhhfzvbvg56g19vlqcgb8mh2x1daazk5ms")))))))
+(define-public w3m
+  (package
+    (inherit w3m-minimal)
+    (name "w3m")
+    (arguments
+     (substitute-keyword-arguments (package-arguments w3m-minimal)
+       ((#:configure-flags flags  #~'())
+        #~(cons* "--with-imagelib=imlib2"
+                 "--enable-image=fb,x11"
+                 #$flags))))
+    (inputs
+     (modify-inputs (package-inputs w3m-minimal)
+       (prepend gdk-pixbuf
+                imlib2
+                libx11
+                openssl)))))
