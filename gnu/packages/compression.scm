@@ -1682,14 +1682,14 @@ speed.")
     (inherit zstd-prev)
     ;; Don't hide this package from the UI.
     (properties '())
-    (version "1.5.5")
+    (version "1.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "1r1ydmj7ib3g5372yj3k40vl3b9ax0154qg2lqcy7ylwhb69chww"))))))
+        (base32 "1h83si7s70jy7mcy0mv1c9mbkz66qqpawxs0zkmc3b1ayinf0acc"))))))
 
 (define-public pzstd
   (package/inherit zstd
