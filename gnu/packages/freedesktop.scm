@@ -3082,12 +3082,12 @@ compatible with the well-known scripts of the same name.")
            gobject-introspection
            libxml2
            vala))
-    ;; TODO wow does nothing on my system require gtk4 except this?
-    ;; (inputs
-    ;;  (list gtk
-    ;;        gtk+
-    ;;        qtbase-5
-    ;;        qtx11extras))
+    (inputs
+     (list gtk
+           gtk+
+           ;; qtbase-5
+           ;; qtx11extras
+           ))
     (propagated-inputs
      (list glib))
     (home-page "https://github.com/flatpak/libportal")
