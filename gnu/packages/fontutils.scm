@@ -1493,7 +1493,10 @@ and returns a sequence of positioned glyphids from the font.")
        (base32
         "1k3sxgjqq0jnpk9xxys05q32sl5hbf1lbk1gmfxcrmpdgnhli0my"))))
     (build-system gnu-build-system)
-    (native-inputs (list ghostscript)) ;for tests
+    ;; We could add ghostscript to enable two more tests which are
+    ;; otherwise skipped but it doesn't feel worth the dependency
+    ;; burden.
+    ;; (native-inputs (list ghostscript))
     (inputs (list zlib))
     (arguments
      `(#:configure-flags
