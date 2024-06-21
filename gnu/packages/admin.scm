@@ -1025,7 +1025,7 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.14.3")
+    (version "4.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1033,7 +1033,7 @@ hostname.")
                     "download/" version "/shadow-" version ".tar.xz"))
               (sha256
                (base32
-                "1lpw5jn75ihzxh59jnhshl4s376bhfgqr8vkhmv54cgy6s92fsb9"))))
+                "1vln39rz456ffbvc0lf4lzd3gh8snd2ww9zj4vbgk085k9ip0pxv"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -1046,14 +1046,6 @@ hostname.")
           "ac_cv_func_setpgrp_void=yes")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-linking-to-pam
-           (lambda _
-             ;; There's a build system problem in 4.9 that causes link
-             ;; failures with the pam libraries (see:
-             ;; https://github.com/shadow-maint/shadow/issues/407).
-             (substitute* "libsubid/Makefile.in"
-               (("\\$\\(LIBTCB\\)" all)
-                (string-append all " $(LIBPAM)")))))
          ,@(if (%current-target-system)
                '((add-before 'configure 'set-runtime-shell
                    (lambda* (#:key inputs #:allow-other-keys)
