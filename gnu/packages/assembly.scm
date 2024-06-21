@@ -133,10 +133,13 @@ manufacturers.")
                (base32
                 "0n152sghkzrpjsd18ay9hyffldzhnzb0lp7cwbpfyx93h3s4axy7"))))
     (build-system gnu-build-system)
-    (native-inputs (list perl ;for doc and test target
-                         texinfo))
+    (native-inputs (list perl ; For docs.
+                         python-minimal)) ; For tests.
     (arguments
-     `(#:test-target "test"
+     `(#:test-target "travis" ; These don't actually stop the build when
+                              ; there's a failure and they might not really
+                              ; be intented for packagers but there's no
+                              ; alterative and it's better than nothing?
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'dont-build-ps-pdf-outputs
