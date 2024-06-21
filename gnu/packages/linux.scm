@@ -2600,6 +2600,10 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
     (outputs (list "out" "python"))
     (arguments
      (list
+      #:configure-flags
+      #~(list (string-append "--datadir="
+                             (assoc-ref %build-inputs "hwdata")
+                             "/share/hwdata"))
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'bootstrap 'patch-bootstrap-scripts
@@ -2616,7 +2620,7 @@ slabtop, tload, top, vmstat, w, watch and sysctl.")
                             (rename-file old new)))
                         (list "bin/lsusb.py")))))))
     (inputs
-     (list eudev libusb python))
+     (list eudev hwdata libusb python))
     (native-inputs
      (list autoconf automake libtool pkg-config))
     (home-page "http://www.linux-usb.org/")
