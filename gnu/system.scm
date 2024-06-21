@@ -919,7 +919,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
   ;; Default set of networking packages.
   (list inetutils isc-dhcp
         iproute
-        wget
+        wget2
         iw))
 
 (define-deprecated %base-packages-disk-utilities #f '())
