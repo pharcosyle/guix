@@ -1178,7 +1178,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "3.1.0")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/storaged-project/"
@@ -1186,7 +1186,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "1ys4msps5svz93kfpd575pw70jcav3gjay6k099pk3npr5kazr21"))))
+                "1ny2glwmb5dcdv2x0giinbyma9fhk59z8117k1kr15pm7yjk7jx5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
