@@ -2647,6 +2647,8 @@ synchronous execution of all clients, and low latency operation.")
            readline))
     (native-inputs
      (list pkg-config))
+    (propagated-inputs
+     `(("libuuid" ,util-linux "lib")))
     ;; Most files are under GPLv2+, but some headers are under LGPLv2.1+
     (license (list license:gpl2+ license:lgpl2.1+))))
 
