@@ -31,6 +31,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
@@ -91,6 +92,28 @@
       (file-name (string-append "wine-" wine-version ".tar.xz"))
       (sha256
        (base32 hash)))))
+
+(define (install-wine-mono version hash)
+  (let ((wine-mono (make-wine-mono version hash)))
+    #~(lambda _
+        (let ((dir (string-append #$output
+                                  "/share/wine/mono/wine-mono-"
+                                  #$(package-version wine-mono))))
+          (mkdir-p dir)
+          (copy-recursively (string-append #$wine-mono) dir)))))
+
+(define (install-wine-gecko bits version hash)
+  (let ((wine-gecko (make-wine-gecko bits version hash)))
+    #~(lambda _
+        (let ((dir (string-append #$output
+                                  "/share/wine/gecko/wine-gecko-"
+                                  #$(package-version wine-gecko)
+                                  "-"
+                                  #$(match bits
+                                      ('32 "x86")
+                                      ('64 "x86_64")))))
+          (mkdir-p dir)
+          (copy-recursively (string-append #$wine-gecko) dir)))))
 
 (define-public wine
   (package
@@ -214,7 +237,16 @@
                                             "/radeon_icd.i686.json" ":"
                                             icd "/intel_icd.i686.json")))))))))
                (_
-                `())))))
+                `()))
+          (add-after 'install 'install-mono
+            #$(install-wine-mono
+               "8.1.0"
+               "1m7d1rznh226s9n1x69fsajgkn5fy7jfn735kqz9wk4yf908lgjf"))
+          (add-after 'install 'install-gecko32
+            #$(install-wine-gecko
+               '32
+               "2.47.4"
+               "1dmg221nxmgyhz7clwlnvwrx1wi630z62y4azwgf40l6jif8vz1c")))))
     (home-page "https://www.winehq.org/")
     (synopsis "Implementation of the Windows API (32-bit only)")
     (description
@@ -284,6 +316,11 @@ integrate Windows applications into your desktop.")
                 (let* ((out (assoc-ref %outputs "out")))
                   (copy-recursively (search-input-directory inputs "/lib/wine32")
                                     (string-append out "/lib/wine32")))))
+            (add-after 'install-gecko32 'install-gecko64
+              #$(install-wine-gecko
+                 '64
+                 "2.47.4"
+                 "0518m084f9bdl836gs3d8qm8jx65j2y1w35zi9x8s1bxadzgr27x"))
             (add-after 'compress-documentation 'copy-wine32-manpage
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out")))
@@ -304,7 +341,15 @@ integrate Windows applications into your desktop.")
     (version %wine-devel-version)
     (source
      (wine-source version
-                  "19lyr3iw79i08wxl2mda7ps0xkhiypfirbd1yaggqwrlrx4jymr4"))))
+                  "19lyr3iw79i08wxl2mda7ps0xkhiypfirbd1yaggqwrlrx4jymr4"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments wine)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (replace 'install-mono
+              #$(install-wine-mono
+                 "9.2.0"
+                 "0myp1hz6dd1zqikx4phc436v64vf95jphv2bi20wacjzabz5vcsr"))))))))
 
 (define-public wine64-devel
   (package
@@ -320,6 +365,10 @@ integrate Windows applications into your desktop.")
      (substitute-keyword-arguments (package-arguments wine64)
        ((#:phases phases)
         #~(modify-phases #$phases
+            (replace 'install-mono
+              #$(install-wine-mono
+                 "9.2.0"
+                 "0myp1hz6dd1zqikx4phc436v64vf95jphv2bi20wacjzabz5vcsr"))
             (replace 'copy-wine32-manpage
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out")))
@@ -434,3 +483,50 @@ integrated into the main branch.")
     (synopsis "Implementation of the Windows API (staging branch, WoW64
 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
+
+(define (make-wine-mono version hash)
+  (package
+    (name "wine-mono")
+    (version version)
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.winehq.org/wine/wine-mono/"
+                           version "/wine-mono-" version "-x86.tar.xz"))
+       (sha256
+        (base32 hash))))
+    (build-system copy-build-system)
+    (home-page "https://wiki.winehq.org/Mono")
+    (synopsis "Wine's built-in replacement for Microsoft's .NET Framework")
+    (description "Mono is an open-source and cross-platform implementation of
+the .NET Framework.  Wine Mono is a fork of Mono that Wine uses to run .NET
+Framework applications.")
+    (license (list license:gpl2+ license:lgpl2.1 license:expat))
+    (supported-systems '("i686-linux" "x86_64-linux"))))
+
+(define (make-wine-gecko bits version hash)
+  (package
+    (name (match bits
+            ('32 "wine-gecko32")
+            ('64 "wine-gecko64")))
+    (version version)
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.winehq.org/wine/wine-gecko/"
+                           version "/wine-gecko-" version "-"
+                           (match bits
+                             ('32 "x86")
+                             ('64 "x86_64"))
+                           ".tar.xz"))
+       (sha256
+        (base32 hash))))
+    (build-system copy-build-system)
+    (home-page "https://wiki.winehq.org/Gecko")
+    (synopsis "Wine's built-in replacement for Microsoft's Internet Explorer")
+    (description "Wine implements its own version of Internet Explorer. The
+implementation is based on a custom version of Mozilla's Gecko Layout Engine.")
+    (license license:mpl2.0)
+    (supported-systems (list (match bits
+                               ('32 "i686-linux")
+                               ('64 "x86_64-linux"))))))
