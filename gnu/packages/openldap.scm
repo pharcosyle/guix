@@ -69,7 +69,7 @@
 (define-public openldap
   (package
     (name "openldap")
-    (version "2.6.4")
+    (version "2.6.8")
     (source (origin
               (method url-fetch)
               ;; See <http://www.openldap.org/software/download/> for a list of
@@ -85,13 +85,12 @@
                           "openldap-release/openldap-" version ".tgz")))
               (sha256
                (base32
-                "1489li52sjxm1f97v927jxaxzfk6v9sa32ixrw30qhvq07jh85ym"))))
+                "0kiwdilry0892x03bbgj8pazhzmsvi12j4va7jqf6fsfx4ir75j8"))))
     (build-system gnu-build-system)
-    (inputs (list bdb-5.3 cyrus-sasl gnutls libgcrypt zlib))
-    (native-inputs (list libtool groff bdb-5.3))
+    (inputs (list cyrus-sasl gnutls libgcrypt libsodium))
+    (native-inputs (list libtool groff))
     (arguments
      (list
-      #:tests? #f
       #:configure-flags
       #~(list "--disable-static"
               #$@(if (%current-target-system)
@@ -103,6 +102,11 @@
       #~(list "STRIP=")
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'use-absolute-file-names
+            (lambda* (#:key native-inputs inputs #:allow-other-keys)
+              (substitute* "tests/scripts/all"
+                (("/bin/rm") (search-input-file (or native-inputs inputs)
+                                                "bin/rm")))))
           #$@(if (%current-target-system)
                  '((add-before 'configure 'fix-cross-gcc
                      (lambda* (#:key target #:allow-other-keys)
