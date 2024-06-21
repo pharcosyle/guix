@@ -56,7 +56,6 @@
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
-  #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -94,7 +93,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.47")
+    (version "1.49")
     (source
      (origin
       (method url-fetch)
@@ -102,7 +101,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1nwvpg5inpjzbq7r6wqsgmwcnfqyahcw9hi8discqvmrcq4nfg4y"))))
+        "1ab33h9nglvxp17h5pciq3ga4sg66wpzn1jlig0apx6v753daycb"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -181,7 +180,7 @@ Daemon and possibly more in the future.")
      ;; Needed here for the 'gpg-error' program.
      `(("libgpg-error-native" ,libgpg-error)))
     (arguments
-     ;; The '--with-gpg-error-prefix' argument is needed because otherwise
+     ;; The '--with-libgpg-error-prefix' argument is needed because otherwise
      ;; 'configure' uses 'gpg-error-config' to determine the '-L' flag, and
      ;; the 'gpg-error-config' it runs is the native one---i.e., the wrong one.
      `(#:configure-flags
@@ -223,7 +222,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.6")
+    (version "2.5.7")
     (source
      (origin
       (method url-fetch)
@@ -231,7 +230,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "09pllidbv01km8qrls21dcz1qwa22ydqyy1r9r79152kilhjgzg9"))))
+        "0xpvd9z4rjg9h8r5kafqclykv1sy235574a7a0p8m0r7zhghh0q1"))))
     (build-system gnu-build-system)
     (arguments (if (%current-target-system)
                    (list #:configure-flags
@@ -256,7 +255,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.6.5")
+    (version "1.6.6")
     (source
      (origin
       (method url-fetch)
@@ -265,7 +264,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "05kd5bpnc10lmm31yifvx6j93gdsa3brhgvmk1wji6acay664r55"))))
+        "1976ik89q334g5i7v5vkdzl3xp6zfdy9bi6072436n8m44yh7v2x"))))
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error))
@@ -274,7 +273,7 @@ provided.")
        (list ,@(if (%current-target-system)
                    '("CC_FOR_BUILD=gcc")
                    '())
-             (string-append "--with-gpg-error-prefix="
+             (string-append "--with-libgpg-error-prefix="
                             (assoc-ref %build-inputs "libgpg-error")))))
     (home-page "https://www.gnupg.org")
     (synopsis "CMS and X.509 access library")
@@ -289,13 +288,13 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public npth
   (package
     (name "npth")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnupg/npth/npth-" version ".tar.bz2"))
        (sha256
-        (base32 "1lg2lkdd3z1s3rpyf88786l243adrzyk9p4q8z9n41ygmpcsp4qk"))))
+        (base32 "01dd2iwh4x5adbg5z57kqcgbgcq2yg5zq4nk50xy6p5p6xlzb2c5"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnupg.org")
     (synopsis "Non-preemptive thread library")
@@ -313,7 +312,7 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.4.4")
+    (version "2.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
@@ -321,7 +320,7 @@ compatible to GNU Pth.")
               (patches (search-patches "gnupg-default-pinentry.patch"))
               (sha256
                (base32
-                "1ijvx1dk7zr4vwippnwpb3ln2qicv3mqg8v7rs47dylhr8bf1sv7"))))
+                "0xs2yjb2yy39r2vvq57achznqhwpmx2dhd3d6df67cbcs1spv3zn"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
