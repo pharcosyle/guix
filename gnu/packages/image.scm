@@ -735,7 +735,7 @@ extracting icontainer icon files.")
           #~(list (string-append "--with-docdir=" #$output:doc "/share/doc/"
                                  #$name "-" #$(package-version this-package))
                 "--disable-static")))
-   (inputs
+   (propagated-inputs
     (list libjpeg-turbo xz zlib))
    (synopsis "Library for handling TIFF files")
    (description
