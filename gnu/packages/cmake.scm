@@ -166,7 +166,7 @@ using the CMake build system.")
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
-    (version "3.26.3")
+    (version "3.29.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmake.org/files/v"
@@ -174,8 +174,7 @@ using the CMake build system.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "0ngny20mg4icwp9haag2hgf6srmc51j0v924nly1d7ah2y9d7n5v"))
-              (patches (search-patches "cmake-curl-certificates-3.24.patch"))))
+                "1jxw72i1crv3h6rff4vkamq1bmcx31yy5magjl2am76l90afwai5"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -243,8 +242,6 @@ using the CMake build system.")
      (list (search-path-specification
             (variable "CMAKE_PREFIX_PATH")
             (files '("")))
-           ;; "cmake-curl-certificates.patch" changes CMake to honor 'SSL_CERT_DIR'
-           ;; and 'SSL_CERT_FILE', hence these search path entries.
            $SSL_CERT_DIR
            $SSL_CERT_FILE))
     (home-page "https://cmake.org/")
@@ -348,23 +345,6 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake-minimal)
     (name "cmake")
-    (version "3.26.3")
-    (source (origin
-              (inherit (package-source cmake-minimal))
-              (method url-fetch)
-              (uri (string-append "https://cmake.org/files/v"
-                                  (version-major+minor version)
-                                  "/cmake-" version ".tar.gz"))
-              (snippet (match (origin-snippet (package-source cmake-minimal))
-                         (('begin ('define 'preserved-files ('quote x))
-                                  rest ...)
-                          `(begin (define preserved-files
-                                    ',(cons "Utilities/cmelf" x))
-                                  ,@rest))))
-              (sha256
-               (base32
-                "0ngny20mg4icwp9haag2hgf6srmc51j0v924nly1d7ah2y9d7n5v"))
-              (patches (search-patches "cmake-curl-certificates-3.24.patch"))))
     (outputs '("out" "doc"))
     (arguments
      (substitute-keyword-arguments (package-arguments cmake-minimal)
@@ -386,6 +366,7 @@ and workspaces that can be used in the compiler environment of your choice.")
                                        "/share/vim/vimfiles/pack/guix/start/cmake")
                         "-DCMAKE_INFO_DIR=share/info"
                         "-DCMAKE_MAN_DIR=share/man")
+                  ;; (delete "-DCMake_ENABLE_DEBUGGER=OFF" #$flags)
                   #$flags))
        ((#:phases phases)
         #~(modify-phases #$phases
@@ -401,7 +382,14 @@ and workspaces that can be used in the compiler environment of your choice.")
                   (delete-file-recursively (string-append #$output html)))))))))
     (inputs
      (modify-inputs (package-inputs cmake-minimal)
-       (prepend ncurses)))              ;required for ccmake
+       (prepend
+        ;; There's some sort of Guile weirdness where this module can't require
+        ;; from the debug packages module where 'cppdap' lives. Note this isn't
+        ;; (shouldn't be?) a circular package dependency since although cppdap
+        ;; uses cmake to build the cmake-build-system depends on cmake-minimal,
+        ;; not this package.
+        ;; cppdap
+        ncurses)))              ;required for ccmake
     ;; Extra inputs required to build the documentation.
     (native-inputs
      (modify-inputs (package-native-inputs cmake-minimal)
