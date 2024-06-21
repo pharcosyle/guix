@@ -1392,14 +1392,14 @@ X11-system or any other graphical user interface.")
 (define-public teckit
   (package
     (name "teckit")
-    (version "2.5.11")                  ; signed by key 0xC9183BEA0288CDEE
+    (version "2.5.12")                  ; signed by key 0xC9183BEA0288CDEE
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/teckit/releases/"
                            "download/v" version "/teckit-" version ".tar.gz"))
        (sha256
-        (base32 "1m2fc7w80gs9brwk98ykdvn61cb8fy49kf38hxpdv642zf3q9gdf"))))
+        (base32 "0zvfbd2jmqahrvpqi0kmj8i18gsd64mskd06g9xl79lynxdhxwby"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
