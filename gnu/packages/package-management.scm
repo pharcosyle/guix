@@ -1982,7 +1982,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2024.4")
+    (version "2024.6")
     (source
      (origin
        (method url-fetch)
@@ -1990,39 +1990,46 @@ for packaging and deployment of cross-compiled Windows applications.")
              "https://github.com/ostreedev/ostree/releases/download/v"
              (version-major+minor version) "/libostree-" version ".tar.xz"))
        (sha256
-        (base32 "1jwzkmccca2rrd2gnknzryymxck64x63x4hd7qvwffik4441kjb3"))))
+        (base32 "13w69xcpmajgb4n3wy77z4dppp8bljnj4hvjy7r1593sd5bchqcb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags (list "--enable-gtk-doc"
+                                "--with-curl")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
            (lambda _
              ;; Don't try to use the non-existing '/var/tmp' as test
              ;; directory.
              (setenv "TEST_TMPDIR" (getenv "TMPDIR")))))
-       ;; XXX: fails with:
-       ;;     tap-driver.sh: missing test plan
-       ;;     tap-driver.sh: internal error getting exit status
-       ;;     tap-driver.sh: fatal: I/O or internal error
+       ;; XXX: Many tests fail with an unmet locale requirement, which seems
+       ;; fixable, but a smattering of others fail for various (likely
+       ;; build-environment related) reasons. Ideally suss them out.
        #:tests? #f))
     (native-inputs
-     (list attr ; for tests
-           bison
+     (list bison
            `(,glib "bin") ; for 'glib-mkenums'
            gobject-introspection
+           gtk-doc/stable
            pkg-config
-           libxslt))
+           libxslt
+
+           ;; For tests.
+           attr
+           libsoup-minimal)) ; "Currently using libcurl requires soup for
+                             ; trivial-httpd for tests."
     (inputs
      (list avahi
-           docbook-xml
+           curl
+           docbook-xml-4.2
+           docbook-xml-4.3
            docbook-xsl
            e2fsprogs
            fuse
            glib
            gpgme
            libarchive
-           libsoup-minimal
-           util-linux))
+           util-linux)) ; For 'libmount'.
     (home-page "https://ostreedev.github.io/ostree")
     (synopsis "Operating system and container binary deployment and upgrades")
     (description
