@@ -7132,7 +7132,7 @@ DAV, and others.")
 (define-public gusb-minimal
   (package
     (name "gusb-minimal")
-    (version "0.4.8")
+    (version "0.4.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7141,7 +7141,7 @@ DAV, and others.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zd0wvwansr9dfpl6qcs0691vnzaj1hdzzyxj4lcd1wfkgiv25f6"))))
+                "1sr4d1jgn6vr7zs6dwp2v63qmq1kdxqqv6h6r7lf8x9pnws0y8m6"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f ; Tests try to access USB.
