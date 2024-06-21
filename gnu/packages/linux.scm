@@ -2316,6 +2316,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                      (("^(exec_)?prefix=.*") "")))))))
     (inputs
      (list file                         ;for libmagic
+           libxcrypt                    ;for sulogin
            ncurses
            zlib))
     (native-inputs
