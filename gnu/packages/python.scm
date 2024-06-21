@@ -656,7 +656,7 @@ def contents() -> str:
 
 (define-public python-3.12
   (package
-    (name "python-next")
+    (name "python")
     (version "3.12.2")
     (source
      (origin
@@ -1041,7 +1041,7 @@ data types.")
 (define-public python-next python-3.12)
 
 ;; Current 3.x version.
-(define-public python-3 python-3.11)
+(define-public python-3 python-3.12)
 
 ;; Current major version.
 (define-public python python-3)
