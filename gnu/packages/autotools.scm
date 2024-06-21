@@ -47,10 +47,10 @@
   #:use-module (ice-9 match)
   #:export (autoconf-wrapper))
 
-(define-public autoconf-2.69
+(define-public autoconf
   (package
     (name "autoconf")
-    (version "2.69")
+    (version "2.72")
     (source
      (origin
        (method url-fetch)
@@ -58,7 +58,7 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "113nlmidxy9kjr45kg9x3ngar4951mvag1js2a3j8nxcz34wxsv4"))))
+         "0niz4852fgyavfh3gr4h4kzalk01nk70v6vfsja6r3ap349mr25s"))))
     (build-system gnu-build-system)
     (inputs
      (list bash-minimal m4 perl))
@@ -66,11 +66,20 @@
      (list perl m4))
     (arguments
      (list
-      ;; XXX: testsuite: 209 and 279 failed.  The latter is an impurity.  It
-      ;; should use our own "cpp" instead of "/lib/cpp".
+      ;; FIXME: To run the test suite, fix all the instances where scripts
+      ;; generates "#! /bin/sh" shebangs.
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'check 'prepare-tests
+            (lambda _
+              (for-each patch-shebang
+                        (append (find-files "tests"
+                                            (lambda (file stat)
+                                              (executable-file? file)))
+                                (find-files "bin"
+                                            (lambda (file stat)
+                                              (executable-file? file)))))))
           #$@(if (%current-target-system)
                  #~((add-after 'install 'patch-non-shebang-references
                       (lambda* (#:key build inputs #:allow-other-keys)
@@ -112,10 +121,10 @@ scripts are self-contained and portable, freeing the user from needing to
 know anything about Autoconf or M4.")
     (license gpl3+))) ; some files are under GPLv2+
 
-(define-public autoconf-2.71
+(define-public autoconf-2.69
   (package
-    (inherit autoconf-2.69)
-    (version "2.72")
+    (inherit autoconf)
+    (version "2.69")
     (source
      (origin
        (method url-fetch)
@@ -123,26 +132,13 @@ know anything about Autoconf or M4.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0niz4852fgyavfh3gr4h4kzalk01nk70v6vfsja6r3ap349mr25s"))))
+         "113nlmidxy9kjr45kg9x3ngar4951mvag1js2a3j8nxcz34wxsv4"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments autoconf-2.69)
+     (substitute-keyword-arguments (package-arguments autoconf)
        ((#:tests? _ #f)
-        ;; FIXME: To run the test suite, fix all the instances where scripts
-        ;; generates "#! /bin/sh" shebangs.
-        #f)
-       ((#:phases phases #~%standard-phases)
-        #~(modify-phases #$phases
-            (add-before 'check 'prepare-tests
-              (lambda _
-                (for-each patch-shebang
-                          (append (find-files "tests"
-                                              (lambda (file stat)
-                                                (executable-file? file)))
-                                  (find-files "bin"
-                                              (lambda (file stat)
-                                                (executable-file? file)))))))))))))
-
-(define-public autoconf autoconf-2.71)
+        ;; XXX: testsuite: 209 and 279 failed.  The latter is an impurity.  It
+        ;; should use our own "cpp" instead of "/lib/cpp".
+        #f)))))
 
 (define-public autoconf-2.68
   (package (inherit autoconf)
@@ -196,7 +192,6 @@ know anything about Autoconf or M4.")
                (invoke bash "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--build=" build))))))))))
-
 
 (define (make-autoconf-wrapper autoconf)
   "Return a wrapper around AUTOCONF that generates `configure' scripts that
