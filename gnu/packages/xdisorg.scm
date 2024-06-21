@@ -513,14 +513,16 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "1.6.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0awwz5pg9x5bj0d7dpg4a7bd4gl6k55mlpxwb12534fkrpn19p0f"))))
+                "0ixjcdld7pswh2921v52r8h7alrg1q2bgakbkjpmbd542052yy35"))
+              (patches
+               (search-patches "libxkbcommon-disable-x11comp-test.patch"))))
     (outputs '("out" "doc"))
     (build-system meson-build-system)
     (inputs
@@ -534,7 +536,8 @@ avoiding password prompts when X11 forwarding has already been setup.")
      (append
        (list bison doxygen pkg-config python
              ;; wayland-scanner is required at build time.
-             wayland)
+             wayland
+             xorg-server-for-tests)
        (if (%current-target-system)
          (list pkg-config-for-build)
          '())))
@@ -546,7 +549,8 @@ avoiding password prompts when X11 forwarding has already been setup.")
                               %build-inputs "share/X11/xkb"))
               (string-append "-Dx-locale-root="
                              (search-input-directory
-                              %build-inputs "share/X11/locale")))
+                              %build-inputs "share/X11/locale"))
+              "-Denable-docs=true")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'install 'move-doc
