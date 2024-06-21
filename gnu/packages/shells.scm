@@ -483,18 +483,32 @@ history mechanism, job control and a C-like syntax.")
   (package
     (name "zsh")
     (version "5.9")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append
-                           "https://www.zsh.org/pub/zsh-" version
-                           ".tar.xz")
-                         (string-append
-                           "https://www.zsh.org/pub/old/zsh-" version
-                           ".tar.xz")))
-              (sha256
-               (base32
-                "1mdc8lnq8qxq1ahxp8610n799pd7a9kqg3liy7xq2pjvvp71x3cv"))
-              (patches (search-patches "zsh-egrep-failing-test.patch"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append
+                   "https://www.zsh.org/pub/zsh-" version
+                   ".tar.xz")
+                  (string-append
+                   "https://www.zsh.org/pub/old/zsh-" version
+                   ".tar.xz")))
+       (sha256
+        (base32
+         "1mdc8lnq8qxq1ahxp8610n799pd7a9kqg3liy7xq2pjvvp71x3cv"))
+       (patches
+        (append
+         (search-patches "zsh-egrep-failing-test.patch")
+         (list
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gitlab.archlinux.org/archlinux/packaging/packages"
+                  "/zsh/-/raw/3e74884436fc21f9e45846babbfb6116a5d16844"
+                  "/0004-pcre2.patch"))
+            (file-name (string-append name "-port-to-pcre2.patch"))
+            (sha256
+             (base32
+              "065xn1skmym861r2487952a8p1yy8jgzr4wyn6hlllg0bd6j2s7a"))))))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  `("--with-tcsetpgrp"
@@ -541,7 +555,7 @@ history mechanism, job control and a C-like syntax.")
                    (add-after 'build 'install-info
                      (lambda _ (invoke "make" "install.info"))))))
     (native-inputs (list autoconf texinfo))
-    (inputs (list ncurses pcre perl))
+    (inputs (list ncurses pcre2 perl))
     (synopsis "Powerful shell for interactive use and scripting")
     (description "The Z shell (zsh) is a Unix shell that can be used
 as an interactive login shell and as a powerful command interpreter
