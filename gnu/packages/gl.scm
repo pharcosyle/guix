@@ -279,21 +279,22 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "24.0.4")
+    (version "24.1.0")
     (source
-     (origin
-       (method url-fetch)
-       (uri (list (string-append "https://archive.mesa3d.org/"
-                                 "mesa-" version ".tar.xz")
-                  (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
-                                 "mesa-" version ".tar.xz")))
-       (sha256
-        (base32
-         "1w25lwdrb0ffrx2fjk9izbvpcgf9ypfc7v32zybwvjwql0qbvzlh"))))
+      (origin
+        (method url-fetch)
+        (uri (list (string-append "https://archive.mesa3d.org/"
+                                  "mesa-" version ".tar.xz")
+                   (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                  "mesa-" version ".tar.xz")))
+        (sha256
+         (base32
+          "12zphdvq65ndqyqc81086wdb79g4571srvkf4wf6p024jb3wismp"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; The following are in the Requires.private field of gl.pc.
-     (list libdrm
+     (list libclc
+           libdrm
            libvdpau
            libx11
            libxdamage
