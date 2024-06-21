@@ -1461,7 +1461,7 @@ language bindings to VIGRA.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
      (origin
        ;; No tarballs are provided for >0.6.1.
@@ -1472,7 +1472,7 @@ language bindings to VIGRA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1x37795gpc63g1ma9kqw4q3dikwhrjklixqzjjsj6viqksa19z41"))))
+         "0fp9nxxddhxvikjn51r46sjrc3iiggr7mivabfgz02426skp0zll"))))
     (build-system gnu-build-system)
     (inputs
      (list giflib
