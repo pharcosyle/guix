@@ -3459,7 +3459,7 @@ rules is done with the @code{auditctl} utility.")
      (list bash-minimal                 ;for wrap-program
            libpcap
            lua
-           openssl-3.0
+           openssl-3
            pcre
            zlib                         ; for NSE compression
            python-2))                   ; for ndiff
