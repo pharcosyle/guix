@@ -4793,8 +4793,7 @@ and RDP protocols.")
            python
            vala))
     (inputs
-     (list gtk+
-           dbus))
+     (list dbus))
     (propagated-inputs
      ;; In Requires of dconf.pc.
      (list glib))
