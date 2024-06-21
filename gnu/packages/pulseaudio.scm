@@ -170,7 +170,7 @@ rates.")
 (define-public pulseaudio-minimal
   (package
     (name "pulseaudio-minimal")
-    (version "16.1")
+    (version "17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -178,10 +178,32 @@ rates.")
                     "pulseaudio-" version ".tar.xz"))
               (sha256
                (base32
-                "1r2aa0g7al9jhrrbrnih6i3bfznd73kkbafrbzwpjyflj7735vwf"))
-              (patches (search-patches
-                        "pulseaudio-fix-mult-test.patch"
-                        "pulseaudio-longer-test-timeout.patch"))))
+                "1dc7xdfbn5rknwsvv5m2ijfwnqrap208liwyhiykjghsczb98dq5"))
+              (patches
+               (append
+                (search-patches "pulseaudio-fix-mult-test.patch"
+                                "pulseaudio-longer-test-timeout.patch")
+                ;; Fix crashes with some UCM devices, see
+                ;; https://gitlab.archlinux.org/archlinux/packaging/packages/pulseaudio/-/issues/4
+                (list
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "https://gitlab.freedesktop.org/pulseaudio/pulseaudio"
+                         "/-/commit/f5cacd94abcc47003bd88ad7ca1450de649ffb15.patch"))
+                   (file-name "pulseaudio-ucm-fix-1.patch")
+                   (sha256
+                    (base32
+                     "18gpfxq2gamhh48ygggn24nn33akshpcp72ziflfxrb76cdvnd5i")))
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "https://gitlab.freedesktop.org/pulseaudio/pulseaudio"
+                         "/-/commit/ed3d4f0837f670e5e5afb1afa5bcfc8ff05d3407.patch"))
+                   (file-name "pulseaudio-ucm-fix-2.patch")
+                   (sha256
+                    (base32
+                     "04864pmvwhaamlwfsa4dchsbga0j74a6scwxz9300pwbqq9w9g5c"))))))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -196,7 +218,8 @@ rates.")
               "-Ddoxygen=false"
               "-Dman=false"
               "-Dbashcompletiondir=no"
-              "-Dzshcompletiondir=no")
+              "-Dzshcompletiondir=no"
+              "-Dconsolekit=disabled")
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'check 'pre-check
@@ -250,15 +273,6 @@ sound server.")
   (package
     (inherit pulseaudio-minimal)
     (name "pulseaudio")
-    (source (origin
-              (inherit (package-source pulseaudio-minimal))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Disable console-kit support by default since it's deprecated
-               ;; anyway.
-               '(substitute* "src/daemon/default.pa.in"
-                 (("load-module module-console-kit" all)
-                  (string-append "#" all "\n"))))))
     (arguments
      (substitute-keyword-arguments (package-arguments pulseaudio-minimal)
        ((#:configure-flags configure-flags)
