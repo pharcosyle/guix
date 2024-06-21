@@ -1376,7 +1376,7 @@ configuration files.")
 (define-public libxmu
   (package
     (name "libxmu")
-    (version "1.1.4")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
@@ -1386,7 +1386,7 @@ configuration files.")
                ".tar.xz"))
         (sha256
           (base32
-            "0i42fng5gizablqziib25ipcwm5830jprl955ibq54rykjmy6391"))))
+            "1cp82iz7yki63iykvb3alwy4nwy01k2axi5rqpyfafca4j9pgcpw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
