@@ -155,7 +155,7 @@
 
              guix))
       (native-inputs
-       (list autoconf-2.71
+       (list autoconf
              automake
              pkg-config
              texinfo
