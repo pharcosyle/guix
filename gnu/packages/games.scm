@@ -963,8 +963,7 @@ Quizzes: arithmetic and quiz.")
                 "0mk03l120scas4dcn6xccnhslnwmcx2blshbf925z06yk7rkzias"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
-       #:make-flags (list "CFLAGS=-DNCURSES_INTERNALS")))
+     `(#:tests? #f))
     (inputs (list ncurses))
     (synopsis "Original rogue game")
     (description
