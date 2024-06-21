@@ -1580,7 +1580,7 @@ quality and performance.")
 (define-public libva-minimal
   (package
     (name "libva-minimal")
-    (version "2.20.0")
+    (version "2.21.0")
     (source
      (origin
        (method git-fetch)
@@ -1590,7 +1590,7 @@ quality and performance.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ysqjd8v76fmvnn3zzjz1n0w3g6xl7w2r6cw3lqjzggav352rl0h"))))
+         "122q6zll2q6rxsb5akc5knn1sa60jrwb6cckqlgj65fq2sgzklaz"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1649,7 +1649,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public libva-utils
   (package
     (name "libva-utils")
-    (version "2.20.1")
+    (version "2.21.0")
     (source
      (origin
        (method git-fetch)
@@ -1659,7 +1659,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nv71b8vd2h213ndmzk0cplbcymb4imj38kyhd29c1yfm629lzk5"))))
+         "10hvdx7x6ywd8vhxak094rgaj6q7vi7c0wixm9v2lyi05gjb237q"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config))
