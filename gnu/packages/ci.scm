@@ -155,7 +155,7 @@
 
              guix))
       (native-inputs
-       (list autoconf-2.71 automake pkg-config texinfo ephemeralpg))
+       (list autoconf automake pkg-config texinfo ephemeralpg))
       (native-search-paths
        ;; For HTTPS access, Cuirass itself honors these variables, with the
        ;; same semantics as Git and OpenSSL (respectively).
