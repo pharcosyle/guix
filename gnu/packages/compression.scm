@@ -657,14 +657,14 @@ some compression ratio).")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.23")
+    (version "1.24.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "03985xc696210irdzv475mlvf30ylahni3msanfz4ppivm3w14j7"))))
+               "0qmih6jfyp8c14g3qzhndmls3c28k9ifnxn3jv27kx050rmcpj9h"))))
     (build-system gnu-build-system)
     (arguments
      ;; The configure script doesn't recognise the --build or --host
@@ -684,14 +684,14 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
 (define-public lziprecover
   (package
     (name "lziprecover")
-    (version "1.23")
+    (version "1.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/lzip/lziprecover/"
                                   "lziprecover-" version ".tar.gz"))
               (sha256
                (base32
-                "0wmmyi03fv2lflsir5ldrsv04q57k3hmlqajzb1m3p86gwbh967j"))))
+                "13s51pfvq8z8dmgc463qzscbn2zyr85mhlin99ib4bp9xzx9qs8x"))))
     (build-system gnu-build-system)
     (arguments
      ;; The configure script doesn't recognise the --build or --host
