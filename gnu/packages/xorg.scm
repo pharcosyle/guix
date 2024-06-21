@@ -240,7 +240,7 @@ directory tree.")
         (base32 "0fjjn1z0cbsmhxkms93w73j2jbzf9f3xgbnjvnisl3rk0icvwq5w"))))
     (build-system gnu-build-system)
     (inputs
-      (list libxfont2))
+      (list xorgproto))
     (native-inputs
        (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -3856,7 +3856,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.38")
+    (version "2.42")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3864,7 +3864,7 @@ extension to the X11 protocol.  It includes:
                     "xkeyboard-config-" version ".tar.xz"))
               (sha256
                (base32
-                "0wn8asnbz111194ksi2mysa6ikn4kqgd9rpfydl8icc6mcdsk406"))))
+                "01q8gs7lnx9d7iz29pal7a3whz7njmgjcpzhy82wa7zhq6znxc56"))))
     (build-system meson-build-system)
     (inputs (list libx11 xkbcomp-intermediate))
     (native-inputs (list gettext-minimal libxslt perl pkg-config python))
