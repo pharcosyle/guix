@@ -364,7 +364,7 @@ svga,swrast,virgl,zink")))
          ;; Explicitly enable Vulkan on some architectures.
          #$@(cond
              ((or (target-x86-32?) (target-x86-64?))
-              '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast"))
+              '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast,nouveau"))
              ((or (target-ppc64le?) (target-ppc32?))
               '("-Dvulkan-drivers=amd,swrast"))
              ((target-aarch64?)
