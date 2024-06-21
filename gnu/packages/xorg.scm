@@ -151,21 +151,21 @@
   ;; License: x11, see COPYING
   (origin
     (method url-fetch)
-    (uri "mirror://xorg/individual/util/xorg-cf-files-1.0.6.tar.bz2")
+    (uri "mirror://xorg/individual/util/xorg-cf-files-1.0.8.tar.xz")
     (sha256
-     (base32 "0kckng0zs1viz0nr84rdl6dswgip7ndn4pnh5nfwnviwpsfmmksd"))))
+     (base32 "1f8primgb6qw3zy7plbsj4a1kdhdqb04xpdys520zaygxxfra23l"))))
 
 (define-public imake
   (package
     (name "imake")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://xorg/individual/util/imake-"
                           version ".tar.xz"))
       (sha256
-       (base32 "10wgw3l0rsnvc2191awyg5j24n3g552xgc671qr5vnbliwkrvpkj"))))
+       (base32 "1xgcsamfij22ggc4p8anvvihwyf4adg6gjdd6v7m9cypm37cppkm"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -206,7 +206,7 @@ autotools system.")
 (define-public lndir
   (package
     (name "lndir")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -214,7 +214,7 @@ autotools system.")
                     "lndir-" version ".tar.xz"))
               (sha256
                (base32
-                "11syg5hx3f7m1d2p7zw717lryk819h6wk8h4vmapfdxvsflkfd1y"))))
+                "1nsd23kz6iqxfcis3432zq01i54n98b94m2gcsay1k3mamx5fr9v"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -229,20 +229,20 @@ directory tree.")
 (define-public bdftopcf
   (package
     (name "bdftopcf")
-    (version "1.1")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/app/bdftopcf-"
+               "mirror://xorg/individual/util/bdftopcf-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "18hiscgljrz10zjcws25bis32nyrg3hzgmiq6scrh7izqmgz0kab"))))
+            "026rzs92h9jsc7r0kvvyvwhm22q0805gp38rs14x6ghg7kam7j8i"))))
     (build-system gnu-build-system)
     (inputs
-      (list libxfont2))
+      (list xorgproto))
     (native-inputs
        (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -256,14 +256,14 @@ which can be read by any architecture.")
 (define-public xorgproto
   (package
     (name "xorgproto")
-    (version "2023.2")
+    (version "2024.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/proto"
                                   "/xorgproto-" version ".tar.xz"))
               (sha256
                (base32
-                "0b4c27aq25w1fccks49p020avf9jzh75kaq5qwnww51bp1yvq7xn"))))
+                "0nfbbi4j130m2gxzp20hp642xizbbl68jpbzahiq8nw183yja8ip"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; To get util-macros in (almost?) all package inputs.
@@ -1125,17 +1125,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfontenc
   (package
     (name "libfontenc")
-    (version "1.1.4")
+    (version "1.1.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libfontenc-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0y90170dp8wsidr1dzza0grxr1lfh30ji3b5vkjz4j6x1n0wxz1c"))))
+            "1ihlznj4m49jn1887cr86qqhrrlghvbfj7bbh230svi30pac60kv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1319,7 +1319,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxdmcp
   (package
     (name "libxdmcp")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
@@ -1329,7 +1329,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.xz"))
         (sha256
           (base32
-            "005dsry6nfqrv32i7gbqn7mxnb2m3pc8fz9lxj2b9w7q2z1mrkid"))))
+            "1312l8x3asib77wgf123w3nbabnky61mb6pnmmqapbf350l259fq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1581,7 +1581,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public makedepend
   (package
     (name "makedepend")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -1591,7 +1591,7 @@ input from UTF-8 into the locale's encoding.")
                ".tar.xz"))
         (sha256
           (base32
-            "0nxs5ibrghym3msbnh0b8i3yd3xgqandmrkc500jm6qq4n06zcmz"))))
+            "1m1dg32z22fw9shg0wsxw7dvdcnfm16gq9qxpkfxixpzb6vdxl4j"))))
     (build-system gnu-build-system)
     (inputs
       (list xorgproto))
@@ -1605,7 +1605,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public mkfontscale
   (package
     (name "mkfontscale")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -1614,7 +1614,7 @@ input from UTF-8 into the locale's encoding.")
                version
                ".tar.xz"))
         (sha256
-          (base32 "1i6mw97r2s1rb6spjj8fbdsgw6197smaqq2haqgnwhz73xdzpqwa"))))
+          (base32 "0pp7dyfrrkrqxslk9q8660k0h4swaqlixsnnph2fxb7i8k1ws899"))))
     (build-system gnu-build-system)
     (inputs
       (list zlib xorgproto freetype libfontenc))
@@ -1956,7 +1956,7 @@ management to participate in an X11R6 session.")
 (define-public util-macros
   (package
     (name "util-macros")
-    (version "1.20.0")
+    (version "1.20.1")
     (source
       (origin
         (method url-fetch)
@@ -1966,7 +1966,7 @@ management to participate in an X11R6 session.")
                ".tar.xz"))
         (sha256
           (base32
-            "1nrh8kmbix5pspva6y7h14fj97xdvxqc6fr3zysfswg9vdib51hb"))))
+            "1xffkcqv96vpk5pckisanrvg4w7i9ciqhs6yv7sc12p7vii8yc0b"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (arguments
@@ -2123,17 +2123,17 @@ the same way.")
 (define-public xbitmaps
   (package
     (name "xbitmaps")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/data/xbitmaps-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "1vh73sc13s7w5r6gnc6irca56s7998bja7wgdivkfn8jccawgw5r"))))
+            "0yhgrllia3lbqx9b21w31w4sppx1a9ggrk62hrys2ckqi1aasv5d"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (home-page "https://www.x.org/wiki/")
@@ -2177,7 +2177,7 @@ emulate a TI-30 or an HP-10C.")
 (define-public xcb-proto
   (package
     (name "xcb-proto")
-    (version "1.16.0")
+    (version "1.17.0")
     (source
       (origin
         (method url-fetch)
@@ -2185,7 +2185,7 @@ emulate a TI-30 or an HP-10C.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "06aij66rs8g378wg8swd7b3g73wqrrbbwl8shhnsi29amm41hnm7"))))
+          "130lc8jx43s83496nc8jn47zixjcp4abgsz69pvrjiqg279aq6rc"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config python-minimal-wrapper))
@@ -2258,17 +2258,17 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
 (define-public xcursor-themes
   (package
     (name "xcursor-themes")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/data/xcursor-themes-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "16a96li0s0ggg60v7f6ywxmsrmxdfizcw55ccv7sp4qjfisca7pf"))))
+            "1j3qfga5llp8g702n7mivvdvfjk7agsgnbglbfh99n13i3sfiflm"))))
     (build-system gnu-build-system)
     (inputs
       (list libxcursor xcursorgen))
@@ -3691,17 +3691,17 @@ alternative implementations like XRandR or TwinView.")
 (define-public xinput
   (package
     (name "xinput")
-    (version "1.6.3")
+    (version "1.6.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/app/xinput-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "1vb6xdd1xmk5f7pwc5zcbxfray5sf1vbnscqwf2yl8lv7gfq38im"))))
+            "1j2pf28c54apr56v1fmvprp657n6x4sdrv8f24rx3138cl6x015d"))))
     (build-system gnu-build-system)
     (inputs
       (list libxrender
@@ -3852,7 +3852,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.38")
+    (version "2.42")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3860,7 +3860,7 @@ extension to the X11 protocol.  It includes:
                     "xkeyboard-config-" version ".tar.xz"))
               (sha256
                (base32
-                "0wn8asnbz111194ksi2mysa6ikn4kqgd9rpfydl8icc6mcdsk406"))))
+                "01q8gs7lnx9d7iz29pal7a3whz7njmgjcpzhy82wa7zhq6znxc56"))))
     (build-system meson-build-system)
     (inputs (list libx11 xkbcomp-intermediate))
     (native-inputs (list gettext-minimal libxslt perl pkg-config python))
@@ -4917,17 +4917,17 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.8")
+    (version "1.8.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libXi-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "005sicls6faddkcj449858i9xz1nafy70y26frsk7iv1d9283l9f"))))
+            "19snjrsdib2y2iq8c1zbrp78qy1b6sdmyvif422gg27j2klc1gw9"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))             ;man pages represent 28% of the total
     (arguments
@@ -5034,7 +5034,7 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.16")
+    (version "1.17.0")
     (source
       (origin
         (method url-fetch)
@@ -5042,7 +5042,7 @@ protocol.")
                             "libxcb-" version ".tar.xz"))
         (sha256
           (base32
-           "0w8xf6ff6axvla734lfb2291hrjrqqhn6mqabvdrdwgvl1m5cj23"))))
+           "0mbdkajqhg0j0zjc9a2z1qyv9mca797ihvifc9qyl3vijscvz7jr"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                      ;5.5 MiB of man pages
     (propagated-inputs
@@ -5428,7 +5428,7 @@ Wayland.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.8.7")
+    (version "1.8.9")
     (source
      (origin
        (method url-fetch)
@@ -5436,7 +5436,7 @@ Wayland.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1vlrgrdibp4lr84wgmsdy1ihzaai8bvvqc68npi1m19wir36gwh5"))))
+         "0qijpp9l6hhwwx22hncrzjpmb5ffcakj6pxa5lzgjkhl3l8qz7bp"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ;8 MiB of man pages + XML
@@ -5463,7 +5463,7 @@ Wayland.")
 (define-public libxcursor
   (package
     (name "libxcursor")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
@@ -5471,7 +5471,7 @@ Wayland.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "011195an3w4xld3x0dr534kar1xjf52q96hmf0hgvfhh2rrl7ha6"))))
+         "1vl87819mnhlbnccchysv9nmax4abil5x3cr61x52vn55jyp3l2k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -6686,14 +6686,14 @@ a configuration file reusable by xcursorgen.")
 (define-public gccmakedep
   (package
     (name "gccmakedep")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/util/gccmakedep-"
-                           version ".tar.bz2"))
+                           version ".tar.xz"))
        (sha256
-        (base32 "1r1fpy5ni8chbgx7j5sz0008fpb6vbazpy1nifgdhgijyzqxqxdj"))))
+        (base32 "1di5rxv930nhf5ls07fx04l0lqsakxycplmrx4kc6qzvd63zk22h"))))
     (build-system gnu-build-system)
     (synopsis "Create dependencies in makefiles using 'gcc -M'")
     (description
