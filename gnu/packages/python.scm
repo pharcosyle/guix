@@ -175,9 +175,6 @@
                        "Lib/test/test_shutil.py"
                        "Lib/test/test_socket.py"
                        "Lib/test/test_subprocess.py"))))))
-    (outputs '("out"
-               "tk"                     ;tkinter; adds 50 MiB to the closure
-               "idle"))                 ;programming environment; weighs 5MB
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -418,9 +415,7 @@
            sqlite ; for sqlite extension
            openssl-1.1
            readline
-           zlib
-           tcl
-           tk))                     ; for tkinter
+           zlib))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("sitecustomize.py" ,(local-file (search-auxiliary-file
@@ -684,8 +679,6 @@ def contents() -> str:
                    ;; Delete windows binaries
                    (for-each delete-file
                              (find-files "Lib/distutils/command" "\\.exe$"))))))
-    (outputs '("out" "tk" ;tkinter; adds 50 MiB to the closure
-               "idle")) ;programming environment; weighs 5MB
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1012,9 +1005,7 @@ def contents() -> str:
                   sqlite ;for sqlite extension
                   openssl
                   readline
-                  zlib
-                  tcl
-                  tk)) ;for tkinter
+                  zlib))
     (native-inputs `(("tzdata" ,tzdata-for-tests)
                      ("unzip" ,unzip)
                      ("zip" ,(@ (gnu packages compression) zip))
@@ -1055,13 +1046,9 @@ data types.")
 ;; Current major version.
 (define-public python python-3)
 
-;; Minimal variants of Python, mostly used to break the cycle between Tk and
-;; Python (Tk -> libxcb -> Python.)
-
 (define-public python2-minimal
   (package/inherit python-2
     (name "python2-minimal")
-    (outputs '("out"))
 
     ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
     ;; is invoked upon 'make install'.  'pip' also expects 'ctypes' and thus
@@ -1072,7 +1059,6 @@ data types.")
 (define-public python-minimal
   (package/inherit python
     (name "python-minimal")
-    (outputs '("out"))
 
     ;; Build fails due to missing ctypes without libffi.
     ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
@@ -1104,7 +1090,6 @@ for more information.")))
     (name name)
     (source #f)
     (build-system trivial-build-system)
-    (outputs '("out"))
     (inputs `(("bash" ,bash)))
     (propagated-inputs `(("python" ,python)))
     (arguments
@@ -1151,6 +1136,17 @@ and the unversioned commands available.")))
 
 (define-public python-wrapper (wrap-python3 python))
 (define-public python-minimal-wrapper (wrap-python3 python-minimal))
+
+;; Keep Python with tk dependency seperate to avoid some dependency cycles
+;; through libxcb, meson, and more.
+(define-public python-tkinter
+  (package/inherit python
+    (name "python-minimal")
+    (outputs '("out" "tk" "idle"))
+    (inputs
+     (modify-inputs (package-inputs python)
+       (prepend tcl
+                tk)))))
 
 ;; The Python used in pyproject-build-system.
 (define-public python-sans-pip
