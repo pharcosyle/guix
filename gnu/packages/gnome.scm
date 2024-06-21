@@ -3140,12 +3140,13 @@ configuring CUPS.")
                 (mkdir-p (dirname new))
                 (rename-file old new)))))))
     (propagated-inputs (list gdk-pixbuf glib)) ;in Requires of libnotify.pc.
-    (inputs (list gtk+ libpng))
     (native-inputs
      (list pkg-config
            `(,glib "bin")
            gobject-introspection
 
+           ;; For teests.
+           gtk+
            ;; For the documentation.
            gi-docgen
            gtk-doc/stable
