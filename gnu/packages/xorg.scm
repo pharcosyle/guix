@@ -1175,7 +1175,7 @@ themselves.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.18")
+    (version "0.18.1")
     (source
       (origin
         (method url-fetch)
@@ -1185,7 +1185,7 @@ themselves.")
                ".tar.xz"))
         (sha256
           (base32
-            "1ab2qbksf15jrpzd6x9ncri64d2bnhlw7aajdws58lj9gljv0qal"))))
+            "0xpslrjnfrc1a7y8f8qwnd3wq24ndpj2q77ds12mbnwand239x2a"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags
