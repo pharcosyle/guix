@@ -5356,7 +5356,7 @@ EGLStream families of extensions.")
 (define-public xorg-server-xwayland
   (package
     (name "xorg-server-xwayland")
-    (version "23.2.5")
+    (version "24.1.1")
     (source
      (origin
        (method url-fetch)
@@ -5364,13 +5364,14 @@ EGLStream families of extensions.")
                            "/xserver/xwayland-" version ".tar.xz"))
        (sha256
         (base32
-         "145xykwmyqkaa8zrbn5fnvnff67iral9mc5raamglnbsd3r7zv1k"))))
+         "0chqlm0jfdkvv7qj91d6y458b9srlgx7v9avgxfq0d83n7hbw9bi"))))
     (inputs (list font-dejavu
                   dbus
-                  egl-wayland
                   eudev
                   libfontenc
+                  libdecor
                   libdrm
+                  libei
                   libepoxy
                   libgcrypt
                   libtirpc
@@ -5394,8 +5395,7 @@ EGLStream families of extensions.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Dxwayland_eglstream=true"
-             (string-append "-Dxkb_dir="
+       (list (string-append "-Dxkb_dir="
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb")
              (string-append "-Dxkb_bin_dir="
