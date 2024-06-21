@@ -175,7 +175,7 @@ rates.")
               (method url-fetch)
               (uri (string-append
                     "https://freedesktop.org/software/pulseaudio/releases/"
-                    name "-" version ".tar.xz"))
+                    "pulseaudio-" version ".tar.xz"))
               (sha256
                (base32
                 "1r2aa0g7al9jhrrbrnih6i3bfznd73kkbafrbzwpjyflj7735vwf"))
