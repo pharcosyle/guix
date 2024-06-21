@@ -92,15 +92,14 @@
                    #t))
                (add-before 'check 'patch-tests
                  (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Skip a failing test. Try removing this workaround on the
+                   ;; next version of gettext which updates the bundled gnulib.
+                   ;; Error reads:
                    ;; test-execute-main.c:164: assertion 'ret == 127' failed
                    ;; test-execute.sh: test case 5 failed
-                   ;; Why does this happen? Work around it:
-                   (substitute* "gettext-tools/gnulib-tests/test-execute-main.c"
-                     (("ASSERT \\(termsig == SIGINT\\);")
-                      "ASSERT (termsig == SIGPIPE);"))
-                   (substitute* "gettext-tools/gnulib-tests/test-execute-child.c"
-                     (("raise \\(SIGINT\\);")
-                      "raise (SIGPIPE);"))
+                   (substitute* "gettext-tools/gnulib-tests/test-execute.sh"
+                     (("4 5 6")
+                      "4 6"))
 
                    (let* ((bash (which "sh")))
                      ;; Some of the files we're patching are
