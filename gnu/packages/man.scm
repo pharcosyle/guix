@@ -439,7 +439,7 @@ automatically.")
 (define-public scdoc
   (package
    (name "scdoc")
-   (version "1.11.2")
+   (version "1.11.3")
    (source
     (origin
      (method git-fetch)
@@ -448,7 +448,7 @@ automatically.")
            (commit version)))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "07c2vmdgqifbynm19zjnrk7h102pzrriv73izmx8pmd7b3xl5mfq"))))
+      (base32 "0rwcy0fzsl7i8fp85s6rjjki211wi3wzgcykf678w9gzp62c7cii"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags
