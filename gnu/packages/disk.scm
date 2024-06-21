@@ -1068,7 +1068,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "78")
+    (version "79")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1077,7 +1077,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rhmxjajxxslsikixlf9cdg5vcn42h7zzqkqj5p5pshxch368kn0"))))
+                "1f8c43dcncrvbal0sbv8wmvsk76vwl6z0sv1j3ibq31dj37m2vc0"))))
     (build-system meson-build-system)
     (arguments
      ;; The test suite runs but SKIPs all tests: do not consider this tested!
