@@ -1956,7 +1956,7 @@ accepted as a quirk (ie AMD Vega 10).")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -1965,7 +1965,7 @@ accepted as a quirk (ie AMD Vega 10).")
              version "/Linux-PAM-" version ".tar.xz"))
        (sha256
         (base32
-         "1bb96579nf63npg3smm0z35rncp265vg54hriwp7xrxybd7a7x7z"))
+         "13pgxq7vij82d9q1rxna9z9qvmj237wa5hmzkmqjs1ar05s3r4pq"))
        (patches (search-patches "linux-pam-unix_chkpwd.patch"
                                 "linux-pam-no-setfsuid.patch"))))
 
@@ -1982,31 +1982,7 @@ accepted as a quirk (ie AMD Vega 10).")
       ;; `security'.
       #:configure-flags #~(list (string-append "--includedir="
                                                (assoc-ref %outputs "out")
-                                               "/include/security")
-                                ;; explicit libdir for pkgconfig files
-                                ;; drop with 1.5.3, which fixes
-                                ;; https://github.com/linux-pam/linux-pam/issues/466
-                                (string-append "--libdir="
-                                               (assoc-ref %outputs "out")
-                                               "/lib")
-
-                                ;; XXX: <rpc/rpc.h> is missing from glibc when
-                                ;; cross-compiling, so we have to disable NIS
-                                ;; support altogether.
-                                #$@(if (%current-target-system)
-                                       #~("--disable-nis")
-                                       #~()))
-
-      #:phases (if (target-hurd?)
-                   #~(modify-phases %standard-phases
-                       (add-after 'unpack 'skip-pam-limits
-                         (lambda _
-                           ;; 'pam_limits.c' uses <sys/prctl.h>, which is
-                           ;; Linux-specific.  Skip it on GNU/Hurd.
-                           (substitute* "modules/Makefile.in"
-                             (("pam_limits") "")))))
-                   #~%standard-phases)
-
+                                               "/include/security"))
       ;; XXX: Tests won't run in chroot, presumably because /etc/pam.d
       ;; isn't available.
       #:tests? #f))
