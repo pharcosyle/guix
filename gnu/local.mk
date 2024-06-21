@@ -1637,6 +1637,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvpx-CVE-2023-5217.patch		\
   %D%/packages/patches/libxml2-xpath0-Add-option-xpath0.patch	\
   %D%/packages/patches/libwpd-gcc-compat.patch			\
+  %D%/packages/patches/libxkbcommon-disable-x11comp-test.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
   %D%/packages/patches/lierolibre-is-free-software.patch	\
