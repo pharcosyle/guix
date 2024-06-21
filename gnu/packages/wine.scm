@@ -127,6 +127,7 @@
      (list bison
            flex
            gettext-minimal
+           mingw-w64-i686
            perl
            pkg-config))
     (inputs
@@ -265,6 +266,8 @@ integrate Windows applications into your desktop.")
   (package
     (inherit wine)
     (name "wine64")
+    (native-inputs (modify-inputs (package-native-inputs wine)
+                     (prepend mingw-w64-x86_64)))
     (inputs (modify-inputs (package-inputs wine)
               (prepend wine)))
     (arguments
