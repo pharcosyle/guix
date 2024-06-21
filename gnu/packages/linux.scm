@@ -4225,7 +4225,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "29")
+    (version "31")
     (source (origin
               (method url-fetch)
               (uri
@@ -4233,7 +4233,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "0am54mi5rk72g5q7k6l6f36gw3r9vwgjmyna43ywcjhqmakyx00b"))
+                "100dy3y1i567g15n2x9xqgrianlwc0cc5n18nw0w0wnc8f8999pm"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4249,14 +4249,6 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                            "--disable-test-modules")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-tests
-           (lambda _
-             ;; XXX: These tests need '--sysconfdir=/etc' to pass.
-             (substitute* "Makefile.in"
-               (("testsuite/test-modprobe") "")
-               (("testsuite/test-depmod") "")
-               (("testsuite/test-blacklist") ""))
-             #t))
          (add-after 'install 'install-modprobe&co
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
