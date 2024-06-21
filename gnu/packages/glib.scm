@@ -272,9 +272,6 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
             (lambda _
               (setenv "G_TEST_SRCDIR" (string-append (getcwd) "/gio/tests"))))
           ;; Needed to pass the test phase on slower ARM and i686 machines.
-          (add-after 'unpack 'set-G_TEST_SRCDIR
-            (lambda _
-              (setenv "G_TEST_SRCDIR" (string-append (getcwd) "/gio/tests"))))
           (add-after 'unpack 'increase-test-timeout
             (lambda _
               (substitute* "meson.build"
