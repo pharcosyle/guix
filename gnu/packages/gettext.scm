@@ -55,14 +55,14 @@
 (define-public gettext-minimal
   (package
     (name "gettext-minimal")
-    (version "0.22.4")
+    (version "0.22.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gettext/gettext-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1shsgbdmy4abwpalwi7zp0v4nk365m9wsqn6j11h5a978hmbpq61"))))
+                "184ni6j8yv6bjidgwh2ygw98insic60fqi1i0ygkmf39x6qha5zc"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;9 MiB of HTML
@@ -182,14 +182,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
 (define-public libtextstyle
   (package
     (name "libtextstyle")
-    (version "0.22.4")
+    (version "0.22.5")
     (source (origin
               (inherit (package-source gnu-gettext))
               (uri (string-append "mirror://gnu/gettext/gettext-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1shsgbdmy4abwpalwi7zp0v4nk365m9wsqn6j11h5a978hmbpq61"))))
+                "184ni6j8yv6bjidgwh2ygw98insic60fqi1i0ygkmf39x6qha5zc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")
