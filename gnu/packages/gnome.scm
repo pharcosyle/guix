@@ -2935,7 +2935,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
 (define-public adwaita-icon-theme
   (package
     (name "adwaita-icon-theme")
-    (version "44.0")
+    (version "46.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2943,18 +2943,19 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0k3638gkdpjcr9pbsmpfj7vdqdm9s04j4d5sh1fx5v5z3dhcb2a8"))))
-    (build-system gnu-build-system)
+                "1jxmjq7jvbkf6rv01y2vjx2g8iic7gkxa6085rvblfck8awjdcdy"))))
+    (build-system meson-build-system)
     (arguments
-     (list #:make-flags
-           ;; Don't create 'icon-theme.cache'.
-           #~(list "GTK_UPDATE_ICON_CACHE=")))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'skip-gtk-update-icon-cache
+            (lambda _
+              ;; Don't create 'icon-theme.cache'.
+              (substitute* "meson.build"
+                (("gtk-update-icon-cache") (which "true"))))))))
     (native-inputs
-     ;; The following requires the SVG pixbuf loader, provided by librsvg,
-     ;; available on x86_64 only.
-     `(,@(if (target-64bit?)
-             `((,gtk+ "bin"))             ;for gtk-encode-symbolic-svg
-             '())))
+     (append (list pkg-config)))
     (home-page "https://gitlab.gnome.org/GNOME/adwaita-icon-theme")
     (synopsis "GNOME icon theme")
     (description "Icons for the GNOME desktop.")
