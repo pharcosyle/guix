@@ -917,6 +917,11 @@ Detect the differences in markup between two SGML files.
                   (srfi srfi-26))
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-tests
+            (lambda _
+              ;; Remove an input from a test that fails with groff 1.23+
+              (substitute* "test/refentry/Makefile.am"
+                (("VCR.7") ""))))
           (add-before 'build 'clean
             (lambda _
               (invoke "make" "clean")))
