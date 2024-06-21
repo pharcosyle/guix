@@ -675,7 +675,7 @@ editor (with wide ints)" )
 (define-public m17n-db
   (package
     (name "m17n-db")
-    (version "1.8.0")
+    (version "1.8.5")
     (source
      (origin
        (method url-fetch)
@@ -683,7 +683,7 @@ editor (with wide ints)" )
                            version ".tar.gz"))
        (sha256
         (base32
-         "0vfw7z9i2s9np6nmx1d4dlsywm044rkaqarn7akffmb6bf1j6zv5"))))
+         "0dm7q2qxhp498wzvafdsnhdrhfqkh9rm3i72avp68a0a5i1gz3xn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -710,7 +710,7 @@ This package contains the library database.")
 (define-public m17n-lib
   (package
     (name "m17n-lib")
-    (version "1.8.0")
+    (version "1.8.4")
     (source
      (origin
        (method url-fetch)
@@ -718,8 +718,7 @@ This package contains the library database.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0jp61y09xqj10mclpip48qlfhniw8gwy8b28cbzxy8hq8pkwmfkq"))
-       (patches (search-patches "m17n-lib-1.8.0-use-pkg-config-for-freetype.patch"))))
+         "1j0w8bflj1ki7hh2y1cbag9alqxkgrfgli18g8p8qajgdqn5i8n6"))))
     (build-system gnu-build-system)
     (native-inputs
      (if (%current-target-system)
@@ -727,7 +726,7 @@ This package contains the library database.")
                libtool
                gettext-minimal
                autoconf automake)
-         '()))
+         (list pkg-config)))
     (inputs
      (list fribidi
            gd
@@ -736,8 +735,7 @@ This package contains the library database.")
            libxml2
            m17n-db))
     (arguments
-     `(#:parallel-build? #f
-       ,@(if (%current-target-system)
+     `(,@(if (%current-target-system)
              '(#:phases
                (modify-phases %standard-phases
                  ;; AC_FUNC_MALLOC and AC_FUNC_REALLOC usually unneeded
