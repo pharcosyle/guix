@@ -2999,6 +2999,8 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
                  ;; Don't create 'icon-theme.cache'.
                  (lambda _ (substitute* "meson.build"
                         (("gtk4?-update-icon-cache") "true")))))))
+    (native-inputs
+     (list pkg-config))
     (home-page "https://gitlab.gnome.org/GNOME/adwaita-icon-theme")
     (synopsis "GNOME icon theme")
     (description "Icons for the GNOME desktop.")
