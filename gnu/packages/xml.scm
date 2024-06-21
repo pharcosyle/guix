@@ -262,9 +262,6 @@ to output XPath results with a null delimiter.")))
           (add-before 'build 'configure
             (lambda* (#:key inputs #:allow-other-keys)
               (chdir "python")
-              ;; Manually create setup.py with the same settings it had
-              ;; before it stopped being included in the distributed tarball.
-              ;; This might not be the best way.
               (copy-file "setup.py.in" "setup.py")
               (substitute* "setup.py"
                 (("@prefix@") "/usr/local")
