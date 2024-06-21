@@ -2106,7 +2106,6 @@ cp -r /tmp/locale/*/en_US.*")))
            json-glib
            libarchive
            libcap
-           libostree
            libseccomp
            libxau
            libxml2
@@ -2115,7 +2114,11 @@ cp -r /tmp/locale/*/en_US.*")))
            util-linux
            xdg-dbus-proxy
            zstd))
-    (propagated-inputs (list glib-networking gnupg gsettings-desktop-schemas))
+    (propagated-inputs
+     (list glib-networking
+           gnupg
+           gsettings-desktop-schemas
+           libostree))
     (home-page "https://flatpak.org")
     (synopsis "System for building, distributing, and running sandboxed desktop
 applications")
