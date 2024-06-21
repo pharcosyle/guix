@@ -500,7 +500,7 @@ complexity of working with shared libraries across platforms.")
 
 (define-public config
   (let ((revision "2")
-        (commit "28ea239c53a2d5d8800c472bc2452eaa16e37af2"))
+        (commit "948ae97ca5703224bd3eada06b7a69f40dd15a02"))
     (package
       (name "config")
       (version (git-version "0.0.0" revision commit)) ;no release tag
@@ -512,7 +512,7 @@ complexity of working with shared libraries across platforms.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1fh3ar2bp5qzzl8l3yr05y81n2v4qicax8aciibm3j4g36cv32mf"))))
+                  "0jz2zzr9qswwan1zlvmkif6yadbqxirvhr1njamb0kyf5k6qa3z6"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
