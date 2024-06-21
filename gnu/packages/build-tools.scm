@@ -293,31 +293,63 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "1.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mesonbuild/meson/"
-                                  "releases/download/" version  "/meson-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1mra0gh5jz254p8wg2m25pazbvrqpqaq5qj1zga465nyvs5mc830"))))
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mesonbuild/meson/"
+                           "releases/download/" version  "/meson-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0jazp9djwy7g0an88i10432c3219m2lsp3ncji1fcsjzi9rsv2hv"))))
     (build-system python-build-system)
     (arguments
-     (list #:tests? #f                  ;disabled to avoid extra dependencies
-           #:phases
-           #~(modify-phases %standard-phases
-               ;; Meson calls the various executables in out/bin through the
-               ;; Python interpreter, so we cannot use the shell wrapper.
-               (replace 'wrap
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (substitute* (search-input-file outputs "bin/meson")
-                     (("# EASY-INSTALL-ENTRY-SCRIPT")
-                      (format #f "\
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'fixup-tests
+            (lambda* (#:key inputs #:allow-other-keys)
+              (setenv "HOME" "/tmp") ; for "test cases/common/220"
+              (with-directory-excursion "test cases"
+                (substitute* "common/273 customtarget exe for test/generate.py"
+                  (("/usr/bin/env python3")
+                   (search-input-file inputs "/bin/python3")))
+                (substitute* "native/8 external program shebang parsing/script.int.in"
+                  (("/usr/bin/env")
+                   (search-input-file inputs "/bin/env")))
+                (for-each
+                 delete-file-recursively
+                 '("common/66 vcstag" ; requires Git
+                   "linuxlike/1 pkg-config" ; requires zlib
+                   "linuxlike/2 external library" ; requires zlib
+                   "linuxlike/4 extdep static lib" ; requires zlib
+                   "linuxlike/5 dependency versions" ; requires zlib
+                   "linuxlike/6 subdir include order" ; requires Glib
+                   "linuxlike/9 compiler checks with dependencies" ; requires Glib
+                   "linuxlike/14 static dynamic linkage"))))) ; requires zlib
+          (replace 'check
+            (lambda _
+              ;; There are more tests (run them all with `./run-tests.py')
+              ;; and running them might be good but there are a lot of
+              ;; failures including a number of false positives.
+              (invoke "./run_project_tests.py")))
+          ;; Meson calls the various executables in out/bin through the
+          ;; Python interpreter, so we cannot use the shell wrapper.
+          (replace 'wrap
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (substitute* (search-input-file outputs "bin/meson")
+                (("# EASY-INSTALL-ENTRY-SCRIPT")
+                 (format #f "\
 import sys
 sys.path.insert(0, '~a')
 # EASY-INSTALL-ENTRY-SCRIPT" (site-packages inputs outputs)))))))))
-    (inputs (list python ninja))
+    (native-inputs
+     ;; For tests.
+     (list ninja
+           pkg-config))
+    (inputs
+     (list python))
     (home-page "https://mesonbuild.com/")
     (synopsis "Build system designed to be fast and user-friendly")
     (description
