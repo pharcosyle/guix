@@ -143,20 +143,26 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.25.0")
+    (version "0.25.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                            "download/" version "/p11-kit-" version ".tar.xz"))
        (sha256
-        (base32 "01j76py4ixrzfg7cl8qxy3z7b1k3ybvsiqxbkibqcgg8vny86mfm"))))
-    (build-system gnu-build-system)
+        (base32 "1p1aid11psx00b94d400y614vqcwq3kwl315kmpri678nwdwxpfq"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri "https://github.com/p11-glue/p11-kit/pull/614.patch")
+           (file-name (string-append name "-hurd-fixes.patch"))
+           (sha256
+            (base32
+             "1bx4xg7l0j13dnhv912y99nzgdp1l74jwg9wwlm1q76g7f79fgsn")))))))
+    (build-system meson-build-system)
     (native-inputs
-     (append (list pkg-config)
-             (if (target-hurd?)
-                 (list autoconf automake gettext-minimal libtool)
-                 '())))
+     (append (list pkg-config)))
     (inputs
      (append (list libffi libtasn1)
              (if (target-hurd?)
@@ -166,28 +172,7 @@ in intelligent transportation networks.")
      (list #:configure-flags
            ;; Use the default certificates so that users such as flatpak
            ;; find them.  See <https://issues.guix.gnu.org/49957>.
-           #~'("--with-trust-paths=/etc/ssl/certs/ca-certificates.crt")
-           #:phases #~(modify-phases %standard-phases
-                        #$@(if (target-hurd?)
-                               #~((add-after 'unpack 'apply-hurd-patch
-                                    (lambda* (#:key inputs #:allow-other-keys)
-                                      (define patch
-                                        #$(local-file
-                                           (search-patch "p11-kit-hurd.patch")))
-                                      (invoke "patch" "-p1" "--batch" "-i"
-                                              patch)))
-                                  (replace 'bootstrap
-                                    (lambda _
-                                      (invoke "autoreconf" "-fiv"))))
-                               #~())
-                        (add-before 'check 'prepare-tests
-                          (lambda _
-                            ;; "test-runtime" expects XDG_RUNTIME_DIR to be set up
-                            ;; and looks for .cache and other directories (only).
-                            ;; For simplicity just drop it since it is irrelevant
-                            ;; in the build container.
-                            (substitute* "Makefile"
-                              (("test-runtime\\$\\(EXEEXT\\)") "")))))))
+           #~'("-Dtrust_paths=/etc/ssl/certs/ca-certificates.crt")))
     (home-page "https://p11-glue.github.io/p11-glue/p11-kit.html")
     (synopsis "PKCS#11 library")
     (description
