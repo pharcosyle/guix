@@ -299,7 +299,7 @@
               (base32
                "1id45r2ccgkbjm9i998997ch32lvicpyynyx8x6aa4420wmdf5ps"))))
     (build-system gnu-build-system)
-    (native-inputs (list `(,pcre "bin")))       ;for 'pcre-config'
+    (native-inputs (list pcre2))       ;for 'pcre-config'
     (inputs (list apr apr-util libxcrypt openssl perl)) ; needed to run bin/apxs
     (arguments
      (list
