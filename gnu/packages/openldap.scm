@@ -88,11 +88,10 @@
                (base32
                 "1zxjws0mcm9cjwhhb7v1qq6g7avqlnx7ydcr1pzhsd68x5rxrdrc"))))
     (build-system gnu-build-system)
-    (inputs (list bdb-5.3 cyrus-sasl gnutls libgcrypt zlib))
-    (native-inputs (list libtool groff bdb-5.3))
+    (inputs (list cyrus-sasl gnutls libgcrypt libsodium))
+    (native-inputs (list libtool groff))
     (arguments
      (list
-      #:tests? #f
       #:configure-flags
       #~(list "--disable-static"
               #$@(if (%current-target-system)
@@ -104,6 +103,11 @@
       #~(list "STRIP=")
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'use-absolute-file-names
+            (lambda* (#:key native-inputs inputs #:allow-other-keys)
+              (substitute* "tests/scripts/all"
+                (("/bin/rm") (search-input-file (or native-inputs inputs)
+                                                "bin/rm")))))
           #$@(if (%current-target-system)
                  '((add-before 'configure 'fix-cross-gcc
                      (lambda* (#:key target #:allow-other-keys)
