@@ -2128,14 +2128,14 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "23.6")
+    (version "23.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
                           version ".tar.xz"))
       (sha256
-       (base32 "0al2138z0m2bqrviv3zw2i2km4v8xg5wrw867li4jk4s2l3dwz95"))))
+       (base32 "09y30ywh1d4s4f0wgvki115kgpliq48rarmfmmjl0iq22jf5viaq"))))
     (build-system gnu-build-system)
     (arguments
      (list
