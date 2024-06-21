@@ -67,7 +67,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.84.0")
+    (version "1.85.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://boostorg.jfrog.io/artifactory/main/release/"
@@ -75,7 +75,7 @@
                                   (version-with-underscores version) ".tar.bz2"))
               (sha256
                (base32
-                "0m4l20j9r577qca5q9v8difslil8r840z6lfd55rsp34rwx8jjyc"))))
+                "05w63ybpn23b13asl2vvkf24xf5d5cx709vhvimlg5qnm8gzw2bh"))))
     (build-system gnu-build-system)
     (inputs
      (append
