@@ -9634,7 +9634,7 @@ the superuser to make device nodes.")
              (substitute* "test/compare-tar"
                (("tar -tvf") "tar --numeric-owner -tvf")))))))
     (native-inputs
-     (list autoconf-2.71 automake gettext-minimal libtool po4a
+     (list autoconf automake gettext-minimal libtool po4a
            sharutils xz))               ; for tests
     (inputs
      (list acl libcap util-linux sed coreutils))
