@@ -56,7 +56,6 @@
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
-  #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
@@ -181,7 +180,7 @@ Daemon and possibly more in the future.")
      ;; Needed here for the 'gpg-error' program.
      `(("libgpg-error-native" ,libgpg-error)))
     (arguments
-     ;; The '--with-gpg-error-prefix' argument is needed because otherwise
+     ;; The '--with-libgpg-error-prefix' argument is needed because otherwise
      ;; 'configure' uses 'gpg-error-config' to determine the '-L' flag, and
      ;; the 'gpg-error-config' it runs is the native one---i.e., the wrong one.
      `(#:configure-flags
@@ -269,7 +268,7 @@ provided.")
        (list ,@(if (%current-target-system)
                    '("CC_FOR_BUILD=gcc")
                    '())
-             (string-append "--with-gpg-error-prefix="
+             (string-append "--with-libgpg-error-prefix="
                             (assoc-ref %build-inputs "libgpg-error")))))
     (home-page "https://www.gnupg.org")
     (synopsis "CMS and X.509 access library")
