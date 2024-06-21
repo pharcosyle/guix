@@ -2504,7 +2504,7 @@ to applications simultaneously competing for fingerprint readers.")
 (define-public desktop-file-utils
   (package
     (name "desktop-file-utils")
-    (version "0.26")
+    (version "0.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/"
@@ -2512,10 +2512,10 @@ to applications simultaneously competing for fingerprint readers.")
                                   "desktop-file-utils-" version ".tar.xz"))
               (sha256
                (base32
-                "02bkfi6fyk4c0gh2avd897882ww5zl7qg7bzzf28qb57kvkvsvdj"))))
-    (build-system gnu-build-system)
+                "0dp8zxmbgmc8vz73480c0j61d67jy5b7qh4031ibd1g3kkrpv0d0"))))
+    (build-system meson-build-system)
     (native-inputs
-     (list autoconf automake pkg-config))
+     (list pkg-config))
     (inputs
      (list glib))
     (home-page "https://www.freedesktop.org/wiki/Software/desktop-file-utils/")
