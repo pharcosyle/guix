@@ -38,7 +38,7 @@
 (define-public less
   (package
     (name "less")
-    (version "608")
+    (version "643")
     (source
      (origin
        (method url-fetch)
@@ -48,8 +48,11 @@
                                  version ".tar.gz")))
        (patches (search-patches "less-hurd-path-max.patch"))
        (sha256
-        (base32 "02f2d9d6hyf03va28ip620gjc6rf4aikmdyk47h7frqj18pbx6m6"))))
+        (base32 "1s2jc25iqwv2i2lsm3x54v0748risrn8zrm2r22a0vw35i1va499"))))
     (build-system gnu-build-system)
+    (arguments
+     (list #:make-flags #~(list "CC=gcc")))
+    (native-inputs (list perl))
     (inputs (list ncurses))
     (home-page "https://www.gnu.org/software/less/")
     (synopsis "Paginator for terminals")
