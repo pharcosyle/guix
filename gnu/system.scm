@@ -965,7 +965,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
   ;; Default set of networking packages.
   (list inetutils isc-dhcp
         iproute
-        wget
+        wget2
 	nss-certs
         iw))
 
