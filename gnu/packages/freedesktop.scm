@@ -166,8 +166,7 @@
     (arguments
      (list
       #:glib-or-gtk? #t
-      #:configure-flags #~(list "-Dsystemd=false"
-                                "-Dvapi=true")
+      #:configure-flags #~(list "-Dsystemd=false")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-libstemmer
@@ -193,8 +192,7 @@
            libxslt
            pkg-config
            python-wrapper
-           gi-docgen
-           vala))
+           gi-docgen))
     (inputs
      (list curl libstemmer libxmlb libxml2 libyaml))
     (propagated-inputs
