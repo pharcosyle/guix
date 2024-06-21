@@ -384,7 +384,7 @@ applications.")
 (define-public pango
   (package
     (name "pango")
-    (version "1.50.14")
+    (version "1.52.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/pango/"
@@ -393,7 +393,7 @@ applications.")
               (patches (search-patches "pango-skip-libthai-test.patch"))
               (sha256
                (base32
-                "1s41sprfgkc944fva36zjmkmdpv8hn1bdpyg55xc4663pw2z4rqx"))))
+                "0sx9g0gv8dppizjvh21rx0n5zkly6kwrkv6yafw18a0807z6l1yh"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
@@ -1724,7 +1724,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.50.1")
+    (version "2.52.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1732,7 +1732,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "054jglmnbig14fs99qqi5y174z9j90r6dprpyszw42742cs95jfc"))))
+                "0is9savlnxyrjqvviqcly2fhwkf4xhv8qdblyw9gz134d893989l"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
