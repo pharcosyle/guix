@@ -240,7 +240,7 @@ generation.")
                                   #$(this-package-input "libgpg-error"))))
                    '()))
     (propagated-inputs
-     (list libgpg-error pth))
+     (list libgpg-error))
     (home-page "https://gnupg.org")
     (synopsis
      "IPC library used by GnuPG and related software")
