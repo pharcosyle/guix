@@ -76,12 +76,18 @@
       (sha256
        (base32 "0x8m8i9phxf55z49ih33js3z4nx05skm93mc8kibx8x887bl3apz"))))
     (build-system gnu-build-system)
-
-    ;; XXX: Enabling udev is now recommended, but eudev indirectly depends on
-    ;; libusb.
-    (arguments `(#:configure-flags '("--disable-udev")))
-    ;; (inputs `(("eudev" ,eudev)))
-
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'add-absolute-udev-pc-reference
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let* ((lib (string-append #$output "/lib"))
+                     (eudev (assoc-ref inputs "eudev")))
+                (substitute* (string-append lib "/pkgconfig/libusb-1.0.pc")
+                  (("-ludev")
+                   (string-append "-L" eudev "/lib -ludev")))))))))
+    (inputs `(("eudev" ,eudev)))
     (home-page "https://libusb.info")
     (synopsis "User-space USB library")
     (description
