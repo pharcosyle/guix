@@ -2035,14 +2035,14 @@ the boot loader configuration.")
 (define-public flatpak
   (package
     (name "flatpak")
-    (version "1.14.6")
+    (version "1.14.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
                            version "/flatpak-" version ".tar.xz"))
        (sha256
-        (base32 "0ij93vl9skcfdfgkmgd80q0q4c6q39dss4rds7phxizqqsr3d3sk"))
+        (base32 "13ilqnl5zjyxljhl0dws0jvx6l1ph7jzfralz6b7iy3sgwrbf5hh"))
        (patches
         (search-patches "flatpak-fix-fonts-icons.patch"
                         "flatpak-fix-path.patch"
@@ -2125,7 +2125,6 @@ cp -r /tmp/locale/*/en_US.*")))
            json-glib
            libarchive
            libcap
-           libostree
            libseccomp
            libxau
            libxml2
@@ -2134,7 +2133,11 @@ cp -r /tmp/locale/*/en_US.*")))
            util-linux
            xdg-dbus-proxy
            zstd))
-    (propagated-inputs (list glib-networking gnupg gsettings-desktop-schemas))
+    (propagated-inputs
+     (list glib-networking
+           gnupg
+           gsettings-desktop-schemas
+           libostree))
     (home-page "https://flatpak.org")
     (synopsis "System for building, distributing, and running sandboxed desktop
 applications")
