@@ -876,7 +876,7 @@ tables.")
                          (substitute* "tests/channels.scm"
                            ((".*assert-run-fibers-terminates .*pingpong.*") "")))))))))
     (native-inputs
-     (list texinfo pkg-config autoconf-2.71 automake libtool
+     (list texinfo pkg-config autoconf automake libtool
            guile-3.0            ;for 'guild compile
            ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'
            gettext-minimal))

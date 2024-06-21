@@ -1505,7 +1505,7 @@ replacement for the OpenDWG libraries.")
               (substitute* "configure"
                 (("test -d [$]UUCPLOCK") "true")))))))
     (native-inputs
-     (list autoconf-2.71 automake gettext-minimal pkg-config))
+     (list autoconf automake gettext-minimal pkg-config))
     (inputs
      (list ncurses))
     (home-page "https://salsa.debian.org/minicom-team/minicom")
