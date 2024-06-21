@@ -547,7 +547,7 @@ OpenSSL for TARGET."
     (license license:openssl)
     (home-page "https://www.openssl.org/")))
 
-(define-public openssl-3.0
+(define-public openssl-3
   (package
     (inherit openssl-1.1)
     (version "3.3.1")
@@ -560,7 +560,7 @@ OpenSSL for TARGET."
                          (string-append "ftp://ftp.openssl.org/source/old/"
                                         (string-trim-right version char-set:letter)
                                         "/openssl-" version ".tar.gz")))
-              (patches (search-patches "openssl-3.0-c-rehash-in.patch"))
+              (patches (search-patches "openssl-3-c-rehash-in.patch"))
               (sha256
                (base32
                 "0zhb09nzwvqdqlhapvsm690wavvqsbsip8d7l9sk722c52bdaz3p"))))
@@ -583,7 +583,7 @@ OpenSSL for TARGET."
             flags))))
     (license license:asl2.0)))
 
-(define-public openssl openssl-3.0)
+(define-public openssl openssl-3)
 
 (define-public bearssl
   (package
