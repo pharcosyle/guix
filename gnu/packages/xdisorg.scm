@@ -760,7 +760,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.120")
+    (version "2.4.121")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -768,7 +768,7 @@ rasterisation.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0yijzgg6rdsa68bz03sw0lcfa2nclv9m3as1cja50wkcyxim7x9v"))))
+                "1azwrn0d1rhw3xfqz50cf6f0dndvnf8hgdwhyn3qhqyp0njq944h"))))
     (build-system meson-build-system)
     (arguments
      (list #:configure-flags
