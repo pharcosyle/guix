@@ -9885,7 +9885,7 @@ computation is supported via MPI.")
                         "modules/ast/src/cpp/parse/parsescilab.cpp"))))))
     (build-system gnu-build-system)
     (native-inputs
-     (list autoconf-2.71
+     (list autoconf
            autoconf-archive
            automake
            bison
