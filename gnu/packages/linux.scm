@@ -3322,7 +3322,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "6.6.0")
+    (version "6.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3330,7 +3330,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1khksrf01xbc718bzjyqk0m865riw8yhqzwkavvhp7yhmw2chf47"))))
+                "1l0kqh7fv5h2fq3fh6i4py624wszkd32nbn98fha590ix84ksr1g"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -3345,7 +3345,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                 (string-append "LIBDIR=" out "/lib")
                 (string-append "HDRDIR=" out "/include")
                 (string-append "SBINDIR=" out "/sbin")
-                (string-append "CONFDIR=" out "/etc")
+                (string-append "DATADIR=" out "/share")
+                (string-append "CONF_ETC_DIR=" out "/etc")
                 (string-append "MANDIR=" out "/share/man")))
       #:phases
       #~(modify-phases %standard-phases
@@ -3356,14 +3357,9 @@ that the Ethernet protocol is much simpler than the IP protocol.")
               (setenv "PKG_CONFIG" #$(pkg-config-for-target))
               (apply invoke "./configure"
                      "--prefix" #$output
-                     configure-flags)))
-          (add-before 'install 'pre-install
-            (lambda _
-              ;; Don't attempt to create /var/lib/arpd.
-              (substitute* "Makefile"
-                (("^.*ARPDDIR.*$") "")))))))
+                     configure-flags))))))
     (inputs
-     (list bdb iptables libmnl))
+     (list iptables libmnl))
     (native-inputs
      (list bison flex pkg-config))
     ;; For tests.
