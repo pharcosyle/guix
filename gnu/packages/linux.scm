@@ -6223,7 +6223,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "6.3.3")
+    (version "6.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -6231,7 +6231,7 @@ and copy/paste text in the console and in xterm.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vmrjn3dcmka9rj5b81ag9jwprzyicx05h1ccj0x0w02fqah1qsb"))))
+                "0ak582n18v6k1iqbz5q8ixbig8hvv0s58q73bmcb42nwfar5p1j3"))))
     (build-system gnu-build-system)
     (outputs '("out" "static")) ;static versions of the binaries in "out"
     (arguments
@@ -6292,7 +6292,8 @@ and copy/paste text in the console and in xterm.")
       ;; For building documentation.  Since python-sphinx requires Rust, add
       ;; it conditionally depending on such support.
       (if (supported-package? python-sphinx)
-          (list python-sphinx)
+          (list python-sphinx
+                python-sphinx-rtd-theme)
           '())
       (list pkg-config
             acl                                   ;for tests
