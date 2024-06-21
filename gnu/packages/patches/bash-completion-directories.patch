@@ -11,13 +11,13 @@ This is what this patch does.
 
 --- a/bash_completion
 +++ b/bash_completion
-@@ -2173,7 +2173,15 @@ complete -F _minimal ''
+@@ -3192,7 +3192,16 @@
+             dirs+=("${dir%/*}/share/bash-completion/completions")
+     done
  
- __load_completion()
- {
--    local -a dirs=(${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions)
-+    local -a dirs=(
-+        ${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions
+-    # 4) From XDG_DATA_DIRS or system dirs (e.g. /usr/share, /usr/local/share):
++    # 4) Guix-specific
++    dirs+=(
 +        "$HOME/.guix-profile/share/bash-completion/completions"
 +        "$HOME/.guix-profile/etc/bash_completion.d"
 +        "$HOME/.guix-home/profile/share/bash-completion/completions"
@@ -25,7 +25,7 @@ This is what this patch does.
 +        "/run/current-system/profile/share/bash-completion/completions"
 +        "/run/current-system/profile/etc/bash_completion.d" )
 +
-     local ifs=$IFS IFS=: dir cmd="${1##*/}" compfile
-     [[ -n $cmd ]] || return 1
-     for dir in ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
-         dirs+=( $dir/bash-completion/completions )
++    # 5) From XDG_DATA_DIRS or system dirs (e.g. /usr/share, /usr/local/share):
+     # Completions in the system data dirs.
+     _comp_split -F : paths "${XDG_DATA_DIRS:-/usr/local/share:/usr/share}" &&
+         dirs+=("${paths[@]/%//bash-completion/completions}")
