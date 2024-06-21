@@ -527,16 +527,15 @@ formats, including zstd, xz, gzip, and bgzf.")
 (define-public xz
   (package
    (name "xz")
-   (version "5.4.5")
+   (version "5.4.6")
    (source (origin
             (method url-fetch)
-            (uri (list (string-append "http://tukaani.org/xz/xz-" version
-                                      ".tar.gz")
-                       (string-append "http://multiprecision.org/guix/xz-"
-                                      version ".tar.gz")))
+            (uri (string-append "https://github.com/tukaani-project/xz"
+                                "/releases/download/v" version
+                                "/xz-" version ".tar.bz2"))
             (sha256
              (base32
-              "1mmpwl4kg1vs6n653gkaldyn43dpbjh8gpk7sk0gps5f6jwr0p0k"))))
+              "0jbg7vfnj5y2dm1s4wvfrw7cznz84cf9z57ch4bx7qg8fjr52f4i"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
@@ -570,7 +569,9 @@ been modified quite a lot to be suitable for XZ Utils.  The primary
 compression algorithm is currently LZMA2, which is used inside the .xz
 container format.  With typical files, XZ Utils create 30 % smaller output
 than gzip and 15 % smaller output than bzip2.")
-   (license (list license:gpl2+ license:lgpl2.1+)) ; bits of both
+   (license
+    ;; Core components / liblzma under 0BSD, bits of other licenses.
+    (list license:bsd-0 license:gpl2+ license:lgpl2.1+))
    (home-page "https://tukaani.org/xz/")))
 
 (define-public lhasa
