@@ -301,7 +301,25 @@ from Markdown files.")
            docbook-sgml-4.1
            docbook-xml-4.5
            perl-test-pod
-           (texlive-updmap.cfg)))
+           ;; Rather than including a heavy texlive dependency necessary for
+           ;; (at the time of this writing) only 2/383 tests we use this tiny
+           ;; script that emulates `kpsewhich' just enough for our purposes:
+           ;; look up article.cls to an existing file and don't ever find
+           ;; article-wrong.cls
+           (computed-file
+            "faux-texlive"
+            #~(let ((bin (string-append #$output "/bin")))
+                (mkdir #$output)
+                (mkdir bin)
+                (copy-file #+(program-file
+                              "faux-kpsewhich"
+                              #~(if (string=? (cadr (command-line))
+                                              "article.cls")
+                                    (begin
+                                      (display "/dev/null")
+                                      (newline))
+                                    (exit 1)))
+                           (string-append bin "/kpsewhich"))))))
     (inputs
      (list bash-minimal
            opensp
