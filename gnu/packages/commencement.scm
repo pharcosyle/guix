@@ -1823,46 +1823,91 @@ exec " gcc "/bin/" program
     (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs '())
     (propagated-inputs '())
-    ;; (arguments
-    ;;  (ensure-keyword-arguments (package-arguments pkg)
-    ;;                            `(#:implicit-inputs? #f
-    ;;                              #:guile ,%bootstrap-guile
-    ;;                              #:tests? #f)))
-    ;; (arguments
-    ;;  (let ((kw-args (ensure-keyword-arguments (package-arguments pkg)
-    ;;                                           `(#:implicit-inputs? #f
-    ;;                                             #:guile ,%bootstrap-guile
-    ;;                                             #:tests? #f))))
-    ;;    (substitute-keyword-arguments kw-args
-    ;;      ((#:phases phases)
-    ;;       #~(modify-phases #$phases
-    ;;           (add-after 'unpack 'workaround-wrapper-bug
-    ;;             (lambda _
-    ;;               (substitute* "Makefile"
-    ;;                 (("-n -e 'w (.*)'" _ outfile)
-    ;;                  (string-append "> " outfile)))
-    ;;               (throw 'a))))))))
     (arguments
-     (substitute-keyword-arguments (package-arguments pkg)
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (add-after 'unpack 'workaround-wrapper-bug
-              (lambda _
-                (substitute* "Makefile"
-                  (("-n -e 'w (.*)'" _ outfile)
-                   (string-append "> " outfile)))
-                (throw 'a)))))))
-    ))
+     (ensure-keyword-arguments (package-arguments pkg)
+                               `(#:implicit-inputs? #f
+                                 #:guile ,%bootstrap-guile
+                                 #:tests? #f)))))
+
+(define-public coreutils-8.32
+  (package
+    (inherit coreutils)
+    (version "8.32")
+    (source (origin
+              (inherit (package-source coreutils))
+              (uri (string-append "mirror://gnu/coreutils/coreutils-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1yjcrh5hw70c0yn8zw55pd6j51dj90anpq8mmg649ps9g3gdhn24"))))))
+
+(define-public sed-4.8
+  (package
+    (inherit sed)
+    (version "4.8")
+    (source (origin
+              (inherit (package-source sed))
+              (uri (string-append "mirror://gnu/sed/sed-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
+              ;; (patches (search-patches "coreutils-gnulib-tests.patch"))
+              ;; (snippet
+              ;;  '(begin
+              ;;     (substitute* "Makefile.in"
+              ;;       (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
+              ;;        (string-append
+              ;;         previous-line
+              ;;         "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
+              ;; (modules '((guix build utils)))
+              ))))
+
+(define-public grep-3.7
+  (package
+    (inherit grep)
+    (version "3.7")
+    (source (origin
+              (inherit (package-source grep))
+              (uri (string-append "mirror://gnu/grep/grep-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0g42svbc1nq5bamxfj6x7320wli4dlj86padk0hwgbk04hqxl42w"))))))
+
+(define-public tar-1.34
+  (package
+    (inherit tar)
+    (version "1.34")
+    (source (origin
+              (inherit (package-source tar))
+              (uri (string-append "mirror://gnu/tar/tar-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0a0x87anh9chbi2cgcyy7pmnm5hzk4yd1w2j8gm1wplwhwkbvgk3"))))))
+
+(define findutils-4.9
+  (package
+    (inherit findutils)
+    (version "4.9.0")
+    (source (origin
+              (inherit (package-source findutils))
+              (uri (string-append "mirror://gnu/findutils/findutils-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1zk2sighc26bfdsm97bv7cd1cnvq7r4gll4zqpnp0rs3kp0bigx2"))))))
 
 ;; These packages are needed to complete the rest of the bootstrap.
 ;; In the future, Gash et al. could handle it directly, but it's not
 ;; ready yet.
 (define bash-mesboot (mesboot-package "bash-mesboot" static-bash))
-(define coreutils-mesboot (mesboot-package "coreutils-mesboot" coreutils))
-(define sed-mesboot (mesboot-package "sed-mesboot" sed))
+(define coreutils-mesboot (mesboot-package "coreutils-mesboot" coreutils-8.32))
+(define sed-mesboot (mesboot-package "sed-mesboot" sed-4.8))
 
 (define grep-mesboot
-  (let ((pkg (mesboot-package "grep-mesboot" grep)))
+  (let ((pkg (mesboot-package "grep-mesboot" grep-3.7)))
     (package
       (inherit pkg)
       (arguments
@@ -1885,7 +1930,7 @@ exec " gcc "/bin/" program
 ;; We don't strictly need Tar here, but it allows us to get rid of
 ;; Bootar and Gash-Utils and continue with the standard GNU tools.
 (define tar-mesboot
-  (let ((pkg (mesboot-package "tar-mesboot" tar)))
+  (let ((pkg (mesboot-package "tar-mesboot" tar-1.34)))
     (package
       (inherit pkg)
       (native-inputs
@@ -1967,7 +2012,7 @@ exec " gcc "/bin/" program
   (package
     (inherit coreutils)
     (outputs (delete "debug" (package-outputs coreutils)))
-    (source (bootstrap-origin (package-source coreutils)))
+    (source (bootstrap-origin (package-source coreutils-8.32)))
     (name "coreutils-boot0")
     (native-inputs `())
     (inputs
@@ -2022,7 +2067,7 @@ exec " gcc "/bin/" program
   (package
     (inherit findutils)
     (name "findutils-boot0")
-    (source (bootstrap-origin (package-source findutils)))
+    (source (bootstrap-origin (package-source findutils-4.9)))
     (inputs
      `(("make" ,gnu-make-boot0)
        ("diffutils" ,diffutils-boot0) ; for tests
@@ -2150,7 +2195,7 @@ exec " gcc "/bin/" program
   (package
     (inherit tar)
     (name "tar-boot0")
-    (source (bootstrap-origin (package-source tar)))
+    (source (bootstrap-origin (package-source tar-1.34)))
     (native-inputs '())
     (inputs
      `(("make" ,gnu-make-boot0)
@@ -3657,7 +3702,7 @@ is the GNU Compiler Collection.")
 
 ;; The default GCC
 (define-public gcc-toolchain
-  gcc-toolchain-14)
+  gcc-toolchain-13)
 
 (define-public gcc-toolchain-aka-gcc
   ;; It's natural for users to try "guix install gcc".  This package
