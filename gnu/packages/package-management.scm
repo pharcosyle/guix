@@ -494,7 +494,6 @@ $(prefix)/etc/openrc\n")))
                        ("texinfo" ,texinfo)
                        ("graphviz" ,graphviz) ;non-minimal for PDF support
                        ("font-ghostscript" ,font-ghostscript) ;fonts for 'dot'
-                       ("imagemagick" ,imagemagick) ;for 'make dist'
                        ("perl" ,perl)               ;for 'make dist'
                        ("help2man" ,help2man)
                        ("po4a" ,po4a-minimal)))
