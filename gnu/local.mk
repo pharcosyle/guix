@@ -1093,7 +1093,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/coreutils-gnulib-tests.patch		\
   %D%/packages/patches/cppcheck-disable-char-signedness-test.patch	\
   %D%/packages/patches/cppdap-add-CPPDAP_USE_EXTERNAL_GTEST_PACKAGE.patch\
-  %D%/packages/patches/cpuinfo-system-libraries.patch		\
   %D%/packages/patches/cpulimit-with-glib-2.32.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crc32c-unbundle-googletest.patch		\
@@ -1406,7 +1405,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-2.31-hurd-clock_gettime_monotonic.patch	\
   %D%/packages/patches/glibc-2.37-hurd-clock_t_centiseconds.patch	\
   %D%/packages/patches/glibc-2.37-hurd-local-clock_gettime_MONOTONIC.patch	\
-  %D%/packages/patches/glibc-2.37-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-2.37-versioned-locpath.patch	\
   %D%/packages/patches/glibc-2.38-ldd-x86_64.patch		\
   %D%/packages/patches/glibc-hurd-clock_t_centiseconds.patch	\
