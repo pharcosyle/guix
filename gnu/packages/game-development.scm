@@ -2069,7 +2069,7 @@ games.")
      (list alsa-lib
            bash-minimal
            bullet
-           freetype-with-brotli
+           freetype
            glew
            glu
            libtheora
