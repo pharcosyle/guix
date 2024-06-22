@@ -121,7 +121,7 @@
                                  (delete-file file))
                                (find-files lib "\\.a$"))))))))
     (native-inputs
-     (list autoconf-2.71
+     (list autoconf
            automake
            gettext-minimal
            libtool
