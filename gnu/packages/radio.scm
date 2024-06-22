@@ -1284,7 +1284,7 @@ radio receiver.")
         (base32 "0l70skbs92pma8ypils4h1wygm7pc61zfqjbnf5kn28vvah3n8zn"))))
     (build-system gnu-build-system)
     (native-inputs
-     (list autoconf-2.71 automake gettext-minimal pkg-config))
+     (list autoconf automake gettext-minimal pkg-config))
     (inputs
      (list alsa-lib
            fltk
@@ -1374,7 +1374,7 @@ or USB connection.")
         (base32 "0nn2ai97a2izckg6lcnxa36ipmrz0pa4d8gdvk47fhwxlcr7pdrl"))))
     (build-system gnu-build-system)
     (native-inputs
-     (list autoconf-2.71 automake pkg-config))
+     (list autoconf automake pkg-config))
     (inputs
      (list fltk libx11 libxext libxfixes libxft))
     (synopsis "NBEMS messaging system")

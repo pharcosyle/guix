@@ -594,7 +594,7 @@ typically encountered in feature film production.")
            embree
            ffmpeg-5
            fftw
-           freetype-with-brotli
+           freetype
            glew
            glog
            gmp                        ;needed for boolean operations on meshes
