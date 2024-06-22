@@ -190,27 +190,6 @@ implementation offers several extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/sed/")))
 
-(define-public sed-4.8
-  (package
-    (inherit sed)
-    (version "4.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/sed/sed-" version
-                                  ".tar.gz"))
-              (sha256
-               (base32
-                "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
-              (patches (search-patches "coreutils-gnulib-tests.patch"))
-              (snippet
-               '(begin
-                  (substitute* "Makefile.in"
-                    (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
-                     (string-append
-                      previous-line
-                      "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
-              (modules '((guix build utils)))))))
-
 (define-public tar
   (package
    (name "tar")
