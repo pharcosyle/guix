@@ -444,23 +444,24 @@ including input methods previous bundled inside Fcitx 4:
        (sha256
         (base32 "1pnwrj6kgha91djfvd2439nbhrmjargpw8ashhb91y5h3cdz7vhz"))))
     (build-system cmake-build-system)
+    (arguments (list #:configure-flags #~(list "-DUSE_QT6=ON")))
     (inputs
      (list fcitx5
            fcitx5-qt
-           qtbase-5
-           qtx11extras
-           qtdeclarative-5
-           qtquickcontrols2-5
-           ki18n
-           kpackage
-           kdeclarative
-           kiconthemes
-           kcoreaddons
-           plasma-framework
-           kitemviews
-           kwidgetsaddons
-           kwindowsystem
-           kirigami
+           qtbase
+           qtdeclarative
+           ksvg
+           kcmutils-6
+           ki18n-6
+           kpackage-6
+           kdeclarative-6
+           kiconthemes-6
+           kcoreaddons-6
+           libplasma
+           kitemviews-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kirigami-6
            libxkbcommon
            libx11
            xkeyboard-config
