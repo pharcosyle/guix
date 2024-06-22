@@ -469,7 +469,7 @@ inspired by Dash.")
       (synopsis "Simplified and community-driven man pages")
       (description "The tldr pages are a community effort to simplify the
 beloved man pages with practical examples.")
-      (license cc-by4.0))))
+      (license license:cc-by4.0))))
 
 (define-public markdeep
   (package
