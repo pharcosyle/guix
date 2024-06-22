@@ -180,7 +180,7 @@ less to gain, as only the helper process is running with privileges (e.g.,
                     (lambda _
                       (for-each make-file-writable
                                 (find-files "po" ".")) #t)))))
-    (native-inputs (list autoconf-2.71 automake gettext-minimal pkg-config))
+    (native-inputs (list autoconf automake gettext-minimal pkg-config))
     (inputs (list libconfuse vte))
     (synopsis "GTK+-based drop-down terminal")
     (description

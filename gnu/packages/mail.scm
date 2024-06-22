@@ -844,7 +844,7 @@ It adds a large amount of new and improved features to mutt.")
                                          (or prog (error "not found: "
                                                          base))))))))))))
     (native-inputs
-     (list autoconf-2.71
+     (list autoconf
            automake
            pkg-config
            gnupg                        ; for tests only

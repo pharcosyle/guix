@@ -639,7 +639,7 @@ database is translated at Transifex.")
     (build-system gnu-build-system)
     (native-inputs
      (list docbook-xsl docbook-xml-4.1.2 docbook-xml-4.3
-           libxslt xmlto w3m-for-tests))
+           libxslt xmlto w3m-minimal))
     (inputs
      (list bash-minimal                 ;for 'wrap-program'
            coreutils
