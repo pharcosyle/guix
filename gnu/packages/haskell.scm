@@ -1441,7 +1441,7 @@ interactive environment for the functional language Haskell.")
     (package
       (inherit base)
       (name "ghc")
-      (version "9.2.5")
+      (version "9.2.8")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://www.haskell.org/ghc/dist/" version
@@ -1449,7 +1449,8 @@ interactive environment for the functional language Haskell.")
                 (sha256
                  (base32
                   "07028i0hm74svvq9b3jpkczaj6lsdgn3hgr4wa7diqiq3dypj1h6"))
-                (patches (search-patches "ghc-9-StgCRunAsm-only-when-needed.patch"))))
+                (patches (search-patches "ghc-9-StgCRunAsm-only-when-needed.patch"
+                                         "ghc-9.2-cabal-support-package-path.patch"))))
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases '%standard-phases)
@@ -1479,7 +1480,7 @@ interactive environment for the functional language Haskell.")
                    version "/ghc-" version "-testsuite.tar.xz"))
              (sha256
               (base32
-               "19ha0hidrijawy53vm2r0sgml5zkl8126mqy7p0pyacmw3k7913l"))
+               "0cmmwhcwv9fjzvmgjj85d354858qqbmqfzaz5160xqj4yl9zk225"))
              (patches (search-patches "ghc-9.2-grep-warnings.patch"
                                       "ghc-testsuite-recomp015-execstack.patch"))))
          ,@(filter (match-lambda
