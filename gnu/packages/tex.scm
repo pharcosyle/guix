@@ -320,6 +320,7 @@ of user-specified directories similar to how shells look up executables.")
                            "tlpkg/TeXLive/"
                            "tlpkg/texlive.tlpdb"))
                     (revision %texlive-revision)))
+              (file-name (git-file-name name version))
               (sha256
                "0sqbg5kjpzkpm1fq2c9hpf4f21bvjs3xas944dlbqp44lsqhcmsk")))
     (outputs '("out" "doc"))
@@ -22605,7 +22606,7 @@ the older (Type 1 fonts only) bundle @code{musixtex-t1fonts} obsolete.")
                         ;; Tarball includes a release date that we ignore.
                         (first (find-files ".." "^musixtnt-.*\\.tar.gz"))
                         "--strip-components=1"))))
-          (add-after 'unpack-prerex-source 'build-msxlint
+          (add-after 'build 'build-msxlint
             (lambda args
               (with-directory-excursion "build"
                 (for-each (lambda (phase)
@@ -56940,7 +56941,8 @@ documents as well as DVI output.")
            perl-module-build
            perl-test-differences))
     (inputs
-     (list perl
+     (list bash-minimal
+           perl
            perl-autovivification
            perl-class-accessor
            perl-data-dump

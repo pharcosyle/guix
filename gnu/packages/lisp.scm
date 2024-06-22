@@ -69,6 +69,7 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages elf)
@@ -487,50 +488,6 @@ high-level, object-oriented functional programming language.  CLISP includes
 an interpreter, a compiler, a debugger, and much more.")
     (license license:gpl2+)))
 
-(define-public confusion-mdl
-  (let* ((commit "12a055581fc262225272df43287dae48281900f5"))
-    (package
-      (name "confusion-mdl")
-      (version "0.2")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url (string-append "https://gitlab.com/emacsomancer/" name))
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1zi8kflzvwqg97ha1sa5xjisbjs5z1mvbpa772vfxiv5ksnpxp0d"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                    ; there are no tests
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (replace 'build
-             (lambda* (#:key (make-flags '()) #:allow-other-keys)
-               (apply invoke "make" "CC=gcc" make-flags)))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin")))
-                 (install-file "mdli" bin)
-                 #t))))))
-      (native-inputs
-       (list perl))
-      (inputs
-       (list libgc))
-      (synopsis "Interpreter for the MIT Design Language (MDL)")
-      (description "MDL (the MIT Design Language) is a descendant of Lisp.  It
-was originally developed in 1971 on the PDP-10 computer under the Incompatible
-Timesharing System (ITS) to provide high level language support for the
-Dynamic Modeling Group at MIT's Project MAC.  Infocom built the original
-PDP-10 Zork in MDL and their later ZIL (Zork Implementation Language) was
-based on a subset of MDL.  Confusion is a MDL interpreter that works just well
-enough to play the original mainframe Zork all the way through.")
-      (home-page "http://www.russotto.net/git/mrussotto/confusion/src/master/src/README")
-      (license license:gpl3+))))
-
 (define-public ecl
   (package
     (name "ecl")
@@ -946,6 +903,187 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
     (home-page "https://lush.sourceforge.net/")
     (license license:lgpl2.1+)))
 
+(define-public confusion-mdl
+  (let* ((commit "12a055581fc262225272df43287dae48281900f5"))
+    (package
+      (name "confusion-mdl")
+      (version "0.2")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url (string-append "https://gitlab.com/emacsomancer/" name))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1zi8kflzvwqg97ha1sa5xjisbjs5z1mvbpa772vfxiv5ksnpxp0d"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda* (#:key (make-flags '()) #:allow-other-keys)
+               (apply invoke "make" "CC=gcc" make-flags)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "mdli" bin)
+                 #t))))))
+      (native-inputs
+       (list perl))
+      (inputs
+       (list libgc))
+      (synopsis "Interpreter for the MIT Design Language (MDL)")
+      (description "MDL (the MIT Design Language) is a descendant of Lisp.  It
+was originally developed in 1971 on the PDP-10 computer under the Incompatible
+Timesharing System (ITS) to provide high level language support for the
+Dynamic Modeling Group at MIT's Project MAC.  Infocom built the original
+PDP-10 Zork in MDL and their later ZIL (Zork Implementation Language) was
+based on a subset of MDL.  Confusion is a MDL interpreter that works just well
+enough to play the original mainframe Zork all the way through.")
+      (home-page "http://www.russotto.net/git/mrussotto/confusion/src/master/src/README")
+      (license license:gpl3+))))
+
+(define man-for-txr
+  (let ((commit "dfbf19b9a96474b8c1bacac85e43605e5691ceb2")
+        ;; Number of additional commits since the last tag (see the output of
+        ;; "git describe --tags").
+        (revision "41"))
+    (package
+      (name "man-for-txr")
+      (version (git-version "1.6g" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://www.kylheku.com/git/man/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1zy0g8fj9nsfwzvg88hyaiy94r8j14xhs8vy2ln2niqdm6x2lvy2"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; There are no tests.
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-man2html-makefile
+             (lambda _
+               (substitute* "man2html/Makefile.in"
+                 ;; It inadvertently ignores @bindir@.
+                 (("^(bindir = \\$\\(DESTDIR\\)\\$\\(PREFIX\\)).*" _ prefix)
+                  (string-append prefix "@bindir@\n")))
+               #t))
+           (add-after 'unpack 'delete-generated-files
+             (lambda _
+               (for-each delete-file
+                         (append
+                          (list "conf_script")
+                          (map (lambda (d) (string-append d "/Makefile"))
+                               '("." "man" "man2html" "src"))
+                          (map (lambda (f) (string-append "src/" f))
+                               '("makewhatis.in" "man.conf"
+                                 "paths.h" "version.h"))))
+               #t))
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (setenv "CC" ,(cc-for-target))
+               ;; Humor the manually written configure script.
+               (invoke "./configure" "+lang" "en" "+fhs"
+                       (string-append "-prefix=" (assoc-ref outputs "out")))
+               #t)))))
+      (home-page "https://www.kylheku.com/cgit/man/")
+      (synopsis "Modifications to the man utilities, specifically man2html")
+      (description
+       "This is a fork of the man utilities intended specifically for building
+the HTML documentation of TXR.")
+      (license license:gpl2))))
+
+(define-public txr
+  (package
+    (name "txr")
+    (version "294")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://www.kylheku.com/git/txr/")
+             (commit (string-append "txr-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cd0ah6lzwszn4jjxrbwknhscdm6rgsprpiybzlikcckgcylpkdn"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:configure-flags
+           #~(list (string-append "cc=" #$(cc-for-target))
+                   (string-append "--prefix=" #$output))
+           #:test-target "tests"
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-license-installation
+                 (lambda _
+                   (substitute* "Makefile"
+                     (("INSTALL(,.*LICENSE,.*)\\$\\(datadir\\)" _ match)
+                      (string-append "INSTALL" match #$output
+                                     "/share/doc/" #$name "-" #$version)))))
+               (delete 'install-license-files)
+               (add-after 'unpack 'fix-paths
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "stream.c"
+                     (("/bin/sh")
+                      (search-input-file inputs "/bin/bash")))))
+               (add-after 'unpack 'fix-tests
+                 (lambda _
+                   (substitute* (list "tests/017/realpath.tl"
+                                      "tests/017/realpath.expected")
+                     (("/usr/bin") "/"))))
+               (replace 'configure
+                 ;; ./configure is a hand-written script that can't handle
+                 ;; standard autotools arguments like CONFIG_SHELL.
+                 (lambda* (#:key configure-flags #:allow-other-keys)
+                   (setenv "txr_shell" (which "bash"))
+                   (apply invoke "./configure" configure-flags)))
+               (add-after 'build 'build-doc
+                 (lambda _
+                   (setenv "GS_GENERATE_UUIDS" "0")
+                   (invoke "make" "txr-manpage.html" "txr-manpage.pdf")))
+               (add-after 'install 'install-doc
+                 (lambda _
+                   (let ((doc (string-append #$output "/share/doc/"
+                                             #$name "-" #$version)))
+                     (for-each (lambda (f) (install-file f doc))
+                               '("txr-manpage.html" "txr-manpage.pdf")))))
+               (add-after 'install 'install-vim-files
+                 (lambda _
+                   (let ((syntax (string-append
+                                   #$output
+                                   "/share/vim/vimfiles/pack/guix/start/txr/syntax")))
+                     (install-file "tl.vim" syntax)
+                     (install-file "txr.vim" syntax)))))))
+    (native-inputs
+     ;; Required to build the documentation.
+     (list ghostscript
+           groff
+           man-for-txr))
+    (inputs
+     (list bash-minimal
+           libffi
+           libxcrypt
+           zlib))
+    (synopsis "General-purpose, multi-paradigm programming language")
+    (description
+     "TXR is a general-purpose, multi-paradigm programming language.  It
+comprises two languages integrated into a single tool: a text scanning and
+extraction language referred to as the TXR Pattern Language (sometimes just
+\"TXR\"), and a general-purpose dialect of Lisp called TXR Lisp.  TXR can be
+used for everything from \"one liner\" data transformation tasks at the
+command line, to data scanning and extracting scripts, to full application
+development in a wide-range of areas.")
+    (home-page "https://www.nongnu.org/txr/")
+    (license license:bsd-2)))
+
 (define picolisp32
   (package
     (name "picolisp32")
@@ -963,7 +1101,8 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
                    #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("openssl" ,openssl)))
+     `(("libxcrypt" ,libxcrypt)
+       ("openssl" ,openssl)))
     (arguments
      `(#:system ,(match (%current-system)
                    ((or "armhf-linux" "aarch64-linux")
@@ -1511,139 +1650,3 @@ statistical profiler, a code coverage tool, and many other extensions.")
     ;; loop macro has its own license.  See COPYING file for further notes.
     (license (list license:public-domain license:bsd-2
                    (license:x11-style "file://src/code/loop.lisp")))))
-
-(define man-for-txr
-  (let ((commit "dfbf19b9a96474b8c1bacac85e43605e5691ceb2")
-        ;; Number of additional commits since the last tag (see the output of
-        ;; "git describe --tags").
-        (revision "41"))
-    (package
-      (name "man-for-txr")
-      (version (git-version "1.6g" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "http://www.kylheku.com/git/man/")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1zy0g8fj9nsfwzvg88hyaiy94r8j14xhs8vy2ln2niqdm6x2lvy2"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f ; There are no tests.
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-man2html-makefile
-             (lambda _
-               (substitute* "man2html/Makefile.in"
-                 ;; It inadvertently ignores @bindir@.
-                 (("^(bindir = \\$\\(DESTDIR\\)\\$\\(PREFIX\\)).*" _ prefix)
-                  (string-append prefix "@bindir@\n")))
-               #t))
-           (add-after 'unpack 'delete-generated-files
-             (lambda _
-               (for-each delete-file
-                         (append
-                          (list "conf_script")
-                          (map (lambda (d) (string-append d "/Makefile"))
-                               '("." "man" "man2html" "src"))
-                          (map (lambda (f) (string-append "src/" f))
-                               '("makewhatis.in" "man.conf"
-                                 "paths.h" "version.h"))))
-               #t))
-           (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (setenv "CC" ,(cc-for-target))
-               ;; Humor the manually written configure script.
-               (invoke "./configure" "+lang" "en" "+fhs"
-                       (string-append "-prefix=" (assoc-ref outputs "out")))
-               #t)))))
-      (home-page "https://www.kylheku.com/cgit/man/")
-      (synopsis "Modifications to the man utilities, specifically man2html")
-      (description
-       "This is a fork of the man utilities intended specifically for building
-the HTML documentation of TXR.")
-      (license license:gpl2))))
-
-(define-public txr
-  (package
-    (name "txr")
-    (version "294")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://www.kylheku.com/git/txr/")
-             (commit (string-append "txr-" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0cd0ah6lzwszn4jjxrbwknhscdm6rgsprpiybzlikcckgcylpkdn"))))
-    (build-system gnu-build-system)
-    (arguments
-     (list #:configure-flags
-           #~(list (string-append "cc=" #$(cc-for-target))
-                   (string-append "--prefix=" #$output))
-           #:test-target "tests"
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'unpack 'fix-license-installation
-                 (lambda _
-                   (substitute* "Makefile"
-                     (("INSTALL(,.*LICENSE,.*)\\$\\(datadir\\)" _ match)
-                      (string-append "INSTALL" match #$output
-                                     "/share/doc/" #$name "-" #$version)))))
-               (delete 'install-license-files)
-               (add-after 'unpack 'fix-paths
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "stream.c"
-                     (("/bin/sh")
-                      (search-input-file inputs "/bin/bash")))))
-               (add-after 'unpack 'fix-tests
-                 (lambda _
-                   (substitute* (list "tests/017/realpath.tl"
-                                      "tests/017/realpath.expected")
-                     (("/usr/bin") "/"))))
-               (replace 'configure
-                 ;; ./configure is a hand-written script that can't handle
-                 ;; standard autotools arguments like CONFIG_SHELL.
-                 (lambda* (#:key configure-flags #:allow-other-keys)
-                   (setenv "txr_shell" (which "bash"))
-                   (apply invoke "./configure" configure-flags)))
-               (add-after 'build 'build-doc
-                 (lambda _
-                   (setenv "GS_GENERATE_UUIDS" "0")
-                   (invoke "make" "txr-manpage.html" "txr-manpage.pdf")))
-               (add-after 'install 'install-doc
-                 (lambda _
-                   (let ((doc (string-append #$output "/share/doc/"
-                                             #$name "-" #$version)))
-                     (for-each (lambda (f) (install-file f doc))
-                               '("txr-manpage.html" "txr-manpage.pdf")))))
-               (add-after 'install 'install-vim-files
-                 (lambda _
-                   (let ((syntax (string-append
-                                   #$output
-                                   "/share/vim/vimfiles/pack/guix/start/txr/syntax")))
-                     (install-file "tl.vim" syntax)
-                     (install-file "txr.vim" syntax)))))))
-    (native-inputs
-     ;; Required to build the documentation.
-     (list ghostscript
-           groff
-           man-for-txr))
-    (inputs
-     (list bash-minimal
-           libffi
-           zlib))
-    (synopsis "General-purpose, multi-paradigm programming language")
-    (description
-     "TXR is a general-purpose, multi-paradigm programming language.  It
-comprises two languages integrated into a single tool: a text scanning and
-extraction language referred to as the TXR Pattern Language (sometimes just
-\"TXR\"), and a general-purpose dialect of Lisp called TXR Lisp.  TXR can be
-used for everything from \"one liner\" data transformation tasks at the
-command line, to data scanning and extracting scripts, to full application
-development in a wide-range of areas.")
-    (home-page "https://www.nongnu.org/txr/")
-    (license license:bsd-2)))

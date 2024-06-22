@@ -4,7 +4,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
-;;; Copyright © 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2021, 2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -227,9 +227,10 @@ unpacking."
 
   (when (string-null? import-path)
     (display "WARNING: The Go import path is unset.\n"))
-  (when (string-null? unpack-path)
-    (set! unpack-path import-path))
-  (let ((dest (string-append (getenv "GOPATH") "/src/" unpack-path)))
+  (let ((dest (string-append (getenv "GOPATH") "/src/"
+                             (if (string-null? unpack-path)
+                               import-path
+                               unpack-path))))
     (mkdir-p dest)
     (if (file-is-directory? source)
         (copy-recursively source dest #:keep-mtime? #t)
@@ -254,8 +255,12 @@ unpacking."
                 (_ #f))
               inputs))))
 
-(define* (build #:key import-path build-flags #:allow-other-keys)
+(define* (build #:key import-path build-flags (parallel-build? #t)
+                #:allow-other-keys)
   "Build the package named by IMPORT-PATH."
+  (let* ((njobs (if parallel-build? (parallel-job-count) 1)))
+    (setenv "GOMAXPROCS" (number->string njobs)))
+
   (with-throw-handler
     #t
     (lambda _
@@ -272,9 +277,12 @@ unpacking."
       (invoke "go" "env"))))
 
 ;; Can this also install commands???
-(define* (check #:key tests? import-path #:allow-other-keys)
+(define* (check #:key tests? import-path (parallel-tests? #t)
+                #:allow-other-keys)
   "Run the tests for the package named by IMPORT-PATH."
   (when tests?
+    (let* ((njobs (if parallel-tests? (parallel-job-count) 1)))
+      (setenv "GOMAXPROCS" (number->string njobs)))
     (invoke "go" "test" import-path))
   #t)
 
