@@ -857,7 +857,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-14)
+(define-public gcc gcc-13)
 
 
 ;;;
