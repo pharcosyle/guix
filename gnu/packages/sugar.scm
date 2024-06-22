@@ -215,7 +215,7 @@ used every school day by children in more than forty countries.")
                 (string-append "#" m))))))))
     (inputs (list cairo gtk+))
     (native-inputs
-     (list autoconf-2.71 automake
+     (list autoconf automake
            icon-naming-utils
            libtool
            pkg-config
@@ -289,7 +289,7 @@ activities and other Sugar components.")
            python-pygobject
            python-xapian-bindings))
     (native-inputs
-     (list autoconf-2.71
+     (list autoconf
            automake
            libtool
            pkg-config))
@@ -367,7 +367,7 @@ and metadata, and the journal with querying and full text search.")
            telepathy-glib
            webkitgtk-for-gtk3))
     (native-inputs
-     (list autoconf-2.71
+     (list autoconf
            automake
            gettext-minimal
            glib
