@@ -246,26 +246,26 @@ well as CD-ROM images.")
 (define-public filelight
   (package
     (name "filelight")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/filelight-" version ".tar.xz"))
               (sha256
                (base32
-                "1mwl1dkknvqw9hd5jsh4cdx1zd8f6rxca0vyq01wrx44q9p6dn1n"))))
+                "13mvd21p4m1kd2mamvdxx34yzvzr71hmlgb5qqs44zpwwzyvsl8m"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kirigami
-                  kquickcharts
-                  kxmlgui
-                  kio
-                  ki18n
-                  kdeclarative
-                  qqc2-desktop-style
-                  qtgraphicaleffects
-                  qtquickcontrols2-5
-                  qtsvg-5))
+    (inputs (list kirigami-6
+                  kirigami-addons
+                  kquickcharts-6
+                  kxmlgui-6
+                  kio-6
+                  ki18n-6
+                  kdeclarative-6
+                  qqc2-desktop-style-6
+                  qtsvg))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://apps.kde.org/filelight/")
     (synopsis "Visualize the disk usage")
     (description "Filelight is an application to visualize the disk usage on
@@ -409,7 +409,7 @@ Kate's features include:
 (define-public kdebugsettings
   (package
     (name "kdebugsettings")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -417,17 +417,18 @@ Kate's features include:
                                   ".tar.xz"))
               (sha256
                (base32
-                "02igg8ry1cxa83pdj6pgwzw7hpjwfrfk57d9ybgfvy2x08d5kvqz"))))
+                "0h5srx78dqym260saz4bv1dv8gkfnsgvfqnbd0hq32xm1h8sbw0g"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kcoreaddons
-                  kconfig
-                  kdbusaddons
-                  ki18n
-                  kwidgetsaddons
-                  kitemviews
-                  kcompletion
-                  kxmlgui))
+    (inputs (list kcoreaddons-6
+                  kconfig-6
+                  kdbusaddons-6
+                  ki18n-6
+                  kwidgetsaddons-6
+                  kitemviews-6
+                  kcompletion-6
+                  kxmlgui-6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/utilities/kdebugsettings")
     (synopsis "Choose which QLoggingCategory are displayed")
     (description
@@ -437,26 +438,29 @@ Kate's features include:
 (define-public kbackup
   (package
     (name "kbackup")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kbackup-" version ".tar.xz"))
               (sha256
                (base32
-                "121w54ivmq8qnxc97g47i8vq4nkivypp84pqs9rs5bid4cpfvh9p"))))
+                "0n3i4lvxs4bh72rswydwljfszmlr8jmkd6bsiy14895j5rr1srq2"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kguiaddons
-                  knotifications
-                  ki18n
-                  kio
-                  kxmlgui
-                  kiconthemes
-                  karchive
-                  kwidgetsaddons
+    (inputs (list kguiaddons-6
+                  knotifications-6
+                  ki18n-6
+                  kio-6
+                  kxmlgui-6
+                  kiconthemes-6
+                  karchive-6
+                  kwidgetsaddons-6
+                  kstatusnotifieritem
                   libarchive
-                  shared-mime-info))
+                  shared-mime-info
+                  qt5compat))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://apps.kde.org/kbackup/")
     (synopsis "Backup program with an easy-to-use interface")
     (description
@@ -1216,30 +1220,30 @@ Features:
 (define-public sweeper
   (package
     (name "sweeper")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/sweeper-" version ".tar.xz"))
        (sha256
-        (base32 "19b382cgdcd4qh4ppdmbhsacvcc9nlbs7spcg8ii02bdpx6qw9b7"))))
+        (base32 "1pddglzvkqvv0qf0pd7w1cy2q1bdygjwfdahcmbqqbn1ws15hx8k"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kactivities-stats
-           kbookmarks
-           kcrash
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           ki18n
-           kio
-           ktextwidgets
-           kxmlgui
+     (list plasma-activities-stats
+           kbookmarks-6
+           kcrash-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           ki18n-6
+           kio-6
+           ktextwidgets-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5))
+           qtbase))
     (home-page "https://apps.kde.org/sweeper/")
     (synopsis "Temporary file and history cleaner")
     (description "

@@ -575,26 +575,27 @@ one of the APIs mentioned above.")
 (define-public kaccounts-integration
   (package
     (name "kaccounts-integration")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1mn64xw5r2magy5y0qmg5r907jz1y8jar0qqkc6s1zjjr3s3knac"))))
+                "01yk0qfwj4xqhw7khxypb60w6qbfgkx60xpy396s5xld1mwks2ym"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kcmutils
-                  ki18n
-                  kcoreaddons
-                  kdbusaddons
-                  kdeclarative
-                  kwallet
-                  kio
-                  libaccounts-qt
-                  qcoro-qt5
-                  signond))
+    (inputs (list kcmutils-6
+                  ki18n-6
+                  kcoreaddons-6
+                  kdbusaddons-6
+                  kdeclarative-6
+                  kwallet-6
+                  kio-6
+                  libaccounts-qt6
+                  qcoro-qt6
+                  signond-qt6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/network/kaccounts-integration")
     (synopsis "Online account management system")
     (description "The Kaccounts Integration library provides online account
@@ -604,24 +605,26 @@ management system and its Plasma integration components.")
 (define-public kaccounts-providers
   (package
     (name "kaccounts-providers")
-    (version "23.04.3")
+    (version "24.02.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lrmj6r09ypnpl2s586i4rd3fk3760qlxyrhh91k43wkb8i6m8f0"))))
+                "064wfjisyx1bcpk8a15p28d7pncgdikzzy00kyqimdjghn56wbsf"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules intltool))
     (inputs (list kaccounts-integration
-                  kcoreaddons
-                  kdeclarative
-                  ki18n
-                  kio
-                  libaccounts-qt
-                  qtwebengine-5
-                  signond))
+                  kcoreaddons-6
+                  kdeclarative-6
+                  kpackage-6
+                  ki18n-6
+                  kio-6
+                  libaccounts-qt6
+                  qtwebengine
+                  signond-qt6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/network/kaccounts-providers")
     (synopsis "Online account providers for the KAccounts system")
     (description "This package provides online account providers for the
@@ -2127,31 +2130,31 @@ and allows one to view/extract message formatted text in Rich Text Format.")
 (define-public libkgapi
   (package
     (name "libkgapi")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/libkgapi-" version ".tar.xz"))
        (sha256
-        (base32 "18jcrp7qi35zxzb4b7mn6519bjw47s7kwfahd6a50p40j17k09bs"))))
+        (base32 "1h37qdz4n7za0gbk3rrbbm94j6csdnd8a7mrcqycp0434l2q8g64"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules qttools-5))
+     (list extra-cmake-modules qttools))
     (inputs
      (list cyrus-sasl
-           ki18n
-           kcontacts
-           kcalendarcore
-           kio
-           kwallet
-           kwindowsystem
-           qtbase-5
-           qtdeclarative-5
-           qtwebchannel-5
-           qtwebengine-5))
+           ki18n-6
+           kcontacts-6
+           kcalendarcore-6
+           kio-6
+           kwallet-6
+           kwindowsystem-6
+           qtdeclarative
+           qtwebchannel
+           qtwebengine))
     (arguments
-     `(#:tests? #f)) ;; TODO 6/48 tests fail
+     (list #:qtbase qtbase
+           #:tests? #f)) ;; TODO 6/48 tests fail
     (home-page "https://invent.kde.org/pim/libkgapi")
     (synopsis "Library for accessing various Google services via their public
 API")

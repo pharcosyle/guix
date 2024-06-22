@@ -3,7 +3,7 @@
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2022 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
-;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,50 +42,50 @@
   #:use-module (gnu packages vnc)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public dolphin
   (package
     (name "dolphin")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-" version ".tar.xz"))
        (sha256
-        (base32 "0bys24i2a3a65ahq5p3q1zr2px8jqip1gjn5m7rngq4hcddb1ji8"))))
+        (base32 "00d74sxnfnw3f39dm6mhwir8f48zf3qgbnfqq4bclnaisj84912h"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools ruby ruby-test-unit))
+     (list extra-cmake-modules kdoctools-6 ruby ruby-test-unit))
     (inputs
-     (list baloo
+     (list baloo-6
            baloo-widgets
-           kactivities
-           kbookmarks
-           kcmutils
-           kcompletion
-           kconfig
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kiconthemes
-           kinit
-           kio
-           knewstuff
-           knotifications
-           kparts
-           ktextwidgets
+           plasma-activities
+           kbookmarks-6
+           kcmutils-6
+           kcompletion-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           knotifications-6
+           kparts-6
+           ktextwidgets-6
            kuserfeedback
-           kwindowsystem
+           kwindowsystem-6
            breeze-icons ;; default icon set
            phonon
-           qtbase-5
-           qtx11extras
-           solid))
+           solid-6
+           libxkbcommon))
     (arguments
-     `(#:tests? #f)) ;; TODO: 4/15 tests fail even with offscreen
+     (list #:qtbase qtbase
+           #:tests? #f)) ;; TODO: 4/15 tests fail even with offscreen
     (home-page "https://apps.kde.org/dolphin/")
     (synopsis "File manager for KDE")
     (description "Dolphin is a file manager for KDE focusing on usability.
@@ -105,26 +105,28 @@ The main features of Dolphin are:
 (define-public dolphin-plugins
   (package
     (name "dolphin-plugins")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-plugins-" version ".tar.xz"))
        (sha256
-        (base32 "0h1b559icj5g3xrx5697a9rncpdcmsjg774c6m36ild56bwc048v"))))
+        (base32 "038bqnwa9m52h0pgbj0wkwcqg0kqw8acpn4wrq602pl5av09xfhl"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list dolphin
-           ki18n
-           kio
-           ktexteditor
-           ksyntaxhighlighting
-           kxmlgui
+           ki18n-6
+           kio-6
+           ktexteditor-6
+           ktextwidgets-6
+           ksyntaxhighlighting-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5))
+           qtbase
+           qt5compat))
     (home-page "https://www.kde.org/")
     (synopsis "VCS-Plugins for Dolphin")
     (description "This package contains plugins that offer integration in
@@ -193,48 +195,46 @@ document meta data file.")
 (define-public konsole
   (package
     (name "konsole")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/konsole-" version ".tar.xz"))
        (sha256
-        (base32 "1k68y1i3g3bsz1dz81jhkx1q2fb13rbm5ywh632bcyln0c6l0vz0"))))
+        (base32 "0bzf83jflh3s0ivpdn2i0g25088axyik3bdw29fdzmrnclrpwik6"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools zlib))
+     (list extra-cmake-modules kdoctools-6 zlib))
     (inputs
-     (list kbookmarks
-           kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kguiaddons
-           ki18n
-           kiconthemes
-           kinit
-           kio
-           knewstuff
-           kglobalaccel
-           knotifications
-           knotifyconfig
-           kparts
-           kpty
-           kservice
-           ktextwidgets
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+     (list kbookmarks-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           kglobalaccel-6
+           knotifications-6
+           knotifyconfig-6
+           kparts-6
+           kpty-6
+           kservice-6
+           ktextwidgets-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5
-           qtscript
-           qtmultimedia-5
+           qt5compat
+           qtmultimedia
            icu4c))
     (arguments
-     `(#:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
+     (list #:qtbase qtbase
+           #:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
     (home-page "https://www.kde.org/")
     (synopsis "Terminal emulator similar for KDE")
     (description "Konsole is a terminal emulator, similar to xterm, built on
@@ -381,17 +381,18 @@ This package is part of the KDE administration module.")
 (define-public spectacle
   (package
     (name "spectacle")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/spectacle-" version ".tar.xz"))
        (sha256
-        (base32 "1fyklcvz0zndxabflkka75rham6768rp01as7m5dv0ic4lipkf9m"))))
+        (base32 "0li1fhhvqk5y1j0jpazhjw1qh5mnwzn4dkl85bmlsn5hbqszf621"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases
+     (list #:qtbase qtbase
+           #:phases
            #~(modify-phases %standard-phases
                (replace 'check
                  (lambda* (#:key tests? #:allow-other-keys)
@@ -399,33 +400,33 @@ This package is part of the KDE administration module.")
                      (invoke "ctest" "-E"
                              "filename_test")))))))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kconfig
-           kcoreaddons
-           kdbusaddons
-           kglobalaccel
-           kguiaddons
-           ki18n
-           kio
-           kirigami
-           knotifications
+     (list kconfig-6
+           kcoreaddons-6
+           kdbusaddons-6
+           kglobalaccel-6
+           kguiaddons-6
+           ki18n-6
+           kio-6
+           kirigami-6
+           knotifications-6
            kpipewire
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
-           libxcb
-           purpose
-           qtdeclarative-5
-           qtquickcontrols2-5
-           qtwayland-5
-           qtx11extras
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
+           purpose-6
+           layer-shell-qt
+           qtdeclarative
+           qtmultimedia
+           qtwayland
            wayland
            wayland-protocols
            plasma-wayland-protocols
            xcb-util
            xcb-util-cursor
-           xcb-util-image))
+           xcb-util-image
+           libxkbcommon))
     (home-page "https://apps.kde.org/spectacle/")
     (synopsis "Screenshot capture utility for KDE")
     (description "Spectacle is a screenshot taking utility for the KDE.")
