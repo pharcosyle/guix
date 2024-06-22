@@ -2512,7 +2512,7 @@ wlr-output-management-unstable-v1 protocol.")
            pciutils
            ;; udis86-for-hyprland
            ;; wlroots-for-hyprland
-           wlroots-0.17
+           wlroots
 
            tomlplusplus
 
