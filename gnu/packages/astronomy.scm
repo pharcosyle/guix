@@ -912,7 +912,8 @@ astronomical images, especially when there is no WCS information available.")
     (propagated-inputs (list python-astropy python-matplotlib python-numpy
                              python-scikit-learn python-scipy))
     (native-inputs (list python-pytest-astropy-header python-pytest-cov
-                         python-pytest-doctestplus python-pytest-remotedata))
+                         python-pytest-doctestplus python-pytest-remotedata
+                         python-setuptools python-wheel))
     (home-page "https://astroml.org")
     (synopsis "Tools for machine learning and data mining in astronomy")
     (description "This package provides tools for machine learning and data
@@ -981,7 +982,7 @@ exitinction laws found in the literature.")
             (lambda _
               (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (inputs
      (list curl cfitsio zlib))
     (propagated-inputs
@@ -1033,7 +1034,8 @@ CFITSIO library.  Among other things, it can
            python-numpy
            python-scipy
            python-supersmoother))
-    (native-inputs (list python-pytest python-nose python-setuptools-scm))
+    (native-inputs (list python-pytest python-nose python-setuptools-scm
+                         python-setuptools python-wheel))
     (home-page "https://github.com/astroml/gatspy")
     (synopsis "General tools for astronomical time series in Python")
     (description
@@ -1768,7 +1770,9 @@ astronomy and astrophysics.")
      (list python-extension-helpers
            python-hypothesis
            python-pytest-astropy
-           python-setuptools-scm))
+           python-setuptools-scm
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-astropy python-numpy))
     (home-page "https://github.com/astropy/astropy-healpix")
@@ -1804,7 +1808,9 @@ astronomy and astrophysics.")
      (list python-hypothesis
            python-pytest
            python-pytest-remotedata
-           python-setuptools-scm))
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (home-page "https://docs.astropy.org/en/latest/utils/iers.html")
     (synopsis "IERS Earth Rotation and Leap Second tables for the astropy core package")
     (description
@@ -1984,7 +1990,9 @@ to access online Astronomical data.  Each web service has its own sub-package.")
            python-extension-helpers
            python-pytest-astropy
            python-scipy
-           python-setuptools-scm))
+           python-setuptools-scm
+           python-setuptools
+           python-wheel))
     (propagated-inputs (list python-astropy python-numpy))
     (home-page "https://github.com/astropy/astroscrappy")
     (synopsis "Speedy Cosmic Ray Annihilation Package in Python")
@@ -2055,7 +2063,10 @@ Herschel.")
             (lambda _
               (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (native-inputs
-     (list python-pytest python-pytest-cov python-pytest-openfiles))
+     (list python-pytest
+           python-pytest-cov
+           python-pytest-openfiles
+           python-setuptools))
     (propagated-inputs
      (list python-astropy python-click python-dask python-numpy))
     (home-page "https://casa-formats-io.readthedocs.io/")
@@ -2128,7 +2139,10 @@ bad pixel tracking throughout the reduction process.")
            python-pytest-cov
            python-pytest-remotedata
            python-setuptools-scm
-           python-xarray))
+           python-xarray
+           python-xarray
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/MAVENSDC/cdflib")
     (synopsis "Python library to deal with NASA's CDF astronmical data format")
     (description "This package provides a Python @acronym{CDF, Computable
@@ -2236,7 +2250,9 @@ files and provide related services.")
      (list python-astropy
            python-pytest
            python-pytest-cov
-           python-pytest-mypy))
+           python-pytest-mypy
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/poliastro/czml3")
     (synopsis "Python library to write CZML")
     (description
@@ -2258,9 +2274,11 @@ Cesium.")
     (build-system pyproject-build-system)
     (native-inputs
      (list python-astropy
-           python-pytest-astropy
            python-pytest
-           python-setuptools-scm))
+           python-pytest-astropy
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (propagated-inputs (list python-numpy python-pandas))
     (home-page "https://sunpy.org")
     (synopsis "Access astronomical HMI, AIA and MDI data with Python")
@@ -2297,9 +2315,9 @@ used with local NetDRMS sites.")
               ;; Cython extensions have to be built before running the tests.
               (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (propagated-inputs
-     (list python-astropy python-numpy))
+     (list python-astropy python-numpy python-setuptools))
     (native-inputs
-     (list python-pytest python-setuptools-scm))
+     (list python-flake8 python-pytest python-setuptools-scm python-wheel))
     (home-page "https://github.com/spacetelescope/drizzle")
     (synopsis
      "Astronomical tool for combining dithered images into a single image")
@@ -2374,7 +2392,8 @@ of dates.")
     (propagated-inputs
      (list python-pydantic-2 python-pydantic-settings python-requests))
     (native-inputs
-     (list python-pytest python-pytest-astropy))
+     (list python-pytest python-pytest-astropy python-setuptools
+                         python-wheel))
     (home-page "https://helioviewer.org/")
     (synopsis "Helioviewer Python API Wrapper")
     (description "@code{hvpy} is a Python API wrapper around the formal
@@ -2395,7 +2414,9 @@ of dates.")
     (native-inputs
      (list python-pytest
            python-pytest-mpl
-           python-setuptools-scm))
+           python-setuptools-scm
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-astropy
            python-matplotlib
@@ -2645,7 +2666,9 @@ Low-Earth Orbit (LEO).")
            python-pytest-xdist
            python-scikit-image
            python-setuptools-scm
-           python-sphinx))
+           python-setuptools
+           python-sphinx
+           python-wheel))
     (home-page "https://poppy-optics.readthedocs.io/")
     (synopsis "Physical Optics Propagation in Python")
     (description
@@ -2703,7 +2726,8 @@ interest, and which require portability between platforms or ease of scripting."
       ;; <https://github.com/astropy/pyvo/issues/547>.
       #:test-flags #~(list "-k" "not test_single_table_description")))
     (native-inputs
-     (list python-pytest-astropy python-requests-mock python-setuptools-scm))
+     (list python-pytest-astropy python-requests-mock python-setuptools-scm
+           python-setuptools python-wheel))
     (propagated-inputs
      (list python-astropy python-pillow python-requests))
     (home-page "https://github.com/astropy/pyvo")
@@ -3207,7 +3231,9 @@ python_files = test_*.py"))))))))
     (native-inputs
      (list python-pytest
            python-pytest-astropy-header
-           python-setuptools-scm))
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (inputs
      (list qd))
     (propagated-inputs
@@ -3242,7 +3268,10 @@ spherical polygons that represent arbitrary regions of the sky.")
               ;; Cython extensions have to be built before running the tests.
               (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (propagated-inputs (list python-numpy python-scipy))
-    (native-inputs (list python-pytest python-setuptools-scm))
+    (native-inputs (list python-pytest
+                         python-setuptools
+                         python-setuptools-scm
+                         python-wheel))
     (home-page "https://github.com/spacetelescope/stsci.image")
     (synopsis "Image array manipulation functions")
     (description
@@ -3270,7 +3299,8 @@ Telescope Science Institute} image array manipulation functions.")
               ;; Cython extensions have to be built before running the tests.
               (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (propagated-inputs (list python-numpy))
-    (native-inputs (list python-pytest python-setuptools-scm))
+    (native-inputs (list python-pytest python-setuptools
+                         python-setuptools-scm python-wheel))
     (home-page "https://stsciimagestats.readthedocs.io/en/latest/")
     (synopsis "Compute sigma-clipped statistics on data arrays")
     (description
@@ -3310,7 +3340,11 @@ task}.")
     (propagated-inputs
      (list python-numpy))
     (native-inputs
-     (list python-pytest python-setuptools-scm python-waf))
+     (list python-pytest
+           python-setuptools
+           python-setuptools-scm
+           python-waf
+           python-wheel))
     (home-page "https://stscistimage.readthedocs.io/en/latest/")
     (synopsis "STScI image processing")
     (description
@@ -3356,7 +3390,9 @@ processing functions: @code{xyxymatch}, @code{geomap}.")
            python-pytest
            python-pytest-cov
            python-pytest-doctestplus
-           python-setuptools-scm))
+           python-setuptools-scm
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/spacetelescope/stcal")
     (synopsis "STScI tools and algorithms used in calibration pipelines")
     (description "STScI tools and algorithms used in calibration pipelines.")
@@ -4013,6 +4049,7 @@ more.")
                 (invoke "python" "-m" "unittest" "discover" "-s" "test")))))))
     (inputs
      (list python-numpy))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/brandon-rhodes/python-jplephem")
     (synopsis "Python version of NASA DE4xx ephemerides")
     (description
@@ -4125,7 +4162,8 @@ exposures and high-level data products (mosaics, extracted spectra, etc.).")
             (lambda _
               (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (native-inputs
-     (list python-pytest-doctestplus python-pytest python-setuptools-scm))
+     (list python-pytest-doctestplus python-pytest python-setuptools
+           python-setuptools-scm python-wheel))
     (inputs
      (list erfa))
     (propagated-inputs
@@ -4212,7 +4250,9 @@ functions, so that they can be called with scalar or array inputs.")
     (native-inputs
      (list python-cython
            python-pandas
-           python-pytest))
+           python-pytest
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-h5py
            python-matplotlib
@@ -4337,12 +4377,14 @@ comparison, and validation are provided.")
       (native-inputs
        (list python-pytest
              python-pytest-remotedata
-             python-setuptools-scm))
+             python-setuptools-scm
+             python-wheel))
       (propagated-inputs
        (list python-astropy
              python-beautifulsoup4
              python-numpy
              python-pytest-astropy-header
+             python-setuptools
              python-six))
       (home-page "https://github.com/spacetelescope/pysynphot")
       (synopsis "Python Synthetic Photometry Utilities")
@@ -4420,7 +4462,9 @@ object.")
     (native-inputs
      (list python-pytest
            python-pytest-astropy
-           python-setuptools-scm))
+           python-setuptools-scm
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/spacetelescope/synphot_refactor")
     (synopsis "Synthetic photometry using Astropy")
     (description
@@ -4498,7 +4542,9 @@ support for reading and writing various compression algorithms including:
                          python-pypa-build
                          python-pytest
                          python-packaging
-                         python-setuptools-scm))
+                         python-setuptools-scm
+                         python-setuptools
+                         python-wheel))
     (propagated-inputs (list python-importlib-resources))
     (home-page "https://asdf-standard.readthedocs.io/")
     (synopsis "ASDF standard schemas")
@@ -4526,7 +4572,7 @@ up-front for extensibility.")
     (arguments
      ;; Dependency cycle with python-asdf
      (list #:tests? #f))
-    (native-inputs (list python-setuptools-scm))
+    (native-inputs (list python-setuptools-scm python-setuptools python-wheel))
     (propagated-inputs (list python-asdf-standard python-importlib-resources))
     (home-page "https://github.com/asdf-format/asdf-transform-schemas")
     (synopsis "ASDF schemas for transforms")
@@ -4554,7 +4600,9 @@ package such as asdf-astropy.")
     (native-inputs
      (list python-pytest
            python-pytest-xdist
-           python-setuptools-scm))
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (propagated-inputs
      (list python-asdf))
     (home-page "https://github.com/asdf-format/asdf-coordinates-schemas")
@@ -4651,7 +4699,7 @@ install an implementation package such as asdf-astropy.")
     (arguments
      ;; Dependency cycle with python-asdf
      (list #:tests? #f))
-    (native-inputs (list python-setuptools-scm))
+    (native-inputs (list python-setuptools-scm python-setuptools python-wheel))
     (propagated-inputs (list python-asdf-standard python-importlib-resources))
     (home-page "https://asdf-unit-schemas.readthedocs.io/")
     (synopsis "ASDF serialization schemas for the units defined by @code{astropy.units}")
@@ -4768,9 +4816,11 @@ default) to world coordinates.")
       ;; python-rad -> python-roman-datamodels -> python-crds -> python-rad
       #:test-flags #~(list "--ignore=tests/test_schemas.py")))
     (native-inputs
-     (list python-pytest python-setuptools-scm))
-    (propagated-inputs
-     (list python-asdf python-asdf-astropy))
+     (list python-pytest
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
+    (propagated-inputs (list python-asdf python-asdf-astropy))
     (home-page "https://github.com/spacetelescope/rad")
     (synopsis "Roman Attribute Dictionary")
     (description
@@ -5015,9 +5065,10 @@ between image and reference catalogs. Currently only aligning images with
                (base32
                 "15kq7z30m9i286ncs9xvpaq3dq1p5fa47jz21prq146qwr7j6dm8"))))
     (build-system pyproject-build-system)
-    (propagated-inputs (list python-numpy python-scipy))
+    (propagated-inputs (list python-numpy python-scipy python-setuptools))
     (native-inputs (list python-codecov python-pytest python-pytest-cov
-                         python-pytest-doctestplus python-setuptools-scm))
+                         python-pytest-doctestplus python-setuptools-scm
+                         python-wheel))
     (home-page "https://github.com/spacetelescope/wiimatch")
     (synopsis
      "Optimal matching of weighted N-dimensional image intensity data")

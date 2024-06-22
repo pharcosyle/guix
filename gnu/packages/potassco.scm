@@ -470,7 +470,7 @@ directly from the python command line.")))
                      (("self\\.assertTrue\\(os_called\\)" all)
                       (string-append "# " all))))))))
     (propagated-inputs (list python-clingo))
-    (native-inputs (list python-typing-extensions))
+    (native-inputs (list python-typing-extensions python-setuptools python-wheel))
     (home-page "https://potassco.org")
     (synopsis "Object relational mapping to clingo")
     (description "@acronym{Clorm, Clingo ORM} provides an @acronym{ORM,
@@ -510,6 +510,7 @@ into Python programs easier.")
                      ;; XXX: Does this cross-compile?
                      (patch-shebang script)))))))
     (propagated-inputs (list python-clingo))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://potassco.org/")
     (synopsis "Solve probabilistic logic programs")
     (description "This package provides a system to solve probabilistic
@@ -532,6 +533,7 @@ the most probable model as well as finding all models and their probabilities.")
                 "1q6hlh4b5hsa4n5agvmfa9rhsxfd2g6kpl4b9kfccwbmf6dh51k6"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-clingo))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://potassco.org/")
     (synopsis "Solve dynamic temporal logic programs")
     (description "This package provides a system to solve dynamic temporal
@@ -559,8 +561,10 @@ logic programs based on clingo.")
                              python-imageio
                              python-jinja2
                              python-jsonschema
-                             python-networkx))
-    (native-inputs (list dot2tex graphviz python-pylint python-pytest))
+                             python-networkx
+                             python-setuptools))
+    (native-inputs (list dot2tex graphviz python-pylint python-pytest
+                         python-wheel))
     (home-page "https://github.com/potassco/clingraph")
     (synopsis "Visualizer for graphs defined as logic programs")
     (description
@@ -607,6 +611,7 @@ as logic programs.")
           python-sphinx-rtd-theme
           python-traitlets
           python-uvicorn))
+   (native-inputs (list python-setuptools python-wheel))
    (home-page "https://github.com/potassco/clingraph")
    (synopsis "Clingo-based interactive UI")
    (description "Clinguin is a graphical user interface toolkit for clingo,

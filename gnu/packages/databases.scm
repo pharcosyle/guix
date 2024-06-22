@@ -635,6 +635,7 @@ the API, and provides features such as:
            python-strenum
            python-tomlkit
            python-typing-extensions))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/RobertCraigie/prisma-client-py")
     (synopsis "Fully type-safe database client")
     (description
@@ -3185,6 +3186,7 @@ protocol with Cython for performance.")
     (build-system pyproject-build-system)
     (arguments '(#:tests? #f))           ;test suite requires docker
     (propagated-inputs (list python-pymysql))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/aio-libs/aiomysql")
     (synopsis "MySQL driver for Python")
     (description "@code{aiomysql} is a driver for accessing a MySQL database
@@ -3626,7 +3628,8 @@ on localhost.")
     (build-system pyproject-build-system)
     (native-inputs
      (list python-cython ; for C extensions
-           python-pytest python-mock python-pytest-xdist)) ; for tests
+           python-pytest python-mock python-pytest-xdist ; for tests
+           python-setuptools python-wheel))
     (propagated-inputs
      (list python-greenlet))
     (arguments
@@ -3761,12 +3764,7 @@ this library provides functions to facilitate such comparisons.")
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32 "0lxi2g2025lz5k7k5dd5fc1lfijqi2yw6qqyjzp073z6laa8cckw"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "pytest" "-vv"))))))
+    (build-system pyproject-build-system)
     (native-inputs
      (list python-mock python-pytest-cov))
     (propagated-inputs
@@ -3824,7 +3822,7 @@ text search extension.")
     (propagated-inputs (list python-click python-click-default-group
                              python-dateutil python-sqlite-fts4
                              python-tabulate))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/simonw/sqlite-utils")
     (synopsis
      "CLI tool and Python utility functions for manipulating SQLite databases")
@@ -3897,7 +3895,7 @@ PickleShare.")
          "1vfrzb414pbh5k0cgcqkp039jvla2galapn4a551zgh8xi70bnrp"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list unzip))
+     (list unzip python-setuptools python-wheel))
     (inputs (list sqlite-next))         ;SQLite 3.45.1 required.
     (arguments
      (list
@@ -4215,7 +4213,8 @@ files or Python scripts that define a list of migration steps.")
      (list #:test-flags
            #~'("tests/test__mysql.py"   ;tests not needing a live db
                "tests/test_MySQLdb_times.py")))
-    (native-inputs (list pkg-config python-pytest))
+    (native-inputs
+     (list pkg-config python-pytest python-setuptools python-wheel))
     (inputs (list mariadb-connector-c))
     (home-page "https://github.com/PyMySQL/mysqlclient")
     (synopsis "MySQLdb is an interface to the popular MySQL database server for Python")
@@ -4252,7 +4251,7 @@ for Python.  The design goals are:
                             ;; The fix was forwarded upstream, see:
                             ;; https://github.com/redis/hiredis-py/pull/160.
                             (delete-file "tests/__init__.py"))))))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (inputs (list hiredis))
     (home-page "https://github.com/redis/hiredis-py")
     (synopsis "Python extension that wraps protocol parsing code in hiredis")
@@ -4344,6 +4343,8 @@ reasonable substitute.")
      (list python-pytest
            python-pytest-asyncio
            python-pytest-timeout
+           python-setuptools
+           python-wheel
            redis))
     (propagated-inputs
      (list python-async-timeout))
@@ -5573,13 +5574,15 @@ mechanism of @code{dogpile}.")
      (list python-beautifulsoup4
            python-black
            python-cogapp
+           python-pip
            python-pytest
            python-pytest-asyncio
            python-pytest-runner
            python-pytest-timeout
            python-pytest-xdist
            python-setuptools
-           python-trustme))
+           python-trustme
+           python-wheel))
     (home-page "https://datasette.io/")
     (synopsis "Multi-tool for exploring and publishing data")
     (description "Datasette is a tool for exploring and publishing data.

@@ -31,6 +31,7 @@
   #:use-module (gnu packages debian)
   #:use-module (gnu packages file)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages xiph))
 
 (define-public patool
@@ -79,6 +80,8 @@
            pbzip2
            pigz
            plzip
+           python-setuptools
+           python-wheel
            rpm))
     (home-page "https://wummel.github.io/patool/")
     (synopsis "Portable archive file manager")
