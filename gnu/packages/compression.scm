@@ -527,15 +527,15 @@ formats, including zstd, xz, gzip, and bgzf.")
 (define-public xz
   (package
    (name "xz")
-   (version "5.4.6")
+   (version "5.6.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/tukaani-project/xz"
                                 "/releases/download/v" version
-                                "/xz-" version ".tar.bz2"))
+                                "/xz-" version ".tar.gz"))
             (sha256
              (base32
-              "0jbg7vfnj5y2dm1s4wvfrw7cznz84cf9z57ch4bx7qg8fjr52f4i"))))
+              "06a585qzn2qlwdv44w7x6p6x8qmbqrqzlz29y8108vyqw7021zcb"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
