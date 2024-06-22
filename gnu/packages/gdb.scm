@@ -51,14 +51,14 @@
   ;; enough to avoid massive rebuilds.
   (package
     (name "gdb")
-    (version "14.1")
+    (version "14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "106v7rj72km56mb2ssjsyjfix3yn4f3wqr7lpzy52d0lfq9gavfn"))))
+                "0wkprsjyyh204fdjlkaz20k847l88i9y8m9zqsv15vcd3l3dhk9d"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -175,18 +175,6 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
               (sha256
                (base32
                 "0k9i8mizg4hby020k53kqmc835pajh9c8d5klv5s1ddm6p6hqdc3"))))))
-
-(define-public gdb-14
-  (package
-    (inherit gdb-13)
-    (version "14.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gdb/gdb-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "106v7rj72km56mb2ssjsyjfix3yn4f3wqr7lpzy52d0lfq9gavfn"))))))
 
 (define-public gdb
   ;; The "default" version.

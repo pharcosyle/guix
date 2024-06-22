@@ -117,7 +117,7 @@
 date algorithms library for calendar dates and durations.  It also provides
 the <tz.h> library for handling time zones and leap seconds.")
     (home-page "https://howardhinnant.github.io/date/date.html")
-    (license license:expat))
+    (license license:expat)))
 
 (define-public libical
   (package
