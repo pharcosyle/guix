@@ -1585,7 +1585,7 @@ command.")
     (name "tzdata")
     ;; This package should be kept in sync with python-pytz and python-tzdata
     ;; in (gnu packages time).
-    (version "2023d")
+    (version "2024a")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1593,7 +1593,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1wq858ip55ijnlrffnnadq7vw0x93ywxghgfxh68r2qa1fbj3jnv"))))
+               "1qzzxnv059gziwjccsgdys8nba4498qg78cdgad0blnbk92k810d"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f
@@ -1661,7 +1661,7 @@ command.")
                           version ".tar.gz"))
                     (sha256
                      (base32
-                      "07hn7hn2klw4dfyr673ril2nrk18198hbfv25gljsvc833hzk9g9")))))
+                      "1y0zdax8rdic93d9jlww5h92m2qxrbj1cghl3n7lanpzmna2h1w0")))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
