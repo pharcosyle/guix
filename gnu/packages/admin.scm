@@ -1009,11 +1009,6 @@ re-executing them as necessary.")
            libxcrypt
            ncurses
            readline))                   ;for 'ftp'
-    (native-inputs
-     (if (member (%current-system)
-                 (package-supported-systems net-tools))
-         (list net-tools)               ;for tests
-         '()))
     (home-page "https://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
