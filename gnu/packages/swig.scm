@@ -45,7 +45,7 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "16xc767gf5ip40jh698wbdrxrghli5v2c966bkdmrmpwv378mw1a"))))
+               "1n5pb77hwadjpbqgqn28i5v4cp94ar19wmv9vk6v4j6hw9a5617s"))))
     (build-system gnu-build-system)
     (native-inputs (list boost
                          ;; The following are for tests and examples:
@@ -68,3 +68,19 @@ you tailor the wrapping process to suit your application.")
 
     ;; See http://www.swig.org/Release/LICENSE for details.
     (license gpl3+)))
+
+(define-public swig-4.0
+  (package
+    (inherit swig)
+    (name "swig")
+    (version "4.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                  name "-" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))
+              (patches (search-patches "swig-support-gcc-12.patch"))))
+    (inputs (list pcre))))
