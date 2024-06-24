@@ -100,14 +100,14 @@
 (define-public emacs-minimal
   (package
     (name "emacs-minimal")
-    (version "29.3")
+    (version "29.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emacs/emacs-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1822swrk4ifmkd4h9l0h37zifcpa1w3sy3vsgyffsrp6mk9hak63"))
+                "0dd2mh6maa7dc5f49qdzj7bi4hda4wfm1cvvgq560djcz537k2ds"))
               (patches (search-patches "emacs-disable-jit-compilation.patch"
                                        "emacs-exec-path.patch"
                                        "emacs-fix-scheme-indent-function.patch"
