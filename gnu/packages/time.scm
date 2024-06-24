@@ -179,6 +179,16 @@ expressions.")
        (base32
         "04lq792fgl2wjpc7512pcz90w0s8bbg6p128nhaaz2y1m5g76a9a"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python" "-m" "unittest" "discover" "-s" "pytz/tests")))))))
+    (native-inputs
+     (list python-setuptools))
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
     (description "This library brings the Olson tz database into Python.  It
@@ -237,25 +247,27 @@ Pendulum instances.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.8.2")
+    (version "2.9.0.post0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dateutil" version))
-       (patches (search-patches "python-dateutil-pytest-compat.patch"))
        (sha256
-        (base32 "11iy7m4bp2lgfkcl0r6xzf34bvk7ppjmsyn2ygfikbi72v6cl8q1"))))
+        (base32 "1lqak92ka6p96wjbf3zr9691gm7b01g7s8c8af3wvqd7ilh59p9p"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      #:test-flags '(list  ; avoid freezegun dependency
-                     "--ignore=dateutil/test/test_utils.py"
-                     "--ignore=dateutil/test/test_rrule.py"
-                     ;; XXX: Fails to get timezone from /etc/localtime.
-                     "--ignore=dateutil/test/test_tz.py")))
+      #:test-flags
+      #~(list
+         ;; https://github.com/pytest-dev/pytest/issues/5678
+         "-W" "ignore::pytest.PytestUnknownMarkWarning"
+         ;; Avoid freezegun (circular) dependency.
+         "--ignore=tests/test_utils.py"
+         "--ignore=tests/test_rrule.py"
+         ;; XXX: Fails to get timezone from /etc/localtime.
+         "--ignore=tests/test_tz.py")))
     (native-inputs
      (list python-pytest
-           python-pytest-cov
            python-setuptools
            python-setuptools-scm
            python-wheel))
@@ -431,22 +443,20 @@ ISO 8601 dates, time and duration.")
 (define-public python-iso8601
   (package
     (name "python-iso8601")
-    (version "1.1.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "iso8601" version))
        (sha256
         (base32
-         "0gzhpqrah7x44cvd4j8yh7rx31lsh7w98bkdx9ij1vnyh5xix09j"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "pytest" "-vv" "iso8601"))))))
+         "1px83gnklx1dmwb3n3dcplyfvaczhbvhkjcq34qc88c9xqlkh7bb"))))
+    (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-pytz))
+     (list python-poetry-core
+           ;; For tests.
+           python-pytest
+           python-pytz))
     (home-page "https://github.com/micktwomey/pyiso8601")
     (synopsis "Module to parse ISO 8601 dates")
     (description

@@ -35,10 +35,12 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sphinx)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system pyproject)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby))
 
@@ -94,26 +96,36 @@ conversions for values passed between the two languages.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.15.1")
+    (version "1.16.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1y9lr651svbzf1m03s4lqbnbv2byx8f6f0ml7hjm24vvlfwvy06l"))
-      (patches
-       (search-patches "python-cffi-3.11-and-pytest-fixes.patch"))))
-    (build-system python-build-system)
+       (base32 "1h1cw0jnr027asm339n4w21n8xz6ra7nk65i5zdbnrc6wm1yzcxw"))))
+    (build-system pyproject-build-system)
     (inputs
      (list libffi))
-    (propagated-inputs ; required at run-time
+    (propagated-inputs
      (list python-pycparser))
     (native-inputs
-     (list pkg-config python-pytest))
+     (list pkg-config
+           python-pytest
+           python-setuptools
+           python-wheel))
     (arguments
-     `(#:phases
+     `(#:test-flags
+       (list "src/c/" "testing/"
+             "-k" (string-join
+                   ;; Disable tests that fail (harmlessly) with glibc
+                   ;; 2.34 and later:
+                   ;; https://foss.heptapod.net/pypy/cffi/-/issues/528
+                   (list "not TestFFI.test_dlopen_handle"
+                         "not test_dlopen_handle")
+                   " and "))
+       #:phases
        (modify-phases %standard-phases
-         (replace 'check
+         (add-before 'check 'set-cc
            (lambda _
              ;; XXX The "normal" approach of setting CC and friends does
              ;; not work here.  Is this the correct way of doing things?
@@ -124,13 +136,7 @@ conversions for values passed between the two languages.")
                                "compiler_so='gcc',linker_exe='gcc',"
                                "linker_so='gcc -shared')")))
              (substitute* "testing/cffi0/test_ownlib.py"
-               (("\"cc testownlib") "\"gcc testownlib"))
-             (invoke "pytest" "-v" "c/" "testing/"
-                     ;; Disable tests that fail (harmlessly) with glibc
-                     ;; 2.34 and later:
-                     ;; https://foss.heptapod.net/pypy/cffi/-/issues/528
-                     "-k" (string-append "not TestFFI.test_dlopen_handle "
-                                         "and not test_dlopen_handle"))))
+               (("\"cc testownlib") "\"gcc testownlib"))))
          (add-before 'check 'patch-paths-of-dynamically-loaded-libraries
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Shared libraries should be referred by their absolute path as
@@ -150,7 +156,7 @@ conversions for values passed between the two languages.")
                               "testing/cffi1/test_verify1.py")
                  (("lib_m = \\[['\"]{1}m['\"]{1}\\]")
                   (format #f "lib_m = ['~a']" libm)))
-               (substitute* "c/test_c.py"
+               (substitute* "src/c/test_c.py"
                  (("find_and_load_library\\(['\"]{1}c['\"]{1}")
                   (format #f "find_and_load_library('~a'" libc)))))))))
     (home-page "https://cffi.readthedocs.io/")

@@ -283,6 +283,12 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                                                #$output:bin "/bin"))
       #:phases
       #~(modify-phases %standard-phases
+          ;; Remove this on update to 2.79.0 or newer.
+          (add-after 'unpack 'backport-python-3.12-fix
+            (lambda _
+              (substitute* "gio/gdbus-2.0/codegen/utils.py"
+                (("distutils") "packaging")
+                (("LooseVersion") "Version"))))
           (add-after 'unpack 'set-G_TEST_SRCDIR
             (lambda _
               (setenv "G_TEST_SRCDIR" (string-append (getcwd) "/gio/tests"))))
@@ -482,6 +488,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
            perl                         ;needed by GIO tests
            pkg-config
            python                       ;for 'patch-python-references
+           python-packaging
            python-wrapper
            tzdata-for-tests))           ;for tests/gdatetime.c
     (inputs

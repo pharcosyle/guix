@@ -5298,7 +5298,6 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                              python-markupsafe
                              python-packaging
                              python-pygments
-                             python-tomli
                              python-typogrify))
     (home-page "https://gitlab.gnome.org/GNOME/gi-docgen")
     (synopsis "Documentation tool for GObject-based libraries")

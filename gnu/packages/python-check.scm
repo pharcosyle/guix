@@ -1057,14 +1057,14 @@ in Pytest.")
 (define-public python-pytest-subtests
   (package
     (name "python-pytest-subtests")
-    (version "0.10.0")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-subtests" version))
        (sha256
-        (base32 "05zvnxx0hdrd9w4z51qhchg3nkz5s47agryw68g8q7krq5kim5nr"))))
-    (build-system python-build-system)
+        (base32 "0va7420hsywwq3yyn9q9qsidf5qwxzw2gl4931y0nzk4i35msq6n"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1072,9 +1072,15 @@ in Pytest.")
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "python" "-m" "pytest")))))))
-    (native-inputs (list python-setuptools-scm))
-    (propagated-inputs (list python-pytest python-attrs))
+               (invoke "pytest" "-vv")))))))
+    (native-inputs
+     (list python-setuptools
+           python-setuptools-scm
+           python-pytest-xdist
+           python-typing-extensions))
+    (propagated-inputs
+     (list python-pytest
+           python-attrs))
     (home-page "https://github.com/pytest-dev/pytest-subtests")
     (synopsis "Unittest subTest() support and subtests fixture")
     (description "This Pytest plugin provides unittest @code{subTest()}
@@ -1158,7 +1164,7 @@ doctest to render the object representations.")
     (propagated-inputs
      (list python-docutils
            python-importlib-metadata
-           python-pep517
+           python-pyproject-hooks
            python-pytest))
     (native-inputs (list python-setuptools-scm))
     (home-page "https://github.com/jaraco/pytest-checkdocs")
@@ -1444,14 +1450,69 @@ for the @code{pytest} framework.")
        (uri (pypi-uri "pytest-benchmark" version))
        (sha256
         (base32
-         "1la802m5r49y1zqilmhqh0qvbnz139lw0qb3jmm9lngy7sw8a1zv"))))
-    (build-system python-build-system)
+         "1la802m5r49y1zqilmhqh0qvbnz139lw0qb3jmm9lngy7sw8a1zv"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/ionelmc/pytest-benchmark/commit"
+                 "/728752d2976ef53fde7e40beb3e55f09cf4d4736.patch"))
+           (file-name (string-append name "-replace-distutils-spawn.patch"))
+           (sha256
+            (base32
+             "0l9r28ba2fsy49v1nz5829qr6f8wf7w25yl4kc4yjl758r32v5bq")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/ionelmc/pytest-benchmark/commit"
+                 "/b2f624afd68a3090f20187a46284904dd4baa4f6.patch"))
+           (file-name (string-append name "-python-3.11-test-fixes.patch"))
+           (sha256
+            (base32
+             "1mq2mj4fan87fa29snggxnj9ygncpq5nv92qqv9i1c2q5p977xdc")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/ionelmc/pytest-benchmark/commit"
+                 "/2b987f5be1873617f02f24cb6d76196f9aed21bd.patch"))
+           (file-name (string-append name "-test_abort_broken-fix.patch"))
+           (sha256
+            (base32
+             "1w38l3wi14fwfw4knl2y0aqsn13vs7biqdn30r0ikmnrzvxfxzl0")))))))
+    (build-system pyproject-build-system)
     (arguments
-     '(#:test-target "check"))
+     (list
+      #:test-flags
+      #~(list
+         ;; Causes errors in some tests presently (at least test_clonefunc
+         ;; et al.)
+         "-W" "ignore::DeprecationWarning"
+         ;; Alternatively add elasticsearch dep(s).
+         "--ignore=tests/test_elasticsearch_storage.py"
+         "-k"
+         (string-join
+          (list
+           ;; Require 'pygal', not presently packaged in Guix.
+           "not test_rendering"
+           "not test_regression_checks"
+           "not test_regression_checks_inf"
+           "not test_compare_1"
+           "not test_compare_2"
+           "not test_compare"
+           "not test_histogram"
+           ;; Requires Git and Mercurial.
+           "not test_commit_info_error")
+          " and "))))
     (propagated-inputs
      (list python-py-cpuinfo))
     (native-inputs
-     (list python-pytest))
+     (list python-setuptools
+           ;; For tests.
+           python-aspectlib
+           python-freezegun
+           python-pytest
+           python-pytest-xdist))
     (home-page "https://github.com/ionelmc/pytest-benchmark")
     (synopsis "Pytest fixture for benchmarking code")
     (description
@@ -2027,15 +2088,28 @@ side effects when unit testing.")
   (package
     (name "python-mypy-extensions")
     (version "1.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "mypy_extensions" version))
-              (sha256
-               (base32
-                "10h7mwjjfbwxzq7jzaj1pnv9g6laa1k0ckgw72j44160bnazinvm"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python/mypy_extensions")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0g8czg1m7db5p19cwg711kgmd30w0yavd26598xi2y2llw5wgrw0"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ;no tests
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-vv" "tests/testextensions.py")))))))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/python/mypy_extensions")
     (synopsis "Experimental extensions for MyPy")
     (description
@@ -2584,15 +2658,33 @@ in an opinionated way.")
 (define-public python-pytest-rerunfailures
   (package
     (name "python-pytest-rerunfailures")
-    (version "10.2")
+    (version "14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-rerunfailures" version))
        (sha256
-        (base32 "15v68kggjvkflbqr0vz8gp5yp3pcsk0rz05bpg2l4xp0a6nin7ly"))))
-    (build-system python-build-system)
-    (propagated-inputs (list python-pytest python-setuptools))
+        (base32 "14ifgn4055sdvhjqgy97pqxcl3nr4g0zm2mba78llyiwrp5hnh2a"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~(list "-k"
+              (string-join
+               ;; Failures in pytest 8.2, see
+               ;; https://github.com/pytest-dev/pytest-rerunfailures/issues/267
+               (list
+                "not test_run_session_teardown_once_after_reruns"
+                "not test_exception_matches_rerun_except_query"
+                "not test_exception_not_match_rerun_except_query"
+                "not test_exception_matches_only_rerun_query"
+                "not test_exception_match_only_rerun_in_dual_query")
+               " and "))))
+    (native-inputs
+     (list python-setuptools))
+    (propagated-inputs
+     (list python-packaging
+           python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-rerunfailures")
     (synopsis "Pytest plugin to re-run flaky tests")
     (description "This package provides a pytest plugin to re-run tests to

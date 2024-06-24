@@ -52,15 +52,18 @@
 (define-public python-pathspec
   (package
     (name "python-pathspec")
-    (version "0.11.1")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pathspec" version))
        (sha256
         (base32
-         "11qnlcanr1mqcpqpq1hmnwrs26csbsa2bafc7biq09x91y0dx617"))))
-    (build-system python-build-system)
+         "04jpkzic8f58z6paq7f3f7fdnlv9l89khv3sqsqk7ax10caxb0m4"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-flit-core
+           python-setuptools))
     (home-page "https://github.com/cpburnz/python-pathspec")
     (synopsis "Utility library for gitignore style pattern matching of file paths")
     (description
@@ -71,15 +74,15 @@ matching of file paths.")
 (define-public python-pluggy
   (package
    (name "python-pluggy")
-   (version "1.0.0")
+   (version "1.5.0")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "pluggy" version))
      (sha256
       (base32
-       "0n8iadlas2z1b4h0fc73b043c7iwfvx9rgvqm1azjmffmhxkf922"))))
-   (build-system python-build-system)
+       "1w8c3mpliqm9biqw75ci8cfj1x5pb6g5zwblqp27ijgxjj7aizrc"))))
+   (build-system pyproject-build-system)
    (native-inputs (list python-setuptools-scm))
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
@@ -100,6 +103,9 @@ Pytest but stripped of Pytest specific details.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                     ;no tests suite in release
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/uiri/toml")
     (synopsis "Library for TOML")
     (description
@@ -143,43 +149,31 @@ write-only counterpart to Tomli, which is a read-only TOML parser.")
     (description "This package provides a Python parser for TOML-0.4.0.")
     (license license:expat)))
 
-(define-public python-six-bootstrap
-  (package
-    (name "python-six-bootstrap")
-    (version "1.16.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "six" version))
-       (sha256
-        (base32
-         "09n9qih9rpj95q3r4a40li7hk6swma11syvgwdc68qm1fxsc6q8y"))))
-    (build-system python-build-system)
-    (arguments `(#:tests? #f))          ;to avoid pytest dependency
-    (home-page "https://pypi.org/project/six/")
-    (synopsis "Python 2 and 3 compatibility utilities")
-    (description
-     "Six is a Python 2 and 3 compatibility library.  It provides utility
-functions for smoothing over the differences between the Python versions with
-the goal of writing Python code that is compatible on both Python versions.
-Six supports every Python version since 2.5.  It is contained in only one
-Python file, so it can be easily copied into your project.")
-    (license license:x11)))
-
 (define-public python-tomli
   (package
     (name "python-tomli")
     (version "2.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "tomli" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hukkin/tomli")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0kwazq3i18rphcr8gak4fgzdcj5w5bbn4k4j2l6ma32gj496qlny"))))
+        (base32
+         "1l3s70kd2jwmfmlaw32flsf6dn1fbqh2dy008y76fs08fan4qimz"))))
     (build-system pyproject-build-system)
     (arguments
-     `(#:tests? #f))                      ;disabled to avoid extra dependencies
-    (native-inputs (list python-flit-core-bootstrap python-six-bootstrap))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python" "-m" "unittest")))))))
+    (native-inputs
+     (list python-flit-core))
     (home-page "https://github.com/hukkin/tomli")
     (synopsis "Small and fast TOML parser")
     (description "Tomli is a minimal TOML parser that is fully compatible with
@@ -210,13 +204,13 @@ PyPI (pypi.org).")
 (define-public python-typing-extensions
   (package
     (name "python-typing-extensions")
-    (version "4.10.0")
+    (version "4.12.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "typing_extensions" version))
               (sha256
                (base32
-                "1jxkj4pni8pdyrn79sq441lsp40xzw363n0qvfc6zfcgkv4dgaxh"))))
+                "1f7z47hmz48kgixzb3ffw6zml8j1iflf6ml8xr6xsng5qxasszhs"))))
     (build-system pyproject-build-system)
     ;; Disable the test suite to keep the dependencies to a minimum.  Also,
     ;; the test suite requires Python's test module, not available in Guix.
@@ -393,30 +387,6 @@ scripts to their final locations) at any later time.  Wheel files can be
 installed with a newer @code{pip} or with wheel's own command line utility.")
     (license license:expat)))
 
-;;; TODO: Deprecate with https://github.com/pypa/pyproject-hooks.
-(define-public python-pep517-bootstrap
-  (hidden-package
-   (package
-     (name "python-pep517-bootstrap")
-     (version "0.10.0")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pep517" version))
-        (sha256
-         (base32
-          "06wkh3l6hpnjd54dyfbyd7h7dks2ji9p9534bbhljskjp7vg6ndc"))))
-     (build-system python-build-system)
-     (arguments
-      `(#:tests? #f))                     ;to avoid circular dependencies
-     (propagated-inputs
-      (list python-toml python-wheel))
-     (home-page "https://github.com/pypa/pep517")
-     (synopsis "Wrappers to build Python packages using PEP 517 hooks")
-     (description
-      "Wrappers to build Python packages using PEP 517 hooks.")
-     (license license:expat))))
-
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
@@ -475,18 +445,16 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-packaging-bootstrap
   (package
     (name "python-packaging-bootstrap")
-    (version "23.2")
+    (version "24.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "packaging" version))
        (sha256
         (base32
-         "1ifgjb0d0bnnm78hv3mnl7hi233m7jamb2plma752djh83lv13q4"))))
+         "00phyhvsrw6dh7lsa46svg8pz4lqhqjp41cmz1dwxz6kiqndfvh2"))))
     (build-system pyproject-build-system)
     (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
-    (propagated-inputs
-     (list python-pyparsing python-six-bootstrap))
     (native-inputs
      (list python-flit-core))
     (home-page "https://github.com/pypa/packaging")
@@ -499,40 +467,6 @@ information.")
     ;; Contributions to this software is made under the terms of *both* these
     ;; licenses.
     (license (list license:asl2.0 license:bsd-2))))
-
-;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
-;;; a name clash with python-build from (guix build-system python).
-(define-public python-pypa-build
-  (package
-    (name "python-pypa-build")
-    (version "0.9.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "build" version))
-              (sha256
-               (base32
-                "0g5w28ban6k9qywqwdqiqms3crg75rsvfphl4f4qkg8wi57741qs"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f                      ;to tests in the PyPI release
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'use-toml-instead-of-tomli
-                    ;; Using toml instead of tomli eases bootstrapping.
-                    (lambda _
-                      (substitute* "setup.cfg"
-                        (("tomli>=.*")
-                         "toml\n")))))))
-    (propagated-inputs
-     `(("python-packaging" ,python-packaging-bootstrap)
-       ("python-pep517", python-pep517-bootstrap)
-       ("python-toml" ,python-toml)))
-    (home-page "https://pypa-build.readthedocs.io/en/latest/")
-    (synopsis "Simple Python PEP 517 package builder")
-    (description "The @command{build} command invokes the PEP 517 hooks to
-build a distribution package.  It is a simple build tool and does not perform
-any dependency management.  It aims to keep dependencies to a minimum, in
-order to make bootstrapping easier.")
-    (license license:expat)))
 
 (define-public python-poetry-core-1.0
   (package
@@ -557,13 +491,13 @@ compatible build front-ends to build Poetry managed projects.")
 (define-public python-poetry-core
   (package
     (name "python-poetry-core")
-    (version "1.5.2")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry_core" version))
        (sha256
-        (base32 "053c8dw632p7jkhjb51k0wcx6hdw4r3lk97mds76df653qxnqmf6"))))
+        (base32 "18imz7hm6a6n94r2kyaw5rjvs8dk22szwdagx0p5gap8x80l0yps"))))
     (build-system pyproject-build-system)
     (arguments
      `(#:tests? #f))                      ;disabled to avoid extra dependencies
@@ -630,15 +564,17 @@ system, then @code{flit_core} to build the package.")
 (define-public python-setuptools-scm
   (package
     (name "python-setuptools-scm")
-    (version "7.1.0")
+    (version "8.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "setuptools_scm" version))
               (sha256
-               (base32 "09wg4zg30ir1c2cvwqipaz3hwaxz503fgw5zdvaxgakilx2q6l3c"))))
-    (build-system python-build-system)
-    (arguments (list #:tests? #f))    ;avoid extra dependencies such as pytest
-    (propagated-inputs (list python-packaging-bootstrap python-tomli
+               (base32 "19y84rzqwb2rd88bjrlafrhfail2bnk6apaig8xskjviayva3pj2"))))
+    (build-system pyproject-build-system)
+    (arguments (list #:build-backend "setuptools.build_meta"
+                     #:tests? #f))    ;avoid extra dependencies such as pytest
+    (propagated-inputs (list python-packaging-bootstrap
+                             python-setuptools
                              python-typing-extensions))
     (home-page "https://github.com/pypa/setuptools_scm/")
     (synopsis "Manage Python package versions in SCM metadata")
@@ -651,7 +587,7 @@ them as the version argument or in a SCM managed file.")
 (define-public python-editables
   (package
     (name "python-editables")
-    (version "0.3")
+    (version "0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -660,8 +596,12 @@ them as the version argument or in a SCM managed file.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gbfkgzmrmbd4ycshm09fr2wd4f1n9gq7s567jgkavhfkn7s2pn1"))))
-    (build-system python-build-system)
+                "1bp959fz987jvrnkilhyr41fw4g00g9jfyiwmfvy96hv1yl68w8b"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f))
+    (native-inputs
+     (list python-flit-core))
     (home-page "https://github.com/pfmoore/editables")
     (synopsis "Editable installations")
     (description "This library supports the building of wheels which, when
@@ -673,13 +613,13 @@ reflected in the package visible to Python, without needing a reinstall.")
 (define-public python-hatchling
   (package
     (name "python-hatchling")
-    (version "1.14.0")
+    (version "1.25.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hatchling" version))
               (sha256
                (base32
-                "1nn5cyc9fgrbawz38drfkl2s588k2gn3yqdm2cldbx9zy0fsjbj6"))))
+                "0qj29z3zckbk5svvfkhw8g8xcl8mv0dzzlx4a0iba416a4d66r3h"))))
     (build-system pyproject-build-system)
     (arguments
      (list #:tests? #f))                  ;to keep dependencies to a minimum
@@ -687,7 +627,6 @@ reflected in the package visible to Python, without needing a reinstall.")
                              python-packaging-bootstrap
                              python-pathspec
                              python-pluggy
-                             python-tomli
                              python-trove-classifiers))
     (home-page "https://hatch.pypa.io/latest/")
     (synopsis "Modern, extensible Python build backend")
@@ -715,7 +654,7 @@ has features such as:
                 "0sn2wsfbpsbf2mqhjvw62h1cfy5mz3d7iqyqvs5c20cnl0n2i4fs"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #f))      ;avoid extra test dependencies
-    (propagated-inputs (list python-hatchling python-tomli
+    (propagated-inputs (list python-hatchling
                              python-typing-extensions))
     (home-page "https://github.com/hynek/hatch-fancy-pypi-readme")
     (synopsis "Fancy PyPI READMEs with Hatch")
@@ -727,13 +666,13 @@ parts of files defined using cut-off points or regular expressions.")
 (define-public python-hatch-vcs
   (package
     (name "python-hatch-vcs")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hatch_vcs" version))
               (sha256
                (base32
-                "1viz2mdfxfqpsd5f30410q6smj90qfxihvy9idzwd0p4ziy11iff"))))
+                "1xyr0wdiq2q9czlyvm1jsbpwm216mk0z5g7sa7ab07g0ixs10f09"))))
     (arguments (list #:tests? #f))      ;avoid extra test dependencies
     (build-system pyproject-build-system)
     (propagated-inputs (list python-hatchling python-setuptools-scm))

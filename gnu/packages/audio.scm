@@ -2605,7 +2605,18 @@ synchronous execution of all clients, and low latency operation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "109g08j3jj9jbsrgdcrq53w7a5z4rkwzg7l7sbr90wazrv55zj8a"))))
+                "109g08j3jj9jbsrgdcrq53w7a5z4rkwzg7l7sbr90wazrv55zj8a"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/jackaudio/jack2/commit"
+                        "/250420381b1a6974798939ad7104ab1a4b9a9994.patch"))
+                  (file-name (string-append "jack2-waflib-python-3.12.patch"))
+                  (sha256
+                   (base32
+                    "1zn1qsv5gqqvgb2iw2862ijqph7lpbcf5jqd3sda21vvsmv5gpyg")))))))
     (build-system waf-build-system)
     (arguments
      (list
