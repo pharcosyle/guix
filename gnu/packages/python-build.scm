@@ -190,13 +190,13 @@ Python file, so it can be easily copied into your project.")
 (define-public python-trove-classifiers
   (package
     (name "python-trove-classifiers")
-    (version "2023.4.18")
+    (version "2024.4.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "trove-classifiers" version))
               (sha256
                (base32
-                "1fnxg2gidi3gszqzxbj9yj3imffm0dmpr50shrlydydxrj1jm2cz"))))
+                "14m44pxvf12gs8zjx03h1zd9q5jjhbp5b3agp8f2mds6lyv0px29"))))
     (build-system pyproject-build-system)
     (arguments (list #:build-backend "setuptools.build_meta"
                      #:tests? #f))      ;keep dependencies to a minimum
@@ -315,14 +315,14 @@ Python Package Index (PyPI).")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "67.6.1")
+    (version "70.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "setuptools" version))
        (sha256
         (base32
-         "16myxkpa89r045il88zcygdy1zbi2mvvpz5b4a70p9jhklmfjz95"))
+         "1xa7df43wr6fip6h4w8ci5hg29nvl381byjir2mqkgd5za9yg881"))
        (modules '((guix build utils)))
        (snippet
         ;; TODO: setuptools now bundles the following libraries:
@@ -331,7 +331,9 @@ Python Package Index (PyPI).")
         ;; installers for Windows.
         '(for-each delete-file (find-files "setuptools"
                                            "^(cli|gui).*\\.exe$")))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-wheel))
     ;; FIXME: Tests require pytest, which itself relies on setuptools.
     ;; One could bootstrap with an internal untested setuptools.
     (arguments (list #:tests? #f))
@@ -366,19 +368,18 @@ facilitate packaging Python projects, where packaging includes:
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.40.0")
+    (version "0.43.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "0ww8fgkvwv35ypj4cnngczdwp6agr4qifvk2inb32azfzbrrc4fd"))))
-    (build-system python-build-system)
+          "118x5y37152by7f8gvzwda441jd8b42w92ngs6i5sp7sd4ngjpj6"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-flit-core))
     (arguments
-     ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
-     ;; fails to find the newly-built bdist_wheel library, even though it is
-     ;; available on PYTHONPATH.  What search path is consulted by setup.py?
      '(#:tests? #f))
     (home-page "https://github.com/pypa/wheel")
     (synopsis "Format for built Python packages")
@@ -575,54 +576,30 @@ a light weight, fully compliant, self-contained package allowing PEP 517
 compatible build front-ends to build Poetry managed projects.")
     (license license:expat)))
 
-;;; This package exists to bootstrap python-tomli.
-(define-public python-flit-core-bootstrap
+(define-public python-flit-core
   (package
-    (name "python-flit-core-bootstrap")
-    (version "3.8.0")
+    (name "python-flit-core")
+    (version "3.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flit" version))
        (sha256
-        (base32 "0dz9sp2zlhkmk6sm5gapbbb30f7xq3n3jn5zxx5pkp25ppsaiwnh"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     (list python-toml))
+        (base32 "1is410a121m9cv6jaj9qx3p0drjigzwad9kh6paj1ni4ndgdypnp"))))
+    (build-system pyproject-build-system)
     (arguments
-     ;; flit-core has a test suite, but it requires Pytest.  Disable it so
-     ;; as to not pull pytest as an input.
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (replace 'build
-           ;; flit-core requires itself to build.  Luckily, a
-           ;; bootstrapping script exists, which does so using just
-           ;; the checkout sources and Python.
+         (add-after 'unpack 'chdir
            (lambda _
-             (invoke "python" "flit_core/build_dists.py")))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (whl (car (find-files "." "\\.whl$"))))
-               (invoke "pip" "--no-cache-dir" "--no-input"
-                       "install" "--no-deps" "--prefix" out whl))))
-         ;; The sanity-check phase fails because flit depends on tomli at
-         ;; run-time, but this core variant avoids it to avoid a cycle.
-         (delete 'sanity-check))))
+             (chdir "flit_core"))))))
     (home-page "https://github.com/pypa/flit")
     (synopsis "Core package of the Flit Python build system")
     (description "This package provides @code{flit-core}, a PEP 517 build
 backend for packages using Flit.  The only public interface is the API
 specified by PEP 517, @code{flit_core.buildapi}.")
     (license license:bsd-3)))
-
-(define-public python-flit-core
-  (package/inherit python-flit-core-bootstrap
-    (name "python-flit-core")
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs python-flit-core-bootstrap)
-       (replace "python-toml" python-tomli)))))
 
 (define-public python-flit-scm
   (package

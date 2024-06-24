@@ -5836,11 +5836,6 @@ and convert DDL to BigQuery JSON schema.")
      (list
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-pyproject
-            (lambda _
-              ;; The build system does not like this.
-              (substitute* "pyproject.toml"
-                (("  \"Topic :: File Formats.*") ""))))
           (add-before 'check 'pre-check
             (lambda _
               (setenv "JSON_SCHEMA_TEST_SUITE" "json"))))))
@@ -5936,15 +5931,6 @@ dereferencing accessor layer.")
        (sha256
         (base32 "1k348xkq45jx13kmv32ls6k4qvjq3ywd4q0i7zamw3z7nf3ng9s8"))))
     (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-pyproject
-            (lambda _
-              ;; The build system does not like this.
-              (substitute* "pyproject.toml"
-                (("  \"Topic :: File Formats.*") "")))))))
     (propagated-inputs (list python-importlib-resources
                              python-referencing-bootstrap))
     (native-inputs
@@ -5956,81 +5942,6 @@ dereferencing accessor layer.")
      "This package provides JSON support files from the JSON Schema
 Specifications (metaschemas, vocabularies, etc.), packaged for runtime access
 from Python as a referencing-based Schema Registry.")
-    (license license:expat)))
-
-(define-public python-jsonschema-specifications
-  (package
-    (name "python-jsonschema-specifications")
-    (version "2023.12.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "jsonschema_specifications" version))
-       (sha256
-        (base32 "1k348xkq45jx13kmv32ls6k4qvjq3ywd4q0i7zamw3z7nf3ng9s8"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; Remove this once `python-trove-classifers' is updated to version
-          ;; 2023.4.25 or later.
-          (add-after 'unpack 'remove-unknown-classifiers
-            (lambda _
-              (substitute* "pyproject.toml"
-                (("\"Topic :: File Formats :: JSON :: JSON Schema\",") "")))))))
-    (native-inputs
-     (list python-hatch-vcs
-           python-hatchling
-           python-pytest))
-    (propagated-inputs
-     (list python-referencing))
-    (home-page "https://github.com/python-jsonschema/jsonschema-specifications")
-    (synopsis "Support files exposing JSON from the JSON Schema specifications")
-    (description
-     "JSON support files from the JSON Schema Specifications (metaschemas,
-vocabularies, etc.), packaged for runtime access from Python as a
-referencing-based Schema Registry.")
-    (license license:expat)))
-
-(define-public python-referencing
-  (package
-    (name "python-referencing")
-    (version "0.33.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "referencing" version))
-       (sha256
-        (base32 "1xqjnk2hckplbmwww79p9lzw5s03zl91rgm3qa4r23xwfkgzwxf7"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:tests? #f ; Circular dependency with `python-jsonschema'.
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; Remove this once `python-trove-classifers' is updated to version
-          ;; 2023.4.25 or later.
-          (add-after 'unpack 'remove-unknown-classifiers
-            (lambda _
-              (substitute* "pyproject.toml"
-                (("\"Topic :: File Formats :: JSON\",") "")
-                (("\"Topic :: File Formats :: JSON :: JSON Schema\",") "")))))))
-    (native-inputs
-     (list python-hatch-vcs
-           python-hatchling
-           ;; For tests.
-           ;; python-pytest
-           ;; python-pytest-subtests
-           ;; python-jsonschema
-           ))
-    (propagated-inputs
-     (list python-attrs
-           python-rpds-py))
-    (home-page "https://github.com/python-jsonschema/referencing")
-    (synopsis "Cross-specification JSON referencing")
-    (description
-     "An implementation-agnostic implementation of JSON reference resolution.")
     (license license:expat)))
 
 (define-public python-schema
@@ -30695,13 +30606,13 @@ the syntactic logic to configure and launch jobs in an execution environment.")
 (define-public python-flit
   (package
     (name "python-flit")
-    (version "3.8.0") ;same as python-flit-core
+    (version "3.9.0") ;same as python-flit-core
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flit" version))
        (sha256
-        (base32 "0dz9sp2zlhkmk6sm5gapbbb30f7xq3n3jn5zxx5pkp25ppsaiwnh"))))
+        (base32 "1is410a121m9cv6jaj9qx3p0drjigzwad9kh6paj1ni4ndgdypnp"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -33652,14 +33563,7 @@ integration, human-readable errors, and standard OS-specific locations.")
     (arguments
      (list
       #:test-flags
-      '(list "--pyargs" "referencing/tests")
-      #:phases
-      '(modify-phases %standard-phases
-         (add-after 'unpack 'patch-pyproject
-           (lambda _
-             ;; The build system does not like this.
-             (substitute* "pyproject.toml"
-               (("  \"Topic :: File Formats.*") "")))))))
+      '(list "--pyargs" "referencing/tests")))
     (propagated-inputs (list python-attrs python-rpds-py))
     (native-inputs
      (list python-hatchling
@@ -33679,14 +33583,7 @@ implementation of JSON reference resolution.")
     (name "python-referencing-bootstrap")
     (arguments
      (list
-      #:tests? #false
-      #:phases
-      '(modify-phases %standard-phases
-         (add-after 'unpack 'patch-pyproject
-           (lambda _
-             ;; The build system does not like this.
-             (substitute* "pyproject.toml"
-               (("  \"Topic :: File Formats.*") "")))))))
+      #:tests? #false))
     (native-inputs (list python-hatchling python-hatch-vcs))))
 
 (define-public python-reflink
