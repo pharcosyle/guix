@@ -5536,7 +5536,7 @@ it won't take longer to install 15 machines than it would to install just 2.")
 (define-public greetd
   (package
     (name "greetd")
-    (version "0.10.0")
+    (version "0.10.3")
     (home-page "https://git.sr.ht/~kennylevinsen/greetd")
     (source (origin
               (method git-fetch)
@@ -5545,7 +5545,7 @@ it won't take longer to install 15 machines than it would to install just 2.")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "130jar3fpzcfba720ddlk7xqc4zbmddm1adjvrdf030prvjl8p20"))))
+               (base32 "1j3c7skby9scsq6p1f6nacbiy9b26y1sswchdsp8p3vv7fgdh2wf"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
