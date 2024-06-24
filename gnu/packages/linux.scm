@@ -2289,14 +2289,10 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                       (string-append "\"" #$output "/bin/umount\"")))))
                (add-before 'check 'pre-check
                  (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                   (let ((services (search-input-file (or native-inputs inputs)
-                                                      "etc/services")))
-                     ;; Change the test to refer to the right file.
-                     (substitute* "tests/ts/misc/mcookie"
-                       (("/etc/services")
-                        services)))
-                   ;; /etc/fstab doesn't exist in the container, use another
-                   ;; file that does (chosen arbitrarily).
+                   ;; /etc/services and /etc/fstab don't exist in the
+                   ;; container, use a file that does (chosen arbitrarily).
+                   (substitute* "tests/ts/misc/mcookie"
+                     (("/etc/services") "/etc/passwd"))
                    (substitute* "tests/helpers/test_mkfds.c"
                      (("/etc/fstab") "/etc/passwd"))
                    ;; Not sure why this subtest fails, maybe something to do with
@@ -2359,8 +2355,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
            ncurses
            zlib))
     (native-inputs
-     (list net-base                     ;for tests
-           perl))
+     (list perl))
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
