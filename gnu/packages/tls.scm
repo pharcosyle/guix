@@ -205,7 +205,7 @@ living in the same process.")
            ;; Ensure we don't keep a reference to the tools used for testing.
            #:disallowed-references (if (target-hurd?)
                                        '()
-                                       (list net-tools iproute socat))
+                                       (list iproute socat))
            #:configure-flags
            #~(cons*
               ;; GnuTLS doesn't consult any environment variables to specify
@@ -263,8 +263,7 @@ living in the same process.")
                    util-linux)          ;one test needs 'setsid'
              (if (target-hurd?)
                  '()
-                 (list net-tools
-                       iproute          ;for 'ss'
+                 (list iproute          ;for 'ss'
                        socat            ;several tests rely on it
                        datefudge))))    ;tests rely on 'datefudge'
     (inputs (list libunistring))
