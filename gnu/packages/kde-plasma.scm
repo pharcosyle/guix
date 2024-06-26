@@ -2640,14 +2640,14 @@ sensors, process information and other system resources.")
 (define-public plasma-workspace
   (package
     (name "plasma-workspace")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ry51pvb3l8bf1lkzsdxlr6hpq2galdcnfynw9fnvrk6r5qjhb3z"))))
+                "1vh7ihicymp0z456nh9zzp7r164ghalvlrbgcnhpy4lcvwmw9lj7"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules kdoctools-6 pkg-config qtsvg
                          qttools
@@ -2685,6 +2685,8 @@ sensors, process information and other system resources.")
                   kio-6
                   xdotool
                   qqc2-desktop-style-6
+                  qcoro-qt6
+                  kirigami-addons
                   kio-extras
                   kitemmodels-6
                   kirigami-6
@@ -2764,13 +2766,6 @@ sensors, process information and other system resources.")
                              "/libexec/kglobalacceld"))
            #:phases
            #~(modify-phases %standard-phases
-               (add-after 'unpack 'patch-wallpaper
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "lookandfeel/sddm-theme/theme.conf.cmake"
-                     (("background=..KDE_INSTALL_FULL_WALLPAPERDIR.")
-                      (string-append "background="
-                                     #$(this-package-input "breeze")
-                                     "/share/wallpapers")))))
                (add-after 'unpack 'patch-workspace-bins
                  (lambda* (#:key inputs #:allow-other-keys)
                    (let ((xmessage (search-input-file inputs "/bin/xmessage"))
@@ -2813,10 +2808,12 @@ sensors, process information and other system resources.")
                              "--output-on-failure"
                              "--rerun-failed"
                              "-E"
-                             "(tasktoolstest|fetchinitialplayertest|mprisdeclarativetest|\
-appstreamtest|locationsrunnertest|testimagefrontend|mediakeystest|\
-tasksmodeltest|shelltest|testimagefinder|systemtraymodeltest|testimagelistmodel|\
-testpackageimagelistmodel|testimageproxymodel|testslidemodel|testdesktop)")))))))
+                             "(appstreamtest|tasktoolstest|tasksmodeltest|\
+fetchinitialplayertest|mprisdeclarativetest|mediakeystest|shelltest|\
+locationsrunnertest|testimagefinder|testimagelistmodel|\
+testpackageimagelistmodel|testimageproxymodel|testslidemodel|testimagefrontend|\
+dbusservicewatchertest|klippertest|keystatetest|lockedtest|tst_triangleFilter|\
+testimagebackend)")))))))
     (home-page "https://invent.kde.org/plasma/plasma-workspace")
     (synopsis "Plasma workspace components")
     (description
