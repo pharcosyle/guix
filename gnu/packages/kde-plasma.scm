@@ -2067,7 +2067,7 @@ activities effectively, without being distracting.")
 (define-public plasma-firewall
   (package
     (name "plasma-firewall")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -2075,7 +2075,7 @@ activities effectively, without being distracting.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1bj32bq3x3azcbxi1bi4n6lnv53x2xkkx1kj66771kx58pp1fbxx"))))
+                "0wrsr6rmml7zqckrr73kgak1ahlqk28rpdf2y1pxqdmx0x2q4a17"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules))
