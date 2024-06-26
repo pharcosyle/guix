@@ -528,14 +528,14 @@ KDE Frameworks 5 to better interact with the system.")
 (define-public kdeplasma-addons
   (package
     (name "kdeplasma-addons")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "061vdfc5ckfyf3sfszia44d63z5ikbgdff5l8fdr79jvfzs6sbbd"))))
+                "0an1prsban3448l7wil9daysq2155q99dx5gllvqmdww455hdcyp"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -551,9 +551,11 @@ KDE Frameworks 5 to better interact with the system.")
                                       "(converterrunnertest)")))))))
     (native-inputs (list extra-cmake-modules tzdata-for-tests))
     (inputs (list karchive-6
+                  kauth-6
                   kconfig-6
                   kcoreaddons-6
                   kdeclarative-6
+                  kdbusaddons-6
                   kholidays-6
                   ki18n-6
                   kio-6
