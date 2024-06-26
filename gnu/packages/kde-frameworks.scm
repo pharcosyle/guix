@@ -522,7 +522,7 @@ documentation.")
 (define-public karchive-6
   (package
     (name "karchive")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/frameworks/"
@@ -530,7 +530,7 @@ documentation.")
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0b7q4qcniwiqhmfhshmfl9x25nkbj85h6xvkplqbb55rrwrp2v2p"))))
+                "0aafcxizxzh239sz9ffsgxbq6c4a368bm3l93jj9m3v60xbpz017"))))
     (build-system cmake-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
