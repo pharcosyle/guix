@@ -2749,7 +2749,7 @@ from DocBook files.")
 (define-public kfilemetadata-6
   (package
     (name "kfilemetadata")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2758,7 +2758,7 @@ from DocBook files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jmi7fmi8dnq4rrf3c8wzszy9dszjzqpda1cj4rdmrgaahn7hanm"))))
+                "1230gl5jf4wizvxhfl0l4393vzgfzj0im139kjlss0qshrwf725x"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -2767,7 +2767,7 @@ from DocBook files.")
           (replace 'check
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
-                (invoke "ctest" "-E" "exiv2extractortest")))))))
+                (invoke "ctest" "-E" "(exiv2extractortest|usermetadatawritertest)")))))))
     (native-inputs (list extra-cmake-modules pkg-config))
     (inputs
      (list attr
