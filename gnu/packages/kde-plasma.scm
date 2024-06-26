@@ -2329,7 +2329,7 @@ customizable platform for mobile devices.")
 (define-public plasma-pa
   (package
     (name "plasma-pa")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -2337,7 +2337,7 @@ customizable platform for mobile devices.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "00d6ppm2kagmchd9qacmilvn5sbf7vacwphlmfz5k13r4v1x36ij"))))
+                "0yf8sj191hnv0y04yr32h1xl9akrk4prbii8wl1rikx1p9zk5aad"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      ;; test require selenium-webdriver-at-spi-run
@@ -2354,6 +2354,8 @@ customizable platform for mobile devices.")
                   kwindowsystem-6
                   kirigami-6
                   ksvg
+                  kdbusaddons-6
+                  pulseaudio-qt
                   ki18n-6
                   qtdeclarative))
     (propagated-inputs (list libcanberra pulseaudio
