@@ -3440,7 +3440,7 @@ maintaining an index of the contents of your files.")
 (define-public plasma-activities-stats
   (package
     (name "plasma-activities-stats")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -3448,7 +3448,7 @@ maintaining an index of the contents of your files.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "02zgnf8mamnqxah32clzc664ljkpx9mm4xd22fnmbhym9xkn7kl6"))))
+                "04xn9l82brf73bx15rpr09g0kkxyyc8dqznvvh6gf7j6zy86g122"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules))
