@@ -610,7 +610,7 @@ KDE Frameworks 5 to better interact with the system.")
 (define-public kglobalacceld
   (package
     (name "kglobalacceld")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -618,15 +618,21 @@ KDE Frameworks 5 to better interact with the system.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ll5kgfd7s47rxdphq2ywih2fqd3fshiidg4acv4x39g5hkvyiwi"))))
+                "004byc0d6zwhfcdb71nqk7d6zsq9m8rnz18pd9d43m1j4ij5kirs"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      #:phases
                      #~(modify-phases %standard-phases
                          (add-before 'check 'setenv
                            (lambda _
-                             (setenv "HOME" (getcwd)))))))
-    (native-inputs (list extra-cmake-modules))
+                             (setenv "HOME" (getcwd))))
+                         (replace 'check
+                           (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
+                             (invoke "dbus-launch" "ctest" "-j"
+                                     (if parallel-tests?
+                                         (number->string (parallel-job-count))
+                                         "1")))))))
+    (native-inputs (list extra-cmake-modules dbus))
     (inputs (list kconfig-6
                   kcoreaddons-6
                   kcrash-6
