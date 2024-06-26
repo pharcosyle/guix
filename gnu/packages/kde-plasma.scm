@@ -84,6 +84,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages gps)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages opencl))
 
 (define-public bluedevil
@@ -1872,14 +1873,14 @@ the KDE Plasma 6 desktop.")
 (define-public plasma-desktop
   (package
     (name "plasma-desktop")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1gn5zl676kj90za9k0lfdzhij4qjxwqgiibwq16jwz8yjyp548c6"))))
+                "0kpnr40cs5qm1w7s3p8wb1fq85949jb7z5vg4si0bk8q62favqwm"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules
                          dbus
@@ -1888,6 +1889,7 @@ the KDE Plasma 6 desktop.")
                          pkg-config
                          qtsvg
                          qttools
+                         libxml2
                          ;; require QtWaylandScanner
                          qtwayland))
     (inputs (list packagekit-qt6
@@ -1986,6 +1988,13 @@ the KDE Plasma 6 desktop.")
      (list #:qtbase qtbase
            #:phases
            #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-wallpaper
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "sddm-theme/theme.conf.cmake"
+                     (("background=..KDE_INSTALL_FULL_WALLPAPERDIR.")
+                      (string-append "background="
+                                     #$(this-package-input "breeze")
+                                     "/share/wallpapers")))))
                (add-after 'unpack 'fix-paths
                  (lambda* (#:key inputs #:allow-other-keys)
                    (substitute* "kcms/keyboard/iso_codes.h"
