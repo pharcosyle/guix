@@ -2062,14 +2062,14 @@ provides uniform access to generation of barcodes with data.")
 (define-public pulseaudio-qt
   (package
     (name "pulseaudio-qt")
-    (version "1.4.0")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/pulseaudio-qt"
                                   "/pulseaudio-qt-" version ".tar.xz"))
               (sha256
                (base32
-                "0rfh1qawf2bxh26p5xr03z2zizpnfw8k9ycwhmmqac11rx765jnq"))))
+                "0845d910jyd6w02yc157m4myfwzbmj1l0y6mj3yx0wq0f34533yd"))))
     (build-system cmake-build-system)
     (arguments (list #:configure-flags #~(list "-DBUILD_WITH_QT6=ON")))
     (native-inputs
