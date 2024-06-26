@@ -1123,7 +1123,7 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
 (define-public kholidays-6
   (package
     (name "kholidays")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1131,7 +1131,7 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
               (sha256
-               (base32 "02kkp6j7s9qppks9g7akbd1j468pwldvivh235bcsw2pmdciarl3"))))
+               (base32 "0pmcrzkq1s3aisihicazxgammmqmc63ywf6b0lwdb89xqwcf36cz"))))
     (build-system cmake-build-system)
     (native-inputs (list extra-cmake-modules qttools))
     (inputs (list qtbase qtdeclarative))
