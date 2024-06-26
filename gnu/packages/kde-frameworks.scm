@@ -2341,7 +2341,7 @@ decode RAW picture files.")
 (define-public plasma-activities
   (package
     (name "plasma-activities")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -2349,7 +2349,7 @@ decode RAW picture files.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vfzg6z5jn8hlg56y83yhiyf4544vzsb666psdpa0sqr36kw6f68"))))
+                "1mg8rk9x09rh56rzdvvkji2j8nj4aqi18glnrb9dzi8808jdkg9x"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
