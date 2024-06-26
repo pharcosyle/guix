@@ -1282,19 +1282,23 @@ KDE Frameworks components.")
 (define-public kwin
   (package
     (name "kwin")
-    (version "6.0.4.1")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://kde/stable/plasma/6.0.4/"
+              (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-" version ".tar.xz"))
               (patches (search-patches "kwin-unwrap-executable-name-for-dot-desktop-search.patch"))
               (sha256
                (base32
-                "0dnb9fy67w11g5070zdcardi08bbiy2wd6alxicg043fldzv7zsn"))))
+                "0r42bj6jxg1f0rwkbsf1a8ba99c714kvp6w3dx02ac3is5jl002h"))))
     (build-system qt-build-system)
     (arguments
      (list
       #:qtbase qtbase
+      #:configure-flags
+      #~(list (string-append "-DQtWaylandScanner_EXECUTABLE="
+                             #$(this-package-native-input "qtwayland")
+                             "/lib/qt6/libexec/qtwaylandscanner"))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch
@@ -1353,6 +1357,7 @@ KDE Frameworks components.")
                           "kwin-testDrm" ;; require Drm
                           "kwin-testInputMethod"
                           "kwin-testPlasmaWindow" ;; require plasma-workspace qml module.
+                          "kwin-testButtonRebind"
                           "kwin-testPointerInput"
                           "kwin-testXdgShellWindow"
                           "kwin-testXdgShellWindow-waylandonly"
@@ -1370,9 +1375,11 @@ KDE Frameworks components.")
                          mesa-utils
                          pkg-config
                          qttools
-                         wayland-protocols
+                         wayland-protocols-next
                          xorg-server-for-tests
-                         python-minimal))
+                         python-minimal
+                         ;; for QtWaylandScanner
+                         qtwayland))
     (inputs (list breeze
                   eudev
                   fontconfig
