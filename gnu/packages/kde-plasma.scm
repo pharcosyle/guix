@@ -240,7 +240,7 @@ Breeze is the default theme for the KDE Plasma desktop.")
 (define-public discover
   (package
     (name "discover")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -252,7 +252,7 @@ Breeze is the default theme for the KDE Plasma desktop.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1a0ssp40s67n5irvq9sm5pdm0s35wjms3xa38z7ifbkni7dv0mm0"))))
+                "0plbsf98ddnrk1fajmqph6i64678a0p0h4rp5v2347g5wx9h1rqq"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -272,6 +272,7 @@ Breeze is the default theme for the KDE Plasma desktop.")
                   fwupd ; optional
                   flatpak ; optional
                   kauth-6
+                  kiconthemes-6
                   kstatusnotifieritem
                   kcoreaddons-6
                   kconfig-6
@@ -291,7 +292,8 @@ Breeze is the default theme for the KDE Plasma desktop.")
                   kidletime-6
                   packagekit-qt6
                   purpose-6
-                  qtdeclarative))
+                  qtdeclarative
+                  qcoro-qt6))
     ;; -- The following features have been disabled:
     ;; * Ostree, Library to manage ostree repository. Required to build the rpm-ostree backend
     ;; * RpmOstree, rpm-ostree binary to manage the system. Required to build the rpm-ostree backend
