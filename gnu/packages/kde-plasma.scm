@@ -2493,14 +2493,14 @@ Desktop.")
 (define-public plasma-vault
   (package
     (name "plasma-vault")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ghcr4g6yp2w9yg6rlrpd9kyvza4qj69gynhigshj9f0569vb5xp"))))
+                "1r7k19fpk0fx1haz97cihhqjrr71029fvy7rsn87b00bgrr2039b"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules pkg-config))
     (inputs (list kio-6
