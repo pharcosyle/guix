@@ -2880,7 +2880,7 @@ taglibextractortest)")))))))
 (define-public kimageformats-6
   (package
     (name "kimageformats")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2889,7 +2889,7 @@ taglibextractortest)")))))))
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pn9zjx18jmbdbpdskchwy0vi9clra4jls6d3dz6bjdli82zlcxh"))))
+                "040j1jr7v4bc0zh4lf7bn9sj4a7g3c8icljagjpm7v9mpmqhgm0f"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules pkg-config))
