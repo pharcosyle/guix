@@ -655,18 +655,18 @@ functionality")
 (define-public kinfocenter
   (package
     (name "kinfocenter")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "13i692d57pl6sjsv871szzfng86z2gllxg9p2li9aky5smzspwas"))))
+                "0a7fn22czqn5ycw1rvdjj8y2vdv5fp0fwa16h00ghmfq5cnysgnz"))))
     (build-system cmake-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
-                        (add-after 'unpack 'fix-systemsettings-symlink
+                        (add-after 'unpack 'set-path
                           (lambda* (#:key inputs #:allow-other-keys)
                             (let ((replace (lambda (file cmd)
                                              (substitute* file
@@ -684,27 +684,27 @@ functionality")
                                 (("\\$\\{KDE_INSTALL_FULL_BINDIR\\}/systemsettings")
                                  (search-input-file inputs
                                                     "/bin/.systemsettings-real")))
-                              (substitute* "Modules/kwinsupportinfo/kcm_kwinsupportinfo.json.in"
+                              (substitute* "kcms/kwinsupportinfo/kcm_kwinsupportinfo.json.in"
                                 (("@QtBinariesDir@/qdbus")
                                  (search-input-file inputs "/bin/qdbus")))
-                              (substitute* "Modules/kwinsupportinfo/main.cpp"
+                              (substitute* "kcms/kwinsupportinfo/main.cpp"
                                 (("QLibraryInfo::location\\(QLibraryInfo::BinariesPath\\) \\+ QStringLiteral\\(\"/qdbus\"\\)")
                                  (string-append "QStringLiteral(\"" (search-input-file inputs "/bin/qdbus") "\")")))
 
-                              (replace '("Modules/cpu/kcm_cpu.json"
-                                         "Modules/cpu/main.cpp") "lscpu")
-                              (replace '("Modules/opencl/kcm_opencl.json"
-                                         "Modules/opencl/main.cpp") "clinfo")
-                              (replace '("Modules/vulkan/kcm_vulkan.json"
-                                         "Modules/vulkan/main.cpp") "vulkaninfo")
-                              (replace '("Modules/glx/kcm_glx.json"
-                                         "Modules/glx/main.cpp") "glxinfo")
-                              (replace '("Modules/wayland/kcm_wayland.json"
-                                         "Modules/wayland/main.cpp") "wayland-info")
-                              (replace '("Modules/egl/kcm_egl.json"
-                                         "Modules/egl/main.cpp") "eglinfo")
-                              (replace '("Modules/xserver/kcm_xserver.json"
-                                         "Modules/xserver/main.cpp") "xdpyinfo")))))))
+                              (replace '("kcms/cpu/kcm_cpu.json"
+                                         "kcms/cpu/main.cpp") "lscpu")
+                              (replace '("kcms/opencl/kcm_opencl.json"
+                                         "kcms/opencl/main.cpp") "clinfo")
+                              (replace '("kcms/vulkan/kcm_vulkan.json"
+                                         "kcms/vulkan/main.cpp") "vulkaninfo")
+                              (replace '("kcms/glx/kcm_glx.json"
+                                         "kcms/glx/main.cpp") "glxinfo")
+                              (replace '("kcms/wayland/kcm_wayland.json"
+                                         "kcms/wayland/main.cpp") "wayland-info")
+                              (replace '("kcms/egl/kcm_egl.json"
+                                         "kcms/egl/main.cpp") "eglinfo")
+                              (replace '("kcms/xserver/kcm_xserver.json"
+                                         "kcms/xserver/main.cpp") "xdpyinfo")))))))
     (native-inputs (list aha extra-cmake-modules kdoctools-6 pkg-config qttools))
     ;; * vulkaninfo
     ;; Wayland KCM
