@@ -2223,7 +2223,7 @@ system.")
 (define-public sonnet-6
   (package
     (name "sonnet")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2232,7 +2232,7 @@ system.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zpbla0d22sd66vgi6kiqsh8mkck6fklllh8pckx0kxc4r4fng61"))))
+                "0zjcjy2b697wizgrr210g24cvkli6yi2ry05kzfc6xxarq0dsi3b"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs
