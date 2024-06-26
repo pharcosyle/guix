@@ -4079,7 +4079,7 @@ window does not need focus for them to be activated.")
 (define-public kiconthemes-6
   (package
     (name "kiconthemes")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4088,7 +4088,7 @@ window does not need focus for them to be activated.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00il1hqwkr64gw8s427j7yh0likij3qhhl155ip7k5213mq7gkkr"))))
+                "00y3gjrplxk29l0f11yf7d9cszzf7ggady87pwj7j87qr6pr8lwl"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules qttools shared-mime-info))
@@ -4106,7 +4106,8 @@ window does not need focus for them to be activated.")
            kwidgetsaddons-6
            qtbase
            qtdeclarative
-           qtsvg))
+           qtsvg
+           breeze-icons))
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
