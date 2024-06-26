@@ -2648,7 +2648,7 @@ application crashes.")
 (define-public kdoctools-6
   (package
     (name "kdoctools")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2657,7 +2657,7 @@ application crashes.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1dgk1qk66mbrlg3866c1p6g5ghxv0ksqn1kj21bll62jpfnm80i4"))))
+                "0jl5qxjscjdpf0jpl35ymdqhks3ynk8jxlwv6xdqml6vp4aysl2b"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules))
