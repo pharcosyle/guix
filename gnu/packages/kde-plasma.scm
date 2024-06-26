@@ -415,14 +415,14 @@ concept.")
 (define-public kde-gtk-config
   (package
     (name "kde-gtk-config")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kde-gtk-config-" version ".tar.xz"))
               (sha256
                (base32
-                "1gax53ny0mr8l87zbr2w11jhjb2g6rzsqq8n9qhdr1z8n3192m7x"))))
+                "194p76jpmzkn5dgw0n6ldgdfljx9znins7fg3vr6xv3ggfxn49kj"))))
     (build-system qt-build-system)
     (arguments
      (list
