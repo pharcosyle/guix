@@ -811,14 +811,14 @@ the schedule and venue information.")
 (define-public kpipewire
   (package
     (name "kpipewire")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0dk8yjibgcrz6216y2rdvavs9aci0zdbjn01w56ib7vi9zxl4x51"))))
+                "11kn3x46pkm9sgqdv9f1qzld6i512yxlql92pc2hclxgdsx5l7ba"))))
     (build-system cmake-build-system)
     (native-inputs (list extra-cmake-modules pkg-config))
     (propagated-inputs (list qtbase qtdeclarative
