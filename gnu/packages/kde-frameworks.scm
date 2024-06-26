@@ -5415,7 +5415,7 @@ setUrl, setUserAgent and call.")
 (define-public libplasma
   (package
     (name "libplasma")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -5423,7 +5423,7 @@ setUrl, setUserAgent and call.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0x7x8qrlm05ccmdhrwf3hmbzw2q1zxnba4a721y7rfbc8m4c3hk1"))))
+                "1l12qjf473hazgzy58wqfzfbbs880qqfw62nvjhrz8ijs86g291g"))))
     (build-system qt-build-system)
     (propagated-inputs
      (list kpackage-6 kwindowsystem-6))
@@ -5463,8 +5463,10 @@ setUrl, setUserAgent and call.")
                      (invoke "ctest" "-E"
                              (string-append "(plasma-dialogstatetest"
                                             "|plasma-iconitemtest"
+                                            "|plasma-dialogqmltest"
                                             "|plasma-themetest"
                                             "|iconitemhidpitest"
+                                            "|bug485688test"
                                             "|dialognativetest)"))))))))
     (home-page "https://invent.kde.org/plasma/libplasma")
     (synopsis "Libraries, components and tools of Plasma workspaces")
