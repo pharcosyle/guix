@@ -58,8 +58,6 @@
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-pim)
-  ;; Including this module breaks the build
-  ;#:use-module ((gnu packages kde-systemtools) #:select (konsole))
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
@@ -91,14 +89,14 @@
 (define-public bluedevil
   (package
     (name "bluedevil")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "133y1zak92wq725srs7zn0yngxk2kbq3mnmycfvc08zb7zgicmlc"))))
+                "186pfbcbdd6lzlh5l3979hbya2mkr7w7w8isc25iqv2rkfr89dki"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules pkg-config qttools))
