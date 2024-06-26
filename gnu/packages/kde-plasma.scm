@@ -1253,7 +1253,7 @@ you login.")
 (define-public kwayland-integration
   (package
     (name "kwayland-integration")
-    (version "6.0.4")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1261,7 +1261,7 @@ you login.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1shmksq8f17kl6y4al26xaj11npkanln7xrn64sgk80g0v9dn0z2"))))
+                "1fajmjplvf15yim93x3qgbyddizn79fwp29avmqfqzrfrmm5ggf8"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules wayland-protocols pkg-config))
     (inputs (list kguiaddons
