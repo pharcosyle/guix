@@ -1078,7 +1078,7 @@ replace the other outdated Graphviz tools.")
 (define-public kguiaddons-6
   (package
     (name "kguiaddons")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1087,7 +1087,7 @@ replace the other outdated Graphviz tools.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lxcwn7g5gkdfa4asfxxh9cxr70j2jsdk68li5rw1kabmr989n08"))))
+                "009jvkakgb44ykz3920pj87kxh9jgbp9mdi654f77hqyq0grnlg1"))))
     (build-system qt-build-system)
     ;; TODO: Build packages for the Python bindings.  Ideally this will be
     ;; done for all versions of python guix supports.  Requires python,
