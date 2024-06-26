@@ -48,14 +48,14 @@
 (define-public dolphin
   (package
     (name "dolphin")
-    (version "24.02.2")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-" version ".tar.xz"))
        (sha256
-        (base32 "00d74sxnfnw3f39dm6mhwir8f48zf3qgbnfqq4bclnaisj84912h"))))
+        (base32 "1f5s0sl3rlkbpzfcvffg12ynwg621sy0r2w7gwwszj831ax4zz5a"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools-6 ruby ruby-test-unit))
