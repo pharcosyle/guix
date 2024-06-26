@@ -3666,7 +3666,7 @@ KCModules can be created with the KConfigWidgets framework.")
 (define-public kconfigwidgets-6
   (package
     (name "kconfigwidgets")
-    (version "6.1.0")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3675,7 +3675,7 @@ KCModules can be created with the KConfigWidgets framework.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wfiz6frwmvbjfz30ci2iilzxr1rww7i74mbjigg1xkgg4p2n98b"))))
+                "14104r6j38kjqmvx3d66xm4amdbdxl1450257l6zlf9wp1lndj5s"))))
     (build-system qt-build-system)
     (propagated-inputs
      (list kcodecs-6 kconfig-6 kcolorscheme kwidgetsaddons-6))
@@ -3686,7 +3686,8 @@ KCModules can be created with the KConfigWidgets framework.")
            kguiaddons-6
            ki18n-6
            ;; todo: PythonModuleGeneration
-           qtdeclarative))
+           qtdeclarative
+           libxkbcommon))
     (arguments
      (list
       #:qtbase qtbase
