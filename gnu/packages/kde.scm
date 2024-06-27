@@ -648,7 +648,7 @@ the functionality of the KDE resource and network access abstractions.")
 (define-public kirigami-addons
   (package
     (name "kirigami-addons")
-    (version "1.1.0")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -657,14 +657,14 @@ the functionality of the KDE resource and network access abstractions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "160wsjj3v5kxz98wn7s73yw5nx1234syj05jnw5c93lf06s38kik"))))
+                "1nsp4vihjhv985nlr6h86jvk43v3x9njla7l03jpcz6g95jdrnmp"))))
     (build-system qt-build-system)
     (arguments
      (list
       #:qtbase qtbase
       #:tests? #f)) ; failing test
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kirigami-6 ki18n-6 qtdeclarative))
+    (inputs (list kirigami-6 ki18n-6 kconfig-6 qtdeclarative))
     (home-page "https://invent.kde.org/libraries/kirigami-addons")
     (synopsis "Add-ons for the Kirigami framework")
     (description
