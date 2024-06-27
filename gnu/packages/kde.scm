@@ -1101,30 +1101,32 @@ include:
 (define-public kopeninghours
   (package
     (name "kopeninghours")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14m4wl79b4qad42l1capz59pslfcrm25jshyhmcqzhqb0wzwkav9"))))
+                "18l9dxrvkn1gdj62q4gyfk77pvc5nzdldqpyhdz0vvwfj3zf0sy2"))))
     (build-system cmake-build-system)
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
-                        (replace 'check
-                          (lambda* (#:key tests? #:allow-other-keys)
-                            (when tests?
-                              (setenv "QT_QPA_PLATFORM" "offscreen")
-                              (invoke "ctest" "-E"
-                                      "(evaluatetest|iterationtest)")))))))
+     (list
+      #:configure-flags #~(list "-DBUILD_WITH_QT6=ON")
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (setenv "QT_QPA_PLATFORM" "offscreen")
+                         (invoke "ctest" "-E"
+                                 "(evaluatetest|iterationtest)")))))))
     (native-inputs (list bison extra-cmake-modules flex))
     (inputs (list boost
-                  kholidays
-                  ki18n
+                  kholidays-6
+                  ki18n-6
                   osmctools
-                  qtbase-5
-                  qtdeclarative-5))
+                  qtbase
+                  qtdeclarative))
     (home-page "https://invent.kde.org/libraries/kopeninghours")
     (synopsis "Get opening hours from OpenStreetMap")
     (description
