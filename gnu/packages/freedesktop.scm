@@ -3137,38 +3137,46 @@ interfaces.")
 (define-public xdg-desktop-portal-kde
   (package
     (name "xdg-desktop-portal-kde")
-    (version "5.27.6")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wzp21l521d9z9mnfgiapzljqpg5qc5ghyzndpr8cz54c2bf9mdf"))))
+                "01188kzi83yxpm4j78pzraqxazqk0ga0jy9771j094ppdwnm90dw"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules pkg-config))
+    (arguments (list
+                #:tests? #f ;; colorschemetest test fail, because require dbus.
+                #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules pkg-config
+                         ;; require by test.
+                         python-minimal
+                         python-pygobject))
     (inputs (list cups
-                  kcoreaddons
-                  kconfig
-                  ki18n
-                  kdeclarative
-                  kio
-                  kirigami
-                  knotifications
-                  plasma-framework
+                  kcoreaddons-6
+                  kconfig-6
+                  ki18n-6
+                  kdeclarative-6
+                  kio-6
+                  kirigami-6
+                  knotifications-6
+                  libplasma
                   plasma-wayland-protocols
-                  kwayland
-                  kwidgetsaddons
-                  kwindowsystem
-                  kiconthemes
-                  qtdeclarative-5
-                  qtwayland-5
+                  kstatusnotifieritem
+                  kwayland-6
+                  kwidgetsaddons-6
+                  kwindowsystem-6
+                  kiconthemes-6
+                  qtdeclarative
+                  qtwayland
                   wayland
-                  kglobalaccel
-                  kguiaddons
+                  kglobalaccel-6
+                  kguiaddons-6
                   libxkbcommon
-                  kio-fuse
                   wayland-protocols))
+    (propagated-inputs
+     (list xdg-desktop-portal))
     (synopsis "Backend implementation for xdg-desktop-portal using Qt/KF5")
     (description "This package provides a backend implementation
 for xdg-desktop-portal that is using Qt/KF5.")
