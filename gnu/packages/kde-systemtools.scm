@@ -343,35 +343,37 @@ This package is part of the KDE administration module.")
 (define-public kwalletmanager
   (package
     (name "kwalletmanager")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kwalletmanager-" version ".tar.xz"))
        (sha256
-        (base32 "1g3yw32kv7yij2ymk52fpp0srncr2ijfckfvz5hc0nsn7xhyqdby"))))
+        (base32 "1a1rq68qny932yz2kib3n62z8qm69wwdi845nxlwab5rags7na8w"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list karchive
-           kauth
-           kcmutils
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kio
-           kjobwidgets
-           knotifications
-           kservice
-           ktextwidgets
-           kwallet
-           kwindowsystem
-           kxmlgui))
+     (list karchive-6
+           kauth-6
+           kcmutils-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           kjobwidgets-6
+           knotifications-6
+           kservice-6
+           kstatusnotifieritem
+           ktextwidgets-6
+           kwallet-6
+           kwindowsystem-6
+           kxmlgui-6))
     (home-page "https://apps.kde.org/kwalletmanager5/")
     (synopsis "Tool to manage passwords on KWallet")
     (description
