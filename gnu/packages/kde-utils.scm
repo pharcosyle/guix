@@ -507,7 +507,7 @@ drive, USB stick, etc
 (define-public kcharselect
   (package
     (name "kcharselect")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -515,10 +515,11 @@ drive, USB stick, etc
                                   ".tar.xz"))
               (sha256
                (base32
-                "05z80j8bwrj1zfpy376gsx30bv7bxsa3lyvrqsz197w1g8vp5gix"))))
+                "00hcrsq3g8lvrqk5nvgqpp9h64hdijk5gp8kxlmy23356a695mbc"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kbookmarks kcoreaddons kcrash ki18n kwidgetsaddons kxmlgui))
+    (inputs (list kbookmarks-6 kcoreaddons-6 kcrash-6 ki18n-6 kwidgetsaddons-6 kxmlgui-6))
     (home-page "https://apps.kde.org/kcharselect/")
     (synopsis "Select and copy special characters from installed fonts")
     (description
