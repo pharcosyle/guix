@@ -1057,14 +1057,14 @@ cards.")
 (define-public kompare
   (package
     (name "kompare")
-    (version "24.02.2")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/kompare-" version ".tar.xz"))
               (sha256
                (base32
-                "0hc7y9sxa5ggnbk0cc2by974rm8in4daf2d3a4pga084asp8j15l"))))
+                "0q6gk60hzswlra1cpwpbv016jmxcfkg482lh3qxh50fcf63zibb7"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
