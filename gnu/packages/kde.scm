@@ -1751,14 +1751,14 @@ Mobipocket e-books in Dolphin and other KDE apps.")
 (define-public libkexiv2
   (package
     (name "libkexiv2")
-    (version "24.02.2")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1p08ygpkw7mff4yb0xvd3b60n2j7vfi6chha2hwv554k91pj4q5f"))))
+        (base32 "0gxalagilx87y4l29ph3l16qag1lpbrxs50gpbmphpz989k70rm3"))))
     (build-system cmake-build-system)
     (arguments (list #:configure-flags #~(list "-DQT_MAJOR_VERSION=6")))
     (native-inputs
