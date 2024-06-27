@@ -249,43 +249,49 @@ This package is part of the KDE base applications module.")
 (define-public krfb
   (package
     (name "krfb")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/krfb-" version ".tar.xz"))
        (sha256
-        (base32 "0qbrvf2wa3af1z1dpq3pqkngfbrfdgqfz8xs1qpdpyb7jxnphry7"))))
+        (base32 "10hnv7sxn80rar554yxl8nhaafkaac2hs91n7yl7q796nl23qgg7"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase
+                     #:configure-flags
+                     #~(list (string-append "-DQtWaylandScanner_EXECUTABLE="
+                                            #$(this-package-native-input "qtwayland")
+                                            "/lib/qt6/libexec/qtwaylandscanner"))))
     (native-inputs
-     (list extra-cmake-modules pkg-config kdoctools))
+     (list extra-cmake-modules pkg-config kdoctools-6 qtwayland))
     (inputs
-     (list kcompletion
-           kconfig
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kdnssd
-           ki18n
-           knotifications
+     (list kcompletion-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kdnssd-6
+           ki18n-6
+           knotifications-6
            kpipewire
-           kwallet
-           kwayland
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+           kstatusnotifieritem
+           kwallet-6
+           kwayland-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            libvnc
            libxcb
            libxtst
            breeze-icons ;; default icon set
            pipewire
            plasma-wayland-protocols
-           qtbase-5
-           qtwayland-5
-           qtx11extras
+           qtbase
+           qtwayland
            wayland
            xcb-util-image
+           libxkbcommon
            zlib))
     (home-page "https://apps.kde.org/krfb/")
     (synopsis "Desktop Sharing utility")
