@@ -1522,44 +1522,43 @@ Python, PHP, and Perl.")
 (define-public libkdegames
   (package
     (name "libkdegames")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/" version
-                          "/src/libkdegames-" version ".tar.xz"))
-      (sha256
-       (base32 "1sicpfsrkxn5d0fdy71h7033rpkb94r5hjvv5ab7qbmzb1qa4awq"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/libkdegames-" version ".tar.xz"))
+       (sha256
+        (base32 "053lhjk4n91ww7d2vnrf1ka3qhgqxf5mbj575iyvz3l6830jnnjv"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
      (list extra-cmake-modules))
     (inputs
-     (list karchive
-           kbookmarks
-           kcodecs
-           kcompletion
-           kconfigwidgets
-           kcrash
-           kdbusaddons
-           kdeclarative
-           kdnssd
-           kglobalaccel
-           kguiaddons
-           ki18n
-           kiconthemes
-           ;("kio" ,kio)
-           kitemviews
-           kjobwidgets
-           knewstuff
-           kservice
-           ktextwidgets
-           kwidgetsaddons
-           kxmlgui
+     (list karchive-6
+           kbookmarks-6
+           kcodecs-6
+           kcompletion-6
+           kconfigwidgets-6
+           kcrash-6
+           kdbusaddons-6
+           kdeclarative-6
+           kdnssd-6
+           kglobalaccel-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kitemviews-6
+           kjobwidgets-6
+           knewstuff-6
+           kservice-6
+           ktextwidgets-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libsndfile
            openal
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/categories/games/")
     (synopsis "Runtime library for kdegames")
     (description "Runtime library for kdegames")
