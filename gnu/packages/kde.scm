@@ -1457,14 +1457,14 @@ unmount drives and view them in a file manager.")
 (define-public ktimer
   (package
     (name "ktimer")
-    (version "24.02.2")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/ktimer-" version ".tar.xz"))
               (sha256
                (base32
-                "0hh9mjnxf57vy20mji5i0z874jfhrx637xk7yimcva52nc5v0wj8"))))
+                "0jfnz2z4cyfn3x8n7l91waj4j4gin2b30gmxb3gy91myhiga1qx4"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules
