@@ -532,23 +532,24 @@ characters.")
 (define-public kdialog
   (package
     (name "kdialog")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kdialog-" version ".tar.xz"))
               (sha256
                (base32
-                "042az7d9ngar6xp7gv3xcmlns9hpbvs39dkymanqgc0riwa1mvsx"))))
+                "09dghlbgmg4809swak8kgfnxc87zmnv6bwy2qib5y3ppgd11qvlf"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules kdoctools))
-    (inputs (list ktextwidgets
-                  knotifications
-                  kguiaddons
-                  kiconthemes
-                  kwindowsystem
-                  kio
-                  kdbusaddons))
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules kdoctools-6))
+    (inputs (list ktextwidgets-6
+                  knotifications-6
+                  kguiaddons-6
+                  kiconthemes-6
+                  kwindowsystem-6
+                  kio-6
+                  kdbusaddons-6))
     (home-page "https://invent.kde.org/utilities/kdialog")
     (synopsis "Show dialog boxes from shell scripts")
     (description "This package provides tool to show nice dialog boxes from
