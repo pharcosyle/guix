@@ -1201,7 +1201,7 @@ multi-floor indoor maps.")
 (define-public kpublictransport
   (package
     (name "kpublictransport")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -1209,10 +1209,11 @@ multi-floor indoor maps.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "04fa9ismgkhskpmjf6b8gvra2z0jpsigz79b93m1snxm4046xihb"))))
+                "1dm1j5d6kpxjkh0di837iw7yc9znph3vqka85csbz9x5yq6hj1s7"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
+     (list #:qtbase qtbase
+           #:phases #~(modify-phases %standard-phases
                         (add-before 'check 'check-setup
                           (lambda* (#:key inputs #:allow-other-keys)
                             (setenv "QT_QPA_PLATFORM" "offscreen")
@@ -1226,10 +1227,10 @@ multi-floor indoor maps.")
     (inputs (list clipper
                   osmctools
                   protobuf
-                  qtdeclarative-5
+                  qtdeclarative
                   zlib
-                  networkmanager-qt
-                  ki18n))
+                  networkmanager-qt-6
+                  ki18n-6))
     (home-page "https://api.kde.org/kdepim/kpublictransport/html/index.html")
     (synopsis "Library for accessing realtime public transport data")
     (description
