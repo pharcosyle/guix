@@ -1703,7 +1703,7 @@ a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
 (define-public poxml
   (package
     (name "poxml")
-    (version "24.02.2")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1711,7 +1711,7 @@ a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
                               "/src/poxml-" version ".tar.xz"))
               (sha256
                (base32
-                "0rfada9myzr447bc1s63jgq4gjgkrdlk30z299f77r1qvqw4hsx5"))))
+                "07gz17llijy64yr3r9450daa4likwg2dkifw7rp7abw3wxby6pqp"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
