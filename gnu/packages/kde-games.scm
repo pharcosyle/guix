@@ -1085,32 +1085,32 @@ This package is part of the KDE games module.")
 (define-public kigo
   (package
     (name "kigo")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kigo-" version ".tar.xz"))
        (sha256
-        (base32 "0qx9plrs588210rdgvb2bkm5yjw4pna9q7v38cb166nfgkh6gv63"))))
+        (base32 "1g3rwk3n4mp591yyh53lzf0y2nww9jmdkxwx3wbwc0jrsq9l5ivp"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kio
-           knewstuff
-           ktextwidgets
-           kxmlgui
+     (list kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           knewstuff-6
+           ktextwidgets-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtbase
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/kigo/")
     (synopsis "Go board game")
     (description "Kigo is an open-source implementation of the popular Go
