@@ -945,31 +945,34 @@ This package is part of the KDE games module.")
 (define-public ksirk
   (package
     (name "ksirk")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
-                          "/src/ksirk-" version ".tar.xz"))
+                           "/src/ksirk-" version ".tar.xz"))
        (sha256
-        (base32 "1sp5mhnf8r3fvifz0kw74436j5kwsmiw66myygb4rsggb8amh5x4"))))
+        (base32 "1drfqkjpswd3rjnlfmyn97wvyrasy14p7g1n9aah8flqr74nkpby"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcrash
-           ki18n
-           kiconthemes
-           kio
-           knewstuff
-           kwallet
-           kxmlgui
+     (list kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           kwallet-6
+           kxmlgui-6
            libkdegames
            phonon
-           qca
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5
+           qca-qt6
+           qt5compat
+           qtbase
+           qtdeclarative
+           qtmultimedia
+           qtsvg
            zlib))
     (home-page "https://apps.kde.org/ksirk/")
     (synopsis "Computerized version of the well known strategy board game
