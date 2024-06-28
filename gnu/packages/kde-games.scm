@@ -1000,37 +1000,36 @@ This package is part of the KDE games module.")
 (define-public palapeli
   (package
     (name "palapeli")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/palapeli-" version ".tar.xz"))
        (sha256
-        (base32 "19xh03rhb48m4bbdmpga4aqij6agqg047ghl92p98z1phg5lxzrv"))))
+        (base32 "1slhg195rh5nlnwqg30fhvg43gx7l5g7lbavr6vhrs5ia2fn66gg"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list karchive
-           kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kcrash
-           ki18n
-           ki18n
-           kio
-           kitemviews
-           knotifications
-           kservice
-           kwidgetsaddons
-           kxmlgui
+     (list karchive-6
+           kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           kitemviews-6
+           knotifications-6
+           kservice-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5
+           qtbase
+           qtdeclarative
+           qtsvg
            shared-mime-info))
     (home-page "https://apps.kde.org/palapeli/")
     (synopsis "Jigsaw puzzle game")
