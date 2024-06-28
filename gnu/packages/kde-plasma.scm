@@ -689,7 +689,7 @@ functionality")
                                 (("@QtBinariesDir@/qdbus")
                                  (search-input-file inputs "/bin/qdbus")))
                               (substitute* "kcms/kwinsupportinfo/main.cpp"
-                                (("QLibraryInfo::location\\(QLibraryInfo::BinariesPath\\) \\+ QStringLiteral\\(\"/qdbus\"\\)")
+                                (("QLibraryInfo::path\\(QLibraryInfo::BinariesPath\\) \\+ QStringLiteral\\(\"/qdbus\"\\)")
                                  (string-append "QStringLiteral(\"" (search-input-file inputs "/bin/qdbus") "\")")))
 
                               (replace '("kcms/cpu/kcm_cpu.json"
@@ -728,6 +728,7 @@ functionality")
                   mesa-utils
                   pciutils
                   libplasma
+                  qttools
                   qtbase
                   solid-6
                   util-linux
