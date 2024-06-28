@@ -1131,31 +1131,32 @@ This package is part of the KDE games module.")
 (define-public kubrick
   (package
     (name "kubrick")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kubrick-" version ".tar.xz"))
        (sha256
-        (base32 "0nank1ga4c4xfsw0m1cqhjhyz2wpbsxplyyb9x3l2vpg92gj5dbs"))))
+        (base32 "1dc49ld23zdl97aazj2a5hlnxlnayskzsw0ni23i30prz68bnhpf"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
      (list glu
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           ki18n
-           kio
-           kwidgetsaddons
-           kxmlgui
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtbase
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/kubrick/")
     (synopsis "Game based on Rubik's Cube")
     (description "Kubrick is a game based on the Rubik's Cube puzzle.
