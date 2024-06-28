@@ -443,39 +443,40 @@ This package is part of the KDE administration module.")
 (define-public yakuake
   (package
     (name "yakuake")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/yakuake-" version ".tar.xz"))
               (sha256
                (base32
-                "17ylm5z5lzjq5g4d48s0clpl3hg4rym9sc1p5hr0wfs9jx7197jy"))))
+                "0393cxws0vd0yyzv0qsrlwslxh2kyxx47wjblnadv35293qhy1qf"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list breeze-icons
-           karchive
-           kconfig
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kglobalaccel
-           ki18n
-           kiconthemes
-           kio
-           knewstuff
-           knotifications
-           knotifyconfig
+           karchive-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kglobalaccel-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           knotifications-6
+           knotifyconfig-6
            konsole
-           kparts
-           kwayland
-           kwidgetsaddons
-           kwindowsystem
-           qtbase-5
-           qtsvg-5
-           qtx11extras))
+           kparts-6
+           kstatusnotifieritem
+           kwayland-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           libxkbcommon
+           qtbase
+           qtsvg))
     (home-page "https://apps.kde.org/yakuake/")
     (synopsis "Quad-style terminal emulator for KDE")
     (description "Yakuake is a drop-down terminal emulator based on KDE Konsole
