@@ -867,28 +867,28 @@ This package is part of the KDE games module.")
 (define-public bomber
   (package
     (name "bomber")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/bomber-" version ".tar.xz"))
        (sha256
-        (base32 "0qgixhmlkcjni5i9391hjg3sfc3ps24lmk9v8199lmnplrybklqj"))))
+        (base32 "1pd8jx331xbvgn6zd60mngg85hbmk1hls59ij81z8cnnpgrykyzh"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfig
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kxmlgui
+     (list kcompletion-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5))
+           qtbase
+           qtdeclarative))
     (home-page "https://apps.kde.org/bomber/")
     (synopsis "Arcade bombing game")
     (description "Bomber is a single player arcade game.
