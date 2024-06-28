@@ -1047,30 +1047,30 @@ This package is part of the KDE games module.")
 (define-public kiriki
   (package
     (name "kiriki")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kiriki-" version ".tar.xz"))
        (sha256
-        (base32 "13lzpbhkp48r9m0bcrzfqacz9xvc89xavf3yn3ql50g3jjlkq41v"))))
+        (base32 "0n8bvqagd61ri9f6nakc5cazcy86g000wdim13i5755gr1hry87v"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kiconthemes
-           kxmlgui
+     (list kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kiconthemes-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5))
+           qtbase
+           qtdeclarative))
     (home-page "https://apps.kde.org/kiriki/")
     (synopsis "Yahtzee dice game")
     (description "Kiriki is an addictive and fun dice game, designed to be
