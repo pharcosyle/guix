@@ -1172,30 +1172,31 @@ This package is part of the KDE games module.")
 (define-public lskat
   (package
     (name "lskat")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/lskat-" version ".tar.xz"))
        (sha256
-        (base32 "1qphzc1r26qwc8sl5rjkw16ia3lsj7c2lg9fxnhk08k8mxncymxg"))))
+        (base32 "03qk7rnfn9svi6kgfbmhs3acb1h4z66bmrpdyq51fj50i20jgybn"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfig
-           kcoreaddons
-           kcrash
-           kguiaddons
-           ki18n
-           kwidgetsaddons
-           kxmlgui
+     (list kcompletion-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtbase
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/lskat/")
     (synopsis "Lieutnant Skat card game")
     (description "Lieutnant Skat (from German \"Offiziersskat\") is a fun and
