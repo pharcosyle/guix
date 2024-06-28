@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2022 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +119,7 @@ Other notable features include:
 (define-public falkon
   (package
     (name "falkon")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
@@ -126,32 +127,36 @@ Other notable features include:
                            "/src/falkon-" version ".tar.xz"))
        (sha256
         (base32
-         "11r1iwimdzabfah68gsvw6xi67cj539anqa6s1rg33agsi5y56d3"))))
+         "0694kiahbj862jrjg2zffsjassi2ks5sz4rl8h3flksizrqh70xz"))))
     (build-system qt-build-system)
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
-               (replace 'check
-                 (lambda* (#:key tests? #:allow-other-keys)
-                   (when tests?
-                     (invoke "ctest" "-E"
-                             "(locationbartest|qmltabsapitest)")))))))
+               (add-after 'install 'wrap
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((qtwebengineprocess
+                          (search-input-file inputs
+                                             "lib/qt6/libexec/QtWebEngineProcess")))
+                     ;; The program fails to find the QtWebEngineProcess program, so
+                     ;; we set QTWEBENGINEPROCESS_PATH to help it.
+                     (wrap-program (string-append #$output "/bin/falkon")
+                       `("QTWEBENGINEPROCESS_PATH" =
+                         (,qtwebengineprocess)))))))))
     (native-inputs
-     (list extra-cmake-modules pkg-config qttools-5))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     (list karchive
-           kcoreaddons
-           kcrash
-           ki18n
-           kio
-           kwallet
+     (list karchive-6
+           kcoreaddons-6
+           kcrash-6
+           ki18n-6
+           kio-6
+           kwallet-6
            openssl
-           purpose
-           qtquickcontrols-5
-           qtsvg-5
-           qtwebengine-5
-           qtx11extras
-           qtwayland-5
+           purpose-6
+           qt5compat
+           qtsvg
+           qtwebengine
+           qtwayland
            xcb-util))
     (home-page "https://www.falkon.org/")
     (synopsis "Qt-based web browser for KDE")
