@@ -4050,54 +4050,7 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 (define-public awscli
   (package
-    ;; Note: updating awscli typically requires updating botocore as well.
     (name "awscli")
-    (version "1.22.90")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri name version))
-       (sha256
-        (base32
-         "0ky4ax4xh7s8w1l0hwc7w9ii8afvh9nib3kz09qhiqdinxzrlv54"))))
-    (build-system python-build-system)
-    (arguments
-     ;; FIXME: The 'pypi' release does not contain tests.
-     '(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'use-recent-pyyaml
-           (lambda _
-             (substitute* '("awscli.egg-info/requires.txt"
-                            "setup.cfg"
-                            "setup.py")
-               (("<5.5") "<=6"))))
-         (add-after 'unpack 'fix-reference-to-groff
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "awscli/help.py"
-               (("if not self._exists_on_path\\('groff'\\):") "")
-               (("raise ExecutableNotFoundError\\('groff'\\)") "")
-               (("cmdline = \\['groff'")
-                (string-append "cmdline = ['"
-                               (search-input-file inputs "bin/groff")
-                               "'"))))))))
-    (inputs
-     (list groff
-           python-colorama-for-awscli
-           python-botocore
-           python-s3transfer
-           python-docutils-0.15
-           python-pyyaml
-           python-rsa))
-    (home-page "https://aws.amazon.com/cli/")
-    (synopsis "Command line client for AWS")
-    (description "AWS CLI provides a unified command line interface to the
-Amazon Web Services (AWS) API.")
-    (license license:asl2.0)))
-
-(define-public awscli-2
-  (package
-    (inherit awscli)
     (version "2.15.21")
     (source
      (origin
@@ -4108,7 +4061,7 @@ Amazon Web Services (AWS) API.")
        (sha256
         (base32
          "11pr1hhvwirslavy08fb4yxdlp9kw6bk9b7zpgdyihwwc7cvrwf8"))
-       (file-name (git-file-name (package-name awscli) version))))
+       (file-name (git-file-name name version))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -4201,7 +4154,56 @@ Amazon Web Services (AWS) API.")
       ;; propagating? Patching references is another option but there are a
       ;; number of them and it would be pretty brittle.
       ;; less
-      ))))
+      ))
+    (home-page "https://aws.amazon.com/cli/")
+    (synopsis "Command line client for AWS")
+    (description "AWS CLI provides a unified command line interface to the
+Amazon Web Services (AWS) API.")
+    (license license:asl2.0)))
+
+(define-public awscli-1
+  (package
+    (inherit awscli)
+    ;; Note: updating awscli typically requires updating botocore as well.
+    (name "awscli")
+    (version "1.22.90")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri (package-name awscli) version))
+       (sha256
+        (base32
+         "0ky4ax4xh7s8w1l0hwc7w9ii8afvh9nib3kz09qhiqdinxzrlv54"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: The 'pypi' release does not contain tests.
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-recent-pyyaml
+           (lambda _
+             (substitute* '("awscli.egg-info/requires.txt"
+                            "setup.cfg"
+                            "setup.py")
+               (("<5.5") "<=6"))))
+         (add-after 'unpack 'fix-reference-to-groff
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "awscli/help.py"
+               (("if not self._exists_on_path\\('groff'\\):") "")
+               (("raise ExecutableNotFoundError\\('groff'\\)") "")
+               (("cmdline = \\['groff'")
+                (string-append "cmdline = ['"
+                               (search-input-file inputs "bin/groff")
+                               "'"))))))))
+    (native-inputs '())
+    (inputs
+     (list groff
+           python-colorama-for-awscli
+           python-botocore
+           python-s3transfer
+           python-docutils-0.15
+           python-pyyaml
+           python-rsa))))
 
 (define-public python-wsgiproxy2
   (package
