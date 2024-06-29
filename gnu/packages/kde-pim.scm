@@ -575,14 +575,14 @@ one of the APIs mentioned above.")
 (define-public kaccounts-integration
   (package
     (name "kaccounts-integration")
-    (version "24.02.2")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01yk0qfwj4xqhw7khxypb60w6qbfgkx60xpy396s5xld1mwks2ym"))))
+                "136vmibrh11dpqkhixlxs7k2mjy5nl81y4f6bz3lpzz4d37z7ij6"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list kcmutils-6
