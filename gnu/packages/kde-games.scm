@@ -627,29 +627,29 @@ This package is part of the KDE games module.")
 (define-public klines
   (package
     (name "klines")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/" version
-                          "/src/klines-" version ".tar.xz"))
-      (sha256
-       (base32 "1dny7wsj90c3vbgbrpxvxfy44j9ip3vdylc7889ckzbliivipxk4"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/klines-" version ".tar.xz"))
+       (sha256
+        (base32 "0ydf12sl68gjqr5wxyc17amn4s13ldygfvdkb1jzvhm6gaj230zs"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kwidgetsaddons
-           kxmlgui
+     (list kcompletion-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5))
+           qtbase
+           qtdeclarative))
     (home-page "https://apps.kde.org/klines/")
     (synopsis "Place 5 equal pieces together, but wait, there are 3 new ones")
     (description "KLines is a simple but highly addictive one player game.
