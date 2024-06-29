@@ -4243,7 +4243,7 @@ supports url redirection and retries, and also gzip and deflate decoding.")
     ;; are modified from their upstream versions or only work at specific
     ;; versions. Packaging for awscli is generally a mess.
     (inputs
-     (list groff
+     (list groff-minimal
            python-awscrt
            python-colorama
            python-cryptography
@@ -4303,7 +4303,7 @@ Amazon Web Services (AWS) API.")
                                "'"))))))))
     (native-inputs '())
     (inputs
-     (list groff
+     (list groff-minimal
            python-colorama-for-awscli
            python-botocore
            python-s3transfer
