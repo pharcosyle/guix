@@ -527,31 +527,31 @@ This package is part of the KDE games module.")
 (define-public kblocks
   (package
     (name "kblocks")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/"
-                          version "/src/kblocks-" version ".tar.xz"))
-      (sha256
-       (base32 "1z5f2zpnmfh05vlmjw85jj2d0sfxl5w1kg30ky6gmgmmfzj2sjzx"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/"
+                           version "/src/kblocks-" version ".tar.xz"))
+       (sha256
+        (base32 "0zwiaka2crzywys578pgk7c3yiknv5q925ks4vmx4q0j9gchbnvq"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kwidgetsaddons
-           kxmlgui
+     (list kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtbase
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/kblocks/")
     (synopsis "Single player falling blocks puzzle game")
     (description "KBlocks is the classic Tetris-like falling blocks game.
