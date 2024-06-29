@@ -489,31 +489,31 @@ This package is part of the KDE games module.")
 (define-public kbounce
   (package
     (name "kbounce")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/"
-                          version "/src/kbounce-" version ".tar.xz"))
-      (sha256
-       (base32 "06b0q4f4yn8m8gy7wgax54ldwnkgykr8yfr2h0ih8mfg3w8xsx7s"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/"
+                           version "/src/kbounce-" version ".tar.xz"))
+       (sha256
+        (base32 "0k1dkyalm2ny0iy38hlpj1vmbn7zxisvx287achcvj2xsrzbnbs4"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kio
-           kwidgetsaddons
-           kxmlgui
+     (list kcompletion-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtbase
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/kbounce/")
     (synopsis "Jezzball arcade game")
     (description "KBounce is a single player arcade game with the elements of
