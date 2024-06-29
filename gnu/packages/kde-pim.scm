@@ -605,14 +605,14 @@ management system and its Plasma integration components.")
 (define-public kaccounts-providers
   (package
     (name "kaccounts-providers")
-    (version "24.02.2")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "064wfjisyx1bcpk8a15p28d7pncgdikzzy00kyqimdjghn56wbsf"))))
+                "1qcdm9183c810phbfacbckz6q6bl0w50iq41fz7l75n34a7pcc96"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules intltool))
     (inputs (list kaccounts-integration
