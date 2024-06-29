@@ -336,56 +336,56 @@ your computer.")
 (define-public kate
   (package
     (name "kate")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kate-" version ".tar.xz"))
        (sha256
-        (base32 "0yyhh21pvzsaz7swmghdchzsfk089axhqkjwjv1m8j4q3q3rhv86"))))
+        (base32 "09r8k9zk56wlrx3vrhiw4z664c2irwl79cvxv6ckg6ny4mkm5xns"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kactivities
-           kconfig
-           kcrash
-           kdbusaddons
-           kguiaddons
-           ki18n
-           kiconthemes
-           kitemmodels
-           threadweaver
-           knewstuff
-           kio
-           kjobwidgets
-           kparts
-           ktexteditor
-           ksyntaxhighlighting
-           kwallet
-           plasma-framework
-           kwindowsystem
-           kxmlgui
-           breeze-icons ;; default icon set
-           qtbase-5
-           qtscript
-           qtx11extras))
+     (list breeze-icons ;; default icon set
+           plasma-activities
+           kconfig-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kitemmodels-6
+           threadweaver-6
+           knewstuff-6
+           kio-6
+           kjobwidgets-6
+           kparts-6
+           ktexteditor-6
+           ktextwidgets-6
+           ksyntaxhighlighting-6
+           kwallet-6
+           kwindowsystem-6
+           kxmlgui-6
+           libplasma
+           libxkbcommon))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; This test requires a 'bin' diretory under '/usr'.
-             (substitute* "addons/externaltools/autotests/externaltooltest.cpp"
-               (("QStringLiteral[(]\"/usr\"[)]")
-                (format #f "QStringLiteral(\"~a\")"
-                        (dirname (dirname (which "ls"))))))))
-         (add-before 'check 'check-setup
-           (lambda _
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             (setenv "HOME" (getcwd)))))))
+     (list #:qtbase qtbase
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-tests
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; This test requires a 'bin' diretory under '/usr'.
+                   (substitute* "addons/externaltools/autotests/externaltooltest.cpp"
+                     (("QStringLiteral[(]\"/usr\"[)]")
+                      (format #f "QStringLiteral(\"~a\")"
+                              (dirname (dirname (which "ls"))))))))
+               (add-before 'check 'check-setup
+                 (lambda _
+                   ;; make Qt render "offscreen", required for tests
+                   (setenv "QT_QPA_PLATFORM" "offscreen")
+                   (setenv "HOME" (getcwd)))))))
     (home-page "https://kate-editor.org/")
     (synopsis "Multi-document, multi-view text editor")
     (description "Kate is a powerful text editor that can open multiple files
