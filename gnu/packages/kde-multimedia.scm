@@ -595,8 +595,8 @@ This package is part of the KDE multimedia module.")
 (define-public kmplayer
   ;; The latest release was in 2016, and does not work with the newer
   ;; KDE libraries.
-  (let ((commit "88e85308b71dc5e58cc655b5b9a13cd71b78233f")
-        (revision "1"))
+  (let ((commit "0703e609ea34b51d86e95a59984c7d6bd14f32ab")
+        (revision "2"))
     (package
       (name "kmplayer")
       (version (git-version "0.12.0b" revision commit))
@@ -609,7 +609,7 @@ This package is part of the KDE multimedia module.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1pzk0js499diqabpwxjq6nnwpmj1ikpyyykzjbm844xcbm74cl19"))))
+           "06sd554pmrdn4grakkq563mq7ly3pf7jcam0m2zy537qnb72iaxc"))))
       (build-system qt-build-system)
       (native-inputs
        (list extra-cmake-modules pkg-config kdoctools))
