@@ -567,34 +567,35 @@ This package is part of the KDE games module.")
 (define-public ksudoku
   (package
     (name "ksudoku")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/"
-                          version "/src/ksudoku-" version ".tar.xz"))
-      (sha256
-       (base32 "03hrwyvwzhxdbq7pp03c7lkz0dhv9yi6lcwvz3s63mn01wyq6iv3"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/"
+                           version "/src/ksudoku-" version ".tar.xz"))
+       (sha256
+        (base32 "08j0vrrw3azhskhqna72lxxj6hybgvcbif3pxkkraqrdm8qwh21f"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list karchive
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kguiaddons
-           ki18n
-           kiconthemes
-           kio
-           kwidgetsaddons
-           kxmlgui
+     (list karchive-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
            glu
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtbase
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/ksudoku/")
     (synopsis "Sudoku puzzle game and solver")
     (description "KSudoku is a Sudoku game and solver, supporting a range of
