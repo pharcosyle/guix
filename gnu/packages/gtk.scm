@@ -255,7 +255,7 @@ Quartz, Win32, image buffers, PostScript, PDF, and SVG file output.")
 (define-public harfbuzz
   (package
     (name "harfbuzz")
-    (version "8.5.0")
+    (version "9.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/harfbuzz/harfbuzz"
@@ -263,7 +263,7 @@ Quartz, Win32, image buffers, PostScript, PDF, and SVG file output.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "09yw3nj7qjrxxa41k5n3w5b9j9wnzcr6hgmmi23vz1ixizwzgr3p"))))
+                "17mqd9xpq1k28vchc183wdgci7idah21d1gccdrca85rxqn2f6x4"))))
     (build-system meson-build-system)
     (outputs '("out"
                "bin"))
