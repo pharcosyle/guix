@@ -820,7 +820,19 @@ stream decoding")
                                   version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vkh19gb76agvh4h87ysbrgy82hrw88lnsvhynjf4vng629dmpgv"))))
+                "1vkh19gb76agvh4h87ysbrgy82hrw88lnsvhynjf4vng629dmpgv"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://src.fedoraproject.org/rpms/aalib/raw"
+                        "/39b0b936152ef02c6a00a8a0afc3bd8c3cb409ea"
+                        "/f/aalib-1.4rc5-opaque-ncurses-fix.patch"))
+                  (file-name (string-append name "-ncurses-6.5-fix.patch"))
+                  (sha256
+                   (base32
+                    "1dc5yqhhdxi9ah77i8h1ks63570w8i18d02qf6snm5ha5q0vsifs")))))))
     (build-system gnu-build-system)
     (arguments
      (list
