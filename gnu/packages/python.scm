@@ -447,7 +447,7 @@ data types.")
   (package
     (inherit python-2)
     (name "python")
-    (version "3.11.7")
+    (version "3.11.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -459,7 +459,7 @@ data types.")
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "1dxrcb07fs6943glab0j88ryam39ba0j5var7m15hfpzcrzamq8q"))
+                "11svljymlyx5rmcxmjvak0g3s2inv43491kc2a8hclgw4djqj7lv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
