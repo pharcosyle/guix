@@ -1226,14 +1226,14 @@ Features:
 (define-public sweeper
   (package
     (name "sweeper")
-    (version "24.02.2")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/sweeper-" version ".tar.xz"))
        (sha256
-        (base32 "1pddglzvkqvv0qf0pd7w1cy2q1bdygjwfdahcmbqqbn1ws15hx8k"))))
+        (base32 "0d84sxn3rk1vi9q5yjhx1hdr7m5fi0i2z9p5jl6w1hlnm6wgwhsz"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools-6))
