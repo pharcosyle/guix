@@ -139,25 +139,27 @@ This package contains GUI widgets for baloo.")
 (define-public grantleetheme
   (package
     (name "grantleetheme")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/grantleetheme-" version ".tar.xz"))
        (sha256
-        (base32 "01kkj3y6xhc792jaxnkglkwvlqx9ckn5yhlfrpqff5hlf5x9vn4w"))))
+        (base32 "0xzj3z8mzn846il6bc27c5f5s9rc9yyx4d2b04h5g9hjxmkgija0"))))
     (build-system qt-build-system)
     (arguments `(#:tests? #f))  ; unexpected error in the test suite.
     (native-inputs
      (list extra-cmake-modules libxml2)) ;; xmllint required for tests
     (inputs
-     (list grantlee
-           kguiaddons
-           ki18n
-           kiconthemes
-           knewstuff
-           qtbase-5))
+     (list grantlee-qt6
+           kguiaddons-6
+           ktexttemplate
+           ki18n-6
+           kiconthemes-6
+           knewstuff-6
+           kxmlgui-6
+           qtbase))
     (home-page "https://invent.kde.org/pim/grantleetheme")
     (synopsis "Library providing Grantlee theme support")
     (description "This library provides Grantlee theme support.")
