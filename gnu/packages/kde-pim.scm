@@ -1110,38 +1110,38 @@ easier to do so.")
 (define-public kitinerary
   (package
     (name "kitinerary")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kitinerary-" version ".tar.xz"))
               (sha256
                (base32
-                "0fcqix7hgmv7qcfxzmqy61kg7dqi5zas5vqfs7pfycgcxma0g869"))))
+                "1rnhc9sbmqy5fxn8ghlqml53wvch874qyv8s01gxjvw2iq57ziz1"))))
     (build-system qt-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
                         (replace 'check
-                          (lambda* (#:key tests? #:allow-other-keys)
+                          (lambda* (#:key inputs tests? #:allow-other-keys)
                             (when tests?
+                              (setenv "TZDIR"
+                                      (search-input-directory inputs "share/zoneinfo"))
                               (invoke "dbus-launch" "ctest" "-E"
-                               "(jsonlddocumenttest|mergeutiltest|locationutiltest|knowledgedbtest|airportdbtest|extractorscriptenginetest|pkpassextractortest|postprocessortest|calendarhandlertest|extractortest)")))))))
-    (native-inputs (list dbus extra-cmake-modules))
+                                      "(jsonlddocumenttest|mergeutiltest|locationutiltest|knowledgedbtest|airportdbtest|extractorscriptenginetest|pkpassextractortest|postprocessortest|calendarhandlertest|extractortest)")))))))
+    (native-inputs (list dbus extra-cmake-modules tzdata-for-tests))
     (inputs (list kpkpass
-                  kcalendarcore
-                  karchive
-                  ki18n
-                  kcoreaddons
-                  kcontacts
+                  kcalendarcore-6
+                  karchive-6
+                  ki18n-6
+                  kcoreaddons-6
+                  kcontacts-6
                   kmime
-                  knotifications
+                  knotifications-6
                   shared-mime-info
                   openssl
                   poppler
-                  qtbase-5
-                  qtdeclarative-5
-                  qtlocation
-                  qtquickcontrols2-5
+                  qtbase
+                  qtdeclarative
                   libxml2
                   zlib
                   zxing-cpp))
