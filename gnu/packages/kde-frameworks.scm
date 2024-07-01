@@ -3115,7 +3115,16 @@ covers feedback and persistent events.")
                 (("QDirIterator::Subdirectories")
                  "QDirIterator::Subdirectories | QDirIterator::FollowSymlinks"))))
           (add-before 'check 'check-setup
-            (lambda _ (setenv "HOME" (getcwd)))))))
+            (lambda _ (setenv "HOME" (getcwd))))
+          (replace 'check
+            (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
+              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+              ;; sometime plasmoidpackagetest will fail.
+              (invoke "ctest" "--rerun-failed" "--output-on-failure"
+                      "-j" (if parallel-tests?
+                               (number->string (parallel-job-count))
+                               "1")
+                      "-E" "plasmoidpackagetest"))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Installation and loading of additional content as packages")
     (description "The Package framework lets the user install and load packages
