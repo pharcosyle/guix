@@ -1420,7 +1420,9 @@ supported by its dependencies."
 (define* (supported-package? package #:optional (system (%current-system)))
   "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
 dependencies are known to build on SYSTEM."
-  (and (not (string=? (package-name package) "python-sphinx"))
+  (and (not (member (package-name package)
+                    (list "python-sphinx"
+                          "ruby-asciidoctor")))
        (member system (package-transitive-supported-systems package system))))
 
 (define (bag-direct-inputs bag)
