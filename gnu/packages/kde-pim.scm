@@ -54,14 +54,14 @@
 (define-public akonadi
   (package
     (name "akonadi")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/akonadi-" version ".tar.xz"))
               (sha256
                (base32
-                "0jpp91d5rlblq6r981wxizmsv512kc43lfk8y29bdky6j4idflrb"))
+                "1jq92gs2jm2lfda71dkjs8czmly6wy0zp9la2pjfbvv9ykgdb5ga"))
               (patches (search-patches "akonadi-paths.patch"
                                        "akonadi-timestamps.patch"
                                        "akonadi-not-relocatable.patch"))))
@@ -69,31 +69,31 @@
     (native-inputs
      (list dbus
            extra-cmake-modules
-           qttools-5
+           qttools
            shared-mime-info
            pkg-config))
     (inputs
      (list boost
-           libaccounts-qt
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           ki18n
-           kiconthemes
-           kio
-           kitemmodels
-           kitemviews
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+           libaccounts-qt6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           kitemmodels-6
+           kitemviews-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            libxml2
            libxslt
            ;; Do NOT add mysql or postgresql to the inputs. Otherwise the binaries
            ;; and wrapped files will refer to them, even if the user choices none
            ;; of these.  Executables are searched on $PATH then.
            signond
-           qtbase-5))
+           qtbase))
     (propagated-inputs (list sqlite kaccounts-integration))
     (arguments
      (list #:tests? #f
