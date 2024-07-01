@@ -32,6 +32,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system qt)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
@@ -1284,15 +1285,16 @@ KDE Frameworks components.")
 (define-public kwin
   (package
     (name "kwin")
-    (version "6.1.1")
+    (version "6.1.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://kde/stable/plasma/" version "/"
+              (uri (string-append "mirror://kde/stable/plasma/"
+                                  (version-major+minor+point version) "/"
                                   name "-" version ".tar.xz"))
               (patches (search-patches "kwin-unwrap-executable-name-for-dot-desktop-search.patch"))
               (sha256
                (base32
-                "0r42bj6jxg1f0rwkbsf1a8ba99c714kvp6w3dx02ac3is5jl002h"))))
+                "0fac8rlibbra5yvzi64aw3xc4q1alc6629d7nrvjmnfcjvcy9w0w"))))
     (build-system qt-build-system)
     (arguments
      (list
