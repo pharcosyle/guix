@@ -1853,17 +1853,17 @@ Virtual Contact File}) files to the KPeople contact management library.")
 (define-public kpkpass
   (package
     (name "kpkpass")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
-                           "/src/kpkpass-" version ".tar.xz"))
+                                  "/src/kpkpass-" version ".tar.xz"))
               (sha256
                (base32
-                "1l3k33yzfjzarc2rpf576ib86ifzrfmsvpcdmv060dy0k8lbm1k9"))))
+                "1j7ghlpbrnwnaz67c4yvgqvnn12sb980nvz06hvkxs360nj4c6gg"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list karchive qtbase-5 shared-mime-info))
+    (inputs (list karchive-6 qtbase shared-mime-info))
     (home-page "https://invent.kde.org/pim/kpkpass")
     (synopsis "Apple Wallet Pass reader")
     (description "This package provides library to deal with Apple Wallet
