@@ -2027,7 +2027,7 @@ corners, shadows, inactive window dimming, etc.")
           #~(delete "-Dlogind-provider=elogind" #$configure-flags))))
       (inputs
        (modify-inputs (package-inputs base)
-         (delete elogind))))))
+         (delete "elogind"))))))
 
 (define-public swaylock
   (package
