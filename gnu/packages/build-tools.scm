@@ -512,7 +512,8 @@ other lower-level build files.")))
                             stray-manuals))))))))
     (native-inputs
      ;; TODO: Add 'fop' when available in Guix to generate manuals.
-     (list python-wheel
+     (list python-setuptools
+           python-wheel
            ;;For tests.
            python-psutil))
     (home-page "https://scons.org/")

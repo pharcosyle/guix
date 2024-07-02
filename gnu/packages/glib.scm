@@ -72,6 +72,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages web)
@@ -286,6 +287,12 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                                                #$output:bin "/bin"))
       #:phases
       #~(modify-phases %standard-phases
+          ;; Remove this on update to 2.79.0 or newer.
+          (add-after 'unpack 'backport-python-3.12-fix
+            (lambda _
+              (substitute* "gio/gdbus-2.0/codegen/utils.py"
+                (("distutils") "packaging")
+                (("LooseVersion") "Version"))))
           (add-after 'unpack 'set-G_TEST_SRCDIR
             (lambda _
               (setenv "G_TEST_SRCDIR" (string-append (getcwd) "/gio/tests"))))
@@ -458,6 +465,15 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
               ;; Some tests want write access there.
               (setenv "HOME" (getcwd))
               (setenv "XDG_CACHE_HOME" (getcwd))))
+          (add-after 'install 'wrap-programs
+            (lambda _
+              (for-each (lambda (prog)
+                          (wrap-program prog
+                            `("GUIX_PYTHONPATH" prefix
+                              ,(search-path-as-string->list
+                                (getenv "GUIX_PYTHONPATH")))))
+                        (find-files
+                         (string-append #$output:bin "/bin")))))
           (add-after 'install 'move-static-libraries
             (lambda _
               (mkdir-p (string-append #$output:static "/lib"))
@@ -509,6 +525,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
       ;; when cross-compiling.
       bash-minimal
       python
+      python-packaging
       python-wrapper))
     (propagated-inputs
      (list libffi            ; in the Requires.private field of gobject-2.0.pc
@@ -627,6 +644,15 @@ be used when cross-compiling."
              (substitute* "tools/g-ir-tool-template.in"
                (("#!@PYTHON_CMD@")
                 (string-append "#!" (which "python3"))))))
+         (add-after 'install 'wrap-programs
+           (lambda _
+             (for-each (lambda (prog)
+                         (wrap-program prog
+                           `("GUIX_PYTHONPATH" prefix
+                             ,(search-path-as-string->list
+                               (getenv "GUIX_PYTHONPATH")))))
+                       (find-files
+                        (string-append #$output "/bin")))))
          #$@(if (%current-target-system)
                ;; Meson gives python extensions an incorrect name, see
                ;; <https://github.com/mesonbuild/meson/issues/7049>.
@@ -647,6 +673,7 @@ be used when cross-compiling."
        ("flex" ,flex)))
     (inputs
      `(("python" ,python)
+       ("python-setuptools" ,python-setuptools)
        ("zlib" ,zlib)))
     (propagated-inputs
      (list glib
