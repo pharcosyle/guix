@@ -841,14 +841,14 @@ memory_cycle_ok( $object );
 (define-public perl-test-mockmodule
   (package
     (name "perl-test-mockmodule")
-    (version "0.177.0")
+    (version "0.178.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/G/GF/GFRANKS/"
                            "Test-MockModule-v" version ".tar.gz"))
        (sha256
-        (base32 "0i8hiw9r2kak8kgp2qabr0cnnpp1yg1sddm781nhfxpavi4pmnhv"))))
+        (base32 "0cb05lsiay9gfg8hpyn71v7nij4xasp4qy9ryyw6h111kvvlcark"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-module-build

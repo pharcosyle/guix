@@ -36,16 +36,16 @@ index c5abefde2..3859fc088 100644
          gs_snprintf(LDict, sizeof(LDict), "\ntrailer\n<</Size %ld/Info %d 0 R/Root %d 0 R/Prev %"PRId64">>\nstartxref\r\n0\n%%%%EOF\n",
          linear_params->LastResource + 3, pdev->ResourceUsage[linear_params->Info_id].NewObjectNumber, pdev->ResourceUsage[linear_params->Catalog_id].NewObjectNumber, mainxref);
      else
-@@ -3191,7 +3191,11 @@
-             stream_puts(s, "trailer\n");
-             pprintld3(s, "<< /Size %ld /Root %ld 0 R /Info %ld 0 R\n",
-                   pdev->next_id, Catalog_id, Info_id);
--            if (!pdev->OmitID) {
-+            if (!pdev->OmitID &&
-+                (pdev->OwnerPassword.size > 0 || /* ID is mandatory when encrypting */
-+                 !(!getenv("GS_GENERATE_UUIDS") ||
-+                   (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 ||
-+                    strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0)))) {
-                 stream_puts(s, "/ID [");
-                 psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
-                 psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
+@@ -3298,7 +3298,11 @@
+                 stream_puts(s, "trailer\n");
+                 pprintld3(s, "<< /Size %ld /Root %ld 0 R /Info %ld 0 R\n",
+                       pdev->next_id, Catalog_id, Info_id);
+-                if (!pdev->OmitID) {
++                if (!pdev->OmitID &&
++                    (pdev->OwnerPassword.size > 0 || /* ID is mandatory when encrypting */
++                     !(!getenv("GS_GENERATE_UUIDS") ||
++                       (strcasecmp(getenv("GS_GENERATE_UUIDS"), "0") != 0 ||
++                        strcasecmp(getenv("GS_GENERATE_UUIDS"), "no") != 0)))) {
+                     stream_puts(s, "/ID [");
+                     psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
+                     psdf_write_string(pdev->strm, pdev->fileID, sizeof(pdev->fileID), 0);
