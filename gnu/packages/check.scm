@@ -1428,8 +1428,7 @@ standard library.")
                            " and not test_color_yes"))
                   (format #t "test suite not run~%")))))))
     (propagated-inputs
-     (list python-exceptiongroup
-           python-iniconfig
+     (list python-iniconfig
            python-packaging-bootstrap
            python-pluggy
            python-tomli))
@@ -1459,10 +1458,7 @@ and many external plugins.")
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
-        (base32 "02q32y67nflrmk9snmibq5kmqcbgfm29k9wm0yw0ia2vqly0m6gf"))))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs python-pytest)
-       (append python-exceptiongroup)))))
+        (base32 "02q32y67nflrmk9snmibq5kmqcbgfm29k9wm0yw0ia2vqly0m6gf"))))))
 
 (define-deprecated python-pytest-6 python-pytest)
 (export python-pytest-6)
@@ -2591,7 +2587,7 @@ instantly.")
     (native-inputs
      (list python-setuptools))
     (propagated-inputs
-     (list python-attrs-bootstrap python-exceptiongroup python-sortedcontainers))
+     (list python-attrs-bootstrap python-sortedcontainers))
     (synopsis "Library for property based testing")
     (description "Hypothesis is a library for testing your Python code against a
 much larger range of examples than you would ever want to write by hand.  It’s
