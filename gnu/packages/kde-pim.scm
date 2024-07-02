@@ -2012,25 +2012,25 @@ text in the text edit to all kinds of markup, like HTML or BBCODE.")
 (define-public ksmtp
   (package
     (name "ksmtp")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ksmtp-" version ".tar.xz"))
        (sha256
-        (base32 "0pz17vmn38n2xl35d9di1b9138dh54wgyal9hx412nh123w13h12"))))
+        (base32 "130g95j6f2mn2vcaw1incalgdsz486q5p7si2vrzsd3q4n2mf8vj"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list cyrus-sasl
-           kcodecs
-           kconfig
-           kcoreaddons
-           ki18n
-           kio
-           qtbase-5))
+           kcodecs-6
+           kconfig-6
+           kcoreaddons-6
+           ki18n-6
+           kio-6
+           qtbase))
     (arguments
      `(#:tests? #f ;; TODO: does not find sasl mechs
        #:phases
