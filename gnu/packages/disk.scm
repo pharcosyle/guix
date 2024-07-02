@@ -1030,15 +1030,25 @@ and its highly optimized now for efficient performance.")
     (name "volume-key")
     (version "0.3.12")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://releases.pagure.org/volume_key/volume_key-"
-                                  version ".tar.xz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://pagure.io/volume_key")
+                    (commit (string-append "volume_key-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "16rhfz6sjwxlmss1plb2wv2i3jq6wza02rmz1d2jrlnsq67p98vc"))))
+                "0zadzbh26ckk263w02d02r2x3mry2kxbybkhwwaxwpv6jsrm7xr6"))))
     (build-system gnu-build-system)
     (native-inputs
-     (list pkg-config swig python-3))           ; used to generate the Python bindings
+     (list autoconf
+           automake
+           libtool
+           gettext-minimal
+           ;; Used to generate the Python bindings
+           pkg-config
+           swig
+           python-3
+           python-setuptools))
     (inputs
      (append
       (cons cryptsetup (libcryptsetup-propagated-inputs))

@@ -1628,6 +1628,8 @@ definitions.")
            libxml2
            potrace
            python
+           python-setuptools
+           python-wheel
            readline
            woff2
            zlib))
