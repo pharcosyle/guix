@@ -15364,7 +15364,7 @@ functionalities with some extras.")
     (build-system pyproject-build-system)
     (native-inputs
      (list python-flit-core
-           python-nose))
+           python-pytest))
     (home-page "https://github.com/pexpect/ptyprocess")
     (synopsis "Run a subprocess in a pseudo terminal")
     (description
@@ -34392,16 +34392,18 @@ iGoogle subscription lists.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           ;; Its `setup.py test` doesn't report failure with exit status, so
-           ;; we use `nose` instead.
-           (lambda _
-             (invoke "nosetests" "-v" "--exclude=^load_tests$"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               ;; Its `setup.py test` doesn't report failure with exit status,
+               ;; so we use `pytest` instead. Also testing via setup.py is
+               ;; becoming deprecated.
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      (list python-setuptools
            python-wheel
            ;; For tests.
            python-docutils
-           python-nose
+           python-pytest
            python-pygments))
     (home-page "https://github.com/leohemsted/smartypants.py")
     (synopsis "Translate punctuation characters into smart quotes")
@@ -34431,12 +34433,13 @@ entities
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "nosetests" "-v"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv" "typogrify/packages/titlecase/tests.py")))))))
     (propagated-inputs
      (list python-smartypants))
     (native-inputs
-     (list python-nose
+     (list python-pytest
            python-setuptools
            python-wheel))
     (home-page "https://github.com/mintchaos/typogrify")
