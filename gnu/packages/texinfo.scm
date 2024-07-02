@@ -46,7 +46,7 @@
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages readline))
 
-(define-public texinfo-7
+(define-public texinfo
   (package
     (name "texinfo")
     (version "7.1")
@@ -121,14 +121,14 @@ is on expressing the content semantically, avoiding physical markup commands.")
 
 (define texinfo-no-texi2any-epub
   (package
-    (inherit texinfo-7)
+    (inherit texinfo)
     (arguments
-     (substitute-keyword-arguments (package-arguments texinfo-7)
+     (substitute-keyword-arguments (package-arguments texinfo)
        ((#:phases phases #~%standard-phases)
         #~(modify-phases #$phases
             (delete 'wrap-program)))))
     (inputs
-     (modify-inputs (package-inputs texinfo-7)
+     (modify-inputs (package-inputs texinfo)
        (delete perl-archive-zip)))))
 
 (define-public texinfo-6
@@ -143,8 +143,6 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "1i7yb7mrp3inz25zbzv2pllr4y7d58v818f1as7iz8mw53nm7dwf"))))))
-
-(define-public texinfo texinfo-6)
 
 (define-public texinfo-5
   (package
