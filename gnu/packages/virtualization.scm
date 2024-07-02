@@ -470,15 +470,20 @@
 exec smbd $@")))
                 (chmod "samba-wrapper" #o755)
                 (install-file "samba-wrapper" libexec))))
-          (add-after 'install 'move-html-doc
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let* ((out #$output)
-                     (doc #$output:doc)
-                     (qemu-doc (string-append doc "/share/doc/qemu-"
-                                              #$(package-version this-package))))
-                (mkdir-p qemu-doc)
-                (rename-file (string-append out "/share/doc/qemu")
-                             (string-append qemu-doc "/html"))))))))
+          #$@(if (supported-package? python-sphinx)
+                 #~((add-after 'install 'move-docs
+                      (lambda* (#:key inputs outputs #:allow-other-keys)
+                        (let* ((out #$output)
+                               (doc #$output:doc)
+                               (qemu-doc (string-append doc "/share/doc/qemu-"
+                                                        #$(package-version this-package))))
+                          (mkdir-p qemu-doc)
+                          (rename-file (string-append out "/share/doc/qemu")
+                                       (string-append qemu-doc "/html"))))))
+                 #~((add-after 'install 'stub-docs
+                      (lambda _
+                        ;; The daemon doesn't like empty output paths.
+                        (mkdir #$output:doc))))))))
     (inputs
      (append
        (if (supported-package? ipxe-qemu)
@@ -519,26 +524,29 @@ exec smbd $@")))
              zlib
              `(,zstd "lib"))))
     (native-inputs
-     ;; Note: acpica is here only to pretty-print firmware differences with IASL
-     ;; (see the replace-firmwares phase above).
-     (list acpica
-           bison
-           flex
-           gettext-minimal
-           `(,glib "bin")               ;gtester, etc.
-           meson
-           ninja
-           perl
-           pkg-config
-           python-wrapper
-           python-sphinx
-           python-sphinx-rtd-theme
-           texinfo
-           ;; The following static libraries are required to build
-           ;; the static output of QEMU.
-           `(,glib "static")
-           `(,pcre2 "static")
-           `(,zlib "static")))
+     (append
+      ;; Note: acpica is here only to pretty-print firmware differences with IASL
+      ;; (see the replace-firmwares phase above).
+      (list acpica
+            bison
+            flex
+            gettext-minimal
+            `(,glib "bin")               ;gtester, etc.
+            meson
+            ninja
+            perl
+            pkg-config
+            python-wrapper
+            texinfo
+            ;; The following static libraries are required to build
+            ;; the static output of QEMU.
+            `(,glib "static")
+            `(,pcre2 "static")
+            `(,zlib "static"))
+      (if (supported-package? python-sphinx)
+          (list python-sphinx
+                python-sphinx-rtd-theme)
+          '())))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
     (description

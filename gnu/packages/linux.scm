@@ -5471,8 +5471,16 @@ Singularity containers.")
       #~(let ((doc (string-append #$output:doc "/share/doc/" #$name)))
           (list (string-append "-Dhtmldir=" doc "/html")
                 (string-append "-Drstdir=" doc "/rst")
-                "-Ddocs-build=true" "-Ddocs=all"))))
-    (native-inputs (list pkg-config perl python python-sphinx))
+                "-Ddocs-build=true"
+                (string-append "-Ddocs="
+                               #$(if (supported-package? python-sphinx)
+                                     "all" "rst"))))))
+    (native-inputs
+     (append
+      (list pkg-config perl python)
+      (if (supported-package? python-sphinx)
+          (list python-sphinx)
+          '())))
     ;; libnvme.pc, libnvme-mi.pc lists these in Requires.private.
     (propagated-inputs (list dbus json-c openssl))
     (home-page "https://github.com/linux-nvme/libnvme")
@@ -6275,9 +6283,7 @@ and copy/paste text in the console and in xterm.")
          ;; Without --disable-documentation, it complains about missing
          ;; python-sphinx on systems where this package isn't available
          ;; (because it requires Rust).
-         #$@(if (member (%current-system)
-                        (package-transitive-supported-systems
-                         python-sphinx))
+         #$@(if (supported-package? python-sphinx)
                 '()
                 '("--disable-documentation"))
          ;; The ‘Python support’ was never actually installed by previous
