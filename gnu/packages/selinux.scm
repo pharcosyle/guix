@@ -42,6 +42,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages swig)
@@ -174,7 +175,10 @@ module into a binary representation.")
      (list python-wrapper))
     ;; These inputs are only needed for the pywrap phase.
     (native-inputs
-     (list pkg-config swig))
+     (list pkg-config
+           swig
+           python-setuptools
+           python-wheel))
     (synopsis "SELinux core libraries and utilities")
     (description
      "The libselinux library provides an API for SELinux applications to get
