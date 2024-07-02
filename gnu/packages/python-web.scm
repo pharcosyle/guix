@@ -3002,7 +3002,6 @@ dispatching systems can be built.")
         (base32
          "0kk56f4lx4lsgr5ghb8dq1784srdc1kdjpssdyi4jmzxdmppw80w"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f))  ; test suite can't find python-zope-testing
     (native-inputs
            python-nose
      (list python-setuptools

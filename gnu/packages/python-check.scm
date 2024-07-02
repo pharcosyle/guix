@@ -1087,8 +1087,8 @@ in Pytest.")
                (invoke "pytest" "-vv")))))))
     (native-inputs
      (list python-setuptools
-           python-setuptools-scm))
            python-setuptools-scm
+           python-pytest-xdist
            python-typing-extensions))
     (propagated-inputs
      (list python-pytest
@@ -1462,15 +1462,69 @@ for the @code{pytest} framework.")
        (uri (pypi-uri "pytest-benchmark" version))
        (sha256
         (base32
-         "1la802m5r49y1zqilmhqh0qvbnz139lw0qb3jmm9lngy7sw8a1zv"))))
+         "1la802m5r49y1zqilmhqh0qvbnz139lw0qb3jmm9lngy7sw8a1zv"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/ionelmc/pytest-benchmark/commit"
+                 "/728752d2976ef53fde7e40beb3e55f09cf4d4736.patch"))
+           (file-name (string-append name "-replace-distutils-spawn.patch"))
+           (sha256
+            (base32
+             "0l9r28ba2fsy49v1nz5829qr6f8wf7w25yl4kc4yjl758r32v5bq")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/ionelmc/pytest-benchmark/commit"
+                 "/b2f624afd68a3090f20187a46284904dd4baa4f6.patch"))
+           (file-name (string-append name "-python-3.11-test-fixes.patch"))
+           (sha256
+            (base32
+             "1mq2mj4fan87fa29snggxnj9ygncpq5nv92qqv9i1c2q5p977xdc")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/ionelmc/pytest-benchmark/commit"
+                 "/2b987f5be1873617f02f24cb6d76196f9aed21bd.patch"))
+           (file-name (string-append name "-test_abort_broken-fix.patch"))
+           (sha256
+            (base32
+             "1w38l3wi14fwfw4knl2y0aqsn13vs7biqdn30r0ikmnrzvxfxzl0")))))))
     (build-system pyproject-build-system)
     (arguments
-     '(#:test-target "check"))
+     (list
+      #:test-flags
+      #~(list
+         ;; Causes errors in some tests presently (at least test_clonefunc
+         ;; et al.)
+         "-W" "ignore::DeprecationWarning"
+         ;; Alternatively add elasticsearch dep(s).
+         "--ignore=tests/test_elasticsearch_storage.py"
+         "-k"
+         (string-join
+          (list
+           ;; Require 'pygal', not presently packaged in Guix.
+           "not test_rendering"
+           "not test_regression_checks"
+           "not test_regression_checks_inf"
+           "not test_compare_1"
+           "not test_compare_2"
+           "not test_compare"
+           "not test_histogram"
+           ;; Requires Git and Mercurial.
+           "not test_commit_info_error")
+          " and "))))
     (propagated-inputs
      (list python-py-cpuinfo))
     (native-inputs
      (list python-setuptools
-           python-pytest))
+           ;; For tests.
+           python-aspectlib
+           python-freezegun
+           python-pytest
+           python-pytest-xdist))
     (home-page "https://github.com/ionelmc/pytest-benchmark")
     (synopsis "Pytest fixture for benchmarking code")
     (description
@@ -2046,17 +2100,27 @@ side effects when unit testing.")
   (package
     (name "python-mypy-extensions")
     (version "1.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "mypy_extensions" version))
-              (sha256
-               (base32
-                "10h7mwjjfbwxzq7jzaj1pnv9g6laa1k0ckgw72j44160bnazinvm"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python/mypy_extensions")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0g8czg1m7db5p19cwg711kgmd30w0yavd26598xi2y2llw5wgrw0"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f)) ;no tests
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-vv" "tests/testextensions.py")))))))
     (native-inputs
-     (list python-setuptools
+     (list python-pytest
+           python-setuptools
            python-wheel))
     (home-page "https://github.com/python/mypy_extensions")
     (synopsis "Experimental extensions for MyPy")
