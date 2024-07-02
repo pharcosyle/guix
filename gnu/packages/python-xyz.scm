@@ -5110,49 +5110,6 @@ user configuration files.  It does not have support for serializing into YAML
 and is not compatible with JSON.")
     (license license:expat)))
 
-(define-public python-exceptiongroup
-  (package
-    (name "python-exceptiongroup")
-    (version "1.1.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/agronholm/exceptiongroup")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0wcvzwgjs0xmggs6dh92jxdqi988gafzh10hrzvw10kasy0xakfj"))))
-    (build-system python-build-system)
-    (arguments
-     (list
-      #:tests? #f                       ;TODO: Circular dependency on pytest
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; XXX: PEP 517 manual build/install procedures copied from
-          ;; python-isort.
-          (replace 'build
-            (lambda _
-              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)
-              ;; ZIP does not support timestamps before 1980.
-              (setenv "SOURCE_DATE_EPOCH" "315532800")
-              (invoke "python" "-m" "build" "--wheel" "--no-isolation" ".")))
-          (replace 'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((whl (car (find-files "dist" "\\.whl$"))))
-                (invoke "pip" "--no-cache-dir" "--no-input"
-                        "install" "--no-deps" "--prefix" #$output whl))))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (invoke "pytest" "-vv" "tests")))))))
-    (native-inputs (list python-flit-scm python-pypa-build))
-    (home-page "https://github.com/agronholm/exceptiongroup")
-    (synopsis "PEP 654 backport from Python 3.11")
-    (description "This is a backport of the @code{BaseExceptionGroup} and
-@code{ExceptionGroup} classes from Python 3.11.")
-    (license license:expat)))
-
 (define-public python-extension-helpers
 (package
   (name "python-extension-helpers")
@@ -12967,7 +12924,6 @@ than the default.")
     (propagated-inputs
      (list python-colorama
            python-decorator
-           python-exceptiongroup
            python-jedi
            python-matplotlib-inline
            python-pexpect
@@ -21779,7 +21735,6 @@ strings require only one extra byte in addition to the strings themselves.")
     (propagated-inputs
      (list python-attrs
            python-cbor2
-           python-exceptiongroup
            python-orjson
            python-pyyaml
            python-tomlkit
@@ -28486,7 +28441,6 @@ N-dimensional arrays for Python.")
               (setenv "NUMBA_CACHE_DIR" "/tmp"))))))
     (propagated-inputs
      (list python-array-api-compat
-           python-exceptiongroup ;only for Python <3.11
            python-h5py
            python-importlib-metadata
            python-natsort
@@ -29504,7 +29458,6 @@ _cyclic_garbage"
      (list python-async-generator
            python-attrs
            python-cffi
-           python-exceptiongroup
            python-idna
            python-outcome
            python-sniffio

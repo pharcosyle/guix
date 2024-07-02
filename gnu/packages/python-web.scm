@@ -2591,8 +2591,7 @@ RFC6455, regardless of your programming paradigm.")
         (base32 "0zyf5b8959sd12ycmqzvsb8746i3gn76rz55gxvix5cwj672m7yx"))))
     (build-system pyproject-build-system)
     ;; Propagate because Hypercorn also exposes functionality over a module.
-    (propagated-inputs (list python-exceptiongroup
-                             python-h11
+    (propagated-inputs (list python-h11
                              python-h2
                              python-priority
                              python-tomli
