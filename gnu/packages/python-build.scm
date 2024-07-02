@@ -434,30 +434,6 @@ scripts to their final locations) at any later time.  Wheel files can be
 installed with a newer @code{pip} or with wheel's own command line utility.")
     (license license:expat)))
 
-;;; TODO: Deprecate with https://github.com/pypa/pyproject-hooks.
-(define-public python-pep517-bootstrap
-  (hidden-package
-   (package
-     (name "python-pep517-bootstrap")
-     (version "0.10.0")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pep517" version))
-        (sha256
-         (base32
-          "06wkh3l6hpnjd54dyfbyd7h7dks2ji9p9534bbhljskjp7vg6ndc"))))
-     (build-system python-build-system)
-     (arguments
-      `(#:tests? #f))                     ;to avoid circular dependencies
-     (propagated-inputs
-      (list python-toml python-wheel))
-     (home-page "https://github.com/pypa/pep517")
-     (synopsis "Wrappers to build Python packages using PEP 517 hooks")
-     (description
-      "Wrappers to build Python packages using PEP 517 hooks.")
-     (license license:expat))))
-
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
