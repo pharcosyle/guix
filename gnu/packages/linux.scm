@@ -9916,7 +9916,7 @@ tools for managing PipeWire.")
            #~(cons "-Delogind=disabled" #$configure-flags))))
       (inputs
        (modify-inputs (package-inputs base)
-         (delete elogind))))))
+         (delete "elogind"))))))
 
 (define-public ell
   (package
