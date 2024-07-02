@@ -1453,7 +1453,6 @@ standard library.")
            ;; For tests.
            bash ; "Regular" bash since 'bash-final' lacks `compgen`.
            python-hypothesis
-           python-nose
            python-pytest-bootstrap
            python-xmlschema))
     (home-page "https://docs.pytest.org/en/latest/")
