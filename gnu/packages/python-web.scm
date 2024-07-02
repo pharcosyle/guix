@@ -2975,14 +2975,14 @@ support for the @code{noload} operations used by @code{zodb}.")
 (define-public python-zope-event
   (package
     (name "python-zope-event")
-    (version "4.4")
+    (version "5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.event" version))
        (sha256
         (base32
-         "1ksbc726av9xacml6jhcfyn828hlhb9xlddpx6fcvnlvmpmpvhk9"))))
+         "1kb73swvjszramlxljwlcbvrsnknr7icb8mmw9l406w9v7c41i5s"))))
     (build-system python-build-system)
     (native-inputs
      (list python-setuptools
@@ -2998,21 +2998,22 @@ dispatching systems can be built.")
 (define-public python-zope-interface
   (package
     (name "python-zope-interface")
-    (version "5.1.0")
+    (version "6.4.post2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
-         "03nrl6b8cb600dnnh46y149awvrm0gxyqgwq5hdw3lvys8mw9r20"))))
+         "0kk56f4lx4lsgr5ghb8dq1784srdc1kdjpssdyi4jmzxdmppw80w"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; test suite can't find python-zope-testing
     (native-inputs
-     (list python-coverage
            python-nose
-           python-setuptools
+     (list python-setuptools
            python-wheel
+           ;; For tests.
+           python-coverage
            python-zope-event
            python-zope-testing))
     (home-page "https://github.com/zopefoundation/zope.interface")
@@ -3085,7 +3086,7 @@ that have uses outside of the Zope framework.")
        (sha256
         (base32
          "0jfnycp9kzmmkk0rard8chd81v5yp6vnm09ky7d3qmv6svcd0z78"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (native-inputs
      (list python-setuptools
            python-wheel))
@@ -5500,16 +5501,20 @@ addon modules.")
       (method url-fetch)
       (uri (pypi-uri "bottle" version))
       (sha256
-        (base32 "08g0wnq0zi4dp6jg7vw19b5z51pbvya64lml7w5p2vdff14wkag1"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (with-directory-excursion "test"
-                 (invoke "pytest" "-vvv"))))))))
+        (base32 "08g0wnq0zi4dp6jg7vw19b5z51pbvya64lml7w5p2vdff14wkag1"))
+      (patches
+       (list
+        (origin
+          (method url-fetch)
+          (uri (string-append
+                "https://src.fedoraproject.org/rpms/python-bottle/raw"
+                "/7dbe99a4a7b15f7afc4ce2dc18aeca9f0cdf0b5f"
+                "/f/0001-Module_loader_fix_Python_3_12.patch"))
+          (file-name (string-append name "-python-3.12-fix.patch"))
+          (sha256
+           (base32
+            "0y2w7ax8d9q7m91xsi4gn3dbyi9b2p1np0hyxsdkwvn84bmhiz2s")))))))
+    (build-system pyproject-build-system)
     (native-inputs
      (list python-setuptools
            python-wheel

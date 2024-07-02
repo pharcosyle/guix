@@ -470,13 +470,13 @@ for example, for recording or replaying web content.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2022.12.7")
+    (version "2024.6.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1qx9a09rssb1fa6jwmpn332irnqlm9j4v108nij5j4cp7964p0im"))
+                "05kmfina92ppv8ysiyqp3aniil4g7783m7fnk5cdrpm7dwf3zm1w"))
               (snippet
                #~(begin
                    (delete-file "certifi/cacert.pem")
