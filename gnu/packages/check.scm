@@ -1482,7 +1482,8 @@ standard library.")
      (list python-exceptiongroup
            python-iniconfig
            python-packaging-bootstrap
-           python-pluggy))
+           python-pluggy
+           python-tomli))
     (native-inputs
      ;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
      (list bash
@@ -1523,7 +1524,8 @@ and many external plugins.")
   (package
     (inherit python-pytest)
     (name "python-pytest-bootstrap")
-    (native-inputs (list python-iniconfig python-setuptools-scm))
+    (native-inputs (list python-iniconfig python-setuptools-scm
+                         python-tomli))
     (arguments `(#:tests? #f))))
 
 (define-public python-pytest-assume
