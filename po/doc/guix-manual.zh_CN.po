@@ -13042,12 +13042,11 @@ msgstr ""
 #, no-wrap
 msgid ""
 "(use-modules (gnu packages glib))\n"
-";; glib-with-documentation is the Guile symbol for the glib package\n"
 "(operating-system\n"
 " ...\n"
 " (packages\n"
 "  (append\n"
-"   (list (list glib-with-documentation \"doc\"))\n"
+"   (list (list glib \"doc\"))\n"
 "         %base-packages)))\n"
 msgstr ""
 
