@@ -1367,6 +1367,13 @@ doctest.")
         (base32
          "0zbnp1kmf7ykc9bvlxamsp15rxsd0ar99v99lbh1hiysrkasm5jy"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (invoke "pytest" "-vv")))))))
     (native-inputs
      (list python-pytest
            python-setuptools
@@ -2660,22 +2667,33 @@ instantly.")
     (name "python-hypothesis")
     (version "6.104.2")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "hypothesis" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/HypothesisWorks/hypothesis")
+                    (commit (string-append "hypothesis-python-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1aqykf5pp58y2vhgdyhipjr4dv36kcqhf9r0zmzwiqcgpj4i8akg"))))
+                "1a93csyqbacmlpzfdgc2ayxyq2ky8rnvcrw9c8n61hkqh2mr43xk"))))
     (build-system pyproject-build-system)
     (arguments
-     ;; XXX: Tests are not distributed with the PyPI archive.
-     (list #:tests? #f
+     (list #:test-flags
+           #~(list
+              ;; This is the "brief" command from tox.ini. Doing more can
+              ;; take really long (cover+nocover+pytest was an hour on my
+              ;; machine).
+              "tests/cover/test_testdecorators.py")
            #:phases
            #~(modify-phases %standard-phases
+               (add-after 'unpack 'chdir-to-source
+                 (lambda _
+                   (chdir "hypothesis-python")))
                ;; XXX: hypothesis requires pytest at runtime, but we can
                ;; not propagate it due to a circular dependency.
                (delete 'sanity-check))))
     (native-inputs
-     (list python-setuptools))
+     (list python-pytest-bootstrap
+           python-setuptools))
     (propagated-inputs
      (list python-attrs-bootstrap python-sortedcontainers))
     (synopsis "Library for property based testing")
@@ -3464,10 +3482,20 @@ mocks, stubs and fakes.")
                 "1xcrjrr63131n2ydj5hn0gagka5dpkmdlqdxrxd3spwhxj0ll827"))))
     (build-system pyproject-build-system)
     (arguments
-     ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.
-     '(#:tests? #f))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;; Based on tox.ini.
+                (invoke "pytest" "-k" "example and not options" "--doctest-modules" "test/test_pytest")
+                (invoke "pytest" "-k" "example and not options" "test/test_pytest")
+                (invoke "pytest" "-p" "no:flaky" "test/test_pytest/test_flaky_pytest_plugin.py")
+                (invoke "pytest" "--force-flaky" "--max-runs" "2" "test/test_pytest/test_pytest_options_example.py")))))))
     (native-inputs
-     (list python-setuptools
+     (list python-pytest
+           python-setuptools
            python-wheel))
     (home-page "https://github.com/box/flaky")
     (synopsis "Automatically rerun flaky tests")
