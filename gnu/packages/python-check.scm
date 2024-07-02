@@ -117,17 +117,26 @@ Python with a fluent API.")
 (define-public python-tappy
   (package
     (name "python-tappy")
-    (version "3.0")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tap.py" version))
        (sha256
         (base32
-         "0w4w6pqjkv54j7rv6vdrpfxa72c5516bnlhpcqr3vrb4zpmyxvpm"))))
+         "1qgixa98i0mfgm1w7gx132hh187g2wjlx5j5ajrjanmd299d831w"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-setuptools
+     (list python-pytest
+           python-setuptools
            python-wheel))
     (home-page "https://github.com/python-tap/tappy")
     (synopsis "Tools for Test Anything Protocol")
@@ -1060,14 +1069,14 @@ in Pytest.")
 (define-public python-pytest-subtests
   (package
     (name "python-pytest-subtests")
-    (version "0.10.0")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-subtests" version))
        (sha256
-        (base32 "05zvnxx0hdrd9w4z51qhchg3nkz5s47agryw68g8q7krq5kim5nr"))))
-    (build-system python-build-system)
+        (base32 "0va7420hsywwq3yyn9q9qsidf5qwxzw2gl4931y0nzk4i35msq6n"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1075,11 +1084,15 @@ in Pytest.")
            (lambda* (#:key inputs outputs tests? #:allow-other-keys)
              (when tests?
                (add-installed-pythonpath inputs outputs)
-               (invoke "python" "-m" "pytest")))))))
+               (invoke "pytest" "-vv")))))))
     (native-inputs
      (list python-setuptools
            python-setuptools-scm))
-    (propagated-inputs (list python-pytest python-attrs))
+           python-setuptools-scm
+           python-typing-extensions))
+    (propagated-inputs
+     (list python-pytest
+           python-attrs))
     (home-page "https://github.com/pytest-dev/pytest-subtests")
     (synopsis "Unittest subTest() support and subtests fixture")
     (description "This Pytest plugin provides unittest @code{subTest()}
@@ -1450,7 +1463,7 @@ for the @code{pytest} framework.")
        (sha256
         (base32
          "1la802m5r49y1zqilmhqh0qvbnz139lw0qb3jmm9lngy7sw8a1zv"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
      '(#:test-target "check"))
     (propagated-inputs
@@ -2593,15 +2606,33 @@ in an opinionated way.")
 (define-public python-pytest-rerunfailures
   (package
     (name "python-pytest-rerunfailures")
-    (version "10.2")
+    (version "14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-rerunfailures" version))
        (sha256
-        (base32 "15v68kggjvkflbqr0vz8gp5yp3pcsk0rz05bpg2l4xp0a6nin7ly"))))
-    (build-system python-build-system)
-    (propagated-inputs (list python-pytest python-setuptools))
+        (base32 "14ifgn4055sdvhjqgy97pqxcl3nr4g0zm2mba78llyiwrp5hnh2a"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~(list "-k"
+              (string-join
+               ;; Failures in pytest 8.2, see
+               ;; https://github.com/pytest-dev/pytest-rerunfailures/issues/267
+               (list
+                "not test_run_session_teardown_once_after_reruns"
+                "not test_exception_matches_rerun_except_query"
+                "not test_exception_not_match_rerun_except_query"
+                "not test_exception_matches_only_rerun_query"
+                "not test_exception_match_only_rerun_in_dual_query")
+               " and "))))
+    (native-inputs
+     (list python-setuptools))
+    (propagated-inputs
+     (list python-packaging
+           python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-rerunfailures")
     (synopsis "Pytest plugin to re-run flaky tests")
     (description "This package provides a pytest plugin to re-run tests to
