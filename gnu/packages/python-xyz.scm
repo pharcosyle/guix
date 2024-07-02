@@ -21942,6 +21942,67 @@ in @file{pyproject.toml}-based projects.  It provides basic functionality to
 write tooling that generates distribution files from Python projects.")
     (license license:expat)))
 
+;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
+;;; a name clash with python-build from (guix build-system python).
+(define-public python-pypa-build
+  (package
+    (name "python-pypa-build")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "build" version))
+              (sha256
+               (base32
+                "17g1wcx8f7h0db3ymwdni1sjnyrpfna5fi9m8dng49hchzs66qjj"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~(list "-k"
+              ;; Disable tests that require internet or uv.
+              (string-join
+               (list "not test_venv_creation[pip-virtualenv+pip-True]"
+                     "not test_venv_creation[pip-virtualenv+pip-None]"
+                     "not test_venv_creation[uv-venv+uv-None]"
+                     "not test_requirement_installation"
+                     "not test_uv_impl_install_cmd_well_formed"
+                     "not test_external_uv_detection_success"
+                     "not test_build_package[False]"
+                     "not test_build_package_via_sdist[False]"
+                     "not test_output[False-via-sdist-isolation]"
+                     "not test_output[False-wheel-direct-isolation]"
+                     "not test_verbose_output"
+                     "not test_build_sdist"
+                     "not test_build_wheel"
+                     "not test_wheel_metadata[False-True]"
+                     "not test_with_get_requires")
+               " and "))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'prepare-check
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; 'test_output_env_subprocess_error' fails if not set.
+              (setenv "HOME" "/tmp"))))))
+    (native-inputs
+     (list python-flit-core
+           ;; For tests.
+           python-filelock
+           python-setuptools
+           python-pytest
+           python-pytest-mock
+           python-pytest-rerunfailures
+           python-wheel))
+    (propagated-inputs
+     (list python-packaging
+           python-pyproject-hooks))
+    (home-page "https://pypa-build.readthedocs.io/en/latest/")
+    (synopsis "Simple Python PEP 517 package builder")
+    (description "The @command{build} command invokes the PEP 517 hooks to
+build a distribution package.  It is a simple build tool and does not perform
+any dependency management.  It aims to keep dependencies to a minimum, in
+order to make bootstrapping easier.")
+    (license license:expat)))
+
 (define-public python-lark-parser
   (package
     (name "python-lark-parser")
