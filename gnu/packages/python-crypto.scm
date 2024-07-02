@@ -508,6 +508,9 @@ def contents() -> str:
         return data.read()")))))))
     (build-system pyproject-build-system)
     (arguments '(#:tests? #f))          ;no tests
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
     (description
@@ -639,7 +642,12 @@ ciphers, message digests and key derivation functions.")
         ("rust-pem" ,rust-pem-3)
         ("rust-pyo3" ,rust-pyo3-0.20)
         ("rust-self-cell" ,rust-self-cell-1))))
-    (native-inputs (list pkg-config python python-cffi))
+    (native-inputs
+     (list pkg-config
+           python
+           python-cffi
+           python-setuptools
+           python-wheel))
     ;; XXX: Adding rust-openssl-sys-0.9 is needed because #:cargo-inputs
     ;; doesn't honor propagated-inputs.
     (inputs (list python rust-openssl-sys-0.9))

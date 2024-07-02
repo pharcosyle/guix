@@ -2985,6 +2985,9 @@ support for the @code{noload} operations used by @code{zodb}.")
         (base32
          "1ksbc726av9xacml6jhcfyn828hlhb9xlddpx6fcvnlvmpmpvhk9"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://pypi.org/project/zope.event/")
     (synopsis "Event publishing system for Python")
     (description "Zope.event provides an event publishing API, intended for
@@ -3007,7 +3010,11 @@ dispatching systems can be built.")
     (build-system python-build-system)
     (arguments '(#:tests? #f))  ; test suite can't find python-zope-testing
     (native-inputs
-     (list python-coverage python-nose python-zope-event
+     (list python-coverage
+           python-nose
+           python-setuptools
+           python-wheel
+           python-zope-event
            python-zope-testing))
     (home-page "https://github.com/zopefoundation/zope.interface")
     (synopsis "Python implementation of the \"design by contract\"
@@ -3080,6 +3087,9 @@ that have uses outside of the Zope framework.")
         (base32
          "0jfnycp9kzmmkk0rard8chd81v5yp6vnm09ky7d3qmv6svcd0z78"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://pypi.org/project/zope.testing/")
     (synopsis "Zope testing helpers")
     (description "Zope.testing provides a number of testing utilities for HTML
@@ -5501,7 +5511,10 @@ addon modules.")
              (when tests?
                (with-directory-excursion "test"
                  (invoke "pytest" "-vvv"))))))))
-    (native-inputs (list python-pytest))
+    (native-inputs
+     (list python-setuptools
+           python-wheel
+           python-pytest))
     (home-page "https://bottlepy.org/")
     (synopsis "WSGI framework for small web-applications")
     (description "@code{python-bottle} is a WSGI framework for small web-applications.")

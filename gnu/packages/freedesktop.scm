@@ -123,6 +123,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -1365,7 +1366,10 @@ devices when in power-saver mode.")
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
                 (invoke "pytest" "-vv" "test")))))))
-    (native-inputs (list python-pytest))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (inputs (list libevdev))
     (home-page "https://gitlab.freedesktop.org/libevdev/python-libevdev")
     (synopsis "Python wrapper for libevdev")
