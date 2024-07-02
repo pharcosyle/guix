@@ -30188,14 +30188,18 @@ for YAML and JSON.")
                               (("(ninja|patchelf)") "")))))))
     (inputs (list dbus glib))
     (propagated-inputs (list python-pygobject))
-    (native-inputs (list pkg-config
-                         python-meson-python
-                         meson ninja patchelf
-                         python-setuptools
-                         python-sphinx
-                         python-sphinx-rtd-theme
-                         python-tappy
-                         python-wheel))
+    (native-inputs
+     (append
+      (list pkg-config
+            python-meson-python
+            meson ninja patchelf
+            python-setuptools
+            python-tappy
+            python-wheel)
+      (if (supported-package? python-sphinx)
+          (list python-sphinx
+                python-sphinx-rtd-theme)
+          '())))
     (home-page "https://dbus.freedesktop.org/doc/dbus-python/")
     (synopsis "Python bindings for libdbus")
     (description "This package provides Python bindings to libdbus, the
