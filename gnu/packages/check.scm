@@ -1345,7 +1345,9 @@ doctest.")
          "0zbnp1kmf7ykc9bvlxamsp15rxsd0ar99v99lbh1hiysrkasm5jy"))))
     (build-system python-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-six))
     (home-page "https://github.com/testing-cabal/mock")
@@ -1368,7 +1370,29 @@ available via the @code{unittest.mock} module.")
         (uri (pypi-uri "nose" version))
         (sha256
           (base32
-            "164a43k7k2wsqqk1s6vavcdamvss4mz0vd6pwzv2h9n8rgwzxgzi"))))
+            "164a43k7k2wsqqk1s6vavcdamvss4mz0vd6pwzv2h9n8rgwzxgzi"))
+        (patches
+         (list
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://src.fedoraproject.org/rpms/python-nose/raw"
+                  "/f26b83a2f86b76645ab4fb255edda780d039a01c"
+                  "/f/python-nose-py311.patch"))
+            (file-name (string-append name "-python-3.11-compat.patch"))
+            (sha256
+             (base32
+              "0kp5n8c56n1fx88vm8g2a6fybqd5qzz1ai75x6hhac7czlwxwhkz")))
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://src.fedoraproject.org/rpms/python-nose/raw"
+                  "/d856b0a68c0194a9f6168989cd04d79e1ad2dfe2"
+                  "/f/python-nose-py312.patch"))
+            (file-name (string-append name "-python-3.12-compat.patch"))
+            (sha256
+             (base32
+              "0cp24ld2aajvnr5d7jm1pkns3aizwsgnbwqv6hw2vzgpamna7ga8")))))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f
@@ -1376,6 +1400,9 @@ available via the @code{unittest.mock} module.")
                   (add-after 'unpack 'invoke-2to3
                     (lambda _
                       (invoke "2to3" "-w" "."))))))
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://readthedocs.org/docs/nose/")
     (synopsis "Python testing library")
     (description
@@ -1490,6 +1517,7 @@ standard library.")
            python-hypothesis
            python-nose
            python-pytest-bootstrap
+           python-setuptools
            python-setuptools-scm
            python-xmlschema))
     (home-page "https://docs.pytest.org/en/latest/")
@@ -1524,7 +1552,9 @@ and many external plugins.")
   (package
     (inherit python-pytest)
     (name "python-pytest-bootstrap")
-    (native-inputs (list python-iniconfig python-setuptools-scm
+    (native-inputs (list python-iniconfig
+                         python-setuptools
+                         python-setuptools-scm
                          python-tomli))
     (arguments `(#:tests? #f))))
 
@@ -2349,7 +2379,12 @@ have failed since the last commit or what tests are currently failing.")))
               ;; sys.path for a directory that already conatains one.
               (invoke "touch" "dummy.pth"))))))
     (native-inputs
-     (list python-pytest python-pytest-xdist python-flaky))
+     (list python-setuptools
+           python-wheel
+           ;; For tests.
+           python-flaky
+           python-pytest
+           python-pytest-xdist))
     (home-page "https://coverage.readthedocs.io")
     (synopsis "Code coverage measurement for Python")
     (description
@@ -2631,6 +2666,8 @@ instantly.")
                ;; XXX: hypothesis requires pytest at runtime, but we can
                ;; not propagate it due to a circular dependency.
                (delete 'sanity-check))))
+    (native-inputs
+     (list python-setuptools))
     (propagated-inputs
      (list python-attrs-bootstrap python-exceptiongroup python-sortedcontainers))
     (synopsis "Library for property based testing")
@@ -2685,8 +2722,9 @@ programs, something like CSmith, a random generator of C programs.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (invoke "python" "lit.py" "tests")))))))
-    ;; This can be built with any version of llvm.
-    (native-inputs (list llvm))
+    (native-inputs
+     (list llvm        ; This can be built with any version of llvm.
+           python-setuptools))
     (home-page "https://llvm.org/")
     (synopsis "LLVM Software Testing Tool")
     (description "@code{lit} is a portable tool for executing LLVM and Clang
@@ -3387,7 +3425,9 @@ inspect\\.isclass\\(attr_value\\):")
 or isinstance(attr_value, staticmethod)):")))))
     (build-system python-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-dateutil))
     (arguments
@@ -3437,6 +3477,9 @@ mocks, stubs and fakes.")
     (arguments
      ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.
      '(#:tests? #f))
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/box/flaky")
     (synopsis "Automatically rerun flaky tests")
     (description
