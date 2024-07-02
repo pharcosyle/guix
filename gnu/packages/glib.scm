@@ -242,7 +242,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
 (define glib
   (package
     (name "glib")
-    (version "2.78.0")
+    (version "2.80.3")
     (source
      (origin
        (method url-fetch)
@@ -251,10 +251,11 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "0c3vagxl77wma85qinbj974jvw96n5bvch2m7hqcwxq8fa5spsj4"))
+        (base32 "05yl6sicpqxjn72ga8lhq5163r391inj9frh08yn3wyhvpma0irr"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
-                        "glib-skip-failing-test.patch"))
+                        "glib-skip-failing-test.patch"
+                        "glib-skip-uninstalled-libs-tests.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -478,6 +479,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
     (native-inputs
      (list dbus
            gettext-minimal
+           gobject-introspection-bootstrap
            m4                           ;for installing m4 macros
            perl                         ;needed by GIO tests
            pkg-config
@@ -562,6 +564,17 @@ functions for strings and common data structures.")
                      (string-append out html)
                      (string-append doc html))))))))))))
 
+;; Resolve a circular dependency betwwen glib and gobject-introspection.
+;; See also:
+;; https://discourse.gnome.org/t/dealing-with-glib-and-gobject-introspection-circular-dependency/18701
+(define-public glib-no-introspection
+  (hidden-package
+   (package/inherit glib
+     (name "glib-no-introspection")
+     (native-inputs
+      (modify-inputs (package-native-inputs glib)
+        (delete "gobject-introspection-bootstrap"))))))
+
 (define (python-extension-suffix python triplet)
   "Determine the suffix for C extensions for PYTHON when compiled
 for TRIPLET."
@@ -601,14 +614,14 @@ be used when cross-compiling."
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.78.1")
+    (version "1.80.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1d0vhi83q0xc7kg3zn32wy7n16f3dd5blicyh5v8w9gpkbcsnyxx"))
+              (base32 "1n66kccwslrvc252ylcy3bm5rpws3c2yj04wcfms3g8m9r17rpx1"))
              (patches (search-patches
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"
@@ -686,6 +699,22 @@ provide bindings to call into the C library.")
       license:lgpl2.0+
       ;; For tools.
       license:gpl2+))))
+
+;; Resolve a circular dependency betwwen glib and gobject-introspection. This
+;; part is only necessary so the main gobject-introspection can *propagate*
+;; the full glib. In fact the main gobject-introspection doesn't even need to
+;; be rebuilt but Guix has no way to indicate propagated packages without also
+;; adding them as built inputs. Alas.
+(define-public gobject-introspection-bootstrap
+  (hidden-package
+   (package/inherit gobject-introspection
+     (name "gobject-introspection-bootstrap")
+     (native-inputs
+      (modify-inputs (package-native-inputs gobject-introspection)
+        (replace "glib" `(,glib-no-introspection "bin"))))
+     (propagated-inputs
+      (modify-inputs (package-propagated-inputs gobject-introspection)
+        (replace "glib" glib-no-introspection))))))
 
 (define-public gobject-introspection-next gobject-introspection)
 
