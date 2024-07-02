@@ -35,6 +35,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sphinx)
@@ -109,7 +110,10 @@ conversions for values passed between the two languages.")
     (propagated-inputs ; required at run-time
      (list python-pycparser))
     (native-inputs
-     (list pkg-config python-pytest))
+     (list pkg-config
+           python-pytest
+           python-setuptools
+           python-wheel))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
