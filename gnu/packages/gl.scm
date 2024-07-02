@@ -327,6 +327,7 @@ also known as DXTn or DXTC) for Mesa.")
             pkg-config
             python-libxml2              ;for OpenGL ES 1.1 and 2.0 support
             python-mako
+            python-packaging
             python-wrapper
             (@ (gnu packages base) which))
       (if (target-aarch64?)

@@ -4672,7 +4672,9 @@ in Golang.")
         "19pqqn01y6qmhhv8q6dh4p1acav49kl923kklnns2qxz5a6h766g"))))
     (build-system python-build-system)
     (native-inputs
-     (list python-toml))
+     (list python-setuptools
+           python-toml
+           python-wheel))
     (home-page "https://simplejson.readthedocs.io/en/latest")
     (synopsis
      "Json library for Python")
@@ -5588,7 +5590,10 @@ interfaces.")
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
                (invoke "pytest" "-vv")))))))
-    (native-inputs (list python-pytest))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://palletsprojects.com/p/click/")
     (synopsis "Command line library for Python")
     (description
@@ -6292,7 +6297,9 @@ JavaScript-like message boxes.  Types of dialog boxes include:
                  (string-append indent "@unittest.skipIf(True, \
 'Fails on Guix too for unknown reasons')\n" all))))))))
     (native-inputs
-     (list python-bottle))
+     (list python-bottle
+           python-setuptools
+           python-wheel))
     (synopsis "Measure, monitor and analyze memory behavior")
     (description
      "Pympler is a development tool to measure, monitor and analyze
@@ -6338,6 +6345,9 @@ environments and back.")
         (base32
          "0hsa7g6ddynifrwdgadqcx80khhblfy94slzpbr7birn2w5ldpxz"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (inputs
      (list libyaml python-cython))
     (home-page "https://pyyaml.org")
@@ -6581,7 +6591,9 @@ possible.")
                       (when tests?
                         (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/mitsuhiko/markupsafe")
     (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
     (description
@@ -8618,6 +8630,8 @@ and is very extensible.")
            (lambda _
              (with-directory-excursion "tests"
                (invoke "sh" "runtests")))))))
+    (native-inputs
+     (list python-setuptools))
     (home-page "http://projectmallard.org")
     (synopsis "Convert Ducktype to Mallard documentation markup")
     (description
@@ -8643,8 +8657,9 @@ provides additional functionality on the produced Mallard documents.")
     (inputs
      (list python))
     (native-inputs
-     ;; Needed for some tests that link against it.
-     (list libxcrypt))
+     (list libxcrypt   ; Needed for some tests that link against it.
+           python-setuptools
+           python-wheel))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -10071,7 +10086,9 @@ a simple netcat replacement with chaining support.")
              (when tests?
                (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://pycodestyle.readthedocs.io/")
     (synopsis "Python style guide checker")
     (description "@code{pycodestyle} (formerly pep8) is a tool to check
@@ -11131,6 +11148,9 @@ a multithreaded image-processing system with low memory needs.")
                                       (string-append doc file)))
                          '("/README.rst" "/CHANGES" "/LICENSE"))
                (copy-recursively "examples" examples)))))))
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/eliben/pycparser")
     (synopsis "C parser in Python")
     (description
@@ -11684,7 +11704,9 @@ wraps Python's standard library threading and multiprocessing objects.")
              #t))
          (replace 'check (lambda _ (invoke "nosetests" "-v"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-setuptools" ,python-setuptools)
+       ("python-wheel" ,python-wheel)
+       ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
        ("man-db" ,man-db)
        ("which" ,which)
@@ -14820,6 +14842,9 @@ use of the Meson build system.")
          (base32
           "0k5jn8jpxni264wxf6cc3xcd1qckc0pww30bsd77mwzdf8l5ra05"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/PyCQA/pyflakes")
     (synopsis "Passive checker of Python programs")
     (description
@@ -14839,7 +14864,11 @@ use of the Meson build system.")
          "07w3p1qm44hgxf3vvwz84kswpsx6s7kvaibzrsx5dzm0hli1i3fx"))))
     (build-system python-build-system)
     (native-inputs
-     (list python-toml python-pytest-bootstrap python-pytest-runner))
+     (list python-toml
+           python-pytest-bootstrap
+           python-pytest-runner
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/PyCQA/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
     (description "This package provides a Flake8 plug-in to compute the McCabe
@@ -14894,7 +14923,10 @@ cyclomatic complexity of Python source code.")
            python-mccabe
            python-pycodestyle
            python-pyflakes))
-    (native-inputs (list python-pytest))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://gitlab.com/pycqa/flake8")
     (synopsis "The modular source code checker: pep8, pyflakes and co")
     (description
@@ -15260,7 +15292,8 @@ Python.")
                 ;; Run as prescribed: https://python-markdown.github.io/test_tools/#running-python-markdowns-tests
                 (invoke "python" "-m" "unittest" "discover" "tests")))))))
     (native-inputs
-     (list python-pyyaml))
+     (list python-pyyaml
+           python-setuptools))
     (home-page "https://python-markdown.github.io/")
     (synopsis "Python implementation of Markdown")
     (description
@@ -15684,6 +15717,9 @@ number of lines in the contained files easily.")
      (native-inputs
       (list unzip))
      (arguments '(#:tests? #f))
+     (native-inputs
+      (list python-setuptools
+            python-wheel))
      (home-page "https://github.com/fonttools/fonttools")
      (synopsis "Tools to manipulate font files")
      (description
@@ -15771,6 +15807,9 @@ provided that can be used to do various manipulations with LilyPond files.")
           (base32
             "0hfzmwknxqhg20aj83fx80vna74xfimg8sk18wb85fmin9kh2pbx"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/ActiveState/appdirs")
     (synopsis
       "Determine platform-specific dirs, e.g. a \"user data dir\"")
@@ -16672,6 +16711,9 @@ primary use case is APIs defined before keyword-only parameters existed.")
         (base32
          "1plzwvna1hk1p3c3jw3wbnzi3yfb2mprghwfalrahqlflq62kdwp"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
     (description
@@ -16920,6 +16962,9 @@ invoked on those path objects directly.")
         (base32
          "040vm94lcbscg5p81g1icmwwwa2jm7wrd1ybmxnv1sz8rl8bh3n9"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/alex/pretend")
     (synopsis "Library for stubbing in Python")
     (description
@@ -19680,7 +19725,9 @@ of @acronym{REGEXPs, regular expressions}.")
     (propagated-inputs
      (list python-markupsafe))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
@@ -21306,6 +21353,9 @@ network support library.")
           (base32
             "18qx113g9bi1ac4indd5phma82zcdq601lxncp3vjn43m2mc3iq0"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "http://www.dabeaz.com/ply/")
     (synopsis "Python Lex & Yacc")
     (description "PLY is a @code{lex}/@code{yacc} implemented purely in Python.
@@ -24188,6 +24238,9 @@ system.")
         (base32
          "1l0b9k158n04cmcccdq9phdy20h08lpis922dy71iq7pw2sywbwi"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/hawkowl/incremental")
     (synopsis "Library for versioning Python projects")
     (description "Incremental is a small library that versions your Python
@@ -24255,7 +24308,11 @@ system.")
              (substitute* "setup.py"
                (("\"automat-visualize = automat._visualize:tool\"") "")))))))
     (native-inputs
-     (list python-m2r python-setuptools-scm python-graphviz))
+     (list python-m2r
+           python-setuptools
+           python-setuptools-scm
+           python-wheel
+           python-graphviz))
     (propagated-inputs
      (list python-six python-attrs))
     (home-page "https://github.com/glyph/Automat")
@@ -28797,6 +28854,8 @@ that is accessible to other projects developed in Cython.")
     (arguments
      ;; TODO: Circular dependency on pytest.
      '(#:tests? #f))
+    (native-inputs
+     (list python-setuptools))
     (home-page "https://grantjenks.com/docs/sortedcontainers/")
     (synopsis "Sorted List, Sorted Dict, Sorted Set")
     (description
@@ -30358,7 +30417,7 @@ reference implementation of the D-Bus protocol.")
                                           status))
                                  (loop)))))))))))))
     (native-inputs
-     (list dbus python-pytest upower which))
+     (list dbus python-pytest python-setuptools upower which))
     (inputs
      (list dbus))
     (propagated-inputs
@@ -30379,7 +30438,7 @@ services to what you expect in your tests.")
     (arguments
      (substitute-keyword-arguments (package-arguments python-dbusmock)
        ((#:tests? _ #t) #f)))
-    (native-inputs (list which))
+    (native-inputs (list python-setuptools which))
     (properties '((hidden? . #t)))))
 
 (define-public python-jsonplus
@@ -31652,6 +31711,9 @@ choose to use Base64 without the “=” padding.")
         (base32
          "144nyk1izyigy0bzpj6p0bcsvply617khr7xic8nzp4hmhzvznrw"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/workhorsy/py-cpuinfo")
     (synopsis "Get CPU info with Python")
     (description
@@ -34201,7 +34263,16 @@ iGoogle subscription lists.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00p1gnb9pzb3svdq3c5b9b332gsp50wrqqa39gj00m133zadanjp"))))
+        (base32 "00p1gnb9pzb3svdq3c5b9b332gsp50wrqqa39gj00m133zadanjp"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri "https://github.com/leohemsted/smartypants.py/pull/21.patch")
+           (file-name (string-append name "-python-3.12-fixes.patch"))
+           (sha256
+            (base32
+             "06b59scbcdgq6f3bjfjcr6vgrlh9052ws9v12nps6kwg9jxa3zks")))))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -34212,8 +34283,12 @@ iGoogle subscription lists.")
            (lambda _
              (invoke "nosetests" "-v" "--exclude=^load_tests$"))))))
     (native-inputs
-     ;; For tests.
-     (list python-docutils python-nose python-pygments))
+     (list python-setuptools
+           python-wheel
+           ;; For tests.
+           python-docutils
+           python-nose
+           python-pygments))
     (home-page "https://github.com/leohemsted/smartypants.py")
     (synopsis "Translate punctuation characters into smart quotes")
     (description
@@ -34247,8 +34322,9 @@ entities
     (propagated-inputs
      (list python-smartypants))
     (native-inputs
-     ;; For tests.
-     (list python-nose))
+     (list python-nose
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/mintchaos/typogrify")
     (synopsis "Filters to transform text into typographically-improved HTML")
     (description
@@ -35622,6 +35698,9 @@ It implements advanced Python dictionaries with dot notation access.")
         (sha256
           (base32 "09sppvhhkhkv9zc9g994m53z15v92csxwcf42ggkaknlv01smm1i"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://python-fields.readthedocs.io/")
     (synopsis "Python container class boilerplate killer")
     (description "Avoid repetetive boilerplate code in Python classes.")
@@ -35638,6 +35717,9 @@ It implements advanced Python dictionaries with dot notation access.")
         (sha256
           (base32 "1am4ycf292zbmgz791z393v63w7qrynf8q5p9db2wwf2qj1fqxfj"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (propagated-inputs (list python-fields))
     (home-page "https://github.com/ionelmc/python-aspectlib")
     (synopsis
