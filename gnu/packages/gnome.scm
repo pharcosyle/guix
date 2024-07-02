@@ -8601,7 +8601,7 @@ services.")
                            #$configure-flags)))))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs base)
-         (delete elogind))))))
+         (delete "elogind"))))))
 
 (define-public network-manager-openvpn
   (package
