@@ -36,7 +36,7 @@
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1nkbv3bxz1kwwql1pdlnj3lxy5h2vsaif393ivb5b9d8610mxi0g"))))
+               "1nkbv3bxz1kwwql2pdlnj3lxy5h2vsaif393ivb5b9d8610mxi0g"))))
     (build-system gnu-build-system)
     (home-page "https://re2c.org/")
     (native-inputs

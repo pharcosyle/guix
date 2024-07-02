@@ -665,14 +665,14 @@ def contents() -> str:
 (define-public python-3.12
   (package
     (name "python")
-    (version "3.12.2")
+    (version "3.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.python.org/ftp/python/" version
                            "/Python-" version ".tar.xz"))
        (sha256
-        (base32 "0w6qyfhc912xxav9x9pifwca40b4l49vy52wai9j0gc1mhni2a5y"))
+        (base32 "0m4mwyqf4bdk67g9akz1hswyi5vds844j6w001kv4fklv2k1km7n"))
        (patches (search-patches "python-3-deterministic-build-info.patch"
                                 "python-3.12-fix-tests.patch"
                                 "python-3-hurd-configure.patch"))
@@ -1150,7 +1150,7 @@ and the unversioned commands available.")))
 ;; through libxcb, meson, and more.
 (define-public python-tkinter
   (package/inherit python
-    (name "python-minimal")
+    (name "python-tkinter")
     (outputs '("out" "tk" "idle"))
     (inputs
      (modify-inputs (package-inputs python)
