@@ -146,29 +146,6 @@ write-only counterpart to Tomli, which is a read-only TOML parser.")
     (description "This package provides a Python parser for TOML-0.4.0.")
     (license license:expat)))
 
-(define-public python-six-bootstrap
-  (package
-    (name "python-six-bootstrap")
-    (version "1.16.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "six" version))
-       (sha256
-        (base32
-         "09n9qih9rpj95q3r4a40li7hk6swma11syvgwdc68qm1fxsc6q8y"))))
-    (build-system python-build-system)
-    (arguments `(#:tests? #f))          ;to avoid pytest dependency
-    (home-page "https://pypi.org/project/six/")
-    (synopsis "Python 2 and 3 compatibility utilities")
-    (description
-     "Six is a Python 2 and 3 compatibility library.  It provides utility
-functions for smoothing over the differences between the Python versions with
-the goal of writing Python code that is compatible on both Python versions.
-Six supports every Python version since 2.5.  It is contained in only one
-Python file, so it can be easily copied into your project.")
-    (license license:x11)))
-
 (define-public python-tomli
   (package
     (name "python-tomli")
@@ -182,7 +159,8 @@ Python file, so it can be easily copied into your project.")
     (build-system pyproject-build-system)
     (arguments
      `(#:tests? #f))                      ;disabled to avoid extra dependencies
-    (native-inputs (list python-flit-core-bootstrap python-six-bootstrap))
+    (native-inputs
+     (list python-flit-core-bootstrap))
     (home-page "https://github.com/hukkin/tomli")
     (synopsis "Small and fast TOML parser")
     (description "Tomli is a minimal TOML parser that is fully compatible with
@@ -491,7 +469,7 @@ that client code uses to construct the grammar directly in Python code.")
     (build-system pyproject-build-system)
     (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
     (propagated-inputs
-     (list python-pyparsing python-six-bootstrap))
+     (list python-pyparsing))
     (native-inputs
      (list python-flit-core))
     (home-page "https://github.com/pypa/packaging")
