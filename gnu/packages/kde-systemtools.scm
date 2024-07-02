@@ -40,6 +40,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages search)
   #:use-module (gnu packages vnc)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages xorg)
@@ -136,49 +137,57 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
 (define-public khelpcenter
   (package
     (name "khelpcenter")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/khelpcenter-" version ".tar.xz"))
        (sha256
-        (base32 "10rivj5c14v5hwk87z41gwk830sy35fz0jg1jpay43jzw0ss995y"))))
+        (base32 "06vr3578slr2y6wm5ycvvn0i6z1glkc1ncnar9aw0rmj48ba3bwp"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6 perl))
     (inputs
      (list grantlee
-           karchive
-           kbookmarks
-           kcodecs
-           kconfig
-           kcoreaddons
-           kdbusaddons
-           khtml
-           ki18n
-           kinit
-           kio
-           kjs
-           kparts
-           kservice
-           kwindowsystem
+           karchive-6
+           kbookmarks-6
+           kcodecs-6
+           kconfig-6
+           kcoreaddons-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           kparts-6
+           kservice-6
+           ktexttemplate
+           kwindowsystem-6
            libxml2
            breeze-icons ;; default icon set
-           qtbase-5
-           xapian))
+           qtbase
+           xapian
+           qtwebengine))
     (arguments
-     (list #:tests? #f ;;1/1 test fails
-           #:phases #~(modify-phases %standard-phases
-                        (add-after 'install 'wrap-executable
-                          (lambda* (#:key inputs #:allow-other-keys)
-                            ;; Since qt-wrap selectors do not wrap for /share/kf5
-                            ;; directories, we need this so khelpcenter can find html4.css.
-                            (wrap-program (string-append #$output
-                                                         "/bin/khelpcenter")
-                              `("XDG_DATA_DIRS" suffix
-                                (,(string-append (assoc-ref inputs "khtml")
-                                                 "/share")))))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'add-miss-package
+                 (lambda _
+                   ;; https://invent.kde.org/system/khelpcenter/-/merge_requests/50
+                   (substitute* "CMakeLists.txt"
+                     (("    WebEngineWidgets")
+                      "    WebEngineWidgets
+    PrintSupport")
+                     (("Qt6::WebEngineWidgets")
+                      "Qt6::PrintSupport
+    Qt6::WebEngineWidgets"))))
+               (add-after 'install 'wrap-executable
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (wrap-program (string-append #$output
+                                                "/bin/khelpcenter")
+                     `("QTWEBENGINEPROCESS_PATH" =
+                       (,(search-input-file
+                          inputs
+                          "lib/qt6/libexec/QtWebEngineProcess")))))))))
     (home-page "https://apps.kde.org/khelpcenter/")
     (synopsis "KDE documentation viewer")
     (description "KHelpCenter uses meta data files which describe the
