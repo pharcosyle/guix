@@ -15780,8 +15780,16 @@ provided that can be used to do various manipulations with LilyPond files.")
           (base32
             "0hfzmwknxqhg20aj83fx80vna74xfimg8sk18wb85fmin9kh2pbx"))))
     (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-setuptools
+     (list python-pytest
+           python-setuptools
            python-wheel))
     (home-page "https://github.com/ActiveState/appdirs")
     (synopsis
@@ -16939,14 +16947,25 @@ invoked on those path objects directly.")
     (version "1.0.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "pretend" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alex/pretend")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "040vm94lcbscg5p81g1icmwwwa2jm7wrd1ybmxnv1sz8rl8bh3n9"))))
+         "156l685r9mg7i4xyrk9ql3sxk088irxlg8x7md5i0d05hdw1z8rs"))))
     (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-setuptools
+     (list python-pytest
+           python-setuptools
            python-wheel))
     (home-page "https://github.com/alex/pretend")
     (synopsis "Library for stubbing in Python")
@@ -24367,20 +24386,21 @@ system.")
                (base32
                 "0kmh9fwb6rkh8r5bi5jyxysywpgpjnwdks1h3p0xq6ddxn2fnsz5"))))
     (build-system python-build-system)
-    ;; We disable the tests because they require python-twisted, while
-    ;; python-twisted depends on python-automat.  Twisted is optional, but the
-    ;; tests fail if it is not available.  Also see
-    ;; <https://github.com/glyph/automat/issues/71>.
     (arguments
-     `(#:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          ;; Remove script, because it depends on python-twisted.
          (add-after 'unpack 'remove-entrypoint
            (lambda _
              (substitute* "setup.py"
-               (("\"automat-visualize = automat._visualize:tool\"") "")))))))
+               (("\"automat-visualize = automat._visualize:tool\"") ""))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-vv")))))))
     (native-inputs
+     (list python-pytest
+           python-pytest-benchmark
            python-setuptools
            python-setuptools-scm
            python-wheel
@@ -31810,8 +31830,17 @@ choose to use Base64 without the “=” padding.")
         (base32
          "144nyk1izyigy0bzpj6p0bcsvply617khr7xic8nzp4hmhzvznrw"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "pytest" "-vv")))))))
     (native-inputs
-     (list python-setuptools
+     (list python-pytest
+           python-setuptools
            python-wheel))
     (home-page "https://github.com/workhorsy/py-cpuinfo")
     (synopsis "Get CPU info with Python")
