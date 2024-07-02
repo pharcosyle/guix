@@ -1964,7 +1964,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pybugz-encode-error.patch		\
   %D%/packages/patches/pybugz-stty.patch			\
   %D%/packages/patches/pygpgme-disable-problematic-tests.patch  \
-  %D%/packages/patches/pyparsing-3.0.7-sre-const-deprecation.patch	\
   %D%/packages/patches/pyqt-configure.patch			\
   %D%/packages/patches/python-2-deterministic-build-info.patch	\
   %D%/packages/patches/python-2.7-adjust-tests.patch		\
@@ -1980,10 +1979,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-hurd-configure.patch		\
   %D%/packages/patches/python-angr-addition-type-error.patch	\
   %D%/packages/patches/python-angr-check-exec-deps.patch	\
-  %D%/packages/patches/python-cffi-3.11-and-pytest-fixes.patch	\
   %D%/packages/patches/python-cross-compile.patch		\
   %D%/packages/patches/python-configobj-setuptools.patch	\
-  %D%/packages/patches/python-dateutil-pytest-compat.patch	\
   %D%/packages/patches/python-debugpy-unbundle-pydevd.patch	\
   %D%/packages/patches/python-docopt-pytest6-compat.patch	\
   %D%/packages/patches/python-fixtures-remove-monkeypatch-test.patch	\

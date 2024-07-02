@@ -4666,36 +4666,48 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
 (define-public python-pyudev
   (package
     (name "python-pyudev")
-    (version "0.22.0")
+    (version "0.24.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pyudev" version))
-        (sha256
-          (base32
-            "0xmj6l08iih2js9skjqpv4w7y0dhxyg91zmrs6v5aa65gbmipfv9"))))
-    (build-system python-build-system)
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pyudev/pyudev")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1kk377hiv31py4hsdym68q81803mywhfi2wd6bzl72ii74n70b83"))))
+    (build-system pyproject-build-system)
     (arguments
-     `(#:tests? #f ; Tests require /sys
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-ctypes-udev
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((eudev (assoc-ref inputs "eudev")))
-               (substitute* "src/pyudev/core.py"
-                (("'udev'")
-                 (string-append "'" eudev "/lib/libudev.so'")))
-               (substitute* "src/pyudev/_ctypeslib/utils.py"
-                ;; Use absolute paths instead of keys.
-                (("= find_library") "= "))
-               #t))))))
+     (list
+      #:test-flags
+      ;; Skip most of the tests, we can't access udev inside the build
+      ;; container.
+      #~(list "--ignore=tests/test_discover.py"
+              "--ignore=tests/test_device.py"
+              "--ignore=tests/test_monitor.py"
+              "--ignore=tests/test_enumerate.py"
+              "--ignore=tests/test_observer.py")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-ctypes-udev
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((eudev (assoc-ref inputs "eudev")))
+                (substitute* "src/pyudev/core.py"
+                  (("\"udev\"")
+                   (string-append "'" eudev "/lib/libudev.so'")))
+                (substitute* "src/pyudev/_ctypeslib/utils.py"
+                  ;; Use absolute paths instead of keys.
+                  (("= find_library") "= "))))))))
     (inputs
      (list eudev))
-    (propagated-inputs
-     (list python-six))
     (native-inputs
-     (list python-docutils python-hypothesis python-mock python-pytest
-           python-setuptools python-sphinx))
+     (list python-setuptools
+           ;; For tests.
+           python-docutils
+           python-hypothesis
+           python-mock
+           python-pytest))
     (home-page "https://pyudev.readthedocs.io/")
     (synopsis "Python udev binding")
     (description "This package provides @code{udev} bindings for Python.")
