@@ -324,14 +324,14 @@ Python Package Index (PyPI).")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "67.6.1")
+    (version "70.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "setuptools" version))
        (sha256
         (base32
-         "16myxkpa89r045il88zcygdy1zbi2mvvpz5b4a70p9jhklmfjz95"))
+         "1xa7df43wr6fip6h4w8ci5hg29nvl381byjir2mqkgd5za9yg881"))
        (modules '((guix build utils)))
        (snippet
         ;; TODO: setuptools now bundles the following libraries:
@@ -340,7 +340,7 @@ Python Package Index (PyPI).")
         ;; installers for Windows.
         '(for-each delete-file (find-files "setuptools"
                                            "^(cli|gui).*\\.exe$")))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (native-inputs
      (list python-wheel))
     ;; FIXME: Tests require pytest, which itself relies on setuptools.
