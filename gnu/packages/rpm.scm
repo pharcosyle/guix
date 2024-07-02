@@ -114,7 +114,7 @@ applying deltarpms, compatible with the original deltarpm packages.")
     (native-inputs
      (list docbook-xml-4.1.2
            `(,glib "bin")
-           `(,glib-with-documentation "doc")
+           `(,glib "doc")
            gobject-introspection        ;for g-ir-scanner
            gtk-doc/stable
            help2man
