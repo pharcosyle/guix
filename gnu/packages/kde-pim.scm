@@ -4,6 +4,7 @@
 ;;; Copyright © 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2022 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages search)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml))
 
 (define-public akonadi
@@ -1708,26 +1710,26 @@ Features:
 (define-public kontactinterface
   (package
     (name "kontactinterface")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kontactinterface-" version ".tar.xz"))
        (sha256
-        (base32 "16fg24hz9vx912cffc94x5zx4jv3k72mbxgp5ck50lydypx6rfns"))))
+        (base32 "1gkqgg4k1p7hs02vcgmkbm3ly1cqig7cwqxqs1p1inmxm6vz73qm"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
-     (list kcoreaddons
-           ki18n
-           kiconthemes
-           kparts
-           kwindowsystem
-           kxmlgui
-           qtbase-5
-           qtx11extras))
+     (list kcoreaddons-6
+           ki18n-6
+           kiconthemes-6
+           kparts-6
+           kwindowsystem-6
+           kxmlgui-6
+           qtbase
+           libxkbcommon))
     (home-page "https://api.kde.org/kdepim/kontactinterface/html/index.html")
     (synopsis "Kontact interface library")
     (description "This library provides the glue necessary for
