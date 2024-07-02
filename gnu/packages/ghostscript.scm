@@ -76,7 +76,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
 (define-public libpaper
   (package
     (name "libpaper")
-    (version "2.1.3")
+    (version "2.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rrthomas/libpaper/releases"
@@ -84,7 +84,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jkg45ws4535bk9a3y46g2lgwwziaklhp3x6j156hvh3a9ybx65p"))))
+                "02dbkk6cki8wmrri4snbfpb3zm9c4w20pwc7fm7cgw0drrs0krbv"))))
     (build-system gnu-build-system)
     (native-inputs
      (list help2man))
@@ -160,7 +160,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "10.02.1")
+    (version "10.03.1")
     (source
      (origin
        (method url-fetch)
@@ -170,7 +170,7 @@ printing, and psresize, for adjusting page sizes.")
                            "/ghostscript-" version ".tar.xz"))
        (sha256
         (base32
-         "025bl5zv19n5sh0yl9gwmxl35fzrjpdwha80rppyq6vjn14cjn4c"))
+         "1vmb0v0k55pdiljmbi2hy4kl9yrkk3jf5p3mji0cr33br7ni4whm"))
        (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                 "ghostscript-no-header-id.patch"
                                 "ghostscript-no-header-uuid.patch"))
