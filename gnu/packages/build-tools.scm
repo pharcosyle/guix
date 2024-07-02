@@ -329,11 +329,12 @@ files and generates build instructions for the Ninja build system.")
                    "linuxlike/9 compiler checks with dependencies" ; requires Glib
                    "linuxlike/14 static dynamic linkage"))))) ; requires zlib
           (replace 'check
-            (lambda _
-              ;; There are more tests (run them all with `./run-tests.py')
-              ;; and running them might be good but there are a lot of
-              ;; failures including a number of false positives.
-              (invoke "./run_project_tests.py")))
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;; There are more tests (run them all with `./run-tests.py')
+                ;; and running them might be good but there are a lot of
+                ;; failures including a number of false positives.
+                (invoke "./run_project_tests.py"))))
           ;; Meson calls the various executables in out/bin through the
           ;; Python interpreter, so we cannot use the shell wrapper.
           (replace 'wrap
@@ -345,8 +346,10 @@ import sys
 sys.path.insert(0, '~a')
 # EASY-INSTALL-ENTRY-SCRIPT" (site-packages inputs outputs)))))))))
     (native-inputs
-     ;; For tests.
-     (list ninja
+     (list python-setuptools
+           python-wheel
+           ;; For tests.
+           ninja
            pkg-config))
     (inputs
      (list python))

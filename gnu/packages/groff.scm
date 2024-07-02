@@ -93,9 +93,6 @@
              ;; details.
              (substitute* "Makefile.in"
                (("-DENABLE_RELOCATABLE=1") ""))))
-         (add-after 'unpack 'setenv
-           (lambda _
-             (setenv "GS_GENERATE_UUIDS" "0")))
          (add-after 'unpack 'fix-docdir
            (lambda _         ;see https://savannah.gnu.org/bugs/index.php?55461
              (substitute* "Makefile.in"
@@ -146,6 +143,9 @@ is usually the formatter of \"man\" documentation pages.")
         #~(delete "--docdir=/tmp/trash/doc" #$flags))
        ((#:phases phases)
         #~(modify-phases #$phases
+            (add-after 'unpack 'setenv
+              (lambda _
+                (setenv "GS_GENERATE_UUIDS" "0")))
             (delete 'remove-non-essentials)))))
     (native-inputs
      (let ((native-inputs (modify-inputs (package-native-inputs groff-minimal)
