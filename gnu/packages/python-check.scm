@@ -1306,7 +1306,7 @@ failures per test.")
     (propagated-inputs
      (list python-docutils
            python-importlib-metadata
-           python-pep517
+           python-pyproject-hooks
            python-pytest))
     (native-inputs (list python-setuptools-scm))
     (home-page "https://github.com/jaraco/pytest-checkdocs")
