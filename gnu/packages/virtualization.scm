@@ -519,26 +519,29 @@ exec smbd $@")))
              zlib
              `(,zstd "lib"))))
     (native-inputs
-     ;; Note: acpica is here only to pretty-print firmware differences with IASL
-     ;; (see the replace-firmwares phase above).
-     (list acpica
-           bison
-           flex
-           gettext-minimal
-           `(,glib "bin")               ;gtester, etc.
-           meson
-           ninja
-           perl
-           pkg-config
-           python-wrapper
-           python-sphinx
-           python-sphinx-rtd-theme
-           texinfo
-           ;; The following static libraries are required to build
-           ;; the static output of QEMU.
-           `(,glib "static")
-           `(,pcre2 "static")
-           `(,zlib "static")))
+     (append
+      ;; Note: acpica is here only to pretty-print firmware differences with IASL
+      ;; (see the replace-firmwares phase above).
+      (list acpica
+            bison
+            flex
+            gettext-minimal
+            `(,glib "bin")               ;gtester, etc.
+            meson
+            ninja
+            perl
+            pkg-config
+            python-wrapper
+            texinfo
+            ;; The following static libraries are required to build
+            ;; the static output of QEMU.
+            `(,glib "static")
+            `(,pcre2 "static")
+            `(,zlib "static"))
+      (if (supported-package? python-sphinx)
+          (list python-sphinx
+                python-sphinx-rtd-theme)
+          '())))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
     (description
