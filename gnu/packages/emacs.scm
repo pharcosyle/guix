@@ -631,7 +631,7 @@ editor (with wide ints)" )
               (delete 'enable-elogind)))))
       (inputs
        (modify-inputs (package-inputs base)
-         (delete elogind))))))
+         (delete "elogind"))))))
 
 (define-public guile-emacs
   (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")
