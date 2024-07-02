@@ -189,7 +189,7 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.12.7")
+    (version "2.12.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libxml2/"
@@ -197,7 +197,7 @@ hierarchical form with variable field lengths.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0mpvdkyjfsgbdaam76z1av02mnj5g4d99fmyv3k77ab32gzpibi4"))))
+               "14zcfdhj47g5pv8kdvvnd0csqbww46aizmv84kmkvilb05xqgba3"))))
     (build-system gnu-build-system)
     (outputs '("out" "static" "doc"))
     (arguments

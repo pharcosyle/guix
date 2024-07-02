@@ -2292,12 +2292,11 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                      (("^(exec_)?prefix=.*") "")))))))
     (inputs
      (list file                         ;for libmagic
-           libxcrypt                    ;for sulogin
            ncurses
            zlib))
     (native-inputs
      (list net-base                     ;for tests
-           perl))
+           pkg-config))
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
@@ -3389,11 +3388,10 @@ inadequately in modern network environments, and both should be deprecated.")
     (version "2.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/ecki/net-tools"
-                                  "/archive/refs/tags/v" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/net-tools/net-tools-" version ".tar.xz"))
               (sha256
                (base32
-                "1lh815rv5k6npmkhd9kxfyp3czd0qdkh12ywnf4ljc7zy1jny64f"))))
+                "0s8db1pxkfccw0r3zfdplzvm4fbm6d8vvjn3a7x9ps21a9d46qmj"))))
     (home-page "https://net-tools.sourceforge.net/")
     (build-system gnu-build-system)
     (arguments
@@ -3441,8 +3439,7 @@ inadequately in modern network environments, and both should be deprecated.")
                             (string-append "BASEDIR=" out)
                             (string-append "INSTALLNLSDIR=" out "/share/locale")
                             (string-append "mandir=/share/man")))))
-    (native-inputs `(("gettext" ,gettext-minimal)
-                     ("unzip" ,unzip)))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (supported-systems (delete "i586-gnu" %supported-systems))
     (synopsis "Tools for controlling the network subsystem in Linux")
     (description
@@ -3456,7 +3453,7 @@ configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.69")
+    (version "2.70")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3464,7 +3461,7 @@ configuration (iptunnel, ipmaddr).")
                     "libcap2/libcap-" version ".tar.xz"))
               (sha256
                (base32
-                "1sypj9sdbprir7iwl57p525jkaa3r5z6y7bdav89jinqvbrzh4gk"))))
+                "03xka8cqwi8kkdb7rg57vd98kvyg2v8v4fv3by3kw7mgmn5fz9i3"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
