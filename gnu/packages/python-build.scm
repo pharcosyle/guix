@@ -202,6 +202,31 @@ Python file, so it can be easily copied into your project.")
 @code{python-toml}.")
     (license license:expat)))
 
+;; TODO: tomli is no longer necessary in Python 3.12 so it should be removed or
+;; added only conditionally for earlier Python versions. It's in a lot of
+;; places so just replace it with a dummy package for the moment to avoid a
+;; bunch of potential merge conflicts.
+(define-public python-tomli
+  (package
+    (name "python-tomli-dummy")
+    (version "0")
+    (source #f)
+    (build-system (@ (guix build-system trivial) trivial-build-system))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:target #f
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let* ((out (assoc-ref %outputs "out"))
+                          (dummy (string-append out "/dummy")))
+                     (mkdir-p out)
+                     (call-with-output-file dummy
+                       (const #t))))))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license (license:fsdg-compatible "dummy"))))
+
 (define-public python-trove-classifiers
   (package
     (name "python-trove-classifiers")
