@@ -655,7 +655,7 @@ editor (with wide ints)" )
               (delete 'enable-elogind)))))
       (inputs
        (modify-inputs (package-inputs base)
-         (delete elogind))))))
+         (delete "elogind"))))))
 
 (define-public guile-emacs
   (let ((upstream-version "31.0.50")

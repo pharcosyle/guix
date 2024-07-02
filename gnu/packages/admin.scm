@@ -6005,7 +6005,7 @@ allows applications to use whatever seat management is available.")
                   (delete "-Dlibseat-logind=elogind" #$configure-flags)))))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs base)
-         (delete elogind))))))
+         (delete "elogind"))))))
 
 (define-public seatd
   (package
@@ -6042,7 +6042,7 @@ that require it.")
                    (delete "-Dlibseat-logind=elogind" #$configure-flags)))))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs base)
-         (delete elogind))))))
+         (delete "elogind"))))))
 
 (define-public sysdig
   ;; Use the latest commit for now, as the latest 0.36.1 release does not yet
