@@ -230,13 +230,13 @@ Python file, so it can be easily copied into your project.")
 (define-public python-trove-classifiers
   (package
     (name "python-trove-classifiers")
-    (version "2023.4.18")
+    (version "2024.7.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "trove-classifiers" version))
+              (uri (pypi-uri "trove_classifiers" version))
               (sha256
                (base32
-                "1fnxg2gidi3gszqzxbj9yj3imffm0dmpr50shrlydydxrj1jm2cz"))))
+                "0ddcs14r5diry19d9iv4qnfzi0vsxnh6birppcy7gzg35jng4a43"))))
     (build-system pyproject-build-system)
     (arguments (list #:build-backend "setuptools.build_meta"
                      #:tests? #f))      ;keep dependencies to a minimum
