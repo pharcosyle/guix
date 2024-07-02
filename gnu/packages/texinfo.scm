@@ -46,18 +46,17 @@
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages readline))
 
-(define-public texinfo
+(define-public texinfo-7
   (package
     (name "texinfo")
-    (version "6.8")
+    (version "7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
-              (patches (search-patches "texinfo-headings-single.patch"))
               (sha256
                (base32
-                "1i7yb7mrp3inz25zbzv2pllr4y7d58v818f1as7iz8mw53nm7dwf"))))
+                "0lq9nf1as11mfqf2ydyc6b1xl1hqk0qj5llavxph97hmkzqwkvny"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -77,7 +76,21 @@
                         (substitute* "configure"
                           (("env -i")
                            "env ")))))
-                 '()))))
+                 '())
+          (add-after 'install 'wrap-program
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (program (string-append bin "/texi2any"))
+                     (zip (car (find-files
+                                (assoc-ref inputs "perl-archive-zip")
+                                (lambda (file stat)
+                                  (and (eq? 'directory (stat:type stat))
+                                       (string=? (basename file)
+                                                 "Archive")))
+                                #:directories? #t))))
+                (wrap-program program
+                  `("PERL5LIB" prefix (,(dirname zip))))))))))
     ;; When cross-compiling, texinfo will build some of its own binaries with
     ;; the native compiler. This means ncurses is needed both in both inputs
     ;; and native-inputs.  Some of its tests require extra locales such as
@@ -88,7 +101,8 @@
            (libc-utf8-locales-for-target)))
     (inputs
      (list ncurses
-           perl))
+           perl
+           perl-archive-zip))
     (native-search-paths
      ;; This is the variable used by the standalone Info reader.
      (list (search-path-specification
@@ -105,41 +119,36 @@ their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
 
-(define-public texinfo-7
+(define texinfo-no-texi2any-epub
   (package
-    (inherit texinfo)
-    (version "7.1")
+    (inherit texinfo-7)
+    (arguments
+     (substitute-keyword-arguments (package-arguments texinfo-7)
+       ((#:phases phases #~%standard-phases)
+        #~(modify-phases #$phases
+            (delete 'wrap-program)))))
+    (inputs
+     (modify-inputs (package-inputs texinfo-7)
+       (delete perl-archive-zip)))))
+
+(define-public texinfo-6
+  (package
+    (inherit texinfo-no-texi2any-epub)
+    (version "6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
+              (patches (search-patches "texinfo-headings-single.patch"))
               (sha256
                (base32
-                "0lq9nf1as11mfqf2ydyc6b1xl1hqk0qj5llavxph97hmkzqwkvny"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments texinfo)
-       ((#:phases phases #~%standard-phases)
-        #~(modify-phases #$phases
-            (add-after 'install 'wrap-program
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                (let* ((out (assoc-ref outputs "out"))
-                       (bin (string-append out "/bin"))
-                       (program (string-append bin "/texi2any"))
-                       (zip (car (find-files
-                                  (assoc-ref inputs "perl-archive-zip")
-                                  (lambda (file stat)
-                                    (and (eq? 'directory (stat:type stat))
-                                         (string=? (basename file)
-                                                   "Archive")))
-                                  #:directories? #t))))
-                  (wrap-program program
-                    `("PERL5LIB" prefix (,(dirname zip)))))))))))
-    (inputs (modify-inputs (package-inputs texinfo)
-              (append perl-archive-zip)))))      ;needed for 'tex2any --epub3'
+                "1i7yb7mrp3inz25zbzv2pllr4y7d58v818f1as7iz8mw53nm7dwf"))))))
+
+(define-public texinfo texinfo-6)
 
 (define-public texinfo-5
   (package
-    (inherit texinfo)
+    (inherit texinfo-no-texi2any-epub)
     (version "5.2")
     (source (origin
               (method url-fetch)
@@ -152,7 +161,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
 
 (define-public texinfo-4
   (package
-    (inherit texinfo)
+    (inherit texinfo-no-texi2any-epub)
     (version "4.13a")
     (source (origin
               (method url-fetch)
@@ -164,7 +173,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
                (base32
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments texinfo)
+     (substitute-keyword-arguments (package-arguments texinfo-no-texi2any-epub)
        ((#:phases phases)
         #~(modify-phases #$phases
             (add-after 'unpack 'fix-configure
@@ -188,8 +197,8 @@ is on expressing the content semantically, avoiding physical markup commands.")
                           (invoke "make" "-C" "tools/gnulib/lib"))))
                    '())))))
     (native-inputs
-     (modify-inputs (package-native-inputs texinfo)
-       (prepend automake)))
+      (modify-inputs (package-native-inputs texinfo-no-texi2any-epub)
+        (prepend automake)))
     (inputs
      (list ncurses
            xz))))
@@ -201,7 +210,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
     (name "info-reader")
     (arguments
      (append
-      (substitute-keyword-arguments (package-arguments texinfo)
+      (substitute-keyword-arguments (package-arguments texinfo-no-texi2any-epub)
         ((#:phases phases)
          #~(modify-phases #$phases
              ;; Make sure 'info-reader' can read compressed info files
@@ -235,12 +244,12 @@ is on expressing the content semantically, avoiding physical markup commands.")
                                      '("info" "locale"))))))))))
       (list
        #:disallowed-references
-       (assoc-ref (package-inputs texinfo)
+       (assoc-ref (package-inputs texinfo-no-texi2any-epub)
                   "perl")
        #:modules `((ice-9 ftw)
                    (srfi srfi-1)
                    ,@%default-gnu-modules))))
-    (inputs (modify-inputs (package-inputs texinfo)
+    (inputs (modify-inputs (package-inputs texinfo-no-texi2any-epub)
               (prepend gzip)))
     (synopsis "Standalone Info documentation reader")))
 
