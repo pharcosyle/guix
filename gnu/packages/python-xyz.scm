@@ -4371,16 +4371,37 @@ in the current session, Python, and the OS.")
     (license license:bsd-3)))
 
 (define-public python-six
-  (package/inherit python-six-bootstrap
+  (package
     (name "python-six")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "six" version))
+       (sha256
+        (base32
+         "09n9qih9rpj95q3r4a40li7hk6swma11syvgwdc68qm1fxsc6q8y"))))
+    (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (invoke "pytest" "-v"))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "pytest" "-vv")))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest-bootstrap)))))
+     (list python-pytest
+           python-setuptools
+           python-wheel))
+    (home-page "https://pypi.org/project/six/")
+    (synopsis "Python 2 and 3 compatibility utilities")
+    (description
+     "Six is a Python 2 and 3 compatibility library.  It provides utility
+functions for smoothing over the differences between the Python versions with
+the goal of writing Python code that is compatible on both Python versions.
+Six supports every Python version since 2.5.  It is contained in only one
+Python file, so it can be easily copied into your project.")
+    (license license:x11)))
 
 (define-public python2-six
   (let ((base (package-with-python2 python-six)))
@@ -25105,7 +25126,7 @@ manipulation, or @code{stdout}.")
     (native-inputs
      (list python-flit-core
            python-pretend python-pytest))
-    (propagated-inputs (list python-pyparsing python-six))
+    (propagated-inputs (list python-pyparsing))
     (home-page "https://github.com/pypa/packaging")
     (synopsis "Core utilities for Python packages")
     (description "Packaging is a Python module for dealing with Python packages.
