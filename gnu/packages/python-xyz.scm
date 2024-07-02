@@ -31621,16 +31621,19 @@ for YAML and JSON.")
               (substitute* "setup.cfg"
                 (("(ninja|patchelf)") "")))))))
     (native-inputs
-     (list pkg-config
-           python-meson-python
-           meson
-           ninja
-           patchelf
-           python-setuptools
-           python-sphinx
-           python-sphinx-rtd-theme
-           python-tappy
-           python-wheel))
+     (append
+      (list pkg-config
+            python-meson-python
+            meson
+            ninja
+            patchelf
+            python-setuptools
+            python-tappy
+            python-wheel)
+      (if (supported-package? python-sphinx)
+          (list python-sphinx
+                python-sphinx-rtd-theme)
+          '())))
     (inputs
      (list dbus glib))
     (propagated-inputs
