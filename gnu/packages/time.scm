@@ -179,6 +179,8 @@ expressions.")
        (base32
         "04lq792fgl2wjpc7512pcz90w0s8bbg6p128nhaaz2y1m5g76a9a"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools))
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
     (description "This library brings the Olson tz database into Python.  It
