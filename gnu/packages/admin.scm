@@ -4695,7 +4695,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
      (list python-six))
     (native-inputs
      (list python-docutils python-hypothesis python-mock python-pytest
-           python-sphinx))
+           python-setuptools python-sphinx))
     (home-page "https://pyudev.readthedocs.io/")
     (synopsis "Python udev binding")
     (description "This package provides @code{udev} bindings for Python.")
