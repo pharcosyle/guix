@@ -167,13 +167,23 @@ write-only counterpart to Tomli, which is a read-only TOML parser.")
     (version "2.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "tomli" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hukkin/tomli")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0kwazq3i18rphcr8gak4fgzdcj5w5bbn4k4j2l6ma32gj496qlny"))))
+        (base32
+         "1l3s70kd2jwmfmlaw32flsf6dn1fbqh2dy008y76fs08fan4qimz"))))
     (build-system pyproject-build-system)
     (arguments
-     `(#:tests? #f))                      ;disabled to avoid extra dependencies
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python" "-m" "unittest")))))))
     (native-inputs
      (list python-flit-core))
     (home-page "https://github.com/hukkin/tomli")
