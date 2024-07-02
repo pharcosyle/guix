@@ -1,0 +1,80 @@
+Since 2.80 these tests fail because they can't find libraries that are not
+located in their installed locations.
+
+glib:girepository+core / function-info
+glib:girepository+core / repository
+glib:girepository+core / throws
+glib:girepository+core / autoptr-girepository
+
+An abortive workaround that works but causes errors in two other tests for
+some reason. If anyone has any ideas, go nuts (add to phases):
+
+;; #$@(let* ((suffix "2.0.so.0")
+;;           (lib-names (list (string-append "libgobject-" suffix)
+;;                            (string-append "libgio-" suffix)
+;;                            (string-append "libglib-" suffix)))
+;;           (lib-dirs (list "gobject"
+;;                           "gio"
+;;                           "glib")))
+;;      #~((add-before 'check 'set-up-libs-for-tests
+;;           (lambda _
+;;             (mkdir-p (string-append #$output "/lib"))
+;;             (for-each (lambda (name dir)
+;;                         (symlink
+;;                          (string-append (getcwd) "/" dir "/" name)
+;;                          (string-append #$output "/lib/" name)))
+;;                       '#$lib-names
+;;                       '#$lib-dirs)))
+;;         (add-after 'check 'clean-up-libs-for-tests
+;;           (lambda _
+;;             (for-each (lambda (name)
+;;                         (delete-file
+;;                          (string-append #$output "/lib/" name)))
+;;                       '#$lib-names)))))
+
+--- a/girepository/tests/meson.build
++++ b/girepository/tests/meson.build
+@@ -43,20 +43,12 @@
+   ]
+ 
+   girepository_tests += {
+-    'function-info' : {
+-      'dependencies': [libffi_dep],
+-      'depends': glib_gir_testing_dep,
+-    },
+     'object-info' : {
+       'depends': gio_gir_testing_dep,
+     },
+     'registered-type-info' : {
+       'depends': gobject_gir_testing_dep,
+     },
+-    'repository' : {
+-      'depends': [gio_gir_testing_dep, gio_platform_gir_testing_dep],
+-      'dependencies': [libgio_dep],
+-    },
+     'repository-search-paths' : {
+       'c_args': '-DGOBJECT_INTROSPECTION_LIBDIR="@0@"'.format(glib_libdir),
+       'depends': glib_gir_testing_dep,
+@@ -64,22 +56,10 @@
+     'struct-info' : {
+       'depends': gobject_gir_testing_dep,
+     },
+-    'throws' : {
+-      'depends': gio_gir_testing_dep,
+-    },
+     'union-info' : {
+       'depends': glib_gir_testing_dep,
+     },
+   }
+-
+-  if cc.get_id() != 'msvc'
+-    girepository_tests += {
+-      'autoptr-girepository' : {
+-        'source' : 'autoptr.c',
+-        'depends': gio_gir_testing_dep,
+-      },
+-    }
+-  endif
+ endif
+ 
+ test_env = environment()

@@ -369,7 +369,16 @@ please install the @code{flyer-composer-gui} package.")))
          #~(modify-phases %standard-phases
              (add-after 'unpack 'set-PKG_CONFIG
                (lambda _
-                 (setenv "PKG_CONFIG" #$(pkg-config-for-target))))))))
+                 (setenv "PKG_CONFIG" #$(pkg-config-for-target))))
+             (add-after 'unpack 'dont-assume-exe-is-python
+               ;; Poppler invokes `glib-mkenums' through the Python
+               ;; interpreter but we wrap it in a shell script. Patch the bit
+               ;; of the build that finds python to find the current shell
+               ;; instead.
+               (lambda _
+                 (substitute* "glib/CMakeLists.txt"
+                   (("find_program\\(GLIB2_MKENUMS_PYTHON NAMES python3 python\\)")
+                    "find_program(GLIB2_MKENUMS_PYTHON sh)"))))))))
    (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.
