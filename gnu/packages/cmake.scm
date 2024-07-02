@@ -194,6 +194,7 @@ using the CMake build system.")
                 "--mandir=share/man"
                 (string-append "--docdir=share/doc/cmake-"
                                #$(version-major+minor version))
+                "--no-debugger"
 
                 ;; By default CMake is built without any optimizations.  Use
                 ;; the recommended Release target for a ~2.5x speedup.
@@ -304,7 +305,8 @@ and workspaces that can be used in the compiler environment of your choice.")
       #~(list "-DCMAKE_USE_SYSTEM_LIBRARIES=ON"
               (string-append "-DCMAKE_DOC_DIR=share/doc/cmake-"
                              #$(version-major+minor (package-version
-                                                     cmake-bootstrap))))
+                                                     cmake-bootstrap)))
+              "-DCMake_ENABLE_DEBUGGER=OFF")
 
       ;; This is the CMake used in cmake-build-system.  Ensure compiler
       ;; optimizations are enabled to save size and CPU cycles.
