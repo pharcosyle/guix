@@ -60,39 +60,40 @@
                 "1i7yb7mrp3inz25zbzv2pllr4y7d58v818f1as7iz8mw53nm7dwf"))))
     (build-system gnu-build-system)
     (arguments
-     ;; When cross-compiling, the package is configured twice: once with the
-     ;; native compiler and once with the cross-compiler. During the configure
-     ;; with the native compiler, the environment is reset. This leads to
-     ;; multiple environment variables missing. Do not reset the environment
-     ;; to prevent that.
-     `(#:phases
-       (if ,(%current-target-system)
-            (modify-phases %standard-phases
-              (add-before 'configure 'fix-cross-configure
-                (lambda _
-                  (substitute* "configure"
-                    (("env -i")
-                     "env "))
-                  #t)))
-            %standard-phases)
-
-       ;; XXX: Work around <https://issues.guix.gnu.org/59616>.
-       #:tests? ,(and (not (target-hurd?))
-                      (not (%current-target-system)))))
-    (inputs (list ncurses perl))
-
+     (list
+      ;; XXX: Work around <https://issues.guix.gnu.org/59616>.
+      #:tests? (and (not (target-hurd?))
+                    (not (%current-target-system)))
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; When cross-compiling, the package is configured twice: once with the
+          ;; native compiler and once with the cross-compiler. During the configure
+          ;; with the native compiler, the environment is reset. This leads to
+          ;; multiple environment variables missing. Do not reset the environment
+          ;; to prevent that.
+          #$@(if (%current-target-system)
+                 #~((add-before 'configure 'fix-cross-configure
+                      (lambda _
+                        (substitute* "configure"
+                          (("env -i")
+                           "env ")))))
+                 '()))))
     ;; When cross-compiling, texinfo will build some of its own binaries with
     ;; the native compiler. This means ncurses is needed both in both inputs
     ;; and native-inputs.  Some of its tests require extra locales such as
     ;; fr_FR.UTF-8.
-    (native-inputs (list perl ncurses (libc-utf8-locales-for-target)))
-
+    (native-inputs
+     (list ncurses
+           perl
+           (libc-utf8-locales-for-target)))
+    (inputs
+     (list ncurses
+           perl))
     (native-search-paths
      ;; This is the variable used by the standalone Info reader.
      (list (search-path-specification
             (variable "INFOPATH")
             (files '("share/info")))))
-
     (home-page "https://www.gnu.org/software/texinfo/")
     (synopsis "The GNU documentation format")
     (description
@@ -115,8 +116,6 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "0lq9nf1as11mfqf2ydyc6b1xl1hqk0qj5llavxph97hmkzqwkvny"))))
-    (inputs (modify-inputs (package-inputs texinfo)
-              (append perl-archive-zip)))        ;needed for 'tex2any --epub3'
     (arguments
      (substitute-keyword-arguments (package-arguments texinfo)
        ((#:phases phases #~%standard-phases)
@@ -134,10 +133,13 @@ is on expressing the content semantically, avoiding physical markup commands.")
                                                    "Archive")))
                                   #:directories? #t))))
                   (wrap-program program
-                    `("PERL5LIB" prefix (,(dirname zip)))))))))))))
+                    `("PERL5LIB" prefix (,(dirname zip)))))))))))
+    (inputs (modify-inputs (package-inputs texinfo)
+              (append perl-archive-zip)))))      ;needed for 'tex2any --epub3'
 
 (define-public texinfo-5
-  (package (inherit texinfo)
+  (package
+    (inherit texinfo)
     (version "5.2")
     (source (origin
               (method url-fetch)
@@ -149,7 +151,8 @@ is on expressing the content semantically, avoiding physical markup commands.")
                 "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))))
 
 (define-public texinfo-4
-  (package (inherit texinfo)
+  (package
+    (inherit texinfo)
     (version "4.13a")
     (source (origin
               (method url-fetch)
@@ -160,36 +163,36 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
-    (inputs (list ncurses xz))
-    (native-inputs
-      (modify-inputs (package-native-inputs texinfo)
-        (prepend automake)))
     (arguments
      (substitute-keyword-arguments (package-arguments texinfo)
        ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'fix-configure
-             (lambda* (#:key inputs native-inputs #:allow-other-keys)
-               ;; Replace outdated config.sub and config.guess.
-               (with-directory-excursion "build-aux"
-                 (for-each
-                  (lambda (file)
-                    (install-file (string-append
-                                   (assoc-ref
-                                    (or native-inputs inputs) "automake")
-                                   "/share/automake-"
-                                   ,(version-major+minor
-                                     (package-version automake))
-                                   "/" file) "."))
-                  '("config.sub" "config.guess")))
-               #t))
-           ;; Build native version of tools before running 'build phase.
-           ,@(if (%current-target-system)
-                 `((add-before 'build 'make-native-gnu-lib
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (invoke "make" "-C" "tools/gnulib/lib")
-                        #t)))
-                 '())))))))
+        #~(modify-phases #$phases
+            (add-after 'unpack 'fix-configure
+              (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                ;; Replace outdated config.sub and config.guess.
+                (with-directory-excursion "build-aux"
+                  (for-each
+                   (lambda (file)
+                     (install-file (string-append
+                                    (assoc-ref
+                                     (or native-inputs inputs) "automake")
+                                    "/share/automake-"
+                                    ,(version-major+minor
+                                      (package-version automake))
+                                    "/" file) "."))
+                   '("config.sub" "config.guess")))))
+            ;; Build native version of tools before running 'build phase.
+            #$@(if (%current-target-system)
+                   #~((add-before 'build 'make-native-gnu-lib
+                        (lambda* (#:key inputs #:allow-other-keys)
+                          (invoke "make" "-C" "tools/gnulib/lib"))))
+                   '())))))
+    (native-inputs
+     (modify-inputs (package-native-inputs texinfo)
+       (prepend automake)))
+    (inputs
+     (list ncurses
+           xz))))
 
 (define-public info-reader
   ;; The idea of this package is to have the standalone Info reader without
@@ -197,46 +200,49 @@ is on expressing the content semantically, avoiding physical markup commands.")
   (package/inherit texinfo
     (name "info-reader")
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments texinfo)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               ;; Make sure 'info-reader' can read compressed info files
-               ;; in a pure environment.  There are also a few other
-               ;; uncompressors listed in this file (lzip, unxz, bunzip2, ...)
-               ;; but let's not include them because info manuals in Guix
-               ;; are always compressed with 'gzip'.
-               ;; TODO(core-updates): maybe move to the 'texinfo' package.
-               (add-after 'unpack 'absolute-binary-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "info/filesys.c"
-                     (("gunzip") (search-input-file inputs "/bin/gunzip"))
-                     (("gzip") (search-input-file inputs "/bin/gzip")))))
-               (add-after 'install 'keep-only-info-reader
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Remove everything but 'bin/info' and associated
-                   ;; files.
-                   (define (files)
-                     (scandir "." (lambda (file)
-                                    (not (member file '("." ".."))))))
+     (append
+      (substitute-keyword-arguments (package-arguments texinfo)
+        ((#:phases phases)
+         #~(modify-phases #$phases
+             ;; Make sure 'info-reader' can read compressed info files
+             ;; in a pure environment.  There are also a few other
+             ;; uncompressors listed in this file (lzip, unxz, bunzip2, ...)
+             ;; but let's not include them because info manuals in Guix
+             ;; are always compressed with 'gzip'.
+             ;; TODO(core-updates): maybe move to the 'texinfo' package.
+             (add-after 'unpack 'absolute-binary-path
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (substitute* "info/filesys.c"
+                   (("gunzip") (search-input-file inputs "/bin/gunzip"))
+                   (("gzip") (search-input-file inputs "/bin/gzip")))))
+             (add-after 'install 'keep-only-info-reader
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; Remove everything but 'bin/info' and associated
+                 ;; files.
+                 (define (files)
+                   (scandir "." (lambda (file)
+                                  (not (member file '("." ".."))))))
 
-                   (let ((out (assoc-ref outputs "out")))
-                     (with-directory-excursion out
-                       (for-each delete-file-recursively
-                                 (fold delete (files) '("bin" "share"))))
-                     (with-directory-excursion (string-append out "/bin")
-                       (for-each delete-file (delete "info" (files))))
-                     (with-directory-excursion (string-append out "/share")
-                       (for-each delete-file-recursively
-                                 (fold delete (files)
-                                       '("info" "locale"))))
-                     #t))))))
-       #:disallowed-references ,(assoc-ref (package-inputs texinfo)
-                                           "perl")
-       #:modules ((ice-9 ftw) (srfi srfi-1)
-                  ,@%default-gnu-modules)))
-    (synopsis "Standalone Info documentation reader")
+                 (let ((out (assoc-ref outputs "out")))
+                   (with-directory-excursion out
+                     (for-each delete-file-recursively
+                               (fold delete (files) '("bin" "share"))))
+                   (with-directory-excursion (string-append out "/bin")
+                     (for-each delete-file (delete "info" (files))))
+                   (with-directory-excursion (string-append out "/share")
+                     (for-each delete-file-recursively
+                               (fold delete (files)
+                                     '("info" "locale"))))))))))
+      (list
+       #:disallowed-references
+       (assoc-ref (package-inputs texinfo)
+                  "perl")
+       #:modules `((ice-9 ftw)
+                   (srfi srfi-1)
+                   ,@%default-gnu-modules))))
     (inputs (modify-inputs (package-inputs texinfo)
-              (prepend gzip)))))
+              (prepend gzip)))
+    (synopsis "Standalone Info documentation reader")))
 
 (define-public texi2html
   (package
@@ -261,12 +267,14 @@ is on expressing the content semantically, avoiding physical markup commands.")
                   (utime "texi2html.pl" 0 0 0 0)
                   #t))))
     (build-system gnu-build-system)
-    (inputs (list perl))
+    (inputs
+     (list perl))
     (arguments
-     ;; Tests fail because of warnings on stderr from Perl 5.22.  Adjusting
-     ;; texi2html.pl to avoid the warnings seems non-trivial, so we simply
-     ;; disable the tests.
-     '(#:tests? #f))
+     (list
+      ;; Tests fail because of warnings on stderr from Perl 5.22.  Adjusting
+      ;; texi2html.pl to avoid the warnings seems non-trivial, so we simply
+      ;; disable the tests.
+      #:tests? #f))
     (home-page "https://www.nongnu.org/texi2html/")
     (synopsis "Convert Texinfo to HTML")
     (description
@@ -324,9 +332,14 @@ Texi2HTML.")
                          (("\"clear\"")
                           (string-append "\"" ncurses "/bin/clear\"")))))))))
       (inputs
-       (list ncurses readline))
+       (list ncurses
+             readline))
       (native-inputs
-       (list autoconf automake gettext-minimal libtool texinfo))
+       (list autoconf
+             automake
+             gettext-minimal
+             libtool
+             texinfo))
       (home-page "https://github.com/baszoetekouw/pinfo")
       (synopsis "Lynx-style Info file and man page reader")
       (description
