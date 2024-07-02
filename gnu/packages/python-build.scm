@@ -172,7 +172,7 @@ write-only counterpart to Tomli, which is a read-only TOML parser.")
     (arguments
      `(#:tests? #f))                      ;disabled to avoid extra dependencies
     (native-inputs
-     (list python-flit-core-bootstrap))
+     (list python-flit-core))
     (home-page "https://github.com/hukkin/tomli")
     (synopsis "Small and fast TOML parser")
     (description "Tomli is a minimal TOML parser that is fully compatible with
@@ -537,10 +537,9 @@ a light weight, fully compliant, self-contained package allowing PEP 517
 compatible build front-ends to build Poetry managed projects.")
     (license license:expat)))
 
-;;; This package exists to bootstrap python-tomli.
-(define-public python-flit-core-bootstrap
+(define-public python-flit-core
   (package
-    (name "python-flit-core-bootstrap")
+    (name "python-flit-core")
     (version "3.8.0")
     (source
      (origin
@@ -549,8 +548,6 @@ compatible build front-ends to build Poetry managed projects.")
        (sha256
         (base32 "0dz9sp2zlhkmk6sm5gapbbb30f7xq3n3jn5zxx5pkp25ppsaiwnh"))))
     (build-system python-build-system)
-    (propagated-inputs
-     (list python-toml))
     (arguments
      ;; flit-core has a test suite, but it requires Pytest.  Disable it so
      ;; as to not pull pytest as an input.
@@ -578,13 +575,6 @@ compatible build front-ends to build Poetry managed projects.")
 backend for packages using Flit.  The only public interface is the API
 specified by PEP 517, @code{flit_core.buildapi}.")
     (license license:bsd-3)))
-
-(define-public python-flit-core
-  (package/inherit python-flit-core-bootstrap
-    (name "python-flit-core")
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs python-flit-core-bootstrap)
-       (replace "python-toml" python-tomli)))))
 
 (define-public python-flit-scm
   (package
