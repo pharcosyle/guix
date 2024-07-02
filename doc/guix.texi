@@ -3982,12 +3982,11 @@ output to select (a string), must be used instead:
 
 @lisp
 (use-modules (gnu packages glib))
-;; glib-with-documentation is the Guile symbol for the glib package
 (operating-system
  ...
  (packages
   (append
-   (list (list glib-with-documentation "doc"))
+   (list (list glib "doc"))
          %base-packages)))
 @end lisp
 
