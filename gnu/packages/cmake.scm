@@ -46,6 +46,8 @@
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  ;; TODO module creates a circular dep?
+  ;; #:use-module (gnu packages debug)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages kde-frameworks)
@@ -194,6 +196,7 @@ using the CMake build system.")
                 "--mandir=share/man"
                 (string-append "--docdir=share/doc/cmake-"
                                #$(version-major+minor version))
+                "--no-debugger"
 
                 ;; By default CMake is built without any optimizations.  Use
                 ;; the recommended Release target for a ~2.5x speedup.
@@ -304,7 +307,8 @@ and workspaces that can be used in the compiler environment of your choice.")
       #~(list "-DCMAKE_USE_SYSTEM_LIBRARIES=ON"
               (string-append "-DCMAKE_DOC_DIR=share/doc/cmake-"
                              #$(version-major+minor (package-version
-                                                     cmake-bootstrap))))
+                                                     cmake-bootstrap)))
+              "-DCMake_ENABLE_DEBUGGER=OFF")
 
       ;; This is the CMake used in cmake-build-system.  Ensure compiler
       ;; optimizations are enabled to save size and CPU cycles.
@@ -366,7 +370,7 @@ and workspaces that can be used in the compiler environment of your choice.")
                                        "/share/vim/vimfiles/pack/guix/start/cmake")
                         "-DCMAKE_INFO_DIR=share/info"
                         "-DCMAKE_MAN_DIR=share/man")
-                  #$flags))
+                  (delete "-DCMake_ENABLE_DEBUGGER=OFF" #$flags)))
        ((#:phases phases)
         #~(modify-phases #$phases
             (delete 'delete-help-documentation)
@@ -381,7 +385,8 @@ and workspaces that can be used in the compiler environment of your choice.")
                   (delete-file-recursively (string-append #$output html)))))))))
     (inputs
      (modify-inputs (package-inputs cmake-minimal)
-       (prepend ncurses)))              ;required for ccmake
+       (prepend ;; cppdap
+                ncurses)))              ;required for ccmake
     ;; Extra inputs required to build the documentation.
     (native-inputs
      (modify-inputs (package-native-inputs cmake-minimal)

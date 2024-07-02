@@ -51,14 +51,14 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.190")
+    (version "0.191")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/elfutils/ftp/"
                                   version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "14nn641g361iqby1yf8b089d8vnjsa0n5s1s4zfc2jzhnnls604f"))
+                "0wfqg8a9g27w9savicky6qa8yfa8r9h6qypwcn1p07bd6rqxnxnz"))
               (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 

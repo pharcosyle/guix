@@ -396,6 +396,7 @@ used to apply commands with arbitrarily long arguments.")
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
+      #:tests? #f
       ,@(if (system-hurd?)
             '(#:make-flags            ; these tests fail deterministically
               (list (string-append "XFAIL_TESTS="

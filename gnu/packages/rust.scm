@@ -1205,7 +1205,7 @@ safety and thread safety guarantees.")
                   (let ((compiler-rt "src/llvm-project/compiler-rt"))
                     (mkdir-p compiler-rt)
                     (copy-recursively
-                     (string-append #$(package-source clang-runtime-15)
+                     (string-append #$(package-source clang-runtime-17)
                                     "/compiler-rt")
                      compiler-rt))))
               (add-after 'configure 'enable-profiler

@@ -1448,7 +1448,7 @@ interactive environment for the functional language Haskell.")
                                     "/ghc-" version "-src.tar.xz"))
                 (sha256
                  (base32
-                  "07028i0hm74svvq9b3jpkczaj6lsdgn3hgr4wa7diqiq3dypj1h6"))
+                  "18b7ln4gx2vy62jpv3z5slv3zfxmxnmkgajznks15zglddwd24sz"))
                 (patches (search-patches "ghc-9-StgCRunAsm-only-when-needed.patch"
                                          "ghc-9.2-cabal-support-package-path.patch"))))
       (arguments
