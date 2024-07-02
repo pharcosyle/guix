@@ -731,15 +731,15 @@ freedesktop.org project.")
                                                #$output:bin "/libexec"))
       #:phases
       #~(modify-phases %standard-phases
-          ;; Not all of the tools are python scripts but let's wrap them all so
-          ;; this package can remain ignorant of that implementation detail.
           (add-after 'install 'wrap-tools
             (lambda _
-              (for-each
-               (lambda (prog)
-                 (wrap-program prog
-                   `("GUIX_PYTHONPATH" ":" prefix (,(getenv "GUIX_PYTHONPATH")))))
-               (find-files (string-append #$output:bin "/libexec"))))))))
+              (for-each (lambda (prog)
+                          (wrap-program prog
+                            `("GUIX_PYTHONPATH" prefix
+                              ,(search-path-as-string->list
+                                (getenv "GUIX_PYTHONPATH")))))
+                        (find-files
+                         (string-append #$output:bin "/libexec"))))))))
     (native-inputs
      (append (list check pkg-config python-minimal-wrapper python-pytest)
              (if (%current-target-system)
