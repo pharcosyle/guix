@@ -52,15 +52,18 @@
 (define-public python-pathspec
   (package
     (name "python-pathspec")
-    (version "0.11.1")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pathspec" version))
        (sha256
         (base32
-         "11qnlcanr1mqcpqpq1hmnwrs26csbsa2bafc7biq09x91y0dx617"))))
-    (build-system python-build-system)
+         "04jpkzic8f58z6paq7f3f7fdnlv9l89khv3sqsqk7ax10caxb0m4"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-flit-core
+           python-setuptools))
     (home-page "https://github.com/cpburnz/python-pathspec")
     (synopsis "Utility library for gitignore style pattern matching of file paths")
     (description
@@ -71,15 +74,15 @@ matching of file paths.")
 (define-public python-pluggy
   (package
    (name "python-pluggy")
-   (version "1.0.0")
+   (version "1.5.0")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "pluggy" version))
      (sha256
       (base32
-       "0n8iadlas2z1b4h0fc73b043c7iwfvx9rgvqm1azjmffmhxkf922"))))
-   (build-system python-build-system)
+       "1w8c3mpliqm9biqw75ci8cfj1x5pb6g5zwblqp27ijgxjj7aizrc"))))
+   (build-system pyproject-build-system)
    (native-inputs (list python-setuptools-scm))
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
@@ -228,13 +231,13 @@ PyPI (pypi.org).")
 (define-public python-typing-extensions
   (package
     (name "python-typing-extensions")
-    (version "4.10.0")
+    (version "4.12.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "typing_extensions" version))
               (sha256
                (base32
-                "1jxkj4pni8pdyrn79sq441lsp40xzw363n0qvfc6zfcgkv4dgaxh"))))
+                "1f7z47hmz48kgixzb3ffw6zml8j1iflf6ml8xr6xsng5qxasszhs"))))
     (build-system pyproject-build-system)
     ;; Disable the test suite to keep the dependencies to a minimum.  Also,
     ;; the test suite requires Python's test module, not available in Guix.
@@ -386,19 +389,18 @@ facilitate packaging Python projects, where packaging includes:
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.40.0")
+    (version "0.43.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "0ww8fgkvwv35ypj4cnngczdwp6agr4qifvk2inb32azfzbrrc4fd"))))
-    (build-system python-build-system)
+          "118x5y37152by7f8gvzwda441jd8b42w92ngs6i5sp7sd4ngjpj6"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-flit-core))
     (arguments
-     ;; FIXME: The test suite runs "python setup.py bdist_wheel", which in turn
-     ;; fails to find the newly-built bdist_wheel library, even though it is
-     ;; available on PYTHONPATH.  What search path is consulted by setup.py?
      '(#:tests? #f))
     (home-page "https://github.com/pypa/wheel")
     (synopsis "Format for built Python packages")
@@ -415,20 +417,17 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "3.0.7")
+    (version "3.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32 "1siyxm70kws5fhszpl6h6w5vcg88c1j9acvp31ahq9sxfwi91vhq"))
-       (patches
-        ;; Remove this when updating to version 3.0.8 or later.
-        (search-patches "pyparsing-3.0.7-sre-const-deprecation.patch"))))
-    (build-system python-build-system)
+        (base32 "1bcl1x123xj3wl6jghcl9jnmd1ipr79r9jkqxp1yqm8iav7c1fm1"))))
+    (build-system pyproject-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:tests? #f                      ;no test target
+     `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-doc
@@ -446,6 +445,8 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
                        (find-files dir ".*")))
                 (list "docs" "htmldoc" "examples")
                 (list doc html-doc examples))))))))
+    (native-inputs
+     (list python-flit-core))
     (home-page "https://github.com/pyparsing/pyparsing")
     (synopsis "Python parsing class library")
     (description
@@ -470,18 +471,16 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-packaging-bootstrap
   (package
     (name "python-packaging-bootstrap")
-    (version "23.2")
+    (version "24.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "packaging" version))
        (sha256
         (base32
-         "1ifgjb0d0bnnm78hv3mnl7hi233m7jamb2plma752djh83lv13q4"))))
+         "00phyhvsrw6dh7lsa46svg8pz4lqhqjp41cmz1dwxz6kiqndfvh2"))))
     (build-system pyproject-build-system)
     (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
-    (propagated-inputs
-     (list python-pyparsing))
     (native-inputs
      (list python-flit-core))
     (home-page "https://github.com/pypa/packaging")
@@ -518,13 +517,13 @@ compatible build front-ends to build Poetry managed projects.")
 (define-public python-poetry-core
   (package
     (name "python-poetry-core")
-    (version "1.5.2")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry_core" version))
        (sha256
-        (base32 "053c8dw632p7jkhjb51k0wcx6hdw4r3lk97mds76df653qxnqmf6"))))
+        (base32 "18imz7hm6a6n94r2kyaw5rjvs8dk22szwdagx0p5gap8x80l0yps"))))
     (build-system pyproject-build-system)
     (arguments
      `(#:tests? #f))                      ;disabled to avoid extra dependencies
@@ -540,35 +539,21 @@ compatible build front-ends to build Poetry managed projects.")
 (define-public python-flit-core
   (package
     (name "python-flit-core")
-    (version "3.8.0")
+    (version "3.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flit" version))
        (sha256
-        (base32 "0dz9sp2zlhkmk6sm5gapbbb30f7xq3n3jn5zxx5pkp25ppsaiwnh"))))
-    (build-system python-build-system)
+        (base32 "1is410a121m9cv6jaj9qx3p0drjigzwad9kh6paj1ni4ndgdypnp"))))
+    (build-system pyproject-build-system)
     (arguments
-     ;; flit-core has a test suite, but it requires Pytest.  Disable it so
-     ;; as to not pull pytest as an input.
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (replace 'build
-           ;; flit-core requires itself to build.  Luckily, a
-           ;; bootstrapping script exists, which does so using just
-           ;; the checkout sources and Python.
+         (add-after 'unpack 'chdir
            (lambda _
-             (invoke "python" "flit_core/build_dists.py")))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (whl (car (find-files "." "\\.whl$"))))
-               (invoke "pip" "--no-cache-dir" "--no-input"
-                       "install" "--no-deps" "--prefix" out whl))))
-         ;; The sanity-check phase fails because flit depends on tomli at
-         ;; run-time, but this core variant avoids it to avoid a cycle.
-         (delete 'sanity-check))))
+             (chdir "flit_core"))))))
     (home-page "https://github.com/pypa/flit")
     (synopsis "Core package of the Flit Python build system")
     (description "This package provides @code{flit-core}, a PEP 517 build
@@ -605,15 +590,18 @@ system, then @code{flit_core} to build the package.")
 (define-public python-setuptools-scm
   (package
     (name "python-setuptools-scm")
-    (version "7.1.0")
+    (version "8.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "setuptools_scm" version))
               (sha256
-               (base32 "09wg4zg30ir1c2cvwqipaz3hwaxz503fgw5zdvaxgakilx2q6l3c"))))
-    (build-system python-build-system)
-    (arguments (list #:tests? #f))    ;avoid extra dependencies such as pytest
-    (propagated-inputs (list python-packaging-bootstrap python-tomli
+               (base32 "19y84rzqwb2rd88bjrlafrhfail2bnk6apaig8xskjviayva3pj2"))))
+    (build-system pyproject-build-system)
+    (arguments (list #:build-backend "setuptools.build_meta"
+                     #:tests? #f))    ;avoid extra dependencies such as pytest
+    (propagated-inputs (list python-packaging-bootstrap
+                             python-setuptools
+                             python-tomli
                              python-typing-extensions))
     (home-page "https://github.com/pypa/setuptools_scm/")
     (synopsis "Manage Python package versions in SCM metadata")
@@ -626,7 +614,7 @@ them as the version argument or in a SCM managed file.")
 (define-public python-editables
   (package
     (name "python-editables")
-    (version "0.3")
+    (version "0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -635,8 +623,12 @@ them as the version argument or in a SCM managed file.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gbfkgzmrmbd4ycshm09fr2wd4f1n9gq7s567jgkavhfkn7s2pn1"))))
-    (build-system python-build-system)
+                "1bp959fz987jvrnkilhyr41fw4g00g9jfyiwmfvy96hv1yl68w8b"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f))
+    (native-inputs
+     (list python-flit-core))
     (home-page "https://github.com/pfmoore/editables")
     (synopsis "Editable installations")
     (description "This library supports the building of wheels which, when
@@ -648,13 +640,13 @@ reflected in the package visible to Python, without needing a reinstall.")
 (define-public python-hatchling
   (package
     (name "python-hatchling")
-    (version "1.14.0")
+    (version "1.25.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hatchling" version))
               (sha256
                (base32
-                "1nn5cyc9fgrbawz38drfkl2s588k2gn3yqdm2cldbx9zy0fsjbj6"))))
+                "0qj29z3zckbk5svvfkhw8g8xcl8mv0dzzlx4a0iba416a4d66r3h"))))
     (build-system pyproject-build-system)
     (arguments
      (list #:tests? #f))                  ;to keep dependencies to a minimum
@@ -702,13 +694,13 @@ parts of files defined using cut-off points or regular expressions.")
 (define-public python-hatch-vcs
   (package
     (name "python-hatch-vcs")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hatch_vcs" version))
               (sha256
                (base32
-                "1viz2mdfxfqpsd5f30410q6smj90qfxihvy9idzwd0p4ziy11iff"))))
+                "1xyr0wdiq2q9czlyvm1jsbpwm216mk0z5g7sa7ab07g0ixs10f09"))))
     (arguments (list #:tests? #f))      ;avoid extra test dependencies
     (build-system pyproject-build-system)
     (propagated-inputs (list python-hatchling python-setuptools-scm))
