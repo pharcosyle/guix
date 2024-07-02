@@ -1093,7 +1093,8 @@ with the Linux kernel.")
               (sha256
                (base32
                 "0bpm1kfi09dxl4c6aanc5c9951fmf6ckkzay60cx7k37dcpp68si"))
-              (patches (search-patches "glibc-2.35-CVE-2023-4911.patch"
+              (patches (search-patches "glibc-2.35-gcc-13-compat.patch"
+                                       "glibc-2.35-CVE-2023-4911.patch"
                                        "glibc-ldd-powerpc.patch"
                                        "glibc-ldd-x86_64.patch"
                                        "glibc-dl-cache.patch"
