@@ -270,7 +270,6 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                   (string-append "https://github.com/libarchive/libarchive"
                                  "/releases/download/v" version "/libarchive-"
                                  version ".tar.xz")))
-       (patches (search-patches "libarchive-remove-potential-backdoor.patch"))
        (sha256
         (base32
          "0d97h05ghsigq0i3qw2vpfixdsgvvdyxha5xkih6lwsa8df7b1zq"))))
