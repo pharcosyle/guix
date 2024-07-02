@@ -243,6 +243,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system pyproject)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix deprecation)
@@ -5371,12 +5372,13 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
               (sha256
                (base32
                 "0cf237ml2jhqcv1zlb35qbvjg4i8a4blawdah5s7f28iz5lmajia"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (propagated-inputs (list python-jinja2
                              python-markdown
                              python-markupsafe
                              python-packaging
                              python-pygments
+                             python-pytest
                              python-tomli
                              python-typogrify))
     (home-page "https://gitlab.gnome.org/GNOME/gi-docgen")
