@@ -281,6 +281,8 @@ to output XPath results with a null delimiter.")))
                   ;; provide the absolute directory name.
                   (("/opt/include")
                    (dirname libxml2-headers)))))))))
+    (native-inputs
+     (list python-setuptools))
     (inputs (list libxml2))
     (synopsis "Python bindings for the libxml2 library")))
 
@@ -1832,6 +1834,8 @@ The central program included in this package is @code{onsgmls}, which replaces
     ;; The test suite is not run, to avoid a dependency cycle with
     ;; python-xmlschema.
     (arguments `(#:tests? #f))
+    (native-inputs
+     (list python-setuptools))
     (home-page
      "https://github.com/sissaschool/elementpath")
     (synopsis
@@ -1870,6 +1874,9 @@ because lxml.etree already has its own implementation of XPath 1.0.")
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests?
                         (invoke "make" "test")))))))
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (inputs
      (list libxml2 libxslt))
     (home-page "https://lxml.de/")

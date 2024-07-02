@@ -126,6 +126,9 @@ Python with a fluent API.")
         (base32
          "0w4w6pqjkv54j7rv6vdrpfxa72c5516bnlhpcqr3vrb4zpmyxvpm"))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/python-tap/tappy")
     (synopsis "Tools for Test Anything Protocol")
     (description "Tappy is a set of tools for working with the Test Anything
@@ -1073,7 +1076,9 @@ in Pytest.")
              (when tests?
                (add-installed-pythonpath inputs outputs)
                (invoke "python" "-m" "pytest")))))))
-    (native-inputs (list python-setuptools-scm))
+    (native-inputs
+     (list python-setuptools
+           python-setuptools-scm))
     (propagated-inputs (list python-pytest python-attrs))
     (home-page "https://github.com/pytest-dev/pytest-subtests")
     (synopsis "Unittest subTest() support and subtests fixture")
@@ -1451,7 +1456,8 @@ for the @code{pytest} framework.")
     (propagated-inputs
      (list python-py-cpuinfo))
     (native-inputs
-     (list python-pytest))
+     (list python-setuptools
+           python-pytest))
     (home-page "https://github.com/ionelmc/pytest-benchmark")
     (synopsis "Pytest fixture for benchmarking code")
     (description
@@ -2036,6 +2042,9 @@ side effects when unit testing.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;no tests
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/python/mypy_extensions")
     (synopsis "Experimental extensions for MyPy")
     (description

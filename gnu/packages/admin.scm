@@ -4704,6 +4704,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
      (list eudev))
     (native-inputs
      (list
+      python-setuptools
       ;; For tests.
       python-docutils
       python-hypothesis

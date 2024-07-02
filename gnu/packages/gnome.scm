@@ -5300,8 +5300,10 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                              python-packaging
                              python-pygments
                              python-pytest
+                             python-setuptools
                              python-tomli
-                             python-typogrify))
+                             python-typogrify
+                             python-wheel))
     (home-page "https://gitlab.gnome.org/GNOME/gi-docgen")
     (synopsis "Documentation tool for GObject-based libraries")
     (description "GI-DocGen is a document generator for GObject-based
