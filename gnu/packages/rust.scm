@@ -54,6 +54,7 @@
   #:use-module (gnu packages mingw)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -433,6 +434,11 @@ safety and thread safety guarantees.")
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'python-3.12-compat
+           (lambda _
+             (substitute* "src/bootstrap/bootstrap.py"
+               (("distutils") "packaging")
+               (("LooseVersion") "Version"))))
          (add-after 'unpack 'set-env
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "SHELL" (which "sh"))
@@ -536,6 +542,9 @@ ar = \"" binutils "/bin/ar" "\"
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
+       ;; Use the bootstrap python-packaging variant to possibly help insulate
+       ;; against rebuild-inducing changes.
+       ("python-packaging" ,python-packaging-bootstrap)
        ("rustc-bootstrap" ,rust-bootstrap)
        ("cargo-bootstrap" ,rust-bootstrap "cargo")))
     (inputs
@@ -782,7 +791,15 @@ safety and thread safety guarantees.")
                 (("\"termios\"") "\"termios\", \"cc\""))
               ;; Also remove the bundled (mostly Windows) libraries.
               (for-each delete-file
-                        (find-files "vendor" "\\.(a|dll|exe|lib)$")))))))))
+                        (find-files "vendor" "\\.(a|dll|exe|lib)$"))))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+            (delete 'python-3.12-compat)))))
+      (native-inputs
+       (modify-inputs (package-native-inputs base-rust)
+         (delete "python-packaging"))))))
 
 (define-public rust-1.70
   (let ((base-rust

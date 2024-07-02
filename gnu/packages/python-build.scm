@@ -100,6 +100,9 @@ Pytest but stripped of Pytest specific details.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                     ;no tests suite in release
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (home-page "https://github.com/uiri/toml")
     (synopsis "Library for TOML")
     (description
@@ -332,6 +335,8 @@ Python Package Index (PyPI).")
         '(for-each delete-file (find-files "setuptools"
                                            "^(cli|gui).*\\.exe$")))))
     (build-system python-build-system)
+    (native-inputs
+     (list python-wheel))
     ;; FIXME: Tests require pytest, which itself relies on setuptools.
     ;; One could bootstrap with an internal untested setuptools.
     (arguments (list #:tests? #f))
