@@ -122,7 +122,7 @@ Language (TOML) configuration files.")
         (base32 "1fg13bfq5qy1ym4x77815nhxh1xpfs0drhn9r9464cz00m1l6qzl"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #f))      ;to avoid extra dependencies
-    (native-inputs (list python-pypa-build python-flit-core))
+    (native-inputs (list python-flit-core))
     (home-page "https://github.com/hukkin/tomli-w")
     (synopsis "Minimal TOML writer")
     (description "Tomli-W is a Python library for writing TOML.  It is a
@@ -528,40 +528,6 @@ information.")
     ;; Contributions to this software is made under the terms of *both* these
     ;; licenses.
     (license (list license:asl2.0 license:bsd-2))))
-
-;;; The name 'python-pypa-build' is chosen rather than 'python-build' to avoid
-;;; a name clash with python-build from (guix build-system python).
-(define-public python-pypa-build
-  (package
-    (name "python-pypa-build")
-    (version "0.9.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "build" version))
-              (sha256
-               (base32
-                "0g5w28ban6k9qywqwdqiqms3crg75rsvfphl4f4qkg8wi57741qs"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f                      ;to tests in the PyPI release
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'use-toml-instead-of-tomli
-                    ;; Using toml instead of tomli eases bootstrapping.
-                    (lambda _
-                      (substitute* "setup.cfg"
-                        (("tomli>=.*")
-                         "toml\n")))))))
-    (propagated-inputs
-     `(("python-packaging" ,python-packaging-bootstrap)
-       ("python-pep517", python-pep517-bootstrap)
-       ("python-toml" ,python-toml)))
-    (home-page "https://pypa-build.readthedocs.io/en/latest/")
-    (synopsis "Simple Python PEP 517 package builder")
-    (description "The @command{build} command invokes the PEP 517 hooks to
-build a distribution package.  It is a simple build tool and does not perform
-any dependency management.  It aims to keep dependencies to a minimum, in
-order to make bootstrapping easier.")
-    (license license:expat)))
 
 (define-public python-poetry-core-1.0
   (package
