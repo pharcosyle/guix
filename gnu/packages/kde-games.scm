@@ -1326,30 +1326,30 @@ This package is part of the KDE games module.")
 (define-public killbots
   (package
     (name "killbots")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/killbots-" version ".tar.xz"))
        (sha256
-        (base32 "0ygg2cmp7wqzw9nsn768vzgjs8i44k3skwcn2abg1jj5k64wp9cb"))))
+        (base32 "1g150knfwb7sn8syxz90jfib482cj03prjq1mpjas9fnva51vffa"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kwidgetsaddons
-           kxmlgui
+     (list kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5))
+           qtbase
+           qtdeclarative))
     (home-page "https://apps.kde.org/killbots/")
     (synopsis "Port of the classic BSD console game robots")
     (description "Killbots is a simple game of evading killer robots.
