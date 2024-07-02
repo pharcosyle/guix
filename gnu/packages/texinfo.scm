@@ -49,60 +49,44 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "7.1")
+    (version "6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
+              (patches (search-patches "texinfo-headings-single.patch"))
               (sha256
                (base32
-                "0lq9nf1as11mfqf2ydyc6b1xl1hqk0qj5llavxph97hmkzqwkvny"))))
+                "1i7yb7mrp3inz25zbzv2pllr4y7d58v818f1as7iz8mw53nm7dwf"))))
     (build-system gnu-build-system)
     (arguments
-     (list
-      ;; XXX: Work around <https://issues.guix.gnu.org/59616>.
-      #:tests? (and (not (target-hurd?))
-                    (not (%current-target-system)))
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; When cross-compiling, the package is configured twice: once with the
-          ;; native compiler and once with the cross-compiler. During the configure
-          ;; with the native compiler, the environment is reset. This leads to
-          ;; multiple environment variables missing. Do not reset the environment
-          ;; to prevent that.
-          #$@(if (%current-target-system)
-                 #~((add-before 'configure 'fix-cross-configure
-                      (lambda _
-                        (substitute* "configure"
-                          (("env -i")
-                           "env ")))))
-                 '())
-          (add-after 'install 'wrap-program
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin"))
-                     (program (string-append bin "/texi2any"))
-                     (zip (car (find-files
-                                (assoc-ref inputs "perl-archive-zip")
-                                (lambda (file stat)
-                                  (and (eq? 'directory (stat:type stat))
-                                       (string=? (basename file)
-                                                 "Archive")))
-                                #:directories? #t))))
-                (wrap-program program
-                  `("PERL5LIB" prefix (,(dirname zip))))))))))
-    (inputs
-     (list ncurses
-           perl
-           perl-archive-zip))                    ; needed for 'tex2any --epub3'
+     ;; When cross-compiling, the package is configured twice: once with the
+     ;; native compiler and once with the cross-compiler. During the configure
+     ;; with the native compiler, the environment is reset. This leads to
+     ;; multiple environment variables missing. Do not reset the environment
+     ;; to prevent that.
+     `(#:phases
+       (if ,(%current-target-system)
+            (modify-phases %standard-phases
+              (add-before 'configure 'fix-cross-configure
+                (lambda _
+                  (substitute* "configure"
+                    (("env -i")
+                     "env "))
+                  #t)))
+            %standard-phases)
+
+       ;; XXX: Work around <https://issues.guix.gnu.org/59616>.
+       #:tests? ,(and (not (target-hurd?))
+                      (not (%current-target-system)))))
+    (inputs (list ncurses perl))
+
     ;; When cross-compiling, texinfo will build some of its own binaries with
     ;; the native compiler. This means ncurses is needed both in both inputs
     ;; and native-inputs.  Some of its tests require extra locales such as
     ;; fr_FR.UTF-8.
-    (native-inputs
-     (list ncurses
-           perl
-           (libc-utf8-locales-for-target)))
+    (native-inputs (list perl ncurses (libc-utf8-locales-for-target)))
+
     (native-search-paths
      ;; This is the variable used by the standalone Info reader.
      (list (search-path-specification
@@ -120,31 +104,40 @@ their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
 
-(define texinfo-no-texi2any-epub
+(define-public texinfo-7
   (package
     (inherit texinfo)
-    (inputs (modify-inputs (package-inputs texinfo)
-              (delete perl-archive-zip)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments texinfo)
-       ((#:phases phases #~%standard-phases)
-        #~(modify-phases #$phases
-            (delete 'wrap-program)))))))
-
-(define-public texinfo-6
-  (package (inherit texinfo-no-texi2any-epub)
-    (version "6.8")
+    (version "7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
-              (patches (search-patches "texinfo-headings-single.patch"))
               (sha256
                (base32
-                "1i7yb7mrp3inz25zbzv2pllr4y7d58v818f1as7iz8mw53nm7dwf"))))))
+                "0lq9nf1as11mfqf2ydyc6b1xl1hqk0qj5llavxph97hmkzqwkvny"))))
+    (inputs (modify-inputs (package-inputs texinfo)
+              (append perl-archive-zip)))        ;needed for 'tex2any --epub3'
+    (arguments
+     (substitute-keyword-arguments (package-arguments texinfo)
+       ((#:phases phases #~%standard-phases)
+        #~(modify-phases #$phases
+            (add-after 'install 'wrap-program
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let* ((out (assoc-ref outputs "out"))
+                       (bin (string-append out "/bin"))
+                       (program (string-append bin "/texi2any"))
+                       (zip (car (find-files
+                                  (assoc-ref inputs "perl-archive-zip")
+                                  (lambda (file stat)
+                                    (and (eq? 'directory (stat:type stat))
+                                         (string=? (basename file)
+                                                   "Archive")))
+                                  #:directories? #t))))
+                  (wrap-program program
+                    `("PERL5LIB" prefix (,(dirname zip)))))))))))))
 
 (define-public texinfo-5
-  (package (inherit texinfo-no-texi2any-epub)
+  (package (inherit texinfo)
     (version "5.2")
     (source (origin
               (method url-fetch)
@@ -156,7 +149,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
                 "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))))
 
 (define-public texinfo-4
-  (package (inherit texinfo-no-texi2any-epub)
+  (package (inherit texinfo)
     (version "4.13a")
     (source (origin
               (method url-fetch)
@@ -169,10 +162,10 @@ is on expressing the content semantically, avoiding physical markup commands.")
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
     (inputs (list ncurses xz))
     (native-inputs
-      (modify-inputs (package-native-inputs texinfo-no-texi2any-epub)
+      (modify-inputs (package-native-inputs texinfo)
         (prepend automake)))
     (arguments
-     (substitute-keyword-arguments (package-arguments texinfo-no-texi2any-epub)
+     (substitute-keyword-arguments (package-arguments texinfo)
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'fix-configure
@@ -204,7 +197,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
   (package/inherit texinfo
     (name "info-reader")
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments texinfo-no-texi2any-epub)
+     `(,@(substitute-keyword-arguments (package-arguments texinfo)
            ((#:phases phases)
             `(modify-phases ,phases
                ;; Make sure 'info-reader' can read compressed info files
@@ -237,12 +230,12 @@ is on expressing the content semantically, avoiding physical markup commands.")
                                  (fold delete (files)
                                        '("info" "locale"))))
                      #t))))))
-       #:disallowed-references ,(assoc-ref (package-inputs texinfo-no-texi2any-epub)
+       #:disallowed-references ,(assoc-ref (package-inputs texinfo)
                                            "perl")
        #:modules ((ice-9 ftw) (srfi srfi-1)
                   ,@%default-gnu-modules)))
     (synopsis "Standalone Info documentation reader")
-    (inputs (modify-inputs (package-inputs texinfo-no-texi2any-epub)
+    (inputs (modify-inputs (package-inputs texinfo)
               (prepend gzip)))))
 
 (define-public texi2html
