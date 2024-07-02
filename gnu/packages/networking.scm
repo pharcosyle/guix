@@ -422,14 +422,17 @@ them in order to efficiently transfer a minimal amount of data.")
                       (string-append out "/lib/gstreamer-1.0")
                       (string-append gst "/lib/gstreamer-1.0"))))))))
     (native-inputs
-     (list googletest
-           graphviz                     ;for 'dot'
-           doxygen
-           pkg-config
-           python-wrapper
-           python-sphinx
-           python-pyyaml
-           python-packaging)) ; Used in 'v4l_compat_test'.
+     (append
+      (list googletest
+            graphviz                     ;for 'dot'
+            doxygen
+            pkg-config
+            python-wrapper
+            python-pyyaml
+            python-packaging) ; Used in 'v4l_compat_test'.
+      (if (supported-package? python-sphinx)
+          (list python-sphinx)
+          '())))
     (inputs
      (list boost
            eudev
