@@ -1524,30 +1524,30 @@ This package is part of the KDE games module.")
 (define-public ksquares
   (package
     (name "ksquares")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/" version
-                          "/src/ksquares-" version ".tar.xz"))
-      (sha256
-       (base32 "0b3r99hfhm5r4jxkwiji0lww703r7dj60x2m55ginvdy7ixm46rm"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/ksquares-" version ".tar.xz"))
+       (sha256
+        (base32 "1r50igkflfygmqaj6pmblrmxixhmk4bx3ii61hjny2c0wah2h7zq"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kwidgetsaddons
-           kxmlgui
+     (list kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kwidgetsaddons-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5))
+           qtbase
+           qtdeclarative))
     (home-page "https://apps.kde.org/ksquares/")
     (synopsis "Dots and Boxes game")
     (description "KSquares is an implementation of the popular paper based
