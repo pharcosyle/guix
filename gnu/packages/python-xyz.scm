@@ -35301,14 +35301,7 @@ integration, human-readable errors, and standard OS-specific locations.")
     (arguments
      (list
       #:test-flags
-      '(list "--pyargs" "referencing/tests")
-      #:phases
-      '(modify-phases %standard-phases
-         (add-after 'unpack 'patch-pyproject
-           (lambda _
-             ;; The build system does not like this.
-             (substitute* "pyproject.toml"
-               (("  \"Topic :: File Formats.*") "")))))))
+      '(list "--pyargs" "referencing/tests")))
     (propagated-inputs (list python-attrs python-rpds-py))
     (native-inputs
      (list python-hatchling
@@ -35328,14 +35321,7 @@ implementation of JSON reference resolution.")
     (name "python-referencing-bootstrap")
     (arguments
      (list
-      #:tests? #false
-      #:phases
-      '(modify-phases %standard-phases
-         (add-after 'unpack 'patch-pyproject
-           (lambda _
-             ;; The build system does not like this.
-             (substitute* "pyproject.toml"
-               (("  \"Topic :: File Formats.*") "")))))))
+      #:tests? #false))
     (native-inputs (list python-hatchling python-hatch-vcs))))
 
 (define-public python-reflink
