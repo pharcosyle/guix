@@ -24407,7 +24407,19 @@ both as keys and as attributes.")
               (uri (pypi-uri "attrs" version))
               (sha256
                (base32
-                "0c0zjwcqzbmpl93izm2g37gc3lsbbb9pf275fv7zcqn256sw6pck"))))
+                "0c0zjwcqzbmpl93izm2g37gc3lsbbb9pf275fv7zcqn256sw6pck"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://src.fedoraproject.org/rpms/python-attrs/raw"
+                        "/736ccbfa86a37de5fe5d070df5b507b08fddcfc1"
+                        "/f/pytest8-compatibility.patch"))
+                  (file-name (string-append name "-pytest-8-fix.patch"))
+                  (sha256
+                   (base32
+                    "1qxrflp0yd1cl8l70cnahsm3vaz205b4a386z5kjmbaq97m6c4z3")))))))
     (build-system pyproject-build-system)
     (arguments
      (list

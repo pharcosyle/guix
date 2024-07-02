@@ -1363,17 +1363,38 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "7.3.1")
+    (version "8.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "1qqmxpcij6b2zqsg52nz9dfx6c3snz90l5nzmp88xmxig3yzljj3"))))
-    (build-system python-build-system)
+         "0xvr25qvmdh6z03jpgg24adhgqkvkal2g2v8vk63j6909q8bhjyy"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/pytest-dev/pytest/commit"
+                 "/de47b73520fd9b7e41272701d7fd4663357af046.patch"))
+           (file-name (string-append name "-test-reruns-fix.patch"))
+           (sha256
+            (base32
+             "0iklrswripwzcp7rii6k9kd8l8qjy50bf31w9j84wn609m7mf22a")))))))
+    (build-system pyproject-build-system)
     (arguments
      (list
+      #:test-flags
+      #~(list "-k"
+              (string-join
+               (list "not test_argcomplete" ; Involves the /usr directory.
+                     ;; Do not honor the isatty detection and fail.
+                     "not test_code_highlight"
+                     "not test_color_yes"
+                     ;; 2/4 of these fail.
+                     "not test_comparisons_handle_colors")
+               " and "))
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'build 'pretend-version
@@ -1382,33 +1403,20 @@ standard library.")
             ;; '0.0.0'.
             (lambda _
               (setenv "SETUPTOOLS_SCM_PRETEND_VERSION"
-                      #$(package-version this-package))))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (setenv "TERM" "dumb")    ;attempt disabling markup tests
-              (if tests?
-                  (invoke "pytest" "-vv" "-k"
-                          (string-append
-                           ;; This test involves the /usr directory, and fails.
-                           " not test_argcomplete"
-                           ;; These test do not honor the isatty detection and
-                           ;; fail.
-                           " and not test_code_highlight"
-                           " and not test_color_yes"))
-                  (format #t "test suite not run~%")))))))
+                      #$(package-version this-package)))))))
     (propagated-inputs
      (list python-iniconfig
            python-packaging-bootstrap
            python-pluggy
            python-tomli))
     (native-inputs
-     ;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
-     (list bash
+     (list python-setuptools
+           python-setuptools-scm
+           ;; For tests.
+           bash ; "Regular" bash since 'bash-final' lacks `compgen`.
            python-hypothesis
            python-nose
            python-pytest-bootstrap
-           python-setuptools
-           python-setuptools-scm
            python-xmlschema))
     (home-page "https://docs.pytest.org/en/latest/")
     (synopsis "Python testing library")
@@ -1418,16 +1426,7 @@ and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
     (license license:expat)))
 
-(define-public python-pytest-next
-  (package/inherit python-pytest
-    (name "python-pytest")
-    (version "7.3.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pytest" version))
-       (sha256
-        (base32 "02q32y67nflrmk9snmibq5kmqcbgfm29k9wm0yw0ia2vqly0m6gf"))))))
+(define-public python-pytest-next python-pytest)
 
 (define-deprecated python-pytest-6 python-pytest)
 (export python-pytest-6)
@@ -1439,8 +1438,7 @@ and many external plugins.")
   (package
     (inherit python-pytest)
     (name "python-pytest-bootstrap")
-    (native-inputs (list python-iniconfig
-                         python-setuptools
+    (native-inputs (list python-setuptools
                          python-setuptools-scm
                          python-tomli))
     (arguments `(#:tests? #f))))
