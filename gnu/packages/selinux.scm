@@ -52,7 +52,7 @@
 (define-public libsepol
   (package
     (name "libsepol")
-    (version "3.4")
+    (version "3.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -61,8 +61,7 @@
               (file-name (git-file-name "selinux" version))
               (sha256
                (base32
-                "1lcmgmfr0q7g5cwg6b7jm6ncw8cw6c1jblkm93v1g37bfhcgrqc0"))
-              (patches (search-patches "libsepol-versioned-docbook.patch"))))
+                "1pdvcyljs90dy8y9d6av6dim2zagqss2svm2bvk9p7aqig0r77rx"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -160,15 +159,11 @@ module into a binary representation.")
                 (apply invoke "make" "pywrap" make-flags)))
             (add-after 'install 'install-pywrap
               (lambda* (#:key make-flags #:allow-other-keys)
-                ;; The build system uses "python setup.py install" to install
+                ;; The build system uses "python -m pip install" to install
                 ;; Python bindings.  Instruct it to use the correct output.
                 (substitute* "src/Makefile"
                   (("--prefix=\\$\\(PREFIX\\)")
-                   (string-append "--prefix=" #$output:python
-                                  ;; Python 3.10 refuses to execute the install
-                                  ;; command unless these flags are present.
-                                  " --single-version-externally-managed"
-                                  " --root=/")))
+                   (string-append "--prefix=" #$output:python)))
 
                 (apply invoke "make" "install-pywrap" make-flags)))))))
     ;; These libraries are in "Requires.private" in libselinux.pc.
