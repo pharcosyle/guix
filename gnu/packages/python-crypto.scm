@@ -470,13 +470,15 @@ for example, for recording or replaying web content.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2024.6.2")
+    (version "2024.06.02")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "certifi" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/certifi/python-certifi")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
-               (base32
-                "05kmfina92ppv8ysiyqp3aniil4g7783m7fnk5cdrpm7dwf3zm1w"))
+               (base32 "0775aap9jxw1hfz0cr2161ib56fxdn53jk1hnnsp2j951h30nk9n"))
               (snippet
                #~(begin
                    (delete-file "certifi/cacert.pem")
@@ -507,9 +509,16 @@ def contents() -> str:
     with open(where(), \"r\", encoding=\"ascii\") as data:
         return data.read()")))))))
     (build-system pyproject-build-system)
-    (arguments '(#:tests? #f))          ;no tests
+    (arguments
+     (list
+      #:test-flags
+      #~(list "-k" (string-join
+                    (list "not test_cabundle_exists"
+                          "not test_read_contents")
+                    " and "))))
     (native-inputs
-     (list python-setuptools
+     (list python-pytest
+           python-setuptools
            python-wheel))
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
