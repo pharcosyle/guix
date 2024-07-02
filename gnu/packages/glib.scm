@@ -265,6 +265,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
     (outputs '("out"                    ;libraries, locales, etc
                "static"                 ;static libraries
                "bin"                    ;executables; depends on Python
+               "doc"
                "debug"))
     (arguments
      (list
@@ -278,7 +279,8 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                        ,(this-package-native-input "python-wrapper")))
                 '()))
       #:configure-flags #~(list "--default-library=both"
-                                "-Dman=false"
+                                "-Ddocumentation=true"
+                                "-Dman-pages=enabled"
                                 "-Dselinux=disabled"
                                 (string-append "--bindir="
                                                #$output:bin "/bin"))
@@ -475,15 +477,29 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                 (("^bindir=.*")
                  "")
                 (("=\\$\\{bindir\\}/")
-                 "=")))))))
+                 "="))))
+          (add-after 'install 'move-doc
+            (lambda _
+              (let ((old (string-append #$output "/share/doc"))
+                    (new (string-append #$output:doc "/share/doc")))
+                (mkdir-p (dirname new))
+                (rename-file old new))))
+          (add-after 'install 'move-man
+            (lambda _
+              (let ((old (string-append #$output "/share/man"))
+                    (new (string-append #$output:bin "/share/man")))
+                (mkdir-p (dirname new))
+                (rename-file old new)))))))
     (native-inputs
      (list dbus
            gettext-minimal
+           gi-docgen
            gobject-introspection-bootstrap
            m4                           ;for installing m4 macros
            perl                         ;needed by GIO tests
            pkg-config
            python                       ;for 'patch-python-references
+           python-docutils              ;for man pages (via rst2man)
            python-wrapper
            tzdata-for-tests))           ;for tests/gdatetime.c
     (inputs
@@ -519,50 +535,7 @@ libraries and applications written in C.  It provides the core object system
 used in GNOME, the main loop implementation, and a large set of utility
 functions for strings and common data structures.")
     (home-page "https://wiki.gnome.org/Projects/GLib")
-    (license license:lgpl2.1+)
-    (properties '((hidden? . #t)))))
-
-(define-public glib-with-documentation
-  ;; glib's doc must be built in a separate package since it requires gtk-doc,
-  ;; which in turn depends on glib.
-  (let ((base glib))
-    (package/inherit base
-      (properties (alist-delete 'hidden? (package-properties base)))
-      (outputs (cons "doc" (package-outputs base))) ; 20 MiB of GTK-Doc reference
-      (native-inputs
-       `(("docbook-xml-4.2" ,docbook-xml-4.2)
-         ("docbook-xml-4.5" ,docbook-xml)
-         ("docbook-xsl" ,docbook-xsl)
-         ("gtk-doc" ,gtk-doc/stable)
-         ("libxml2" ,libxml2)
-         ("xsltproc" ,libxslt)
-         ,@(package-native-inputs base)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:configure-flags flags ''())
-          #~(cons "-Dgtk_doc=true"
-                  (delete "-Dman=false" #$flags)))
-         ((#:phases phases)
-          #~(modify-phases #$phases
-              (add-after 'unpack 'patch-docbook-xml
-                (lambda* (#:key inputs #:allow-other-keys)
-                  (with-directory-excursion "docs"
-                    (substitute* (find-files "." "\\.xml$")
-                      (("http://www.oasis-open.org/docbook/xml/4\\.5/")
-                       (string-append (assoc-ref inputs "docbook-xml-4.5")
-                                      "/xml/dtd/docbook/"))
-                      (("http://www.oasis-open.org/docbook/xml/4\\.2/")
-                       (string-append (assoc-ref inputs "docbook-xml-4.2")
-                                      "/xml/dtd/docbook/"))))))
-              (add-after 'install 'move-doc
-                (lambda* (#:key outputs #:allow-other-keys)
-                  (let* ((out (assoc-ref outputs "out"))
-                         (doc (assoc-ref outputs "doc"))
-                         (html (string-append "/share/gtk-doc")))
-                    (mkdir-p (string-append doc "/share"))
-                    (rename-file
-                     (string-append out html)
-                     (string-append doc html))))))))))))
+    (license license:lgpl2.1+)))
 
 ;; Resolve a circular dependency betwwen glib and gobject-introspection.
 ;; See also:
