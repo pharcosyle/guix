@@ -21946,6 +21946,13 @@ it will manage (install/update) them for you.")
         (base32
          "0jhrycac2byz3m2fd7dxp51kz0r5f1gwaxajw45x1lg86mhqqfdz"))))
     (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~(list
+         ;; Fails with setuptools 70.1.0, see
+         ;; https://github.com/pypa/pyproject-hooks/issues/203
+         "-k" "not test_setup_py")))
     (native-inputs
      (list python-flit-core
            python-pytest
