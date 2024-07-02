@@ -1367,31 +1367,31 @@ This package is part of the KDE games module.")
 (define-public ksnakeduel
   (package
     (name "ksnakeduel")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/" version
-                          "/src/ksnakeduel-" version ".tar.xz"))
-      (sha256
-       (base32 "182z9664p0shyx4rbr1cn32mzlfzl80x96nwakvv1ss7sf7dp1x3"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/ksnakeduel-" version ".tar.xz"))
+       (sha256
+        (base32 "0kw4qr39dzih57lp57yzsh0lvc2v5q46yhysyd5aswy371bdf5wf"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kguiaddons
-           ki18n
-           kxmlgui
+     (list kcompletion-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kxmlgui-6
            libkdegames
-           qtbase-5
-           qtdeclarative-5
-           qtsvg-5))
+           qtbase
+           qtdeclarative
+           qtsvg))
     (home-page "https://apps.kde.org/ksnakeduel/")
     (synopsis "Snake race played against the computer")
     (description "KSnakeDuel is a fast action game where you steer a snake
