@@ -1378,6 +1378,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gklib-suitesparse.patch			\
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-skip-failing-test.patch		\
+  %D%/packages/patches/glib-skip-uninstalled-libs-tests.patch	\
   %D%/packages/patches/glibc-2.33-riscv64-miscompilation.patch	\
   %D%/packages/patches/glibc-2.39-git-updates.patch	\
   %D%/packages/patches/glibc-CVE-2019-7309.patch		\
