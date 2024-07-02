@@ -1145,11 +1145,7 @@ with the Linux kernel.")
                         (member (basename patch)
                                 '("glibc-2.35-CVE-2023-4911.patch"
                                   "glibc-hurd-clock_gettime_monotonic.patch")))
-                             (origin-patches (package-source glibc-2.35)))))))
-    (native-inputs
-     ;; Build errors on GCC 12 and later. Use an older compiler.
-     (modify-inputs (package-native-inputs glibc)
-       (prepend gcc-11)))))
+                             (origin-patches (package-source glibc-2.35)))))))))
 
 (define-public glibc-2.32
   (package
