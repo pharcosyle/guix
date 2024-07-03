@@ -488,7 +488,16 @@ the Core 2 Duo.")
     (native-inputs
      (list pkg-config python-wrapper))
     (inputs
-     (list libdrm libva libpciaccess wayland libx11))
+     (cons (package
+             (inherit libdrm)
+             (propagated-inputs
+              (modify-inputs (package-propagated-inputs libdrm)
+                (prepend (package
+                           (inherit libpciaccess)
+                           (propagated-inputs
+                            (modify-inputs (package-propagated-inputs libpciaccess)
+                              (prepend zlib))))))))
+           (list libva wayland libx11)))
     (synopsis "Intel Media SDK")
     (description "MediaSDK provides a plain C API to access hardware-accelerated
 video decode, encode and filtering on Intel's Gen graphics hardware platforms.")

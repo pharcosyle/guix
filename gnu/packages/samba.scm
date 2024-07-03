@@ -210,11 +210,11 @@ external dependencies.")
              (lambda* (#:key inputs #:allow-other-keys)
                (let* ((libdir (string-append #$output "/lib")))
                  (invoke "./configure"
-                         #$@(if (member (%current-system)
-                                        (package-transitive-supported-systems
-                                         python-cryptography))
-                                '("--enable-selftest")
-                                '())
+                         ;; #$@(if (member (%current-system)
+                         ;;                (package-transitive-supported-systems
+                         ;;                 python-cryptography))
+                         ;;        '("--enable-selftest")
+                         ;;        '())
                          "--enable-fhs"
                          (string-append "--prefix=" #$output)
                          "--sysconfdir=/etc"
@@ -266,11 +266,11 @@ external dependencies.")
        ;; The python-cryptography dependency is needed for the krb5 tests.
        ;; Since python-cryptography requires Rust, add it conditionally
        ;; depending on such support.
-       (if (member (%current-system)
-                   (package-transitive-supported-systems
-                    python-cryptography))
-           (list python-cryptography)
-           '())
+       ;; (if (member (%current-system)
+       ;;             (package-transitive-supported-systems
+       ;;              python-cryptography))
+       ;;     (list python-cryptography)
+       ;;     '())
        (list python-dnspython
              python-iso8601
              python-markdown
