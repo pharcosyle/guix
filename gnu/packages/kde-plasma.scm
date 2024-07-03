@@ -73,6 +73,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages package-management) ; flatpak
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages unicode)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vpn)
@@ -413,6 +414,45 @@ games, and tools.")
 concept.")
     (home-page "https://invent.kde.org/plasma/kactivitymanagerd")
     (license (list license:gpl2 license:gpl3))))
+
+(define-public krdp
+  (package
+    (name "krdp")
+    (version "6.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/plasma/"
+                                  version "/" name "-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0xp1zi51fpw9zcyry6g8qrm7k94pbi6kw3d8dakdnq5qrkcsvc8g"))))
+    (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules
+                         pkg-config
+                         ;; for wayland-scanner
+                         wayland))
+    (inputs (list
+             kconfig-6
+             kdbusaddons-6
+             kcmutils-6
+             ki18n-6
+             kcoreaddons-6
+             kstatusnotifieritem
+             kpipewire
+             plasma-wayland-protocols
+             freerdp
+             qtwayland
+             qtdeclarative
+             qtkeychain-qt6
+             wayland-protocols
+             wayland))
+    (synopsis "Library and examples for creating an RDP server")
+    (description "This package provides a library and examples for creating an
+RDP server.")
+    (home-page "https://invent.kde.org/plasma/krdp")
+    (license license:lgpl2.0+)))
 
 (define-public kde-gtk-config
   (package
