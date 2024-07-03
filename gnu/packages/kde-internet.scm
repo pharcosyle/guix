@@ -427,49 +427,50 @@ This package is part of the KDE networking module.")
 (define-public ktorrent
   (package
     (name "ktorrent")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ktorrent-" version ".tar.xz"))
        (sha256
-        (base32 "17q6ivnbh4zxqnbm1bdzz3hri1434sq2rs9y57lvn4bb2xdwn1z5"))))
+        (base32 "1f8pjavj4dgq73yy9nfqp06n15vmq3j4spap419k6ksx32yciln0"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
      (list boost
            gmp
-           karchive
-           kcmutils
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kdnssd
-           ki18n
-           kiconthemes
-           kio
-           knotifications
-           knotifyconfig
-           kparts
-           kplotting
-           kross
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+           karchive-6
+           kcmutils-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kdnssd-6
+           kglobalaccel-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knotifications-6
+           knotifyconfig-6
+           kparts-6
+           kplotting-6
+           kstatusnotifieritem
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            libgcrypt
            libktorrent
            ;; TODO: LibKWorkspace -> plasma-workspace?
            breeze-icons ; default icon set
            phonon
-           qtbase-5
-           qtscript
-           qtwebengine-5
-           solid
-           syndication
+           qt5compat
+           qtwebengine
+           solid-6
+           syndication-6
            taglib))
     (home-page "https://apps.kde.org/ktorrent/")
     (synopsis "BitTorrent client")
