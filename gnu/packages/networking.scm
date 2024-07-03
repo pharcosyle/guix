@@ -438,6 +438,7 @@ them in order to efficiently transfer a minimal amount of data.")
            eudev
            glib
            gst-plugins-base
+           (@ (gnu packages xdisorg) libdrm)
            gnutls
            libyaml
            openssl

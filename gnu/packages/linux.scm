@@ -2221,7 +2221,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.40.2")
+    (version "2.40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -2229,7 +2229,7 @@ deviation, and minimum and maximum values.  It can show a nice histogram too.")
                                   "util-linux-" version ".tar.xz"))
               (sha256
                (base32
-                "1cz8r1kjnaiv40l6dzfaqg9lxlrkdcdb1prvvw7df8jrdyk3g2yp"))
+                "0kzjvrhj9ngsa93lgwdyj4f8jx52iwdf1zzh75n4pd6cafm7drjr"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -2367,6 +2367,20 @@ block devices, UUIDs, TTYs, and many other tools.")
     ;; explicitly defined license.
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
+
+(define-public util-linux-2.40.2
+  (package
+    (inherit util-linux)
+    (version "2.40.2")
+    (source
+     (origin
+       (inherit (package-source util-linux))
+       (uri (string-append "mirror://kernel.org/linux/utils/"
+                           "util-linux/v" (version-major+minor version) "/"
+                           "util-linux-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1cz8r1kjnaiv40l6dzfaqg9lxlrkdcdb1prvvw7df8jrdyk3g2yp"))))))
 
 ;; util-linux optionally supports udev, which allows lsblk to read file system
 ;; metadata without special privileges.  Add it as a separate package to avoid
