@@ -786,100 +786,87 @@ ever use this library.")
     (home-page "https://gitlab.gnome.org/Archive/gdk-pixbuf-xlib")
     (license license:lgpl2.1+)))
 
-;;; A minimal variant used to prevent a cycle with Inkscape.
 (define-public at-spi2-core
-  (hidden-package
-   (package
-     (name "at-spi2-core")
-     (version "2.48.4")
-     (source (origin
-               (method url-fetch)
-               (uri (string-append "mirror://gnome/sources/" name "/"
-                                   (version-major+minor version)  "/"
-                                   name "-" version ".tar.xz"))
-               (sha256
-                (base32
-                 "05d5azffbglnvqzwk8ngg61jksm3brrwhmfpymsrccz8j8lv3v19"))))
-     (build-system meson-build-system)
-     (arguments
-      (list
-       #:glib-or-gtk? #t              ;to wrap binaries and/or compile schemas
-       #:tests? (not (or (target-ppc32?)
-                         (%current-target-system)))
-       #:phases
-       #~(modify-phases %standard-phases
-           (delete 'check)
-           (add-after 'install 'check
-             (lambda* (#:key tests? #:allow-other-keys)
-               (when tests?
-                 ;; xfconfd requires a writable HOME
-                 (setenv "HOME" (getenv "TMPDIR"))
-                 ;; dbus-run-session may crash if XDG_DATA_DIRS has too
-                 ;; many entries, maybe related to
-                 ;; https://gitlab.freedesktop.org/dbus/dbus/-/issues/481.
-                 (setenv "XDG_DATA_DIRS"
-                         (string-append
-                          #$output "/share:"
-                          #$(this-package-native-input
-                             "gsettings-desktop-schemas")
-                          "/share"))
-                 ;; Don't fail on missing  '/etc/machine-id'.
-                 (setenv "DBUS_FATAL_WARNINGS" "0")
-                 (with-directory-excursion (string-append "../at-spi2-core-"
-                                                          #$version "")
-                   (invoke "dbus-run-session" "--" "ci/run-registryd-tests.sh")
-                   (substitute* "ci/run-tests.sh"
-                     (("ps auxwww") "")   ;avoid a dependency on procps
-                     (("meson test -C _build")
-                      "meson test -C ../build")) ;adjust build directory
-                   (invoke "dbus-run-session" "--" "ci/run-tests.sh"))))))))
-     (inputs
-      (list bash-minimal libxml2))
-     (propagated-inputs
-      ;; atspi-2.pc refers to all these.
-      (list dbus glib libx11 libxi libxtst))
-     (native-inputs
+  (package
+    (name "at-spi2-core")
+    (version "2.48.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "05d5azffbglnvqzwk8ngg61jksm3brrwhmfpymsrccz8j8lv3v19"))))
+    (build-system meson-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     (list
+      #:glib-or-gtk? #t              ;to wrap binaries and/or compile schemas
+      #:configure-flags
+      #~(list #$(if (%current-target-system)
+                    "-Ddocs=false"
+                    "-Ddocs=true"))
+      #:tests? (not (or (target-ppc32?)
+                        (%current-target-system)))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'set-documentation-path
+            (lambda _
+              ;; Ensure that the cross-references point to the "doc" output.
+              (substitute* "doc/meson.build"
+                (("docs_dir =.*")
+                 (string-append "docs_dir = '" #$output:doc
+                                "/share/doc'\n")))))
+          (delete 'check)
+          (add-after 'install 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;; xfconfd requires a writable HOME
+                (setenv "HOME" (getenv "TMPDIR"))
+                ;; dbus-run-session may crash if XDG_DATA_DIRS has too
+                ;; many entries, maybe related to
+                ;; https://gitlab.freedesktop.org/dbus/dbus/-/issues/481.
+                (setenv "XDG_DATA_DIRS"
+                        (string-append
+                         #$output "/share:"
+                         #$(this-package-native-input
+                            "gsettings-desktop-schemas")
+                         "/share"))
+                ;; Don't fail on missing  '/etc/machine-id'.
+                (setenv "DBUS_FATAL_WARNINGS" "0")
+                (with-directory-excursion (string-append "../at-spi2-core-"
+                                                         #$version "")
+                  (invoke "dbus-run-session" "--" "ci/run-registryd-tests.sh")
+                  (substitute* "ci/run-tests.sh"
+                    (("ps auxwww") "")   ;avoid a dependency on procps
+                    (("meson test -C _build")
+                     "meson test -C ../build")) ;adjust build directory
+                  (invoke "dbus-run-session" "--" "ci/run-tests.sh"))))))))
+    (inputs
+     (list bash-minimal libxml2))
+    (propagated-inputs
+     ;; atspi-2.pc refers to all these.
+     (list dbus glib libx11 libxi libxtst))
+    (native-inputs
+     (append
       (list findutils
+            gi-docgen
             gettext-minimal
             `(,glib "bin")
             gobject-introspection
             gsettings-desktop-schemas
             pkg-config
-            python-dbusmock-minimal
+            python-dbusmock
             python-pytest
-            python-wrapper))
-     (synopsis "Assistive Technology Service Provider Interface, core components")
-     (description
-      "The Assistive Technology Service Provider Interface, core components,
+            python-sphinx
+            python-wrapper)))
+    (synopsis "Assistive Technology Service Provider Interface, core components")
+    (description
+     "The Assistive Technology Service Provider Interface, core components,
 is part of the GNOME accessibility project.")
-     (license license:lgpl2.1+)
-     (home-page "https://wiki.gnome.org/Accessibility/"))))
-
-(define-public at-spi2-core-with-documentation
-  (package/inherit at-spi2-core
-    (outputs (cons "doc" (package-outputs at-spi2-core)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments at-spi2-core)
-       ((#:configure-flags flags ''())
-        #~(cons #$(if (%current-target-system)
-                      "-Ddocs=false"
-                      "-Ddocs=true")
-                #$flags))
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (add-after 'unpack 'set-documentation-path
-              (lambda _
-                ;; Ensure that the cross-references point to the "doc" output.
-                (substitute* "doc/meson.build"
-                  (("docs_dir =.*")
-                   (string-append "docs_dir = '" #$output:doc
-                                  "/share/doc'\n")))))))))
-    (native-inputs
-     (modify-inputs (package-native-inputs at-spi2-core)
-       (append gi-docgen python python-sphinx)
-       (replace "python-dbusmock" python-dbusmock)))
-    (properties (alist-delete 'hidden?
-                              (package-properties at-spi2-core)))))
+    (license license:lgpl2.1+)
+    (home-page "https://wiki.gnome.org/Accessibility/")))
 
 (define-public at-spi2-atk
   (deprecated-package "at-spi2-atk" at-spi2-core))
