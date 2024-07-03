@@ -1188,20 +1188,16 @@ themselves.")
             "0xpslrjnfrc1a7y8f8qwnd3wq24ndpj2q77ds12mbnwand239x2a"))))
     (build-system meson-build-system)
     (arguments
-     (list
-      #:configure-flags
-      #~(list (string-append "-Dpci-ids="
-                             (assoc-ref %build-inputs "pciutils")
-                             "/share/hwdata"))))
-    (native-inputs
-     (list pkg-config))
+     '(#:configure-flags
+       (list (string-append "-Dpci-ids="
+                            (assoc-ref %build-inputs "pciutils")
+                            "/share/hwdata"))))
     (inputs
-     (list pciutils)) ; for 'pci.ids.gz'
-    (propagated-inputs
-     (list
-      ;; Make sure libpciaccess can read compressed 'pci.ids'files as provided
-      ;; by pciutils. Also in Requires.private.
-      zlib))
+     (list pciutils ; for 'pci.ids.gz'
+           zlib)) ; Make sure libpciaccess can read compressed 'pci.ids'
+                  ; files as provided by pciutils.
+    (native-inputs
+       (list pkg-config))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PCI access library")
     (description "Xorg Generic PCI access library.")

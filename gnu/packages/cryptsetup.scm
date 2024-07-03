@@ -81,7 +81,7 @@
           libgcrypt
           lvm2 ; device-mapper
           popt
-          `(,util-linux "lib"))) ;libuuid
+          `(,util-linux-2.40.2 "lib"))) ;libuuid
    (synopsis "Set up transparent encryption of block devices using dm-crypt")
    (description
     "Cryptsetup is a utility used to conveniently set up disk encryption based
@@ -106,7 +106,7 @@ block integrity kernel modules.")
         json-c
         libgcrypt
         lvm2
-        `(,util-linux "lib")))
+        `(,util-linux-2.40.2 "lib")))
 
 (define (static-library library)
   "Return a variant of package LIBRARY that provides static libraries ('.a'
@@ -178,7 +178,7 @@ files).  This assumes LIBRARY uses Libtool."
          ("json-c" ,(static-library json-c-0.13))
          ("libgcrypt" ,libgcrypt-static)
          ("lvm2" ,lvm2-static)
-         ("util-linux" ,util-linux "static")
-         ("util-linux" ,util-linux "lib")
+         ("util-linux" ,util-linux-2.40.2 "static")
+         ("util-linux" ,util-linux-2.40.2 "lib")
          ("popt" ,(static-library popt)))))
     (synopsis "Hard disk encryption tool (statically linked)")))
