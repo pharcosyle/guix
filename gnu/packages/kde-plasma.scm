@@ -1674,6 +1674,7 @@ on top of Baloo.")
                              kdeplasma-addons
                              ktexteditor-6
                              kscreen
+                             krdp
                              libkscreen
                              ksystemstats
                              kwallet-pam
