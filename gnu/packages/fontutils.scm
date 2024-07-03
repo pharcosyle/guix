@@ -92,9 +92,9 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
-(define-public freetype-bootstrap
+(define-public freetype
   (package
-    (name "freetype-bootstrap")
+    (name "freetype")
     (version "2.13.2")
     (source
      (origin
@@ -119,7 +119,7 @@
                   _ store target)
                  "pkg-config")))))))
     (native-inputs (list pkg-config))
-    (propagated-inputs (list brotli bzip2 libpng zlib))
+    (propagated-inputs (list brotli bzip2 harfbuzz libpng zlib))
     (synopsis "Font rendering library")
     (description
      "Freetype is a library that can be used by applications to access the
@@ -130,16 +130,15 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
     (license license:freetype)          ; some files have other licenses
     (home-page "https://freetype.org/")))
 
-(define-public freetype
+;; Harfbuzz has a required dependency on freetype. Freetype has an optional
+;; but recommended dependency on harfbuzz. This package satisfies the former.
+(define-public freetype-no-harfbuzz
   (package
-    (inherit freetype-bootstrap)
-    (name "freetype")
-    (inputs
-     (modify-inputs (package-inputs freetype-bootstrap)
-       (prepend freetype-bootstrap))) ; For harfbuzz.
+    (inherit freetype)
+    (name "freetype-no-harfbuzz")
     (propagated-inputs
-     (modify-inputs (package-propagated-inputs freetype-bootstrap)
-       (prepend harfbuzz)))))
+     (modify-inputs (package-propagated-inputs freetype)
+       (delete "harfbuzz")))))
 
 (define-public opentype-sanitizer
   (package
@@ -1427,9 +1426,7 @@ applications should be.")
          "1790ajyhk0ax8xxamnrk176gc9gvhadzy78qia4rd8jzm89ir7gr"))))
    (build-system cmake-build-system)
    (native-inputs
-    (list python python-fonttools-minimal))
-   (inputs
-    (list freetype-bootstrap))
+    (list freetype-no-harfbuzz python python-fonttools-minimal))
    (arguments
     (if (system-hurd?)
         (list

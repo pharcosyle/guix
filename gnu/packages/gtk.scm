@@ -268,12 +268,21 @@ Quartz, Win32, image buffers, PostScript, PDF, and SVG file output.")
     (outputs '("out"
                "bin"))
     (inputs
-     ;; Freetype should be propagated too (it's in Requires.private) but I
-     ;; don't think propagating the bootstrap variant is a good idea.
-     (list freetype-bootstrap))
+     ;; Freetype should be propagated (it's in Requires.private) but freetype
+     ;; also propagates harfbuzz and they can't both propagate each other.
+     (list freetype-no-harfbuzz))
     (propagated-inputs
      ;; There are all in the Requires or Requires.private field of '.pc'.
-     (list glib graphite2 icu4c))
+     (list
+      ;; Adding cairo here is very burdensome vis-a-vis dependency cycles.
+      ;; Furtherore, Cairo support only seems to be necessary for an `hb-view'
+      ;; binary and libharfbuzz-cairo.so library that nothing really uses.
+      ;; cairo
+      glib
+      graphite2
+      ;; Upstream recommends using its optimized (small/fast), up-to-date,
+      ;; *bundled* version. Might be worth considering.
+      icu4c))
     (native-inputs
      (append (list `(,glib "bin"))      ;for glib-mkenums
              (if (target-hurd?)
