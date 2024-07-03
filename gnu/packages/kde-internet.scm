@@ -382,14 +382,14 @@ This package is part of the KDE networking module.")
 (define-public krdc
   (package
     (name "krdc")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/krdc-" version ".tar.xz"))
        (sha256
-        (base32 "0jva74n11fpm4ix4sbi0y1xnbly97lnap7dfj0bliw5s2d0sdjr0"))))
+        (base32 "1d346f4p0w8062z9xl7svnq7mhr40q9p50sjn0wlpssa5zyy5442"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
@@ -401,6 +401,7 @@ This package is part of the KDE networking module.")
            kconfig
            kdnssd
            ki18n
+           kio
            kiconthemes
            knotifications
            knotifyconfig
