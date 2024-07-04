@@ -54,7 +54,7 @@
                           version ".tar.lz"))
       (sha256
        (base32
-        "1nabhxx3rg28h2scba2mlawzjyx3dw07j2kjn76cpvahbyd630rn"))))
+        "0nabhxx3rg28h2scba2mlawzjyx3dw07j2kjn76cpvahbyd630rn"))))
     (build-system gnu-build-system)
     (inputs
      (list gnutls libidn2 libpsl))
