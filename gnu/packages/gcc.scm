@@ -1043,6 +1043,10 @@ using compilers other than GCC."
     (propagated-inputs '())
     (synopsis "GNU C++ standard library")))
 
+;; (define libstdc++
+;;   ;; Libstdc++ matching the default GCC.
+;;   (make-libstdc++ gcc))
+
 (define libstdc++
   ;; Libstdc++ matching the default GCC.
   (let ((base (make-libstdc++ gcc)))
@@ -1245,7 +1249,7 @@ misnomer.")))
 (define-public libgccjit-14 (make-libgccjit gcc-14))
 
 ;; Use the 'gcc' variable from above to track the same version.
-(define-public libgccjit (make-libgccjit gcc))
+(define-public libgccjit (make-libgccjit gcc-14))
 
 (define (make-gccgo gcc)
   "Return a gccgo package based on GCC."

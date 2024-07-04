@@ -48,3 +48,9 @@
 
 (define-public gcc-cross-x86_64-w64-mingw32-toolchain
   (cross-gcc-toolchain "x86_64-w64-mingw32"))
+
+(define-public gcc-cross-x86_64-w64-mingw32
+  (cross-gcc "x86_64-w64-mingw32"))
+
+(define-public gcc-cross-i686-w64-mingw32
+  (cross-gcc "i686-w64-mingw32"))

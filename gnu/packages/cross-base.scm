@@ -61,7 +61,7 @@
   ;;
   ;; Note: This is a macro so that we do not refer to 'gcc' from the top
   ;; level, which would lead to circular-dependency issues.
-  (identifier-syntax gcc))
+  (identifier-syntax gcc-14))
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.

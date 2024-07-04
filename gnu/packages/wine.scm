@@ -127,7 +127,7 @@
      (list bison
            flex
            gettext-minimal
-           mingw-w64-i686
+           ;; mingw-w64-i686
            perl
            pkg-config))
     (inputs
@@ -266,10 +266,10 @@ integrate Windows applications into your desktop.")
   (package
     (inherit wine)
     (name "wine64")
-    (native-inputs (modify-inputs (package-native-inputs wine)
-                     (prepend mingw-w64-x86_64)))
-    (inputs (modify-inputs (package-inputs wine)
-              (prepend wine)))
+    ;; (native-inputs (modify-inputs (package-native-inputs wine)
+    ;;                  (prepend mingw-w64-x86_64)))
+    ;; (inputs (modify-inputs (package-inputs wine)
+    ;;           (prepend wine)))
     (arguments
      (substitute-keyword-arguments
          (strip-keyword-arguments '(#:system) (package-arguments wine))
@@ -552,12 +552,28 @@ implementation is based on a custom version of Mozilla's Gecko Layout Engine.")
            bison
            flex
            gettext-minimal
-           mingw-w64-i686
+           ;; ;; mingw-w64-i686
            perl
            pkg-config
 
            ;; from wine64
-           mingw-w64-x86_64
+           ;; mingw-w64-x86_64
+
+
+
+
+           ;; (@ (gnu packages cross-toolchain) gcc-cross-i686-w64-mingw32-toolchain)
+           ;; (@ (gnu packages cross-toolchain) gcc-cross-i686-w64-mingw32)
+           ;; mingw-w64-i686
+
+           ;; (@ (gnu packages cross-toolchain) gcc-cross-x86_64-w64-mingw32-toolchain)
+           ;; (@ (gnu packages cross-toolchain) gcc-cross-x86_64-w64-mingw32)
+           ;; mingw-w64-x86_64
+
+
+
+
+
 
            ;; Additional stuff from Arch package
            libxxf86vm
@@ -565,7 +581,8 @@ implementation is based on a custom version of Mozilla's Gecko Layout Engine.")
            vulkan-loader
            vulkan-headers
            autoconf
-           opencl-headers))
+           ;; opencl-headers
+           ))
     (inputs
      (list alsa-lib
            bash-minimal
@@ -614,7 +631,10 @@ implementation is based on a custom version of Mozilla's Gecko Layout Engine.")
       ;; pass.
       #:tests? #f
       #:configure-flags
-      #~(list "--enable-archs=x86_64,i386")
+      #~(list "--enable-archs=i386,x86_64"
+              ;; "CC=gcc"
+              ;; "CROSSCC=x86_64-w64-mingw32-gcc"
+              )
       ;; #:make-flags
       ;; #~(list "SHELL=bash"
       ;;         (string-append "libdir=" #$output "/lib/wine64"))
