@@ -71,7 +71,7 @@
 (define-public sdl2
   (package
     (name "sdl2")
-    (version "2.30.4")
+    (version "2.30.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -79,7 +79,7 @@
                               version ".tar.gz"))
               (sha256
                (base32
-                "09hslcfmczhygzqi8jrkk30bp783wygs52iinwiznkhdsh79vj2r"))
+                "0fz67lcwid7s3d8svwm5s4j8krapvkbsgm12131gqzf357xg6x7k"))
               (patches
                (list
                 (origin

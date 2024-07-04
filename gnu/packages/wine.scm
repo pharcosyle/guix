@@ -336,7 +336,7 @@ integrate Windows applications into your desktop.")
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
-(define %wine-devel-version "9.11")
+(define %wine-devel-version "9.12")
 
 (define-public wine-devel
   (package
@@ -546,7 +546,7 @@ implementation is based on a custom version of Mozilla's Gecko Layout Engine.")
     (version %wine-devel-version)
     (source
      (wine-source version
-                  "0h3jz1xxdss4hvgh0aj213xn3rya90z876l45b86j4d79qk0r86z"))
+                  "1xkaq9z0gxapglfsyy6wx1dfsg5z1dja02wphy0z3ydj43kml509"))
     (build-system gnu-build-system)
     (native-inputs
      (list ;; from wine32
@@ -690,8 +690,8 @@ implementation is based on a custom version of Mozilla's Gecko Layout Engine.")
             ;;       `()))
           (add-after 'install 'install-mono
             #$(install-wine-mono
-               "9.1.0"
-               "0rw7r09g7fkkxl6lgg9aw8fy0mc8aflmdcs6v6ziya9v4386j4b0"))
+               "9.2.0"
+               "0myp1hz6dd1zqikx4phc436v64vf95jphv2bi20wacjzabz5vcsr"))
           ;; TODO Not sure if 32 and 64 bit versions are both required the same way they are in wine64.
           (add-after 'install 'install-gecko32
             #$(install-wine-gecko
