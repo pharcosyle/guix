@@ -5388,14 +5388,14 @@ Singularity containers.")
 (define-public libnvme
   (package
     (name "libnvme")
-    (version "1.5")
+    (version "1.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/linux-nvme/libnvme.git")
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "1wq8bw60l090z2kb717wyzk5wz1jrcn31ykdaa7k9pz9w79v0v67"))
+               (base32 "0sz5na6irkjzf44205hc4rzx1a42jgk4fckxidi123q17rpdhz4x"))
               (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (outputs (list "out" "doc"))        ; docs are 80% of all output
