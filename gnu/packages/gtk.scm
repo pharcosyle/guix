@@ -808,14 +808,23 @@ ever use this library.")
                (base32
                 "05d5azffbglnvqzwk8ngg61jksm3brrwhmfpymsrccz8j8lv3v19"))))
     (build-system meson-build-system)
-    (outputs '("out" "doc"))
+    (outputs (cons "out"
+                   (if (and (not (%current-target-system))
+                            (supported-package? python-sphinx))
+                       '("docs")
+                       '())))
     (arguments
      (list
       #:glib-or-gtk? #t              ;to wrap binaries and/or compile schemas
       #:configure-flags
-      #~(list #$(if (%current-target-system)
-                    "-Ddocs=false"
-                    "-Ddocs=true"))
+      #~(list
+         ;; Both docs (requiring gi-docgen) and devel-docs (requiring sphinx)
+         ;; are controlled by the same option, so if you can't do either you
+         ;; get neither.
+         #$(if (and (not (%current-target-system))
+                    (supported-package? python-sphinx))
+               "-Ddocs=true"
+               "-Ddocs=false"))
       #:tests? (not (or (target-ppc32?)
                         (%current-target-system)))
       #:phases
@@ -866,10 +875,12 @@ ever use this library.")
             gobject-introspection
             gsettings-desktop-schemas
             pkg-config
-            python-dbusmock
+            python-dbusmock-minimal
             python-pytest
-            python-sphinx
-            python-wrapper)))
+            python-wrapper)
+      (if (supported-package? python-sphinx)
+          (list python-sphinx)
+          '())))
     (synopsis "Assistive Technology Service Provider Interface, core components")
     (description
      "The Assistive Technology Service Provider Interface, core components,
