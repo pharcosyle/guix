@@ -5097,13 +5097,6 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
       #:configure-flags #~(list "-Ddocs=enabled")
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'adjust-tests
-            (lambda _
-              ;; Fails because of errors from `session_get_uri' like
-              ;; "Unexpected status 200 OK (expected 301 Moved Permanently)"
-              ;; (see: https://gitlab.gnome.org/GNOME/libsoup/-/issues/239).
-              (substitute* "tests/hsts-db-test.c"
-                ((".*/hsts-db/subdomains.*") ""))))
           (add-after 'install 'move-doc
             (lambda _
               (mkdir-p (string-append #$output:doc "/share"))
