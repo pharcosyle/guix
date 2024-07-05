@@ -6029,7 +6029,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.72")
+    (version "5.76")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6037,7 +6037,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0vjk4ihywzv8k07bxq7clqgi2afrw54nfp0gcnxw35m98nipz7a9"))))
+                "0qxx1cjdvb1znzmb2h890zq0wkj343n8bkj27j1jvn4sj12wdqjm"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -6052,6 +6052,11 @@ Bluetooth audio output devices like headphones or loudspeakers.")
               ;; Install dbus/udev files to the correct location.
               (string-append "--with-dbusconfdir=" #$output "/etc")
               (string-append "--with-udevdir=" #$output "/lib/udev"))
+      #:make-flags
+      #~(list
+         ;; Don't try to create /var and /etc.
+         "sysconfdir=/tmp/dummy"
+         "localstatedir=/tmp/dummy")
       #:phases
       #~(modify-phases %standard-phases
           ;; Test unit/test-gatt fails unpredictably. Seems to be a timing
@@ -6083,8 +6088,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
      (list gettext-minimal
            pkg-config
            python
-           python-docutils
-           python-pygments))
+           python-docutils))
     (inputs
      (list glib dbus eudev libical readline))
     (home-page "https://www.bluez.org/")
