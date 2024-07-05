@@ -804,9 +804,14 @@ ever use this library.")
      (list
       #:glib-or-gtk? #t              ;to wrap binaries and/or compile schemas
       #:configure-flags
-      #~(list #$(if (%current-target-system)
-                    "-Ddocs=false"
-                    "-Ddocs=true"))
+      #~(list
+         ;; Both docs (requiring gi-docgen) and devel-docs (requiring sphinx)
+         ;; are controlled by the same option, so if you can't do either you
+         ;; get neither.
+         #$(if (or (%current-target-system)
+                   (not (supported-package? python-sphinx)))
+               "-Ddocs=false"
+               "-Ddocs=true"))
       #:tests? (not (or (target-ppc32?)
                         (%current-target-system)))
       #:phases
@@ -842,7 +847,14 @@ ever use this library.")
                     (("ps auxwww") "")   ;avoid a dependency on procps
                     (("meson test -C _build")
                      "meson test -C ../build")) ;adjust build directory
-                  (invoke "dbus-run-session" "--" "ci/run-tests.sh"))))))))
+                  (invoke "dbus-run-session" "--" "ci/run-tests.sh")))))
+          #$@(if (or (%current-target-system)
+                     (not (supported-package? python-sphinx)))
+                 #~((add-after 'install 'stub-docs
+                      (lambda _
+                        ;; The daemon doesn't like empty output paths.
+                        (mkdir #$output:doc))))
+                 #~()))))
     (inputs
      (list bash-minimal libxml2))
     (propagated-inputs
@@ -857,10 +869,12 @@ ever use this library.")
             gobject-introspection
             gsettings-desktop-schemas
             pkg-config
-            python-dbusmock
+            python-dbusmock-minimal
             python-pytest
-            python-sphinx
-            python-wrapper)))
+            python-wrapper)
+      (if (supported-package? python-sphinx)
+          (list python-sphinx)
+          '())))
     (synopsis "Assistive Technology Service Provider Interface, core components")
     (description
      "The Assistive Technology Service Provider Interface, core components,
