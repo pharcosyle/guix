@@ -23,7 +23,7 @@
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
 ;;; Copyright © 2021, 2022, 2023 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
-;;; Copyright © 2022, 2023 Navid Afkhami <navid.afkhami@mdc-berlin.de>
+;;; Copyright © 2022, 2023, 2024 Navid Afkhami <navid.afkhami@mdc-berlin.de>
 ;;; Copyright © 2022 Antero Mejr <antero@mailbox.org>
 ;;; Copyright © 2024 Alexis Simon <alexis.simon@runbox.com>
 ;;;
@@ -752,6 +752,54 @@ to the R ecosystem, allowing you to effortlessly manipulate and analyze your
 single-cell data.  This package lets you work with backed h5ad and zarr files,
 directly access various slots (e.g. X, obs, var), or convert the data into
 @code{SingleCellExperiment} and Seurat objects.")
+      (license license:expat))))
+
+(define-public r-anpan
+  (let ((commit "286b88dcf5e9e963a595482139aade154ee1dc86")
+        (revision "1"))
+    (package
+      (name "r-anpan")
+      (version (git-version "0.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/biobakery/anpan")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10nw5v69gn4pxb4g5gd8nh9r1ywd6yczapl3dpdfms0434wcmkxm"))))
+      (properties `((upstream-name . "anpan")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-ape
+                               r-cmdstanr
+                               r-data-table
+                               r-dplyr
+                               r-fastglm
+                               r-furrr
+                               r-future
+                               r-ggdendro
+                               r-ggnewscale
+                               r-ggplot2
+                               r-loo
+                               r-mass
+                               r-patchwork
+                               r-phylogram
+                               r-posterior
+                               r-progressr
+                               r-purrr
+                               r-r-utils
+                               r-stringr
+                               r-tibble
+                               r-tidyselect))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/biobakery/anpan")
+      (synopsis "Quantifying microbial strain-host associations")
+      (description
+       "The goal of anpan is to consolidate statistical methods for strain
+analysis.  This includes automated filtering of metagenomic functional
+profiles, testing genetic elements for association with outcomes, phylogenetic
+association testing, and pathway-level random effects models.")
       (license license:expat))))
 
 (define-public r-bedtorch
@@ -4466,6 +4514,102 @@ with MOFA+ in Python.")
      "Mudata is a Python package for multi-omics data analysis.
 It is designed to provide functionality to load, process, and store multimodal
 omics data.")
+    (license license:bsd-3)))
+
+(define-public python-mofapy2
+  (package
+    (name "python-mofapy2")
+    (version "0.7.1")
+    (source
+     (origin
+       ;; The tarball from PyPi doesn't include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bioFAM/mofapy2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ahhnqk6gjrhyq286mrd5n7mxcv8l6040ffsawbjx9maqx8wbam0"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      ;; cupy is an optional dependency, which
+      ;; itself has nonfree dependencies (CUDA)
+      '(list "--ignore=mofapy2/notebooks/test_cupy.py")))
+    (propagated-inputs (list python-anndata
+                             python-h5py
+                             python-numpy
+                             python-pandas
+                             python-scikit-learn
+                             python-scipy))
+    (native-inputs (list python-poetry-core
+                         python-pytest))
+    (home-page "https://biofam.github.io/MOFA2/")
+    (synopsis "Multi-omics factor analysis")
+    (description "MOFA is a factor analysis model that provides a general
+framework for the integration of multi-omic data sets in an unsupervised
+fashion.  Intuitively, MOFA can be viewed as a versatile and statistically
+rigorous generalization of principal component analysis to multi-omics data.
+Given several data matrices with measurements of multiple -omics data types on
+the same or on overlapping sets of samples, MOFA infers an interpretable
+low-dimensional representation in terms of a few latent factors.  These learnt
+factors represent the driving sources of variation across data modalities,
+thus facilitating the identification of cellular states or disease
+subgroups.")
+    (license license:lgpl3)))
+
+(define-public python-muon
+  (package
+    (name "python-muon")
+    (version "0.1.6")
+    (source
+     (origin
+       ;; The tarball from PyPi doesn't include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/scverse/muon")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1kd3flgy41dc0sc71wfnirh8vk1psxgyjxkbx1zx9yskkh6anbgw"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      ;; Even providing a random seed, scipy.sparse.rand produces inconsistent
+      ;; results across scipy versions.
+      '(list "-k" "not test_tfidf")
+      #:phases
+      '(modify-phases %standard-phases
+         ;; Numba needs a writable dir to cache functions.
+         (add-before 'build 'set-numba-cache-dir
+           (lambda _
+             (setenv "NUMBA_CACHE_DIR" "/tmp"))))))
+    (propagated-inputs (list python-anndata
+                             python-h5py
+                             python-matplotlib
+                             python-mofapy2
+                             python-mudata
+                             python-numba
+                             python-numpy
+                             python-pandas
+                             python-protobuf
+                             python-pybedtools
+                             python-pysam
+                             python-scanpy
+                             python-scikit-learn
+                             python-seaborn
+                             python-tqdm
+                             python-umap-learn))
+    (native-inputs (list python-flit-core
+                         python-pytest
+                         python-pytest-flake8))
+    (home-page "https://github.com/scverse/muon")
+    (synopsis "Multimodal omics analysis framework")
+    (description "muon is a multimodal omics Python framework.")
     (license license:bsd-3)))
 
 (define-public python-pyega3
@@ -8430,7 +8574,7 @@ translated into a human-readable text format using the @code{jellyfish dump}
 command, or queried for specific k-mers with @code{jellyfish query}.")
     (home-page "http://www.genome.umd.edu/jellyfish.html")
     ;; JELLYFISH seems to be 64-bit only.
-    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
+    (supported-systems %64bit-supported-systems)
     ;; One of these licenses may be picked
     (license (list license:gpl3+ license:bsd-3))))
 
@@ -11572,6 +11716,41 @@ tasks.")
 Pore-C concatemers.")
       (license license:gpl3))))
 
+(define-public r-cmdstanr
+  (let ((commit "a45d4f7d686aa6b57ce25f342a71eea79507f01c")
+        (revision "1"))
+    (package
+      (name "r-cmdstanr")
+      (version (git-version "0.8.1.9000" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stan-dev/cmdstanr")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "01vyh3sy704rs7yvaka2hp6vld0mdl7hbrs20dpbwidgm4ksrvsi"))))
+      (properties `((upstream-name . "cmdstanr")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-checkmate
+                               r-data-table
+                               r-jsonlite
+                               r-posterior
+                               r-processx
+                               r-r6
+                               r-rlang
+                               r-withr))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/stan-dev/cmdstanr")
+      (synopsis "R interface to 'CmdStan'")
+      (description
+       "This package provides a lightweight interface to Stan
+<https://mc-stan.org>.  The @code{CmdStanR} interface is an alternative
+to RStan that calls the command line interface for compilation and
+running algorithms instead of interfacing with C++ via Rcpp'.")
+      (license license:bsd-3))))
+
 (define-public r-dnamcrosshyb
   ;; There aren't any releases.
   (let ((commit "fe8acb33667e81f00dcb84e0fa75c87ab2db5d8f")
@@ -13957,6 +14136,50 @@ for analyzing gene-level association tests in meta-analyses for binary
 trait.")
     (license license:gpl3)))
 
+(define-public r-rnacrosslinkoo
+  (let ((commit "a317e0fa6ddf34c309529d57390769e2b2b5bfb7")
+        (revision "1"))
+    (package
+      (name "r-rnacrosslinkoo")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cran/rnaCrosslinkOO")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0csv9924z0ish960k034qzv3gxh1yabnxni8hsrn5j6xl1r3cdpl"))))
+      (properties `((upstream-name . "rnaCrosslinkOO")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-classdiscovery
+                               r-doparallel
+                               r-foreach
+                               r-genomicranges
+                               r-ggplot2
+                               r-ggrepel
+                               r-heatmap3
+                               r-igraph
+                               r-iranges
+                               r-mass
+                               r-mixtools
+                               r-patchwork
+                               r-r4rna
+                               r-rcolorbrewer
+                               r-reshape2
+                               r-rrna
+                               r-s4vectors
+                               r-seqinr
+                               r-tidyverse
+                               r-topdom))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/cran/rnaCrosslinkOO")
+      (synopsis "Analysis of RNA crosslinking data")
+      (description
+       "The package is ideal for analyzing RNA structure and chemical probing data.")
+      (license license:gpl3))))
+
 (define-public r-rnaseqdtu
   (let ((commit "5bee1e769d2e1dc6a3f1cecb78078050eeb5b9ac")
         (revision "1"))
@@ -14174,6 +14397,58 @@ working with SAM and BAM files.  Current parallelised functionality is
 an important subset of samtools functionality, including view, index,
 sort, markdup, and depth.")
     (license license:gpl2+)))
+
+(define-public r-rphyloxml
+  (let ((commit "a30e39249239b2de01d6964ae2a2205a6c48b475")
+        (revision "1"))
+    (package
+      (name "r-rphyloxml")
+      (version (git-version "0.0-9000" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/USCbiostats/rphyloxml")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15ijzqvjxx6vqyqlg5asdbqlhw1g0ix6palf1rism3si0qapddgw"))
+         (snippet
+          '(delete-file "docs/jquery.sticky-kit.min.js"))))
+      (properties `((upstream-name . "rphyloxml")))
+      (build-system r-build-system)
+      (arguments
+       (list
+        #:modules
+        '((guix build r-build-system)
+          (guix build minify-build-system)
+          (guix build utils))
+        #:imported-modules
+        `(,@%r-build-system-modules (guix build minify-build-system))
+        #:phases
+        '(modify-phases %standard-phases
+           (add-after 'unpack 'process-javascript
+             (lambda* (#:key inputs #:allow-other-keys)
+               (with-directory-excursion "inst/"
+                 (minify (assoc-ref inputs "js-jquery-sticky-kit")
+                         #:target "docs/jquery.sticky-kit.min.js")))))))
+      (propagated-inputs (list r-ape r-xml2))
+      (native-inputs
+       `(("esbuild" ,esbuild)
+         ("js-jquery-sticky-kit"
+          ,(origin
+             (method url-fetch)
+             (uri "https://raw.githubusercontent.com/leafo/sticky-kit/\
+v1.1.2/jquery.sticky-kit.js")
+             (sha256
+              (base32
+               "17c3a1hqc3ybwj7hpw8prazajp2x98aq7nyfn71h6lzjvblq297g"))))))
+      (home-page "https://github.com/USCbiostats/rphyloxml")
+      (synopsis "Read and write phyloXML files in R")
+      (description
+       "The package reads phylogenetic data in the @code{phyloXML} format.
+It also includes functions for writing data in this format.")
+      (license license:expat))))
 
 (define-public ritornello
   (package

@@ -1,9 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
-;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
@@ -61,6 +61,33 @@
 ;;;
 ;;; Libraries:
 ;;;
+
+(define-public go-atomicgo-dev-assert
+  (package
+    (name "go-atomicgo-dev-assert")
+    (version "0.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atomicgo/assert")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ra5bx3w6vynwbxgsz5knibk2xwmfi6654fsi29zsmk77f39g8vv"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:go go-1.21
+      #:import-path "atomicgo.dev/assert"))
+    (home-page "https://atomicgo.dev/assert")
+    (synopsis "Go package with tons of assertions")
+    (description
+     "Package assert provides obj set of assertion functions.  Every assertion
+function returns obj boolean.  This package does not integrate into the
+testing package automatically and requires to check the returning boolean
+value and call @code{t.Fatal()} if the assertion fails.")
+    (license license:expat)))
 
 (define-public go-github-com-alecthomas-assert-v2
   (package
@@ -577,6 +604,51 @@ Many times certain facilities are not available, or tests must run
 differently.")
     (license license:expat)))
 
+(define-public go-github-com-marvinjwendt-testza
+  (package
+    (name "go-github-com-marvinjwendt-testza")
+    (version "0.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MarvinJWendt/testza")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mqvs9142wx3a352yj0zxcm8f3mclyqzzxjlpn1rsb3vrskgs8v9"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:go go-1.21
+      #:import-path "github.com/MarvinJWendt/testza"
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; An error that should be nil is not nil.  Error message: "creating
+          ;; snapshot failed: <...> permission denied
+          (add-before 'check 'writable-test-file
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/"
+                                                       import-path
+                                                       "/testdata/snapshots")
+                (for-each make-file-writable
+                          (list "TestSnapshotCreate_file_content.testza"
+                                "TestSnapshotCreate_file_content_string.testza"))))))))
+    (propagated-inputs
+     (list go-atomicgo-dev-assert
+           go-github-com-sergi-go-diff
+           go-github-com-davecgh-go-spew
+           go-github-com-klauspost-cpuid-v2
+           go-github-com-pterm-pterm))
+    (home-page "https://github.com/MarvinJWendt/testza")
+    (synopsis "Full-featured test framework for Golang")
+    (description
+     "Package testza is a full-featured testing framework for Go.  It
+integrates with the default test runner, so you can use it with the standard
+@code{go test} tool.  Testza contains easy to use methods, like assertions,
+output capturing, mocking, and much more.")
+    (license license:expat)))
+
 (define-public go-github-com-onsi-ginkgo
   (package
     (name "go-github-com-onsi-ginkgo")
@@ -657,7 +729,7 @@ Gomega matcher library.")
       #:go go-1.21
       #:import-path "github.com/onsi/gomega"))
     (propagated-inputs
-     (list go-github-com-golang-protobuf-proto
+     (list go-github-com-golang-protobuf
            go-golang-org-x-net
            go-golang-org-x-sys
            go-golang-org-x-text
@@ -668,6 +740,31 @@ Gomega matcher library.")
     (description
      "Gomega is the preferred matcher/assertion library for the Ginkgo test
 framework.")
+    (license license:expat)))
+
+(define-public go-github-com-otiai10-mint
+  (package
+    (name "go-github-com-otiai10-mint")
+    (version "1.6.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/otiai10/mint")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g5zhz4znp68427p2a1yvrxbq90y7caagdd7zsb4iygnhdszfm7w"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:go go-1.21
+      #:import-path "github.com/otiai10/mint"))
+    (home-page "https://github.com/otiai10/mint")
+    (synopsis "Minimal assertion for Golang testing framework")
+    (description
+     "Mint (@code{mint.Mint}) is wrapper for @code{*testing.T} blending
+testing type to omit repeated @code{t}.")
     (license license:expat)))
 
 (define-public go-github-com-pkg-profile
@@ -731,6 +828,57 @@ Go application.")
      "Package gostub is used for stubbing variables in tests, and resetting the
 original value once the test has been run.")
     (license license:expat)))
+
+(define-public go-github-com-petermattis-goid
+  (let ((commit "bb94eb51e7a772d09cef11768f3248ac25adf9f9")
+        (revision "2"))
+    (package
+      (name "go-github-com-petermattis-goid")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/petermattis/goid")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hr94frr0rhac4mb9r7ixdgr6hm63rxh6z43rhn2wn7fdy8csw11"))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:import-path "github.com/petermattis/goid"))
+      (home-page "https://github.com/petermattis/goid")
+      (synopsis "Identify the running goroutine")
+      (description
+       "This package offers a method of programmatically retrieving the
+current goroutine's ID.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-sasha-s-go-deadlock
+  (package
+    (name "go-github-com-sasha-s-go-deadlock")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sasha-s/go-deadlock")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0arb35idnyz4n118xz7p2snazqi35gk1975h1xfk0y4riiks58yz"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/sasha-s/go-deadlock"))
+    (propagated-inputs
+     (list go-github-com-petermattis-goid))
+    (home-page "https://github.com/sasha-s/go-deadlock")
+    (synopsis "Deadlock detection in go")
+    (description
+     "This package provides tools for detecting deadlocks at run-time in Go.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-stretchr-testify
   (package
@@ -904,6 +1052,37 @@ scope for a group of related test cases, in the style of xUnit fixtures.  This
 makes extraction of setup/teardown behavior (as well as invoking the system
 under test) much simpler.")
     (license license:expat)))
+
+(define-public go-go-etcd-io-gofail
+  (package
+    (name "go-go-etcd-io-gofail")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/etcd-io/gofail")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jh0qjgfb2irshwj7an3lj0w9bv6c5gbnkdhisgpdr7x7hk682m1"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "go.etcd.io/gofail"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'remove-examples
+            (lambda* (#:key import-path #:allow-other-keys)
+              (delete-file-recursively
+               (string-append "src/" import-path "/examples")))))))
+    (native-inputs (list go-github-com-stretchr-testify))
+    (home-page "https://pkg.go.dev/go.etcd.io/gofail")
+    (synopsis "Failpoints for go")
+    (description
+     "This package provides an implementation of
+@url{http://www.freebsd.org/cgi/man.cgi?query=fail,failpoints} for Golang.")
+    (license license:asl2.0)))
 
 (define-public go-golang-org-sql-mock
   (let ((commit "e98392b8111b45f8126e00af035a0dd95dc12e8b")

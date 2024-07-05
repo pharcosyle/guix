@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018–2022 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2021-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2021-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -378,6 +378,11 @@ until LLVM/Clang 14."
                                   "add_subdirectory(${LLVM_THIRD_PARTY_DIR}/uni\
 ttest third-party/unittest)\n" line))))))
                         '())
+                  ;; The build daemon goes OOM on i686-linux on this phase.
+                  ,@(if (and (version>=? version "15")
+                             (target-x86-32?))
+                        '((delete 'make-dynamic-linker-cache))
+                        '())
                   ;; Awkwardly, multiple phases added after the same phase,
                   ;; e.g. unpack, get applied in the reverse order.  In other
                   ;; words, adding 'change-directory last means it occurs
@@ -540,7 +545,7 @@ output), and Binutils.")
     ("15.0.7" . "12sggw15sxq1krh1mfk3c1f07h895jlxbcifpwk3pznh4m1rjfy2")
     ("16.0.6" . "0jxmapg7shwkl88m4mqgfjv4ziqdmnppxhjz6vz51ycp2x4nmjky")
     ("17.0.6" . "1a7rq3rgw5vxm8y39fyzr4kv7w97lli4a0c1qrkchwk8p0n07hgh")
-    ("18.1.6" . "14p7f82x5qp1dv0y4d6pz42z0dsmpxz393prhi2acbzk5hksz9mb")))
+    ("18.1.8" . "1l9wm0g9jrpdf309kxjx7xrzf13h81kz8bbp0md14nrz38qll9la")))
 
 (define %llvm-patches
   '(("14.0.6" . ("clang-14.0-libc-search-path.patch"
@@ -552,7 +557,7 @@ output), and Binutils.")
                  "clang-16-remove-crypt-interceptors.patch"))
     ("17.0.6" . ("clang-17.0-libc-search-path.patch"
                  "clang-17.0-link-dsymutil-latomic.patch"))
-    ("18.1.6" . ("clang-18.0-libc-search-path.patch"
+    ("18.1.8" . ("clang-18.0-libc-search-path.patch"
                  "clang-17.0-link-dsymutil-latomic.patch"))))
 
 (define (llvm-monorepo version)
@@ -1390,7 +1395,15 @@ Library.")
   (package
     (inherit llvm-15)
     (version "16.0.6")
-    (source (llvm-monorepo version))))
+    (source (llvm-monorepo version))
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm-15)
+       ;; The build daemon goes OOM on i686-linux on this phase.
+       ((#:phases phases #~'%standard-phases)
+        (if (target-x86-32?)
+            #~(modify-phases #$phases
+                (delete 'make-dynamic-linker-cache))
+            phases))))))
 
 (define-public clang-runtime-16
   (clang-runtime-from-llvm llvm-16))
@@ -1424,7 +1437,15 @@ Library.")
   (package
     (inherit llvm-15)
     (version "17.0.6")
-    (source (llvm-monorepo version))))
+    (source (llvm-monorepo version))
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm-15)
+       ;; The build daemon goes OOM on i686-linux on this phase.
+       ((#:phases phases #~'%standard-phases)
+        (if (target-x86-32?)
+            #~(modify-phases #$phases
+                (delete 'make-dynamic-linker-cache))
+            phases))))))
 
 (define-public clang-runtime-17
   (clang-runtime-from-llvm llvm-17))
@@ -1457,8 +1478,16 @@ Library.")
 (define-public llvm-18
   (package
     (inherit llvm-15)
-    (version "18.1.6")
-    (source (llvm-monorepo version))))
+    (version "18.1.8")
+    (source (llvm-monorepo version))
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm-15)
+       ;; The build daemon goes OOM on i686-linux on this phase.
+       ((#:phases phases #~'%standard-phases)
+        (if (target-x86-32?)
+            #~(modify-phases #$phases
+                (delete 'make-dynamic-linker-cache))
+            phases))))))
 
 (define-public clang-runtime-18
   (clang-runtime-from-llvm llvm-18))
@@ -1473,7 +1502,7 @@ Library.")
                     (package-version llvm-18)))
      (sha256
       (base32
-       "0kknfygvc0iq9jzsaacrw4gnmdd756aprf8lpr53gdsmdpn351yp")))))
+       "1wd7y1a0db4y51swlq6dmm9hrv8pvmv158yi9f10dlayv7y7g275")))))
 
 (define-public libomp-18
   (package

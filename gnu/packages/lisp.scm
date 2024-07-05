@@ -383,7 +383,7 @@ interface.")
     (build-system trivial-build-system)
     (native-inputs
      `(("config-patch" ,@(search-patches "cl-asdf-config-directories.patch"))
-       ("patch" ,patch)))
+       ("patch" ,patch/pinned)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build lisp-utils))
@@ -585,7 +585,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
 (define-public eisl
   (package
     (name "eisl")
-    (version "3.90")
+    (version "4.00")
     (source
      (origin
        (method git-fetch)
@@ -594,7 +594,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1c4gy7ys6kk6hw4px8rdrw3nj81jm6cvhx0nnzi7jbbzhbapm3n1"))))
+        (base32 "0bksy893hvhxn308h3vfj4k0pb7ryizn74lmcswxdk7jmyfccdx1"))))
     (build-system gnu-build-system)
     (inputs
      (list bash-minimal freeglut gdbm libiconv ncurses tcl tk))
@@ -1004,7 +1004,7 @@ the HTML documentation of TXR.")
 (define-public txr
   (package
     (name "txr")
-    (version "294")
+    (version "295")
     (source
      (origin
        (method git-fetch)
@@ -1013,7 +1013,7 @@ the HTML documentation of TXR.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cd0ah6lzwszn4jjxrbwknhscdm6rgsprpiybzlikcckgcylpkdn"))))
+        (base32 "0fpvsz31ark1gyhzyg2x85fxfssfjfc6k0v9hvqdp0y1q5bf66az"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags
@@ -1070,7 +1070,6 @@ the HTML documentation of TXR.")
     (inputs
      (list bash-minimal
            libffi
-           libxcrypt
            zlib))
     (synopsis "General-purpose, multi-paradigm programming language")
     (description

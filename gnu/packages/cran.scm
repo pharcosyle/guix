@@ -704,6 +704,40 @@ to other implementations such a @code{purrr::partial()} the operators in
 etc.")
     (license license:gpl2+)))
 
+(define-public r-cutpointr
+  (package
+    (name "r-cutpointr")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cutpointr" version))
+       (sha256
+        (base32 "1qxnh20hs3bh9v04ls7gwwl7lfc6bwl8c88dn8lkcdqyp3nyr01j"))))
+    (properties `((upstream-name . "cutpointr")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-dplyr
+                             r-foreach
+                             r-ggplot2
+                             r-gridextra
+                             r-purrr
+                             r-rcpp
+                             r-rlang
+                             r-tibble
+                             r-tidyr
+                             r-tidyselect))
+    (native-inputs (list r-knitr))
+    (home-page "https://github.com/thie1e/cutpointr")
+    (synopsis "Determine optimal cutpoints for binary classification")
+    (description
+     "This package estimates optimal cutpoints for binary classification metrics.
+It also validates performance using bootstrapping.  Some methods for more
+robust cutpoint estimation are supported, e.g. a parametric method assuming
+normal distributions, bootstrapped cutpoints, and smoothing of the metric
+values per cutpoint using Generalized Additive Models.  Various plotting
+functions are included.")
+    (license license:gpl3)))
+
 (define-public r-datawizard
   (package
     (name "r-datawizard")
@@ -1748,6 +1782,23 @@ the lp_solve solver.")
 Functions include searching for people, searching by DOI, or searching by
 Orcid ID.")
     (license license:expat)))
+
+(define-public r-rrna
+  (package
+    (name "r-rrna")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RRNA" version))
+       (sha256
+        (base32 "0bgsakpz1wr3wr6c5xa7wx2xmzs3xzkscrgwn6dc7f93kpq1j17p"))))
+    (properties `((upstream-name . "RRNA")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/package=RRNA")
+    (synopsis "Secondary structure plotting for RNA")
+    (description "This package facilitates RNA secondary structure plotting.")
+    (license license:gpl3)))
 
 (define-public r-ruv
   (package
@@ -5238,6 +5289,30 @@ memory leakage.  This can be problematic in cases where many different keys
 are used.  Fastmap avoids this memory leak issue by implementing the map using
 data structures in C++.")
     (license license:expat)))
+
+(define-public r-fastglm
+  (package
+    (name "r-fastglm")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fastglm" version))
+       (sha256
+        (base32 "0283kgk81cxbii7ljmp1rzqg5mzkvf7cj7lflhhhkgj5ljqina2i"))))
+    (properties `((upstream-name . "fastglm")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-bh r-bigmemory r-rcpp r-rcppeigen))
+    (native-inputs (list r-knitr))
+    (home-page "https://cran.r-project.org/package=fastglm")
+    (synopsis
+     "Fast and stable fitting of generalized linear models using 'RcppEigen'")
+    (description
+     "This package fits generalized linear models efficiently using @code{RcppEigen}'.
+The iteratively reweighted least squares implementation utilizes the
+step-halving approach of Marschner to help safeguard against convergence
+issues.")
+    (license license:gpl2+)))
 
 (define-public r-fastghquad
   (package
@@ -31107,6 +31182,30 @@ settings (linear regression, nonlinear regression, nonparametric regression,
 and multivariate regression), and analysis of variance tolerance intervals.
 Visualizations are also available for most of these settings.")
     (license license:gpl2+)))
+
+(define-public r-topdom
+  (package
+    (name "r-topdom")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TopDom" version))
+       (sha256
+        (base32 "1rryfnwvdlpdrjgs6sciy91cxfp4jykll0swclasydjvj4n642i6"))))
+    (properties `((upstream-name . "TopDom")))
+    (build-system r-build-system)
+    (propagated-inputs (list r-ggplot2 r-matrixstats r-reshape2 r-tibble))
+    (home-page "https://github.com/HenrikBengtsson/TopDom")
+    (synopsis "Efficient method for identifying genomic topological domains")
+    (description
+     "This method identifies topological domains in genomes from Hi-C sequence
+data.  The authors published an implementation of their method as an R script.
+This package originates from those original @code{TopDom} R scripts and
+provides help pages adopted from the original @code{TopDom} PDF documentation.
+It also provides a small number of bug fixes to the original code.")
+    ;; Either version of the GPL
+    (license (list license:gpl2 license:gpl3))))
 
 ;; Keep this in sync with the liblantern package.
 (define-public r-torch

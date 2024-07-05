@@ -73,6 +73,7 @@
 ;;; Copyright © 2024 Erik Eduardo Alonso Hernández <erik@erikeduardo.xyz>
 ;;; Copyright © 2024 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2024 bigbug <bigbookofbug@proton.me>
+;;; Copyright © 2024 dan <i@dan.games>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -816,7 +817,7 @@ desktop environment.")
 (define-public icewm
   (package
     (name "icewm")
-    (version "3.5.0")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -824,7 +825,7 @@ desktop environment.")
                     version "/icewm-" version ".tar.lz"))
               (sha256
                (base32
-                "0j6drgc4r2ji5plg65h855xpysmbdxlbyrz9q3jl13vnm2sccp9y"))))
+                "0fjxpc46nlv91ijbxkyk33rlwbg2gd9xkr2mikimrba07zahfns5"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (inputs (list fontconfig
@@ -2217,7 +2218,7 @@ compository, supporting the following featuers:
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.10.2")
+    (version "0.10.3")
     (source
      (origin
        (method git-fetch)
@@ -2226,7 +2227,7 @@ compository, supporting the following featuers:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0h8anmzhbimgdjnbg79al32d5acbfyrh3sf8wcsbx1296qpd6af6"))))
+        (base32 "04xd61ycn1nisq1s5ch14zkbsjcfcy6n29nkjn68s2ribmws0iid"))))
     (build-system meson-build-system)
     (arguments
      (list #:configure-flags #~(list "--wrap-mode=nodownload")))
@@ -2423,7 +2424,6 @@ wlr-output-management-unstable-v1 protocol.")
      (list sbcl-alexandria
            sbcl-cl-ppcre
            sbcl-clx))
-    (outputs '("out" "lib"))
     (arguments
      (list
       #:phases
@@ -2436,12 +2436,12 @@ wlr-output-management-unstable-v1 protocol.")
           (add-after 'create-asdf-configuration 'build-program
             (lambda* (#:key outputs #:allow-other-keys)
               (build-program
-               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
+               (string-append #$output "/bin/stumpwm")
                outputs
                #:entry-program '((stumpwm:stumpwm) 0))))
           (add-after 'build-program 'create-desktop-file
             (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
+              (let* ((out #$output)
                      (xsessions (string-append out "/share/xsessions")))
                 (mkdir-p xsessions)
                 (call-with-output-file
@@ -2458,7 +2458,7 @@ wlr-output-management-unstable-v1 protocol.")
                        out))))))
           (add-after 'create-desktop-file 'install-manual
             (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
-              (let* ((out  (assoc-ref outputs "out"))
+              (let* ((out  #$output)
                      (info (string-append out "/share/info")))
                 (invoke "./autogen.sh")
                 (invoke "sh" "./configure" "SHELL=sh")
@@ -2466,8 +2466,7 @@ wlr-output-management-unstable-v1 protocol.")
                 (install-file "stumpwm.info" info))))
           (add-after 'install-manual 'remove-temporary-cache
             (lambda* (#:key outputs #:allow-other-keys)
-              (delete-file-recursively (string-append (assoc-ref outputs "lib")
-                                                      "/.cache")))))))
+              (delete-file-recursively (string-append #$output "/.cache")))))))
     (synopsis "Window manager written in Common Lisp")
     (description
      "Stumpwm is a window manager written entirely in Common Lisp.
@@ -2487,10 +2486,8 @@ productive, customizable lisp based systems.")
   (package
     (inherit stumpwm)
     (name "stumpwm-with-slynk")
-    (outputs '("out"))
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("slynk" ,sbcl-slynk)))
+     (list sbcl-slynk stumpwm))
     (arguments
      (substitute-keyword-arguments (package-arguments stumpwm)
        ((#:phases phases)
@@ -2505,8 +2502,7 @@ productive, customizable lisp based systems.")
                                 #:dependencies '("stumpwm" "slynk")
                                 #:dependency-prefixes
                                 (map (lambda (input) (assoc-ref inputs input))
-                                     '("stumpwm" "slynk")))
-                 #t)))
+                                     '("stumpwm" "sbcl-slynk"))))))
            (delete 'copy-source)
            (delete 'build)
            (delete 'check)
@@ -2530,7 +2526,7 @@ productive, customizable lisp based systems.")
           (base32 "1g8h2vd5qsmaiz6ixlx9ykrv6a08izmkf0js18fvljvznpyhsznz"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("stumpwm" ,stumpwm "lib")))
+       (list stumpwm))
       (home-page "https://github.com/stumpwm/stumpwm-contrib")
       (synopsis "StumpWM extra modules")
       (description "This package provides extra modules for StumpWM.")
@@ -2575,7 +2571,7 @@ productive, customizable lisp based systems.")
                 (sha256
                  (base32
                   "0djcrr16bx40l7b60d4j507vk5l42fdgmjpgrnk86z1ba8wlqim8"))))
-      (inputs (list pamixer `(,stumpwm "lib")))
+      (inputs (list pamixer stumpwm))
       (build-system asdf-build-system/sbcl)
       (arguments
        (list #:asd-systems ''("pamixer")
@@ -2617,8 +2613,7 @@ mouse control mode for StumpWM.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-ttf-fonts")
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("clx-truetype" ,sbcl-clx-truetype)))
+     (list sbcl-clx-truetype stumpwm))
     (arguments
      '(#:asd-systems '("ttf-fonts")
        #:tests? #f
@@ -2730,9 +2725,7 @@ between windows.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir (lambda _ (chdir "modeline/stumptray") #t)))))
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("xembed" ,sbcl-clx-xembed)
-       ("alexandria" ,sbcl-alexandria)))
+     (list sbcl-alexandria sbcl-clx-xembed stumpwm))
     (home-page
      "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/stumptray")
     (synopsis "Modeline support for stumptray connectivity")
@@ -2807,9 +2800,7 @@ layouts in StumpWM.")
          (add-after 'unpack 'chdir
            (lambda _ (chdir "modeline/disk") #t)))))
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("cl-diskspace" ,sbcl-cl-diskspace)
-       ("cl-mount-info" ,sbcl-cl-mount-info)))
+     (list sbcl-cl-diskspace sbcl-cl-mount-info stumpwm))
     (home-page "https://github.com/stumpwm/stumpwm-contrib")
     (synopsis "StumpWM modeline support to show disk usage")
     (description "StumpWM modeline support to show disk usage")
@@ -2857,8 +2848,7 @@ one in Emacs.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-screenshot")
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("zpng" ,sbcl-zpng)))
+     (list sbcl-zpng stumpwm))
     (arguments
      '(#:asd-systems '("screenshot")
        #:tests? #f
@@ -2907,7 +2897,7 @@ modeline.")
      (list sbcl-bordeaux-threads
            sbcl-dbus
            sbcl-xml-emitter
-           (list stumpwm "lib")))
+           stumpwm))
     (arguments
      '(#:asd-systems '("notify")
        #:phases
@@ -2927,8 +2917,7 @@ by default.")
     (name "sbcl-stumpwm-battery-portable")
     (build-system asdf-build-system/sbcl)
     (inputs
-     (list sbcl-cl-ppcre
-           (list stumpwm "lib")))
+     (list sbcl-cl-ppcre stumpwm))
     (arguments
      '(#:asd-systems '("battery-portable")
        #:phases
@@ -3834,6 +3823,38 @@ notable features include:
       (synopsis "Simple window manager based on swc")
       (description "velox is a simple window manager for Wayland based on swc.
 It is inspired by dwm and xmonad.")
+      (license license:expat))))
+
+(define-public wbg
+  ;; This commit fixes a build error: https://codeberg.org/dnkl/wbg/issues/11
+  (let ((commit "dd36cce8c47bb0e17a789cf2bd95a51e29b59e78")
+        (revision "0"))
+    (package
+      (name "wbg")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://codeberg.org/dnkl/wbg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nsb8w3myprhnwr59i6g4nwkc8fx67d40l70svjmwfmhpqy6zc18"))))
+      (build-system meson-build-system)
+      (arguments
+       (list
+        #:build-type "release"
+        #:configure-flags #~(list "-Dpng=enabled"
+                                  "-Djpeg=enabled"
+                                  "-Dwebp=enabled")))
+      (native-inputs (list pkg-config tllist wayland-protocols))
+      (inputs (list libjpeg-turbo libpng libwebp pixman wayland))
+      (home-page "https://codeberg.org/dnkl/wbg")
+      (synopsis "Wallpaper application for Wayland compositors")
+      (description
+       "wbg is a super simple wallpaper application for Wayland compositors
+implementing the layer-shell protocol.")
       (license license:expat))))
 
 (define-public wsbg

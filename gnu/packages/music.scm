@@ -57,6 +57,7 @@
 ;;; Copyright © 2023 Yovan Naumovski <yovan@gorski.stream>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2024 Parnikkapore <poomklao@yahoo.com>
+;;; Copyright © 2024 hapster <o.rojon@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2387,7 +2388,7 @@ a JACK session.")
 (define-public mixxx
   (package
     (name "mixxx")
-    (version "2.3.6")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -2395,90 +2396,85 @@ a JACK session.")
              (url "https://github.com/mixxxdj/mixxx")
              (commit version)))
        (file-name (git-file-name name version))
-       (patches
-        (search-patches "mixxx-link-qtscriptbytearray-qtscript.patch"
-                        "mixxx-system-googletest-benchmark.patch"))
        (sha256
-        (base32 "1v1sza75rf2q1m0bdc0j2k53qd34m12d1573jmac3g7vvyqh5n2m"))
+        (base32 "0cfdgrxfhck6cg4j9mb2rdp06n57kca1403qw92c3pmk1y05grq4"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete libraries that we already have or don't need.
         ;; TODO: try to unbundle more (see lib/).
         `(begin
-           (let ((third-parties '("apple" "benchmark" "googletest" "hidapi"
-                                  "libebur128")))
+           (let ((third-parties '("apple" "hidapi")))
              (with-directory-excursion "lib"
                (map (lambda (third-party)
-                      (delete-file-recursively third-party))
-                    third-parties)))
+                      (delete-file-recursively third-party)) third-parties)))
            #t))))
     (build-system qt-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Tests need a running X server.
-         (add-before 'check 'prepare-x-for-test
-           (lambda _
-             (system "Xvfb &")
-             (setenv "DISPLAY" ":0")))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (faad2 (assoc-ref inputs "faad2")))
-               (wrap-program (string-append out "/bin/mixxx")
-                 `("LD_LIBRARY_PATH" ":" prefix
-                   ,(list (string-append faad2 "/lib"))))))))))
-    (native-inputs
-     (list benchmark
-           googletest
-           python-wrapper
-           qttools-5
-           xorg-server-for-tests))
-    (inputs
-     (list bash-minimal
-           chromaprint
-           faad2
-           ffmpeg
-           fftw
-           flac
-           glu
-           hidapi
-           jack-1
-           lame
-           libdjinterop
-           libebur128
-           libid3tag
-           libkeyfinder
-           libmad
-           libmp4v2
-           libmodplug
-           libsndfile
-           libshout
-           ;; XXX: Mixxx complains the libshout-idjc package suffers from bug
-           ;; lp1833225 and refuses to use it.  Use the bundle for now.
-           ;; libshout-idjc
-           libusb
-           libvorbis
-           lilv
-           mp3guessenc
-           openssl
-           opusfile
-           portaudio
-           portmidi
-           protobuf
-           qtbase-5
-           qtdeclarative-5
-           qtkeychain
-           qtscript
-           qtsvg-5
-           qtx11extras
-           rubberband
-           soundtouch
-           sqlite
-           taglib
-           upower
-           vamp
-           wavpack))
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-bugged-test
+                    ;; This test regularly fails and aborts the build process, hence it
+                    ;; was disabled (no impact on functionality).  It appears this is a
+                    ;; problem for some upstream as well, as indicated by:
+                    ;; https://github.com/mixxxdj/mixxx/issues/12887 (featuring a
+                    ;; reference to another issue related to the same problem).
+                    (lambda _
+                      (substitute* "src/test/soundproxy_test.cpp"
+                        (("TEST_F\\(SoundSourceProxyTest, firstSoundTest\\)")
+                         "TEST_F(SoundSourceProxyTest, DISABLED_firstSoundTest)"))))
+                  (add-after 'install 'wrap-executable
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (faad2 (assoc-ref inputs "faad2")))
+                        (wrap-program (string-append out "/bin/mixxx")
+                          `("LD_LIBRARY_PATH" ":" prefix
+                            ,(list (string-append faad2 "/lib"))))))))))
+    (native-inputs (list benchmark googletest python-wrapper qttools-5
+                         xorg-server-for-tests))
+    (inputs (list bash-minimal
+                  chromaprint
+                  faad2
+                  ffmpeg
+                  fftw
+                  flac
+                  glu
+                  hidapi
+                  jack-1
+                  lame
+                  libdjinterop
+                  libebur128
+                  libid3tag
+                  libkeyfinder
+                  libmad
+                  libmp4v2
+                  libmodplug
+                  libsndfile
+                  libshout
+                  ;; XXX: Mixxx complains the libshout-idjc package suffers from bug
+                  ;; lp1833225 and refuses to use it.  Use the bundle for now.
+                  libshout-idjc
+                  libusb
+                  libvorbis
+                  lilv
+                  mp3guessenc
+                  openssl
+                  opusfile
+                  portaudio
+                  portmidi
+                  protobuf
+                  qtbase-5
+                  qtdeclarative-5
+                  qtkeychain
+                  qtscript
+                  qtsvg-5
+                  qtx11extras
+                  rubberband
+                  soundtouch
+                  sqlite
+                  taglib
+                  upower
+                  vamp
+                  wavpack
+                  c++-gsl))
     (home-page "https://mixxx.org/")
     (synopsis "DJ software to perform live mixes")
     (description "Mixxx is a DJ software.  It integrates the tools DJs need to
@@ -5574,7 +5570,7 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "23.12")
+    (version "24.06")
     (source
      (origin
        (method url-fetch)
@@ -5582,7 +5578,7 @@ specification and header.")
                            (version-major+minor version) "/"
                            "rosegarden-" version ".tar.xz"))
        (sha256
-        (base32 "0clkzrs931dypvqcn5hzx2v3bq9gc439g71phahgwkh4c1jfcmrz"))))
+        (base32 "09www13ndba14krzycwm44qgcy7j11wa6a6xiqh6i2hjghlx8v46"))))
     (build-system cmake-build-system)
     (arguments
      (list

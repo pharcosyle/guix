@@ -191,6 +191,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
@@ -512,7 +513,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
 
-(define-public linux-libre-6.9-version "6.9.5")
+(define-public linux-libre-6.9-version "6.9.7")
 (define-public linux-libre-6.9-gnu-revision "gnu")
 (define deblob-scripts-6.9
   (linux-libre-deblob-scripts
@@ -522,7 +523,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0b8hsr0s4f3hps27bmd5qj1yknhd73q4zplr4v3lmq7sr57mgly6")))
 (define-public linux-libre-6.9-pristine-source
   (let ((version linux-libre-6.9-version)
-        (hash (base32 "1ccm5w2x3faln5d0jj954xf99x7hn74ihk5zv6di99h3a2mv87x5")))
+        (hash (base32 "1y01w26sas7pl24l09yczdr8mzzy2nadykz1wmhx9ygfj76qixg4")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.9)))
@@ -532,7 +533,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
 
-(define-public linux-libre-6.6-version "6.6.34")
+(define-public linux-libre-6.6-version "6.6.36")
 (define-public linux-libre-6.6-gnu-revision "gnu")
 (define deblob-scripts-6.6
   (linux-libre-deblob-scripts
@@ -542,12 +543,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "05ypqx1sz54yhb8jyxphvg5pwgb2cnzb4zqqaiyyywpqsrnya9kq")))
 (define-public linux-libre-6.6-pristine-source
   (let ((version linux-libre-6.6-version)
-        (hash (base32 "180v8q5376gl6zmjd54qcb1wpmz7cq299bdbhmz738rsb67yrq64")))
+        (hash (base32 "1mfdw2prjb54r19y22sm37q8spnk6lyk162ima7gps1pnwl6hrxr")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.6)))
 
-(define-public linux-libre-6.1-version "6.1.94")
+(define-public linux-libre-6.1-version "6.1.96")
 (define-public linux-libre-6.1-gnu-revision "gnu")
 (define deblob-scripts-6.1
   (linux-libre-deblob-scripts
@@ -557,7 +558,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0nq8b6rnn031wl0qz7ahyfs3hcb0qsr7hzdmxi2g33ycsm9955lk")))
 (define-public linux-libre-6.1-pristine-source
   (let ((version linux-libre-6.1-version)
-        (hash (base32 "0sakp5k4q2xfd3la7j8s2rcbvndh6fdqgzz5ivyqf0df4anp3siq")))
+        (hash (base32 "1ab290vm6h8vj1qi1qhxzh9kc6dbgpkwybcwzw1aprz5kl3cjxry")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.1)))
@@ -577,7 +578,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.15)))
 
-(define-public linux-libre-5.10-version "5.10.219")
+(define-public linux-libre-5.10-version "5.10.220")
 (define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
@@ -587,7 +588,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "12csh2zyjrqzgqcv799gv8h4xaw1irxh2zqddn4jqp5p7psx4j5k")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "0c6dhi6w8likvyyzw7wj2fqhz8nhv760kkic8bk66r1prhakzdwk")))
+        (hash (base32 "16z1xqm7djm8pl15s5wvgc4pwq81gydcf00jpxfplw794kwszhvw")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
@@ -10039,7 +10040,7 @@ headers.")
 (define-public bcc
   (package
     (name "bcc")
-    (version "0.24.0")
+    (version "0.30.0")
     (source
      (origin
        (method git-fetch)
@@ -10049,63 +10050,54 @@ headers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1i6xikkxf2nasfkqa91hjzdq0a88mgyzrvia4fi2i2v1d8pbmnp4"))))
+         "0b5la0yn6x6ll73drnrm5v5yibbrzkvl86hqivkrmnpgy8cqn0cy"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list bison flex))
+     (list bison
+           flex
+           (@ (gnu packages compression) zip)))
     (inputs
      (list bash-minimal                 ;for wrap-program
-           clang-toolchain-9
-           (package-source libbpf)
-           ;; LibElf required but libelf does not contain
-           ;; archives, only object files.
-           ;; https://github.com/iovisor/bcc/issues/504
+           clang-15
            elfutils
            luajit
+           libbpf
            python-wrapper))
     (arguments
-     `(;; Tests all require root permissions and a "standard" file hierarchy.
-       #:tests? #f
-       #:configure-flags
-       (let ((revision ,version))
-         `(,(string-append "-DREVISION=" revision)))
-       #:phases
-       (modify-phases %standard-phases
-         ;; FIXME: Use "-DCMAKE_USE_LIBBPF_PACKAGE=ON".
-         (add-after 'unpack 'copy-libbpf
-           (lambda* (#:key inputs #:allow-other-keys)
-             (delete-file-recursively "src/cc/libbpf")
-             (copy-recursively
-              (assoc-ref inputs "libbpf") "src/cc/libbpf")))
-         (add-after 'copy-libbpf 'substitute-libbc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "src/python/bcc/libbcc.py"
-               (("(libbcc\\.so.*)\\b" _ libbcc)
-                (string-append
-                 (assoc-ref outputs "out") "/lib/" libbcc)))))
-         (add-after 'install 'wrap-tools
-           (lambda* (#:key outputs #:allow-other-keys)
-             (use-modules (ice-9 textual-ports))
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (tools (string-append out "/share/bcc/tools"))
-                    (python-executable?
-                     (lambda (filename _)
-                       (call-with-input-file filename
-                         (lambda (port)
-                           (string-contains (get-line port)
-                                            "/bin/python"))))))
-               (for-each
-                (lambda (python-executable)
-                  (format #t "Wrapping: ~A.~%" python-executable)
-                  (wrap-program python-executable
-                    `("GUIX_PYTHONPATH" ":" prefix
-                      (,(string-append lib
-                                       "/python"
-                                       ,(version-major+minor
-                                         (package-version python))
-                                       "/site-packages")))))
-                (find-files tools python-executable?))))))))
+     (list
+      ;; Tests all require root permissions and a "standard" file hierarchy.
+      #:tests? #f
+      #:configure-flags #~(list (string-append "-DREVISION=" #$version)
+                                "-DCMAKE_USE_LIBBPF_PACKAGE=ON")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'substitute-libbc
+            (lambda _
+              (substitute* "src/python/bcc/libbcc.py"
+                (("(libbcc\\.so.*)\\b" _ libbcc)
+                 (string-append #$output "/lib/" libbcc)))))
+          (add-after 'install 'wrap-tools
+            (lambda _
+              (use-modules (ice-9 textual-ports))
+              (let* ((out #$output)
+                     (lib (string-append out "/lib"))
+                     (tools (string-append out "/share/bcc/tools"))
+                     (python-executable?
+                      (lambda (filename _)
+                        (call-with-input-file filename
+                          (lambda (port)
+                            (string-contains (get-line port)
+                                             "/bin/python"))))))
+                (for-each (lambda (python-executable)
+                            (format #t "Wrapping: ~A.~%" python-executable)
+                            (wrap-program python-executable
+                              `("GUIX_PYTHONPATH" ":" prefix
+                                (,(string-append lib
+                                                 "/python"
+                                                 #$(version-major+minor
+                                                    (package-version python))
+                                                 "/site-packages")))))
+                          (find-files tools python-executable?))))))))
     (home-page "https://github.com/iovisor/bcc")
     (synopsis "Tools for BPF on Linux")
     (description
@@ -10157,30 +10149,37 @@ modification of BPF objects on the system.")
 (define-public bpftrace
   (package
     (name "bpftrace")
-    (version "0.18.1")
+    (version "0.21.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/iovisor/bpftrace")
+             (url "https://github.com/bpftrace/bpftrace")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j8ba2j98d3j8lilgx3z2n162r26ryg7zw5ldwd9m36xnjp40347"))
-       (patches (search-patches "bpftrace-disable-bfd-disasm.patch"))))
+        (base32 "06yg3w80kdq0i003w2gvn0czbh8z9d3rfgmglp37dkir7g3dc6iz"))))
     (build-system cmake-build-system)
-    (native-inputs
-     (list bison flex))
-    (inputs
-     (list bcc clang-toolchain-9 elfutils libbpf cereal))
-    (arguments
-     `(#:tests? #f ;Tests require googletest sources.
-       #:configure-flags
-       '("-DBUILD_TESTING=OFF"
-         ;; FIXME: libbfd misses some link dependencies, when fixed, remove
-         ;; the associated patch.
-         "-DHAVE_BFD_DISASM=OFF")))
-    (home-page "https://github.com/iovisor/bpftrace")
+    (arguments (list #:configure-flags #~(list "-DBUILD_TESTING=ON")
+                     ;; Only run the unit tests suite, as the other ones
+                     ;; (runtime_tests, tools-parsing-test) require to run as
+                     ;; 'root'.
+                     #:test-target "bpftrace_test"
+                     #:phases #~(modify-phases %standard-phases
+                                  (add-after 'unpack 'patch-paths
+                                    (lambda _
+                                      (with-directory-excursion "tests"
+                                        (substitute* (find-files ".")
+                                          (("/bin/sh")
+                                           (which "sh")))
+                                        (substitute* '("child.cpp"
+                                                       "runtime/call"
+                                                       "procmon.cpp")
+                                          (("/bin/ls")
+                                           (which "ls")))))))))
+    (native-inputs (list bison dwarves flex googletest xxd))
+    (inputs (list bcc clang-15 elfutils libbpf libiberty cereal))
+    (home-page "https://github.com/bpftrace/bpftrace")
     (synopsis "High-level tracing language for Linux eBPF")
     (description
      "bpftrace is a high-level tracing language for Linux enhanced Berkeley

@@ -526,14 +526,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.6.21")
+    (version "1.6.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "1vm27la2yanjhwwdwabci4c21yv9hy5iqas47kcxaza1zh79i267"))))
+        (base32 "0ma8qn97hng8vp52s3906g9id75yicf96950hm40zn47k1z2vl5i"))))
     (build-system gnu-build-system)
     (inputs
      (list libevent cyrus-sasl))
@@ -1260,14 +1260,14 @@ and high-availability (HA).")
 (define-public postgresql-15
   (package
     (name "postgresql")
-    (version "15.4")
+    (version "15.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1yf8cfg9j2pfxh5lxfaq1ifbvrcvv2g5vjxnadk36ds4vi5mmv5s"))
+                "1xwq1592k1r64ki9bmkcyw39416kymabdfxbkpiqaqxbhnaf8vx4"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -1335,27 +1335,27 @@ pictures, sounds, or video.")
 (define-public postgresql-13
   (package
     (inherit postgresql-14)
-    (version "13.12")
+    (version "13.15")
     (source (origin
               (inherit (package-source postgresql-14))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "12r1kwjaclq2qn4qg3k6j0asrs4r0k0g1fkdpb3pnjsiwg7fv88d"))))))
+                "09f99rp5q1xp769r71if9ckb4cbm0nnx2xmy8b1bhcvd8hax9va2"))))))
 
 (define-public postgresql-11
   (package
     (inherit postgresql-13)
     (name "postgresql")
-    (version "11.21")
+    (version "11.22")
     (source (origin
               (inherit (package-source postgresql-13))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0l7qrwzwyiy5dwg6j7nnd9mq245sycc4gcv6a6r7gpfmf5s87c07"))))
+                "1w71xf97i3hha6vl05xqf960k75nczs6375w3f2phwhdg9ywkdrc"))))
     (native-inputs
      (modify-inputs (package-native-inputs postgresql-13)
        (replace "docbook-xml" docbook-xml-4.2)))))
@@ -2848,7 +2848,7 @@ more efficient access and storage of column subsets) and log-structured merge
 trees (LSM), for sustained throughput under random insert workloads.")
     (license license:gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
-    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
+    (supported-systems (delete "riscv64-linux" %64bit-supported-systems))))
 
 (define-public wiredtiger-3
   (package
@@ -3034,34 +3034,6 @@ PostgreSQL database back-end.  The database back-end can be local or it may be
 on another machine, accessed via TCP/IP.")
     (home-page "https://pqxx.org/")
     (license license:bsd-3)))
-
-(define-public go-go-etcd-io-bbolt
-  (package
-    (name "go-go-etcd-io-bbolt")
-    (version "1.3.6")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/etcd-io/bbolt")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "0pj5245d417za41j6p09fmkbv05797vykr1bi9a6rnwddh1dbs8d"))))
-    (build-system go-build-system)
-    (arguments
-     `(#:import-path "go.etcd.io/bbolt"
-       ;; Extending the test timeout to 30 minutes still times out on aarch64.
-       #:tests? ,(not target-arm?)))
-    (propagated-inputs
-     (list go-golang-org-x-sys))
-    (home-page "https://go.etcd.io/bbolt")
-    (synopsis "Embedded key/value database for Go")
-    (description "Bolt is a pure Go key/value store inspired by Howard Chu's
-LMDB project.  The goal of the project is to provide a simple, fast, and
-reliable database for projects that don't require a full database server such as
-Postgres or MySQL.")
-    (license license:expat)))
 
 (define-public python-peewee
   (package
@@ -3587,7 +3559,7 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
 relational, graph, and document data management with web application server
 and web services platform functionality.")
     ;; configure: error: ... can only be build on 64bit platforms
-    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
+    (supported-systems %64bit-supported-systems)
     (license license:gpl2)))
 
 (define-public python-ccm
@@ -3647,6 +3619,53 @@ provides a full suite of well known enterprise-level persistence patterns,
 designed for efficient and high-performing database access, adapted into a
 simple and Pythonic domain language.")
     (license license:x11)))
+
+(define-public python-sqlalchemy-2
+  (package
+    (name "python-sqlalchemy")
+    (version "2.0.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "SQLAlchemy" version))
+       (sha256
+        (base32 "1y1l4lwhvgs7ivwhcp4vljjdsaha77x9859kz65virhzlxlyv9l6"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list python-pytest))
+    (propagated-inputs (list python-typing-extensions))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-tests
+            (lambda _
+              ;; Remove expensive tests.
+              (for-each delete-file
+                        '("test/ext/mypy/test_mypy_plugin_py3k.py"
+                          "test/typing/test_mypy.py"
+                          "test/aaa_profiling/test_memusage.py"))
+              (substitute* "test/engine/test_pool.py"
+                ;; Disable a test that fails randomly.
+                (("def test_recycle_pool_no_race")
+                 "def _test_recycle_pool_no_race"))))
+          ;; According to the pyproject.toml, greenlet is optional.
+          (add-after 'unpack 'remove-dependency-on-greenlet
+            (lambda _
+              (substitute* "setup.cfg"
+                (("greenlet != 0.4.17")
+                 "#greenlet != 0.4.17"))
+              (substitute* "PKG-INFO"
+                (("Requires-Dist: greenlet")
+                 "#Requires-Dist: greenlet")))))))
+    (home-page "https://www.sqlalchemy.org")
+    (synopsis "SQL toolkit and object relational mapper")
+    (description
+     "SQLAlchemy is the Python SQL toolkit and @acronym{ORM, Object Relational Mapper}
+that gives application developers the full power and flexibility of SQL.  It provides
+a full suite of well known enterprise-level persistence patterns, designed for
+efficient and high-performing database access, adapted into a simple and Pythonic
+domain language.")
+    (license license:expat)))
 
 (define-public python-sqlalchemy-stubs
   (package
@@ -3882,7 +3901,7 @@ PickleShare.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.45.1.0")
+    (version "3.46.0.0")
     ;; The compressed release has fetching functionality disabled.
     (source
      (origin
@@ -3892,7 +3911,7 @@ PickleShare.")
              version "/apsw-" version ".zip"))
        (sha256
         (base32
-         "1vfrzb414pbh5k0cgcqkp039jvla2galapn4a551zgh8xi70bnrp"))))
+         "10yfbasi4mq63g0svyl1h49ylwn9znjylq78id16dzxzk9q9ipdx"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list unzip python-setuptools python-wheel))

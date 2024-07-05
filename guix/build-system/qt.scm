@@ -131,7 +131,7 @@
                    (build-type "RelWithDebInfo")
                    (tests? #t)
                    (test-target "test")
-                   (parallel-build? #t) (parallel-tests? #f)
+                   (parallel-build? #t) (parallel-tests? #t)
                    (validate-runpath? #t)
                    (patch-shebangs? #t)
                    (strip-binaries? #t)

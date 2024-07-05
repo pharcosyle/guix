@@ -108,6 +108,8 @@
                   #~())
            "-DENABLE_WAYLAND=ON"
            "-DENABLE_PAM=ON"
+           ;; PAM is configured by pam service.
+           "-DINSTALL_PAM_CONFIGURATION=OFF"
            ;; Both flags are required for elogind support.
            "-DNO_SYSTEMD=ON"
            "-DUSE_ELOGIND=ON"

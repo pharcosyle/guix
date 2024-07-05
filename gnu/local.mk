@@ -271,6 +271,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/fabric-management.scm		\
   %D%/packages/fcitx.scm			\
   %D%/packages/fcitx5.scm			\
+  %D%/packages/fediverse.scm			\
   %D%/packages/figlet.scm			\
   %D%/packages/file.scm				\
   %D%/packages/file-systems.scm			\
@@ -320,6 +321,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/golang-check.scm		\
   %D%/packages/golang-compression.scm		\
   %D%/packages/golang-crypto.scm	      	\
+  %D%/packages/golang-maths.scm		\
   %D%/packages/golang-web.scm	        	\
   %D%/packages/golang-xyz.scm	        	\
   %D%/packages/gperf.scm			\
@@ -441,7 +443,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/machine-learning.scm		\
   %D%/packages/magic-wormhole.scm		\
   %D%/packages/man.scm				\
-  %D%/packages/mastodon.scm			\
   %D%/packages/mail.scm				\
   %D%/packages/make-bootstrap.scm		\
   %D%/packages/markup.scm			\
@@ -1014,7 +1015,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/bloomberg-bde-cmake-module-path.patch	\
   %D%/packages/patches/bloomberg-bde-tools-fix-install-path.patch	\
   %D%/packages/patches/boolector-find-googletest.patch	\
-  %D%/packages/patches/bpftrace-disable-bfd-disasm.patch	\
   %D%/packages/patches/breezy-fix-gio.patch			\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/bubblewrap-fix-locale-in-tests.patch	\
@@ -1088,6 +1088,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/converseen-hide-updates-checks.patch	\
   %D%/packages/patches/converseen-hide-non-free-pointers.patch	\
   %D%/packages/patches/cool-retro-term-wctype.patch		\
+  %D%/packages/patches/coq-autosubst-1.8-remove-deprecated-files.patch		\
   %D%/packages/patches/coreutils-gnulib-tests.patch		\
   %D%/packages/patches/cppcheck-disable-char-signedness-test.patch	\
   %D%/packages/patches/cppdap-add-CPPDAP_USE_EXTERNAL_GTEST_PACKAGE.patch\
@@ -1190,7 +1191,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ergodox-firmware-fix-json-target.patch	\
   %D%/packages/patches/ergodox-firmware-fix-numpad.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
-  %D%/packages/patches/esmini-no-clutter-log.patch		\
   %D%/packages/patches/esmini-use-pkgconfig.patch		\
   %D%/packages/patches/esmtp-add-lesmtp.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
@@ -1247,6 +1247,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/firebird-riscv64-support-pt2.patch	\
   %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flatpak-fix-path.patch			\
+  %D%/packages/patches/flatpak-fix-fonts-icons.patch	\
   %D%/packages/patches/flatpak-unset-gdk-pixbuf-for-sandbox.patch	\
   %D%/packages/patches/fluxbox-1.3.7-no-dynamic-cursor.patch	\
   %D%/packages/patches/fluxbox-1.3.7-gcc.patch			\
@@ -1262,6 +1263,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fpc-reproducibility.patch		\
   %D%/packages/patches/fpc-glibc-2.34-compat.patch		\
   %D%/packages/patches/fpm-newer-clamp-fix.patch		\
+  %D%/packages/patches/freecad-vtk-9.3.patch		\
   %D%/packages/patches/freedink-engine-fix-sdl-hints.patch	\
   %D%/packages/patches/freeimage-libtiff-compat.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
@@ -1356,6 +1358,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
   %D%/packages/patches/ghc-9.2-cabal-support-package-path.patch \
   %D%/packages/patches/ghc-9-StgCRunAsm-only-when-needed.patch	\
+  %D%/packages/patches/ghc-9.2-glibc-2.33-link-order.patch \
   %D%/packages/patches/ghc-9.2-grep-warnings.patch \
   %D%/packages/patches/ghc-testsuite-dlopen-pie.patch		\
   %D%/packages/patches/ghc-testsuite-grep-compat.patch		\
@@ -1427,6 +1430,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnome-settings-daemon-gc.patch		\
   %D%/packages/patches/gnome-session-support-elogind.patch	\
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
+  %D%/packages/patches/gnulib-bootstrap.patch			\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnupg-1-build-with-gcc10.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
@@ -1456,7 +1460,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/grub-setup-root.patch			\
-  %D%/packages/patches/grub-ignore-metadata-csum-seed.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
   %D%/packages/patches/guile-2.2-skip-so-test.patch             \
@@ -1684,6 +1687,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libvpx-CVE-2023-5217.patch		\
+  %D%/packages/patches/libvpx-CVE-2023-44488.patch		\
   %D%/packages/patches/libxml2-xpath0-Add-option-xpath0.patch	\
   %D%/packages/patches/libwpd-gcc-compat.patch			\
   %D%/packages/patches/libxslt-generated-ids.patch		\
@@ -1744,7 +1748,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/memtest86+-build-reproducibly.patch	\
   %D%/packages/patches/mercurial-hg-extension-path.patch	\
   %D%/packages/patches/mercurial-openssl-compat.patch		\
-  %D%/packages/patches/mes-0.26.1-fixups.patch			\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mia-fix-boost-headers.patch		\
   %D%/packages/patches/mia-vtk9.patch				\
@@ -1757,8 +1760,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/minisat-install.patch			\
   %D%/packages/patches/miniz-for-pytorch.patch			\
   %D%/packages/patches/mit-krb5-hurd.patch			\
-  %D%/packages/patches/mixxx-link-qtscriptbytearray-qtscript.patch	\
-  %D%/packages/patches/mixxx-system-googletest-benchmark.patch	\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mpg321-CVE-2019-14247.patch		\
   %D%/packages/patches/mpg321-gcc-10.patch			\

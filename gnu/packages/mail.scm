@@ -1825,7 +1825,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "4.1.1")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
@@ -1833,7 +1833,7 @@ compresses it.")
         (string-append "https://www.claws-mail.org/releases/claws-mail-"
                        version ".tar.xz"))
        (sha256
-        (base32 "0i037bskrnmsmylhmqayjg0pmsr0m2zx8xhbxc6mwvw9q40fg2di"))))
+        (base32 "1q8wb2fh5fmbbyrvzdwkhxkzdbsvyk5w783z8qlg05mris41vp4m"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
@@ -1977,7 +1977,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.96.1")
+    (version "4.97.1")
     (source
      (origin
        (method url-fetch)
@@ -1991,7 +1991,7 @@ delivery.")
                     (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
                                    file-name))))
        (sha256
-        (base32 "0g83cxkq3znh5b3r2a3990qxysw7d2l71jwcxaxzvq8pqdahgb4k"))))
+        (base32 "1afzxyffjqm2xm5v6b731hbfm1fi4q35ja45a29kaycsa1bj0y5x"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
@@ -2044,6 +2044,12 @@ delivery.")
                    (substitute* "scripts/Configure-config.h"
                      (("\\| /bin/sh") "| sh"))
                    (patch-shebang "scripts/Configure-eximon")))
+               (add-before 'build 'fix-perl-file-names
+                 (lambda _
+                  (substitute* (list  "Local/Makefile"
+                                      "OS/Makefile-Default")
+                    (("PERL_COMMAND=/usr/bin/perl")
+                     (string-append "PERL_COMMAND=" #$perl "/bin/perl")))))
                (add-before 'build 'build-reproducibly
                  (lambda _
                    ;; The ‘compilation number’ increments on every build in the
@@ -2069,6 +2075,7 @@ delivery.")
            libxcrypt
            libxt
            perl
+           perl-file-fcntllock
            xz))
     (home-page "https://www.exim.org/")
     (synopsis

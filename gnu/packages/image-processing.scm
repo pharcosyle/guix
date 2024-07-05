@@ -310,7 +310,7 @@ many popular formats.")
 (define-public vtk
   (package
     (name "vtk")
-    (version "9.2.2")
+    (version "9.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://vtk.org/files/release/"
@@ -318,7 +318,7 @@ many popular formats.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "0x8h2bwxq2870067j7wqd0qym87pa3inkbri93zrdb0zwwmhlnqw"))
+                "1s8vd34nhrgnw1bf9zhfn062d53fwq3csjfwvm7lxcr5a8lvkizx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -389,6 +389,7 @@ many popular formats.")
 
                    ;; Do not retain a reference to GCC.
                    (substitute* (choose
+                                 "Common/Core/vtkBuild.h.in" ;dummy >=v9.3
                                  "Common/Core/vtkConfigureDeprecated.h.in" ;v9.x
                                  "Common/Core/vtkConfigure.h.in") ;v7.x
                      (("@CMAKE_CXX_COMPILER@") "c++")))))

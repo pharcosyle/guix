@@ -66,6 +66,7 @@
 ;;; Copyright © 2023 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2024 dan <i@dan.games>
 ;;; Copyright © 2024 gemmaro <gemmaro.dev@gmail.com>
+;;; Copyright © 2024 Richard Sent <richard@freakingpenguin.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -392,14 +393,14 @@ interface and is based on GNU Guile.")
 (define-public shepherd-0.10
   (package
     (inherit shepherd-0.9)
-    (version "0.10.4")
+    (version "0.10.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0206r2l914qjahzd1qill57r1qcg1x8faj0f6qv3x42wqx6x28ky"))))
+                "0k40n9qm5r5rqf94isa1857ghd4329zc5rjf3ll2572gpiw3ij4x"))))
     (native-inputs (modify-inputs (package-native-inputs shepherd-0.9)
                      (replace "guile-fibers"
                        ;; Work around
@@ -2820,7 +2821,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "7.3")
+    (version "7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2828,7 +2829,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "0ax2wf5j8k2fbm85s0rbj9sajn5q3j2a2k22wyqcyn0cin0ghi55"))))
+                "0gcrzcb4g7f994n6nws26g6x15yjija1gyzd359sjv7r3xj1z9p9"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
@@ -4269,6 +4270,37 @@ everyone's screenshots nowadays.")
       (description "This package provides a simple, configurable system
 information tool.")
       (license license:expat))))
+
+(define-public fastfetch
+  (package
+    (name "fastfetch")
+    (version "2.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fastfetch-cli/fastfetch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "112dvfx7gvp6n20i1lkd0jbh897jf7bxjxq96bj4099j3x313y3m"))))
+    (build-system cmake-build-system)
+    (inputs (list dbus
+                  glib
+                  imagemagick
+                  libxcb
+                  mesa
+                  wayland
+                  zlib)) ;for imagemagick and an #ifdef
+    (native-inputs (list pkg-config))
+    (arguments (list #:tests? #f)) ; no test target
+    (home-page "https://github.com/fastfetch-cli/fastfetch")
+    (synopsis "Display system information in a stylized manner")
+    (description
+     "Fastfetch is a tool for fetching system information and displaying it in
+a stylized way.  Fastfetch displays this information next to a logo of the
+system distribution, akin to many similar tools.")
+    (license license:expat)))
 
 (define-public nnn
   (package

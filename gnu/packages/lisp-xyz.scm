@@ -2977,8 +2977,8 @@ definition objects.")
   (sbcl-package->ecl-package sbcl-cesdi))
 
 (define-public sbcl-cf
-  (let ((commit "0186b2aa93bba6b89773c655c5d59c01f0c5bc8c")
-        (revision "4"))
+  (let ((commit "2bf64feadf63569149b7ee6e9dc25572704d8939")
+        (revision "6"))
     (package
       (name "sbcl-cf")
       (version (git-version "1.0" revision commit))
@@ -2990,7 +2990,7 @@ definition objects.")
                (commit commit)))
          (file-name (git-file-name "cl-cf" version))
          (sha256
-          (base32 "1s8066wynz4fh3m68psmvl9pniqrh6pfpl0w2s9qxbahqwjapn6k"))))
+          (base32 "0zp9699wvf2ylk6s5j9k9mcds1g1yxb2wnlm27rvnb5m6nfrxbzv"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs (list sbcl-fiveam))
       (synopsis "Continued fractions library")
@@ -15654,44 +15654,30 @@ of the files and the line numbers where they were found.")
   (sbcl-package->ecl-package sbcl-formgrep))
 
 (define-public sbcl-fset
-  (let ((commit "a75a4ec713277780d9e15bfaa486b56949142d35")
-        (revision "1"))
-    (package
-      (name "sbcl-fset")
-      (version (git-version "1.3.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/slburson/fset")
-               (commit commit)))
-         (file-name (git-file-name "cl-fset" version))
-         (sha256
-          (base32 "0bah0z8zrcykvnbi2wcdlbx902r818xg5dvd3384wf75kr2ccxvv"))
-         (snippet '(begin
-                     ;; Remove obsolete copy of system definition.
-                     (delete-file "Code/fset.asd")))))
-      (build-system asdf-build-system/sbcl)
-      (inputs
-       (list sbcl-misc-extensions sbcl-mt19937 sbcl-named-readtables))
-      (arguments
-       (list #:phases
-             #~(modify-phases %standard-phases
-                 (add-after 'unpack 'fix-build
-                   (lambda _
-                     ;; Fix for SBCL > 2.4.4
-                     (substitute* "Code/port.lisp"
-                       (("sb-ext::once-only")
-                        "sb-int:once-only")))))))
-      (synopsis "Functional set-theoretic collections library")
-      (description
-       "FSet is a functional set-theoretic collections library for Common Lisp.
+  (package
+    (name "sbcl-fset")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/slburson/fset")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cl-fset" version))
+       (sha256
+        (base32 "16a3g9av8rvhvnhv5vfq2shim7b7i062wzyz6xwjk9sp9q9bqlva"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     (list sbcl-misc-extensions sbcl-mt19937 sbcl-named-readtables))
+    (synopsis "Functional set-theoretic collections library")
+    (description
+     "FSet is a functional set-theoretic collections library for Common Lisp.
 Functional means that all update operations return a new collection rather than
 modifying an existing one in place.  Set-theoretic means that collections may
 be nested arbitrarily with no additional programmer effort; for instance, sets
 may contain sets, maps may be keyed by sets, etc.")
-      (home-page "https://common-lisp.net/project/fset/Site/index.html")
-      (license license:llgpl))))
+    (home-page "https://common-lisp.net/project/fset/Site/index.html")
+    (license license:llgpl)))
 
 (define-public cl-fset
   (sbcl-package->cl-source-package sbcl-fset))
@@ -20574,7 +20560,12 @@ like Ruby's ActiveRecord.
   (sbcl-package->cl-source-package sbcl-mito))
 
 (define-public ecl-mito
-  (sbcl-package->ecl-package sbcl-mito))
+  (let ((pkg (sbcl-package->ecl-package sbcl-mito)))
+    (package
+      (inherit pkg)
+      (arguments
+       ;; FIXME: Tests never end.
+       '(#:tests? #f)))))
 
 (define-public sbcl-mk-string-metrics
   (package
@@ -26424,7 +26415,7 @@ the Processing language and shares some of the API.")
   ;; Update together with emacs-slime.
   (package
     (name "sbcl-slime-swank")
-    (version "2.29.1")
+    (version "2.30")
     (source
      (origin
        (file-name (git-file-name "cl-slime-swank" version))
@@ -26433,7 +26424,7 @@ the Processing language and shares some of the API.")
              (url "https://github.com/slime/slime/")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1fcasqsdfwsphkfx1vd3r5mr89vgvzb9g2dbw82mc9lijg1mr1ki"))
+        (base32 "1z9mi663cs5gks1fz5yy9dycx47sbs6fdr47z05yc1nl8znqib99"))
        (modules '((guix build utils)))
        (snippet
         ;; The doc folder drags `gawk' into the closure.  Doc is already
@@ -28582,8 +28573,8 @@ even by adding additional statistical @code{compute}ations.")
   (sbcl-package->ecl-package sbcl-trivial-channels))
 
 (define-public sbcl-trivial-clipboard
-  (let ((commit "aee67d6132a46237f61d508ae4bd9ff44032566d")
-        (revision "7"))
+  (let ((commit "50b3d3a25717ac78fb1f0517635c3cb1c31c7667")
+        (revision "8"))
     (package
       (name "sbcl-trivial-clipboard")
       (version (git-version "0.0.0" revision commit))
@@ -28595,7 +28586,7 @@ even by adding additional statistical @code{compute}ations.")
                (commit commit)))
          (file-name (git-file-name "cl-trivial-clipboard" version))
          (sha256
-          (base32 "029qmx523xfk54p99ndgbmdd20s5i32mzpf77xymngrn4c33v9jk"))))
+          (base32 "1agj4nvw4qq7k4vp64y15gq5h5g22zasys48c2bvzqjr0n9d4lj1"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        ;; Pick xsel instead of xclip because its closure size is slightly

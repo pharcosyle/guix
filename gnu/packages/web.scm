@@ -512,14 +512,14 @@ the same, being completely separated from the Internet.")
     ;; Track the ‘mainline’ branch.  Upstream considers it more reliable than
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
-    (version "1.23.3")
+    (version "1.27.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0m5s8a04jlpv6qhk09sfqbj4rxj38g6923w12j5y3ymrvf3mgjvm"))))
+                "170ja338zh7wdyva34cr7f3wfq59434sssn51d5jvakyz0y0w8xp"))))
     (build-system gnu-build-system)
     (inputs (list libxcrypt libxml2 libxslt openssl pcre zlib))
     (arguments
@@ -609,9 +609,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.23.3")
-        (revision 2916)
-        (changeset "178f55cf631a"))
+  (let ((version "1.27.0")
+        (revision 3081)
+        (changeset "1b23e39a3b94"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -623,7 +623,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "0b03dnniwm3p3gd76vqs6lj2z4blqmb7y4lhn9vg7xjz0yqgzvn2"))))
+                 "0xnfda8xh8mv00fsycqbwicm8bb7rsvdqmmwv0h372kiwxnazjkh"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -633,7 +633,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
            (replace 'build
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((output (assoc-ref outputs "out")))
-                 (substitute* "umasked.sh"
+                 (substitute* "tools/umasked.sh"
                    ((" /bin/sh") (string-append " " (which "sh"))))
                  ;; The documentation includes a banner, which makes sense on
                  ;; the NGinx website, but doesn't make much sense when
@@ -736,6 +736,7 @@ ngx_http_accept_language_module~%")
                        "--with-http_v2_module"
                        "--with-pcre-jit"
                        "--with-debug"
+                       "--with-compat"
                        ;; Even when not cross-building, we pass the
                        ;; --crossbuild option to avoid customizing for the
                        ;; kernel version on the build machine.
@@ -5191,8 +5192,8 @@ Cloud.")
     (license license:expat)))
 
 (define-public guix-data-service
-  (let ((commit "d74422c2686890c7df26dd52104d65bfd042e7bd")
-        (revision "50"))
+  (let ((commit "b5fbde5ac832e34987a05b1445c1c465c19d5340")
+        (revision "52"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -5204,7 +5205,7 @@ Cloud.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "06np60hd0vlwbhkh8x9drnzndykykgxw4f7qmgnp8p3rxrzh8y9g"))))
+                  "1dp26bj14jaac9f5332pd6hasm3wr1hg9wrbjm9m8wb7cdll9h2p"))))
       (build-system gnu-build-system)
       (arguments
        (list
@@ -8235,6 +8236,37 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
 @item TLS/SSL and proxy support.
 @end itemize")
       (license license:bsd-2))))
+
+(define-public gemget
+  (package
+    (name "gemget")
+    (version "1.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/makew0rld/gemget")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03x9apk73lwyafc4fd2vs033z7vcpk4k0jf97452l7pnlx2v57rz"))))
+    (build-system go-build-system)
+    (native-inputs
+     (list go-github-com-dustin-go-humanize
+           go-github-com-makeworld-the-better-one-go-gemini
+           go-github-com-makeworld-the-better-one-go-gemini-socks5
+           go-github-com-schollz-progressbar-v3
+           go-github-com-spf13-pflag))
+    (arguments
+     (list
+      #:install-source? #f
+      #:import-path "github.com/makeworld-the-better-one/gemget"))
+    (home-page "https://github.com/makew0rld/gemget")
+    (synopsis "Command line downloader for the Gemini protocol")
+    (description
+     "Gemget is a command line downloader for the Gemini protocol.
+It works well with streams and can print headers for debugging as well.")
+    (license license:expat)))
 
 (define-public geomyidae
   (package

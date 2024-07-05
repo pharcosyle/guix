@@ -7499,7 +7499,7 @@ at their peak of economic growth and military prowess.
 (define-public open-adventure
   (package
     (name "open-adventure")
-    (version "1.18")
+    (version "1.19")
     (source
      (origin
        (method git-fetch)
@@ -7508,7 +7508,7 @@ at their peak of economic growth and military prowess.
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zl72lsp443aryzmwzh5w4j439jgf5njvh9xig6vjvmzhfcjkk9q"))))
+        (base32 "19nspsvkzh3xw70mwlvralfr2ia7a8knd9s7x7abmjvk8p5rx468"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -7674,32 +7674,30 @@ abilities and powers.")
 (define-public quakespasm
   (package
     (name "quakespasm")
-    (version "0.93.2")
+    (version "0.96.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/quakespasm/Source/quakespasm-"
-                           version ".tgz"))
+                           version ".tar.gz"))
        (sha256
-        (base32 "0qm0j5drybvvq8xadfyppkpk3rxqsxbywzm6iwsjwdf0iia3gss5"))))
+        (base32 "0hr58w1d2yw82vm9lkln05z6d4sjlcr6grxhf6sqdqwyfy9nv1mw"))))
     (arguments
-     `(#:tests? #f
-       #:make-flags '("CC=gcc"
-                      "MP3LIB=mpg123"
-                      "USE_CODEC_FLAC=1"
-                      "USE_CODEC_MIKMOD=1"
-                      "USE_SDL2=1"
-                      "-CQuake")
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'unpack 'fix-makefile-paths
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (mkdir-p (string-append out "/bin"))
-                        (substitute* "Quake/Makefile"
-                          (("/usr/local/games")
-                           (string-append out "/bin")))
-                        #t))))))
+     (list #:tests? #f
+           #:make-flags #~(list (string-append "CC=" #$(cc-for-target))
+                                "MP3LIB=mpg123"
+                                "USE_CODEC_FLAC=1"
+                                "USE_CODEC_MIKMOD=1"
+                                "USE_SDL2=1"
+                                "-CQuake")
+           #:phases #~(modify-phases %standard-phases
+                        (delete 'configure)
+                        (add-after 'unpack 'fix-makefile-paths
+                          (lambda _
+                            (mkdir-p (string-append #$output "/bin"))
+                            (substitute* "Quake/Makefile"
+                              (("/usr/local/games")
+                               (string-append #$output "/bin"))))))))
     (build-system gnu-build-system)
     (inputs (list libmikmod
                   libvorbis

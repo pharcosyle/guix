@@ -76,6 +76,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdb)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
@@ -87,6 +88,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1094,6 +1096,35 @@ macros for defining tests, grouping them into suites, and providing a test
 runner.  It is quite unopinionated with most of its features being optional.")
    (license license:isc)))
 
+(define-public klee
+  (package
+   (name "klee")
+   (version "3.1")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/klee/klee")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "1nma6dqi8chjb97llsa8mzyskgsg4dx56lm8j514j5wmr8vkafz6"))))
+   (arguments
+    (list
+     #:configure-flags
+     #~(list (string-append "-DLLVMCC="
+                            (search-input-file %build-inputs "/bin/clang"))
+             (string-append "-DLLVMCXX="
+                            (search-input-file %build-inputs "/bin/clang++")))))
+   (native-inputs (list clang-13 llvm-13 python-lit))
+   (inputs (list gperftools sqlite z3))
+   (build-system cmake-build-system)
+   (home-page "https://klee-se.org/")
+   (synopsis "Symbolic execution engine")
+   (description "KLEE is a symbolic virtual machine built on top of the LLVM
+compiler infrastructure.")
+   (license license:bsd-3)))
+
 (define-public cpputest
   (package
     (name "cpputest")
@@ -1139,8 +1170,8 @@ but it works for any C/C++ project.")
                   go-github-com-mattn-go-colorable
                   go-github-com-mattn-go-runewidth
                   go-github-com-robfig-cron
-                  go-golang.org-x-sync-errgroup
-                  go-golang.org-x-sync-semaphore
+                  go-golang-org-x-sync
+                  go-golang-org-x-sync
                   go-gopkg-in-yaml-v3))
     (native-inputs (list go-github-com-google-go-cmp-cmp))
     (home-page "https://rhysd.github.io/actionlint/")

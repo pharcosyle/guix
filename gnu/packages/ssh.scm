@@ -18,6 +18,7 @@
 ;;; Copyright © 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2023 Simon Streit <simon@netpanic.org>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -199,7 +200,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "9.7p1")
+   (version "9.8p1")
    (source
     (origin
       (method url-fetch)
@@ -207,7 +208,7 @@ a server that supports the SSH-2 protocol.")
                           "openssh-" version ".tar.gz"))
       (patches (search-patches "openssh-trust-guix-store-directory.patch"))
       (sha256
-       (base32 "1z9zfw7ndibxwprazlkv1isrh1yplczdin5cziijfanqcvvjc129"))))
+       (base32 "1wrrb8zrfj9wa9nbpx310kl2k05gm4gxsl5hvycx9dbrlc1d12yx"))))
    (build-system gnu-build-system)
    (arguments
     (list
@@ -511,7 +512,7 @@ responsive, especially over Wi-Fi, cellular, and long-distance links.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2022.83")
+    (version "2024.85")
     (source
      (origin
        (method url-fetch)
@@ -519,7 +520,7 @@ responsive, especially over Wi-Fi, cellular, and long-distance links.")
              "https://matt.ucc.asn.au/dropbear/releases/"
              "dropbear-" version ".tar.bz2"))
        (sha256
-        (base32 "0fs495ks354qcfj4k5bwg6m50vbl8az03gjymmqm2jy9zcgi4nmw"))
+        (base32 "00m5dmajx0za1zmya4qdz763hxy4cmfk7bpba778k7d66g23dc46"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -537,7 +538,7 @@ responsive, especially over Wi-Fi, cellular, and long-distance links.")
       #:phases #~(modify-phases %standard-phases
                    (add-after 'unpack 'enable-x11-forwarding
                      (lambda _
-                       (substitute* "default_options.h"
+                       (substitute* "src/default_options.h"
                          (("#define DROPBEAR_X11FWD 0")
                           "#define DROPBEAR_X11FWD 1")))))))
     (inputs (list libtomcrypt libtommath libxcrypt zlib))

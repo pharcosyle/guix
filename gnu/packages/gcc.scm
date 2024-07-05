@@ -816,6 +816,29 @@ It also includes runtime support libraries for these languages.")
         ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
        ,@(package-properties gcc-11)))))
 
+(define-public gcc-14
+  (package
+    (inherit gcc-13)
+    (version "14.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0h3889kkfp9bzw8km9w1ssh5qjskg6yw02q8v3lkvzksk1acd0z2"))
+              (patches (search-patches "gcc-12-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))
+              (modules '((guix build utils)))
+              (snippet gcc-canadian-cross-objdump-snippet)))
+    (arguments (substitute-keyword-arguments (package-arguments gcc-13)
+                 ((#:phases phases #~%standard-phases)
+                  #~(modify-phases #$phases
+                      (add-before 'configure 'pre-x86-configure
+                        (lambda _
+                          (substitute* "gcc/config/i386/t-linux64"
+                            (("\\.\\./lib64") "../lib"))))))))))
+
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
@@ -1194,6 +1217,7 @@ misnomer.")))
 (define-public libgccjit-10 (make-libgccjit gcc-10))
 (define-public libgccjit-11 (make-libgccjit gcc-11))
 (define-public libgccjit-12 (make-libgccjit gcc-12))
+(define-public libgccjit-14 (make-libgccjit gcc-14))
 
 ;; Use the 'gcc' variable from above to track the same version.
 (define-public libgccjit (make-libgccjit gcc))
@@ -1288,6 +1312,10 @@ provides the GNU compiler for the Go programming language."))
 ;; Provides go-1.18
 (define-public gccgo-13
   (make-gccgo gcc-13))
+
+;; Provides go-1.18
+(define-public gccgo-14
+  (make-gccgo gcc-14))
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."

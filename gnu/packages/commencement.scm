@@ -800,7 +800,7 @@ MesCC-Tools), and finally M2-Planet.")
 (define patch-mesboot
   ;; The initial patch.
   (package
-    (inherit patch)
+    (inherit patch/pinned)
     (name "patch-mesboot")
     (version "2.5.9")
     (source (origin
@@ -2103,8 +2103,8 @@ exec " gcc "/bin/" program
 
 (define patch-boot0
   (package
-    (inherit patch)
-    (source (bootstrap-origin (package-source patch)))
+    (inherit patch/pinned)
+    (source (bootstrap-origin (package-source patch/pinned)))
     (name "patch-boot0")
     (native-inputs '())
     (inputs
@@ -3444,7 +3444,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    ("bzip2" ,bzip2)
                    ("file" ,file)
                    ("diffutils" ,diffutils)
-                   ("patch" ,patch)
+                   ("patch" ,patch/pinned)
                    ("findutils" ,findutils)
                    ("gawk" ,(package/inherit gawk
                               (native-inputs
@@ -3610,6 +3610,9 @@ is the GNU Compiler Collection.")
 
 (define-public gcc-toolchain-13
   (make-gcc-toolchain gcc-13))
+
+(define-public gcc-toolchain-14
+  (make-gcc-toolchain gcc-14))
 
 ;; The default GCC
 (define-public gcc-toolchain

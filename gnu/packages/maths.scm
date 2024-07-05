@@ -3023,7 +3023,7 @@ can solve two kinds of problems:
 (define-public octave-cli
   (package
     (name "octave-cli")
-    (version "9.1.0")
+    (version "9.2.0")
     (source
      (origin
        (method url-fetch)
@@ -3031,7 +3031,7 @@ can solve two kinds of problems:
                            version ".tar.xz"))
        (sha256
         (base32
-         "0jqk3amfkqzn1c5rzb9gm3v7r2y5xcgx6cgi4r5w8mpa9814nrgd"))))
+         "01sqfqrglzkjp20sg45fjd43hbjj069a1gn0r8sv01ciazxplh91"))))
     (build-system gnu-build-system)
     (inputs
      (list alsa-lib
@@ -5206,8 +5206,7 @@ parts of it.")
 (define-public openblas-ilp64
   (package/inherit openblas
     (name "openblas-ilp64")
-    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"
-                         "powerpc64le-linux"))
+    (supported-systems %64bit-supported-systems)
     (arguments
      (substitute-keyword-arguments (package-arguments openblas)
        ((#:make-flags flags #~'())
@@ -9537,23 +9536,34 @@ of C, Java, or Ada programs.")
 (define-public frama-c
   (package
     (name "frama-c")
-    (version "28.1")
+    (version "29.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://frama-c.com/download/frama-c-"
-                                  version "-Nickel.tar.gz"))
+                                  version "-Copper.tar.gz"))
               (sha256
                (base32
-                "14zmwghwhcryvri7k91vc1yampvxvhg36vwjxf64d8kx7dsbq802"))))
+                "14vlvynp3yfmnkixm676c1ip0jlkiqjzmrp9f9c990zzs2wb7yyj"))))
     (build-system dune-build-system)
     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (add-before 'build 'set-env
-            (lambda _
-              (setenv "CC" "gcc"))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+             (add-before 'build 'set-env
+               (lambda _
+                 (setenv "CC" "gcc")))
+             (add-after 'install 'wrap-programs
+               (lambda _
+                 (let ((ocamlpath
+                         `(,(string-append #$output "/lib/ocaml/site-lib")
+                           ,@(search-path-as-string->list
+                               (getenv "OCAMLPATH")))))
+                   (for-each
+                     (lambda (program)
+                       (wrap-program (string-append #$output "/bin/" program)
+                         `("OCAMLPATH" ":" prefix ,ocamlpath)))
+                     '("frama-c" "frama-c-gui"))))))))
     (inputs
-     (list gmp zlib))
+     (list bash-minimal gmp zlib))
     (propagated-inputs (list
                          graphviz
                          lablgtk3

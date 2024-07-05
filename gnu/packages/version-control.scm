@@ -2393,14 +2393,14 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.14.2")
+    (version "1.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/subversion/"
                                   "subversion-" version ".tar.bz2"))
               (sha256
                (base32
-                "0a6csc84hfymm8b5cnvq1n1p3rjjf33qy0z7y1k8lwkm1f6hw4y9"))))
+                "0h54l4p2dlk1rm4zm428hi6ij6xpqxqlqmvkhmz5yhq9392zv7ll"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -3522,7 +3522,7 @@ will reconstruct the object along its delta-base chain and return it.")
            go-github-com-xeipuuv-gojsonreference
            go-github-com-xeipuuv-gojsonpointer
            go-golang-org-x-net
-           go-golang.org-x-sync-semaphore
+           go-golang-org-x-sync
            go-github-com-ssgelm-cookiejarparser
            go-github-com-rubyist-tracerx
            go-github-com-olekukonko-ts
@@ -3866,8 +3866,8 @@ If several repos are related, it helps to see their status together.")
            go-github-com-motemen-go-colorine
            go-github-com-saracen-walker
            go-github-com-urfave-cli-v2
-           go-golang-org-x-net-html
-           go-golang.org-x-sync-errgroup))
+           go-golang-org-x-net
+           go-golang-org-x-sync))
     (synopsis "Manage remote repository clones")
     (description
      "@code{ghq} provides a way to organize remote repository clones, like

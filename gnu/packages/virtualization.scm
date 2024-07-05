@@ -2308,6 +2308,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
       #~(list (string-append "CC=" #$(cc-for-target))
               "PREFIX="
               (string-append "DESTDIR=" #$output)
+              "GOGCFLAGS=-trimpath"
               (string-append "GOMD2MAN="
                              #$go-github-com-go-md2man "/bin/go-md2man"))
       #:tests? #f                       ; The tests require Docker
@@ -2346,9 +2347,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
               (wrap-program (string-append #$output "/bin/skopeo")
                 `("PATH" suffix
                   ;; We need at least newuidmap, newgidmap and mount.
-                  ("/run/setuid-programs")))))
-          (add-after 'install 'remove-go-references
-            (@@ (guix build go-build-system) remove-go-references)))))
+                  ("/run/setuid-programs"))))))))
     (home-page "https://github.com/containers/skopeo")
     (synopsis "Interact with container images and container image registries")
     (description
