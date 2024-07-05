@@ -72,7 +72,7 @@
 ;;; Copyright © 2022 Roman Riabenko <roman@riabenko.com>
 ;;; Copyright © 2022, 2023 zamfofex <zamfofex@twdb.moe>
 ;;; Copyright © 2022 Gabriel Arazas <foo.dogsquared@gmail.com>
-;;; Copyright © 2022, 2024 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2022-2024 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2022 Hendursaga <hendursaga@aol.com>
 ;;; Copyright © 2022 Parnikkapore <poomklao@yahoo.com>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
@@ -433,6 +433,7 @@ the style of similar games for the Commodore+4.")
              libtiff
              libvorbis
              libx11
+             libxcrypt
              libxext
              pcre
              sdl
@@ -786,10 +787,13 @@ terminal.")
                "RELEASE=1"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'werror-begone
+         (add-after 'unpack 'patch-sources
            (lambda _
              (substitute* "Makefile" (("-Werror") ""))
-             #t))
+             ;; glibc 2.38 includes strlcpy and strlcat.
+             (substitute* "src/headers.h"
+               (("static inline void strlcat.*") "")
+               (("static inline void strlcpy.*") ""))))
          (delete 'configure))))         ;no configure script
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -1088,7 +1092,7 @@ high a score as possible.")
      (list
       #:make-flags
       #~(list (string-append "PREFIX=" #$output)
-              "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1"
+              "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1" "WARNINGS=-w"
               "LOCALIZE=1" "LANGUAGES=all")
       #:phases
       #~(modify-phases %standard-phases
@@ -1223,7 +1227,8 @@ allows users to brew while offline.")
       #:tests? #f)) ; TODO need busted package to run tests
     ;; Omit Lua-Socket dependency to disable automatic updates.
     (inputs
-     (list ffmpeg
+     (list bash-minimal
+           ffmpeg
            fluid-3
            freetype
            lua
@@ -2067,7 +2072,8 @@ such as chess or stockfish.")
                   glu
                   gtkglext
                   sqlite
-                  libcanberra))
+                  libcanberra
+                  libxcrypt))           ;required by Python.h
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
     (arguments
@@ -4728,7 +4734,8 @@ Battle for Wesnoth}.")))
     (native-inputs
      (list pkg-config intltool))
     (inputs
-     (list gstreamer
+     (list bash-minimal
+           gstreamer
            gst-plugins-base ; playbin plugin
            gst-plugins-good ; for wav playback
            gtk+))
@@ -4747,8 +4754,7 @@ Battle for Wesnoth}.")))
             (let ((out             (assoc-ref outputs "out"))
                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
               (wrap-program (string-append out "/bin/gamine")
-                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
-            #t)))))
+                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))))))))
     (home-page "http://gamine-game.sourceforge.net/")
     (synopsis "Mouse and keyboard discovery for children")
     (description
@@ -5483,8 +5489,7 @@ http://lavachat.symlynx.com/unix/")
                  (("data = \"data\"")
                   (string-append "data = \""
                                  (assoc-ref outputs "out")
-                                 "/share/redeclipse/data\"")))
-               #t))
+                                 "/share/redeclipse/data\"")))))
            (delete 'configure)  ; no configure script
            (add-after 'set-paths 'set-sdl-paths
              (lambda* (#:key inputs #:allow-other-keys)
@@ -5503,8 +5508,7 @@ http://lavachat.symlynx.com/unix/")
                                    (string-append out "/share/redeclipse/data"))
                  (mkdir-p (string-append out "/lib/redeclipse"))
                  (symlink (string-append out "/share/redeclipse/data")
-                          (string-append out "/lib/redeclipse/data")))
-               #t))
+                          (string-append out "/lib/redeclipse/data")))))
            (add-after 'copy-data 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -5533,12 +5537,11 @@ exec -a \"$0\" ~a/.redeclipse_server_linux-real~%"
                                (string-append out)
                                (string-append bin))))
                    (chmod "redeclipse_linux" #o555)
-                   (chmod "redeclipse_server_linux" #o555)))
-               #t)))))
+                   (chmod "redeclipse_server_linux" #o555))))))))
       (native-inputs
        (list pkg-config))
       (inputs
-       (list curl freetype glu
+       (list bash-minimal curl freetype glu
              (sdl-union (list sdl2 sdl2-image sdl2-mixer))))
       (home-page "https://redeclipse.net/")
       (synopsis "Arena shooter derived from the Cube 2 engine")
@@ -5995,14 +5998,15 @@ safety of the Chromium vessel.")
     (native-inputs
      (list gperf pkg-config))
     (inputs
-     `(("cairo" ,cairo)
-       ("fribidi" ,fribidi)
-       ("gettext" ,gettext-minimal)
-       ("libpng" ,libpng)
-       ("librsvg" ,(librsvg-for-system))
-       ("libpaper" ,libpaper)
-       ("netpbm" ,netpbm)
-       ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf sdl-image)))))
+     (list bash-minimal
+           cairo
+           fribidi
+           gettext-minimal
+           libpng
+           (librsvg-for-system)
+           libpaper
+           netpbm
+           (sdl-union (list sdl sdl-mixer sdl-ttf sdl-image))))
     ;; TODO: Use system fonts rather than those in data/fonts
     (arguments
      `(#:make-flags `("VER_DATE=2018-09-02"
@@ -6019,8 +6023,7 @@ safety of the Chromium vessel.")
                   (add-before 'install 'no-sys-cache
                     (lambda _           ;do not rebuild system conf cache
                       (substitute* "Makefile"
-                        (("kbuildsycoca4") ""))
-                      #t))
+                        (("kbuildsycoca4") ""))))
                   (add-after 'install 'fix-import
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -6238,7 +6241,8 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
                                       "laby-use-tmpdir-from-runtime.patch"))))
     (build-system glib-or-gtk-build-system)
     (inputs
-     (list gdk-pixbuf
+     (list bash-minimal
+           gdk-pixbuf
            lablgtk3
            (librsvg-for-system)
            ocaml-lablgtk3-sourceview3
@@ -6904,6 +6908,7 @@ over 100 user-created campaigns.")
      `(("glu" ,glu)
        ;; Kiki builds fine with freeglut 3.0.0 but segfaults on start.
        ("freeglut" ,freeglut-2.8)
+       ("libxcrypt" ,libxcrypt)
        ("sdl-union" ,(sdl-union (list sdl
                                       sdl-mixer
                                       sdl-image)))
@@ -8441,6 +8446,7 @@ original.")
            unzip))
     (inputs
      (list alsa-lib
+           bash-minimal
            curl
            libjpeg-turbo
            libmodplug
@@ -8707,8 +8713,7 @@ when packaged in Blorb container files or optionally from individual files.")
            (add-after 'unpack 'prevent-build-error
              (lambda _
                (substitute* "inc/My/Builder.pm"
-                 (("-Werror") ""))
-               #t))
+                 (("-Werror") ""))))
            (add-after 'install 'install-desktop-file-and-icons
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((share (string-append (assoc-ref outputs "out") "/share"))
@@ -8731,8 +8736,7 @@ when packaged in Blorb container files or optionally from individual files.")
                         (copy-file
                          (string-append "frozen-bubble-icon-" dim ".png")
                          (string-append dir "/frozen-bubble.png"))))
-                    '("16" "32" "48" "64"))))
-               #t))
+                    '("16" "32" "48" "64"))))))
            (add-after 'install 'wrap-perl-libs
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
@@ -8742,20 +8746,20 @@ when packaged in Blorb container files or optionally from individual files.")
                                `("PERL5LIB" ":" prefix
                                  (,(string-append perl5lib ":" out
                                                   "/lib/perl5/site_perl")))))
-                           (find-files "bin" ".")))
-               #t)))))
+                           (find-files "bin" "."))))))))
       (native-inputs
        (list perl-alien-sdl perl-capture-tiny perl-locale-maketext-lexicon
              perl-module-build pkg-config))
       (inputs
-       `(("glib" ,glib)
-         ("perl-compress-bzip2" ,perl-compress-bzip2)
-         ("perl-file-sharedir" ,perl-file-sharedir)
-         ("perl-file-slurp" ,perl-file-slurp)
-         ("perl-file-which" ,perl-file-which)
-         ("perl-ipc-system-simple" ,perl-ipc-system-simple)
-         ("perl-sdl" ,perl-sdl)
-         ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-pango sdl-ttf)))))
+       (list bash-minimal
+             glib
+             perl-compress-bzip2
+             perl-file-sharedir
+             perl-file-slurp
+             perl-file-which
+             perl-ipc-system-simple
+             perl-sdl
+             (sdl-union (list sdl sdl-image sdl-mixer sdl-pango sdl-ttf))))
       (home-page "http://frozen-bubble.org/")
       (synopsis "Puzzle with bubbles")
       (description
@@ -10099,7 +10103,7 @@ on items and player adaptability for character progression.")
          "07gi3lsmbzzsjambgixj6xy79lh22km84z7bnzgwzxdy806lyvwb"))))
     (build-system gnu-build-system)
     (inputs
-     (list glib gtk+-2 vte/gtk+-2 readline guile-1.8))
+     (list glib gtk+-2 vte/gtk+-2 readline guile-1.8 libxcrypt))
     (native-inputs
      (list pkg-config))
     (arguments
@@ -10838,8 +10842,7 @@ kingdom.")
          (snippet
           '(begin
              ;; Octocat seems to be non-free.  Oddly, Debian doesn't strip it.
-             (delete-file-recursively "data/ball/octocat")
-             #t))))
+             (delete-file-recursively "data/ball/octocat")))))
       (build-system copy-build-system)
       (arguments
        `(#:install-plan
@@ -10904,20 +10907,19 @@ kingdom.")
                          (string-append "LOCALEDIR=" out "/share/locale")
                          (string-append "SDL_CPPFLAGS=-I"
                                         sdl
-                                        "/include/SDL2/")))
-               #t))
+                                        "/include/SDL2/")))))
            (add-after 'install 'fix-some-broken-fonts
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out")))
                  (wrap-program (string-append out "/bin/neverball")
                    `("LANG" = ("en_US.utf8")))
                  (wrap-program (string-append out "/bin/neverputt")
-                   `("LANG" = ("en_US.utf8"))))
-               #t)))))
+                   `("LANG" = ("en_US.utf8")))))))))
       (native-inputs
        `(("gettext" ,gettext-minimal))) ;for msgfmt
       (inputs
-       `(("libjpeg" ,libjpeg-turbo)
+       `(("bash-minimal" ,bash-minimal)
+         ("libjpeg" ,libjpeg-turbo)
          ("libpng" ,libpng)
          ("libvorbis" ,libvorbis)
          ("physfs" ,physfs)
@@ -11304,7 +11306,7 @@ available.")
                             "exec ~a --path=~a glk:zcode~%"
                             scummvm share)))
                 (chmod executable #o755))))
-          (add-after 'install-executable 'install-desktop-file
+          (add-after 'install 'install-desktop-file
             (lambda _
               (let* ((apps (string-append #$output "/share/applications"))
                      (share (string-append #$output "")))

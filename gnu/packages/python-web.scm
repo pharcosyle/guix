@@ -6210,6 +6210,8 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
                (for-each (lambda (file)
                            (copy-file file (string-append doc "/" file)))
                          '("README.rst" "NOTICE" "LICENSE" "THANKS"))))))))
+    (inputs
+     `(("bash" ,bash-minimal))) ;; for wrap-program
     (native-inputs
      (list binutils ;; for ctypes.util.find_library()
            python-aiohttp
