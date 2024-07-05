@@ -414,16 +414,16 @@ Definition Facility.")
 (define-public clisp
   (package
     (name "clisp")
-    (version "2.49-92")
+    (version "2.50-pre-2024-07-05")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.com/gnu-clisp/clisp")
-             (commit "clisp-2.49.92-2018-02-18")))
+             (commit "0526ed705f0930b1a10ffb7a6a0c9a72566ca574")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))))
+        (base32 "00vc56qbfgwvim0m402xh62fvf28sxxs12c81r76450sk3hyi6nb"))))
     (build-system gnu-build-system)
     (native-inputs
      (list cl-asdf))
