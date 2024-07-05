@@ -1354,7 +1354,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.xz"))
         (sha256
           (base32
-            "1a3qybcvhdshgj1wynhsahdnrlmfv2wrjklyh1j2whj4v3i8zr1j"))))
+            "0jfxqsqhjl2b2ll6b7x21mj02hxp5znkhjvbxw5a9h6lq95kr32y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
