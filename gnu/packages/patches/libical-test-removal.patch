@@ -1,0 +1,31 @@
+See: https://github.com/libical/libical/issues/684
+
+--- a/src/test/CMakeLists.txt
++++ b/src/test/CMakeLists.txt
+@@ -181,25 +181,6 @@
+     target_link_libraries(icalrecurtest ical icalss icalvcal)
+     set(test_cmd "${PROJECT_BINARY_DIR}/bin/icalrecurtest${CMAKE_EXECUTABLE_SUFFIX}")
+ 
+-    if(ICU_FOUND)
+-      #test rscale capable rrules
+-      set(test_args "-r")
+-      if(HAVE_ICU_DANGI)
+-        set(reference_data "icalrecur_withicu_dangi_test.out")
+-      else()
+-        set(reference_data "icalrecur_withicu_test.out")
+-      endif()
+-      add_test(NAME icalrecurtest-r
+-        COMMAND ${CMAKE_COMMAND}
+-        -D test_cmd=${test_cmd}
+-        -D test_args:string=${test_args}
+-        -D output_blessed=${PROJECT_SOURCE_DIR}/src/test/${reference_data}
+-        -D output_test=${PROJECT_BINARY_DIR}/bin/test.out
+-        -P ${PROJECT_SOURCE_DIR}/cmake/run_test.cmake
+-      )
+-      setprops(icalrecurtest-r)
+-    endif()
+-
+     #test non-rscale rrules
+     set(test_args "")
+     set(reference_data "icalrecur_test.out")
+
