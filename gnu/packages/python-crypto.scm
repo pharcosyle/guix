@@ -299,7 +299,9 @@ do what is needed for client/server Kerberos authentication based on
     (native-inputs
      (list python-toml
            python-pytest
-           python-setuptools-scm))
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (propagated-inputs
      (list python-importlib-metadata
            python-jaraco-classes
@@ -441,7 +443,7 @@ blake3, a cryptographic hash function.")
        (sha256
         (base32
          "1yxqfb5131wahjyw9pxz03bq476rcfx62s6k53xx4cqbzzgdaqkq"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
@@ -578,7 +580,10 @@ def contents() -> str:
            python-iso8601
            python-pretend
            python-pytest                ;for subtests
-           python-pytest-benchmark))
+           python-pytest-benchmark
+           python-pytest-subtests
+           python-setuptools
+           python-wheel))
     (inputs (list python-cryptography-rust))
     (propagated-inputs (list python-cffi))
     (home-page "https://github.com/pyca/cryptography")
@@ -829,7 +834,7 @@ PKCS#12, PKCS#5, X.509 and TSP.")
            (lambda _
              (setenv "SODIUM_INSTALL" "system"))))))
     (native-inputs
-     (list python-hypothesis python-pytest))
+     (list python-hypothesis python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list python-cffi python-six libsodium))
     (home-page "https://github.com/pyca/pynacl/")
@@ -1076,7 +1081,7 @@ provides drop-in compatibility with PyCrypto.")))
        ;; certificates.
        #:tests? #f))
     (inputs (list openssl))
-    (native-inputs (list swig))
+    (native-inputs (list swig python-setuptools python-wheel))
     (home-page "https://gitlab.com/m2crypto/m2crypto")
     (synopsis "Python crypto and TLS toolkit")
     (description "@code{M2Crypto} is a complete Python wrapper for OpenSSL
@@ -1263,7 +1268,8 @@ derivation function.")
                (base32
                 "0d4x84crbz0a17d8gi90z6zlxwm9pslc65rx0cdw2797ra360v3f"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-idna python-pytest))
+    (native-inputs (list python-idna python-pytest python-setuptools
+                         python-wheel))
     (propagated-inputs (list python-attrs python-cryptography python-pyasn1
                              python-pyasn1-modules python-six))
     (home-page "https://service-identity.readthedocs.io/")
@@ -1494,6 +1500,8 @@ items and collections, editing items, locking and unlocking collections
            python-pytest
            python-pytest-cov
            python-service-identity
+           python-setuptools
+           python-wheel
            python-zipp))
     (propagated-inputs
      (list python-cryptography
@@ -1562,36 +1570,39 @@ I/O-free core, and integration modules for different event loops.")
 (define-public python-argon2-cffi
   (package
     (name "python-argon2-cffi")
-    (version "20.1.0")
+    (version "21.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "argon2-cffi" version))
         (sha256
          (base32
-          "0zgr4mnnm0p4i99023safb0qb8cgvl202nly1rvylk2b7qnrn0nq"))
+          "0w5q5cdwmzpjgw3bl9f6b9a5xai87qvx3jryra9gd8fi0c8vc47p"))
         (modules '((guix build utils)))
-        (snippet '(begin (delete-file-recursively "extras") #t))))
+        (snippet '(delete-file-recursively "extras"))))
+    ;; TODO: with pyproject-build-system the install phase fails.
     (build-system python-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
+     (list
+      #:phases
+      '(modify-phases %standard-phases
          (replace 'build
            (lambda _
              (setenv "ARGON2_CFFI_USE_SYSTEM" "1")
              (invoke "python" "setup.py" "build")))
          (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (invoke "pytest")
-             (invoke "python" "-m" "argon2" "--help")
-             ;; see tox.ini
-             (invoke "python" "-m" "argon2" "-n" "1" "-t" "1" "-m" "8" "-p" "1"))))))
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest")
+               (invoke "python" "-m" "argon2" "--help")
+               ;; see tox.ini
+               (invoke "python" "-m" "argon2" "-n" "1" "-t" "1" "-m" "8" "-p" "1")))))))
     (propagated-inputs
-     (list python-cffi python-six))
+     (list python-cffi python-typing-extensions))
     (inputs (list argon2))
     (native-inputs
-     (list python-hypothesis python-pytest))
+     (list python-hypothesis
+           python-pytest))
     (home-page "https://argon2-cffi.readthedocs.io/")
     (synopsis "Secure Password Hashes for Python")
     (description

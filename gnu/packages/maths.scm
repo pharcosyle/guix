@@ -3758,7 +3758,8 @@ bindings to almost all functions of PETSc.")
                 "1v6nc0z9dg4am0bibji9pijci9f15z68mwrlv91a28pvawx5czp5"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-typing-extensions))
-    (native-inputs (list python-cppy python-pytest python-setuptools-scm))
+    (native-inputs (list python-cppy python-pytest python-setuptools
+                         python-setuptools-scm python-wheel))
     (home-page "https://github.com/nucleic/kiwi")
     (synopsis "Fast implementation of the Cassowary constraint solver")
     (description
@@ -5363,7 +5364,8 @@ access to BLIS implementations via traditional BLAS routine calls.")
              (invoke "python" "setup.py" "build_ext" "--inplace"
                      "-j" (number->string (parallel-job-count))))))))
     (propagated-inputs (list python-numpy))
-    (native-inputs (list python-cython python-pytest))
+    (native-inputs (list python-cython python-pytest
+                         python-setuptools python-wheel))
     (home-page "https://github.com/explosion/cython-blis")
     (synopsis "Blis as a self-contained C-extension for Python")
     (description

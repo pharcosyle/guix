@@ -1737,8 +1737,7 @@ listeners answer questions about music quickly and simply.")
 (define-public abjad
   (package
     (name "abjad")
-    ;; XXX: The latest version which supports current Guix's Python 3.9.9.
-    (version "3.4")
+    (version "3.19")
     (source
      (origin
        (method git-fetch)
@@ -1747,36 +1746,12 @@ listeners answer questions about music quickly and simply.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s63vk9fifp0im9c31kb9ck39mbaxhrls993d8fvg0nkg41z1jnz"))))
+        (base32 "1cgcnmwzxx2hr21pqm1hbsknpad748yw3gf7jncsb3w1azhjypzm"))))
     (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; XXX. Permit newer version of uqbar, remove for >3.4. Remove in
-          ;; the next update.
-          (add-after 'unpack 'loosen-requirements
-            (lambda _
-              (substitute* "setup.py"
-                ((", <0\\.5\\.0") ""))))
-          ;; FIXME: Check why it's failing with this: Note: compilation failed
-          ;; and \version outdated, did you update input syntax with
-          ;; convert-ly?
-          (add-before 'check 'disable-failing-tests
-            (lambda _
-              (substitute* "tests/test_ext_sphinx.py"
-                (("def test_ext_sphinx_01") "def __off_test_ext_sphinx_01")))))))
     (inputs
      (list lilypond))
     (native-inputs
-     (list python-flake8
-           python-isort
-           python-mypy
-           python-pytest
-           python-pytest-cov
-           python-pytest-helpers-namespace
-           python-six
-           python-sphinx-autodoc-typehints))
+     (list python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list python-quicktions
            python-ply
@@ -1796,7 +1771,7 @@ typographic detail of symbols on the page.")
 (define-public abjad-ext-rmakers
   (package
     (name "abjad-ext-rmakers")
-    (version "3.4")
+    (version "3.19")
     (source
      (origin
        (method git-fetch)
@@ -1805,20 +1780,10 @@ typographic detail of symbols on the page.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0wma9vzn42h1rhbzh2dwjsrzjhsi1yqdgn6wx1dfk78vaki6prd8"))))
+        (base32 "1y8s55b4mlsigm0xkk6qjpp08c75rv0swvjp0lj3cs6lgqdjxdjl"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list lilypond
-           python-black
-           python-flake8
-           python-iniconfig
-           python-isort
-           python-mypy
-           python-pytest
-           python-pytest-cov
-           python-pytest-helpers-namespace
-           python-sphinx-autodoc-typehints))
+     (list lilypond python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list abjad))
     (home-page "https://abjad.github.io")
@@ -1831,7 +1796,7 @@ and manipulating rhythms such as accelerandi, taleas, and more.")
 (define-public abjad-ext-nauert
   (package
     (name "abjad-ext-nauert")
-    (version "3.4")
+    (version "3.19")
     (source
      (origin
        (method git-fetch)
@@ -1840,20 +1805,10 @@ and manipulating rhythms such as accelerandi, taleas, and more.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05hr2lr6myzi493k8vc19cqzraxxnbdwlckwbnras19l5g5ns38x"))))
+        (base32 "0j4pf4h27jm3df0dn2rwkdx6zqcxvr7pqchbaa9rffz7q4hbakmf"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list lilypond
-           python-black
-           python-flake8
-           python-iniconfig
-           python-isort
-           python-mypy
-           python-pytest
-           python-pytest-cov
-           python-pytest-helpers-namespace
-           python-sphinx-autodoc-typehints))
+     (list lilypond python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list abjad))
     (home-page "https://abjad.github.io")
@@ -4058,7 +4013,7 @@ formats, looking up tracks through metadata and audio fingerprints.")
               (sha256
                (base32
                 "1qdk6i8gyhbi1c4j5jmbfpac3q8sff2ysri1pnp7nb9wzcp615v3"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
      (list
        #:phases
@@ -4071,7 +4026,11 @@ formats, looking up tracks through metadata and audio fingerprints.")
                  (("( +)@given" all spaces)
                   (string-append spaces "@settings(deadline=None)\n" all))))))))
     (native-inputs
-     (list python-pytest python-hypothesis python-flake8))
+     (list python-flake8
+           python-hypothesis
+           python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://mutagen.readthedocs.io/")
     (synopsis "Read and write audio tags")
     (description "Mutagen is a Python module to handle audio metadata.  It

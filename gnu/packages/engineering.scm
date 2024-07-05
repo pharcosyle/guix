@@ -2616,7 +2616,7 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
                             (substitute* "pyvisa/shell.py"
                               (("from .thirdparty import prettytable")
                                "import prettytable")))))))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (propagated-inputs (list python-dataclasses python-prettytable
                              python-typing-extensions))
     (home-page "https://pyvisa.readthedocs.io/en/latest/")
@@ -2640,6 +2640,12 @@ measurement devices and test equipment via GPIB, RS232, Ethernet or USB.")
                 "0qfijh2r93jn3za2h9wdv2y49gd4alcww35zrdvmxrx6kbv67m2f"))
               (file-name (git-file-name name version))))
     (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags '(list ;; Missing docscrape dependency.
+                          "--ignore=doc/sphinxext/tests/test_docscrape.py"
+                          ;; these test require network
+                          "--ignore=skrf/tests/test_network.py")))
     (propagated-inputs (list python-matplotlib
                              python-networkx
                              python-numpy
@@ -4339,7 +4345,7 @@ more.")
     (build-system pyproject-build-system)
     (native-inputs
      (list python-pytest-asyncio python-pytest-runner python-asynctest
-           python-pytest-mock))
+           python-pytest-mock python-setuptools python-wheel))
     (propagated-inputs
      (list python-aiofiles python-aiosqlite python-cryptography
            python-importlib-metadata python-dateutil python-pytz

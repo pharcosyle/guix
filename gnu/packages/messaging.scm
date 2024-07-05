@@ -1155,13 +1155,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
           (replace 'check
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests? (invoke "python" "-m" "unittest" "-v")))))))
-    (native-inputs (list `(,glib "bin")))
+    (native-inputs (list `(,glib "bin") python-setuptools python-wheel))
     (inputs
      (list glib
            glib-networking
            libsoup-minimal
            python-gssapi
            python-idna
+           python-packaging
            python-precis-i18n
            python-pygobject))
     (synopsis "Non-blocking XMPP Module")
@@ -3255,24 +3256,13 @@ designed for experienced users.")
         (base32
          "1xhhy3v4wck74a83avil0rnmsi2grrh03cww19n5mv80p2q1cjmf"))
        (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "setup.py"
-             (("\\=\\=1\\.7") ">=1.7")  ; pytest-mock
-             (("\\=\\=2\\.5") ">=2.5")  ; pytest-cov
-             (("4\\.5\\.2") "4.4.2"))   ; lxml
-           #t))))
-    (build-system python-build-system)
+       (snippet '(substitute* "setup.py"
+                   (("\\=\\=1\\.7") ">=1.7")    ; pytest-mock
+                   (("\\=\\=2\\.5") ">=2.5")    ; pytest-cov
+                   (("4\\.5\\.2") "4.4.2")))))  ; lxml
+    (build-system pyproject-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               ;; Delete failing tests.
-               (delete-file "tests/cli/test_run.py")
-               (invoke "pytest"))
-             #t)))))
+     '(#:test-flags '("--ignore=tests/cli/test_run.py")))
     (inputs
      (list python-beautifulsoup4
            python-lxml
