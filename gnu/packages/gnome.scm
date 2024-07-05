@@ -5786,7 +5786,7 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "1.90.2")
+    (version "1.90.4")
     (source
      (origin
        (method git-fetch)
@@ -5795,7 +5795,7 @@ faster results and to avoid unnecessary server load.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13xp423ycv8imf2cmgf6lii9f01p7x2v19cny7acrmczkc0cqv7d"))
+        (base32 "0sjzmpzkf0gs4q8r0lksxbdvbj2qd84n6jlfxms53cg26aw0gp76"))
        (modules '((guix build utils)))
        (snippet
         ;; Upstream commit <https://cgit.freedesktop.org/upower/commit/
@@ -5808,7 +5808,7 @@ faster results and to avoid unnecessary server load.")
              "get_option('sysconfdir') / 'dbus-1/system.d'")
             ;; Avoid writing to /var during the build, this is
             ;; not possible in Guix!
-            (("^install_subdir\\('does-not-exist'.*$") "")))))
+            (("install_emptydir\\(historydir\\)") "")))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -5822,21 +5822,17 @@ faster results and to avoid unnecessary server load.")
               (string-append "-Dudevhwdbdir=" #$output "/lib/udev/hwdb.d"))
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'adjust-test-suite
-            (lambda _
-              ;; This test calls an unimplemented bluez dbus method.
-              (substitute* "src/linux/integration-test.py"
-                (("test_bluetooth_hidpp_mouse")
-                 "disabled_test_bluetooth_hidpp_mouse"))
-              #$@(if (target-x86-32?)
-                     ;; Address test failure caused by excess precision
-                     ;; on i686:
-                     ;; <https://gitlab.freedesktop.org/upower/upower/-/issues/214>.
-                     '((substitute* "src/linux/integration-test.py"
-                         (("assertEqual(.*)40\\.0" _ middle)
-                          (string-append
-                           "assertAlmostEqual" middle "40.0"))))
-                     '()))))))
+          #$@(if (target-x86-32?)
+                 #~((add-after 'unpack 'adjust-test-suite
+                      (lambda _
+                        ;; Address test failure caused by excess precision
+                        ;; on i686:
+                        ;; <https://gitlab.freedesktop.org/upower/upower/-/issues/214>.
+                        '((substitute* "src/linux/integration-test.py"
+                           (("assertEqual(.*)40\\.0" _ middle)
+                            (string-append
+                             "assertAlmostEqual" middle "40.0")))))))
+                 '()))))
     (native-inputs
      (list `(,glib "bin")               ; for gdbus-codegen
            gobject-introspection
