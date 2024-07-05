@@ -1627,6 +1627,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgeotiff-fix-tests-on-i386.patch	\
   %D%/packages/patches/libgpg-error-hurd64.patch		\
   %D%/packages/patches/libguestfs-syms.patch            	\
+  %D%/packages/patches/libical-test-removal.patch               \
   %D%/packages/patches/libinput-udev-program-absolute-path.patch	\
   %D%/packages/patches/libobjc2-unbundle-robin-map.patch	\
   %D%/packages/patches/libvirt-add-install-prefix.patch	\
