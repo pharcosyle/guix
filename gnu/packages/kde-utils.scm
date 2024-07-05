@@ -246,26 +246,26 @@ well as CD-ROM images.")
 (define-public filelight
   (package
     (name "filelight")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/filelight-" version ".tar.xz"))
               (sha256
                (base32
-                "1mwl1dkknvqw9hd5jsh4cdx1zd8f6rxca0vyq01wrx44q9p6dn1n"))))
+                "02zcghipnp6s2y14gpph271c1dill6p8m606v1f6y2bcjkxvimn5"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kirigami
-                  kquickcharts
-                  kxmlgui
-                  kio
-                  ki18n
-                  kdeclarative
-                  qqc2-desktop-style
-                  qtgraphicaleffects
-                  qtquickcontrols2-5
-                  qtsvg-5))
+    (inputs (list kirigami-6
+                  kirigami-addons
+                  kquickcharts-6
+                  kxmlgui-6
+                  kio-6
+                  ki18n-6
+                  kdeclarative-6
+                  qqc2-desktop-style-6
+                  qtsvg))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://apps.kde.org/filelight/")
     (synopsis "Visualize the disk usage")
     (description "Filelight is an application to visualize the disk usage on
@@ -336,56 +336,56 @@ your computer.")
 (define-public kate
   (package
     (name "kate")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kate-" version ".tar.xz"))
        (sha256
-        (base32 "0yyhh21pvzsaz7swmghdchzsfk089axhqkjwjv1m8j4q3q3rhv86"))))
+        (base32 "09r8k9zk56wlrx3vrhiw4z664c2irwl79cvxv6ckg6ny4mkm5xns"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kactivities
-           kconfig
-           kcrash
-           kdbusaddons
-           kguiaddons
-           ki18n
-           kiconthemes
-           kitemmodels
-           threadweaver
-           knewstuff
-           kio
-           kjobwidgets
-           kparts
-           ktexteditor
-           ksyntaxhighlighting
-           kwallet
-           plasma-framework
-           kwindowsystem
-           kxmlgui
-           breeze-icons ;; default icon set
-           qtbase-5
-           qtscript
-           qtx11extras))
+     (list breeze-icons ;; default icon set
+           plasma-activities
+           kconfig-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kitemmodels-6
+           threadweaver-6
+           knewstuff-6
+           kio-6
+           kjobwidgets-6
+           kparts-6
+           ktexteditor-6
+           ktextwidgets-6
+           ksyntaxhighlighting-6
+           kwallet-6
+           kwindowsystem-6
+           kxmlgui-6
+           libplasma
+           libxkbcommon))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; This test requires a 'bin' diretory under '/usr'.
-             (substitute* "addons/externaltools/autotests/externaltooltest.cpp"
-               (("QStringLiteral[(]\"/usr\"[)]")
-                (format #f "QStringLiteral(\"~a\")"
-                        (dirname (dirname (which "ls"))))))))
-         (add-before 'check 'check-setup
-           (lambda _
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             (setenv "HOME" (getcwd)))))))
+     (list #:qtbase qtbase
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-tests
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; This test requires a 'bin' diretory under '/usr'.
+                   (substitute* "addons/externaltools/autotests/externaltooltest.cpp"
+                     (("QStringLiteral[(]\"/usr\"[)]")
+                      (format #f "QStringLiteral(\"~a\")"
+                              (dirname (dirname (which "ls"))))))))
+               (add-before 'check 'check-setup
+                 (lambda _
+                   ;; make Qt render "offscreen", required for tests
+                   (setenv "QT_QPA_PLATFORM" "offscreen")
+                   (setenv "HOME" (getcwd)))))))
     (home-page "https://kate-editor.org/")
     (synopsis "Multi-document, multi-view text editor")
     (description "Kate is a powerful text editor that can open multiple files
@@ -409,7 +409,7 @@ Kate's features include:
 (define-public kdebugsettings
   (package
     (name "kdebugsettings")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -417,17 +417,18 @@ Kate's features include:
                                   ".tar.xz"))
               (sha256
                (base32
-                "02igg8ry1cxa83pdj6pgwzw7hpjwfrfk57d9ybgfvy2x08d5kvqz"))))
+                "0il1rr7x2ddnr3prmran3zjblmbv9973kyjvm2w5x4wz9dqj215y"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kcoreaddons
-                  kconfig
-                  kdbusaddons
-                  ki18n
-                  kwidgetsaddons
-                  kitemviews
-                  kcompletion
-                  kxmlgui))
+    (inputs (list kcoreaddons-6
+                  kconfig-6
+                  kdbusaddons-6
+                  ki18n-6
+                  kwidgetsaddons-6
+                  kitemviews-6
+                  kcompletion-6
+                  kxmlgui-6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/utilities/kdebugsettings")
     (synopsis "Choose which QLoggingCategory are displayed")
     (description
@@ -437,26 +438,29 @@ Kate's features include:
 (define-public kbackup
   (package
     (name "kbackup")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kbackup-" version ".tar.xz"))
               (sha256
                (base32
-                "121w54ivmq8qnxc97g47i8vq4nkivypp84pqs9rs5bid4cpfvh9p"))))
+                "1mbk8750pzk1y5bsdfxyirgwga2ahvkw0lgm9q8widhcl3nmfgx3"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kguiaddons
-                  knotifications
-                  ki18n
-                  kio
-                  kxmlgui
-                  kiconthemes
-                  karchive
-                  kwidgetsaddons
+    (inputs (list kguiaddons-6
+                  knotifications-6
+                  ki18n-6
+                  kio-6
+                  kxmlgui-6
+                  kiconthemes-6
+                  karchive-6
+                  kwidgetsaddons-6
+                  kstatusnotifieritem
                   libarchive
-                  shared-mime-info))
+                  shared-mime-info
+                  qt5compat))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://apps.kde.org/kbackup/")
     (synopsis "Backup program with an easy-to-use interface")
     (description
@@ -473,25 +477,26 @@ drive, USB stick, etc
 (define-public kcalc
   (package
     (name "kcalc")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kcalc-" version ".tar.xz"))
               (sha256
                (base32
-                "04mqicwqn6h99jgh1zl0wsgk1rdkswzxaq8b8yz5hq654dsyq6y1"))))
+                "10ll7yni2qawm8c8mxp92fy5vvwy79p3iks2nswsb9yrg4rf81cv"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules kdoctools))
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules kdoctools-6))
     (inputs (list gmp
-                  kcoreaddons
-                  kcrash
-                  kconfig
-                  kconfigwidgets
-                  kguiaddons
-                  ki18n
-                  knotifications
-                  kxmlgui
+                  kcoreaddons-6
+                  kcrash-6
+                  kconfig-6
+                  kconfigwidgets-6
+                  kguiaddons-6
+                  ki18n-6
+                  knotifications-6
+                  kxmlgui-6
                   mpfr))
     (home-page "https://apps.kde.org/kcalc/")
     (synopsis "Scientific calculator")
@@ -502,7 +507,7 @@ drive, USB stick, etc
 (define-public kcharselect
   (package
     (name "kcharselect")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -510,10 +515,11 @@ drive, USB stick, etc
                                   ".tar.xz"))
               (sha256
                (base32
-                "05z80j8bwrj1zfpy376gsx30bv7bxsa3lyvrqsz197w1g8vp5gix"))))
+                "00hcrsq3g8lvrqk5nvgqpp9h64hdijk5gp8kxlmy23356a695mbc"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kbookmarks kcoreaddons kcrash ki18n kwidgetsaddons kxmlgui))
+    (inputs (list kbookmarks-6 kcoreaddons-6 kcrash-6 ki18n-6 kwidgetsaddons-6 kxmlgui-6))
     (home-page "https://apps.kde.org/kcharselect/")
     (synopsis "Select and copy special characters from installed fonts")
     (description
@@ -526,23 +532,24 @@ characters.")
 (define-public kdialog
   (package
     (name "kdialog")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kdialog-" version ".tar.xz"))
               (sha256
                (base32
-                "042az7d9ngar6xp7gv3xcmlns9hpbvs39dkymanqgc0riwa1mvsx"))))
+                "09dghlbgmg4809swak8kgfnxc87zmnv6bwy2qib5y3ppgd11qvlf"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules kdoctools))
-    (inputs (list ktextwidgets
-                  knotifications
-                  kguiaddons
-                  kiconthemes
-                  kwindowsystem
-                  kio
-                  kdbusaddons))
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules kdoctools-6))
+    (inputs (list ktextwidgets-6
+                  knotifications-6
+                  kguiaddons-6
+                  kiconthemes-6
+                  kwindowsystem-6
+                  kio-6
+                  kdbusaddons-6))
     (home-page "https://invent.kde.org/utilities/kdialog")
     (synopsis "Show dialog boxes from shell scripts")
     (description "This package provides tool to show nice dialog boxes from
@@ -611,22 +618,25 @@ with support for QR scanning.")
 (define-public kfind
   (package
     (name "kfind")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kfind-" version ".tar.xz"))
               (sha256
                (base32
-                "03g9cn0wp3f2n9zwzbc5sbcria4hcp2ls77fbxyj3wkady3m50if"))))
+                "02jg3rshmw9yp6a5qf3h3vw6wd5hi47q49gkpmj7m6iswhql2dwr"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules kdoctools))
-    (inputs (list karchive
-                  kcoreaddons
-                  kfilemetadata
-                  ki18n
-                  kio
-                  kwidgetsaddons))
+    (arguments (list #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules kdoctools-6))
+    (inputs (list karchive-6
+                  kcoreaddons-6
+                  kfilemetadata-6
+                  kxmlgui-6
+                  ki18n-6
+                  kio-6
+                  kwidgetsaddons-6
+                  qt5compat))
     (home-page "https://apps.kde.org/kfind/")
     (synopsis "File search utility")
     (description
@@ -784,24 +794,24 @@ the computer and 3D Printers.")
 (define-public kmag
   (package
     (name "kmag")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kde/stable/release-service/" version
-                          "/src/kmag-" version ".tar.xz"))
-      (sha256
-       (base32 "13ar37yv3gk5451cdqrgbm91jm50qw4559sx25fv95g2i9wa7z74"))))
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/kmag-" version ".tar.xz"))
+       (sha256
+        (base32 "002qixib9ca33mq82ph3na4hx3dx0vhr6ws5r57qpsgqmr83cs97"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list ki18n
-           kio
-           kxmlgui
+     (list ki18n-6
+           kio-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           ;; TODO: QAccessibilityClient - libqaccessibilityclien
-           qtbase-5))
+           libqaccessibilityclient-qt6))
     (home-page "https://apps.kde.org/kmag/")
     (synopsis "Screen magnifier tool")
     (description "You can use KMagnifier to magnify a part of the screen just
@@ -1216,30 +1226,30 @@ Features:
 (define-public sweeper
   (package
     (name "sweeper")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/sweeper-" version ".tar.xz"))
        (sha256
-        (base32 "19b382cgdcd4qh4ppdmbhsacvcc9nlbs7spcg8ii02bdpx6qw9b7"))))
+        (base32 "0d84sxn3rk1vi9q5yjhx1hdr7m5fi0i2z9p5jl6w1hlnm6wgwhsz"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kactivities-stats
-           kbookmarks
-           kcrash
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           ki18n
-           kio
-           ktextwidgets
-           kxmlgui
+     (list plasma-activities-stats
+           kbookmarks-6
+           kcrash-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           ki18n-6
+           kio-6
+           ktextwidgets-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5))
+           qtbase))
     (home-page "https://apps.kde.org/sweeper/")
     (synopsis "Temporary file and history cleaner")
     (description "

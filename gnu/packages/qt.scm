@@ -140,7 +140,7 @@
 (define-public qcoro-qt5
   (package
     (name "qcoro-qt5")
-    (version "0.9.0")
+    (version "0.10.0")
     (source
      (origin
        (method git-fetch)
@@ -149,11 +149,14 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pk5ybk6zv7m0wnkl6m3m8sjybmfk6wcn22mmgj942hrc3yrdzci"))))
+        (base32 "0inhjc9zknc64q6gajkljfpm2287arg1j0848ia3rhqcbc53k28b"))))
     (build-system qt-build-system)
     (arguments
      (list #:configure-flags
-           #~(list "-DUSE_QT_VERSION=5")))
+           #~(list (string-append "-DUSE_QT_VERSION="
+                                  #$(version-major
+                                     (package-version
+                                      (this-package-input "qtbase")))))))
     (native-inputs (list dbus))         ;for tests
     (inputs (list qtbase-5 qtdeclarative-5 qtwebsockets-5))
     (home-page "https://qcoro.dvratil.cz/")
@@ -161,6 +164,16 @@
     (description "QCoro is a C++ library that provide set of tools to make use
 of C++20 coroutines in connection with certain asynchronous Qt actions.")
     (license license:expat)))
+
+(define-public qcoro-qt6
+  (package
+    (inherit qcoro-qt5)
+    (name "qcoro-qt6")
+    (inputs (modify-inputs (package-inputs qcoro-qt5)
+              (replace "qtbase" qtbase)
+              (replace "qtdeclarative" qtdeclarative)
+              (replace "qtwebsockets" qtwebsockets)
+              (append libxkbcommon)))))
 
 (define-public qmdnsengine
   ;; Used as submodule in https://github.com/moonlight-stream/moonlight-qt
@@ -418,6 +431,18 @@ applications on Wayland.")
 other text such as code.  The syntax uses the syntax of the Django template
 system, and the core design of Django is reused in Grantlee.")
     (license license:lgpl2.1+)))
+
+(define-public grantlee-qt6
+  (package
+    (inherit grantlee)
+    (name "grantlee-qt6")
+    (inputs (modify-inputs (package-inputs grantlee)
+              (replace "qtbase" qtbase)
+              (replace "qtdeclarative" qtdeclarative)
+              (delete "qtscript")))
+    (arguments (substitute-keyword-arguments (package-arguments grantlee)
+                 ((#:configure-flags flags #~'())
+                  #~(cons* "-DGRANTLEE_BUILD_WITH_QT6=ON" #$flags))))))
 
 (define (qt-url component version)
   "Return a mirror URL for the Qt5 COMPONENT at VERSION."
@@ -4350,6 +4375,29 @@ This package provides the Python bindings.")))
 securely.  It will not store any data unencrypted unless explicitly requested.")
     (license license:bsd-3)))
 
+(define-public qtkeychain-qt6
+  (package
+    (inherit qtkeychain)
+    (name "qtkeychain-qt6")
+    (native-inputs
+     (modify-inputs (package-native-inputs qtkeychain)
+       (replace "qttools" qttools)))
+    (inputs
+     (modify-inputs (package-inputs qtkeychain)
+       (replace "qtbase" qtbase)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qtkeychain)
+       ((#:configure-flags flags #~(list))
+        #~(cons "-DBUILD_WITH_QT6=ON" #$flags))
+       ((#:phases phases '%standard-phases)
+        #~(modify-phases #$phases
+            (replace 'set-qt-trans-dir
+              (lambda _
+                (lambda _
+                  (substitute* "CMakeLists.txt"
+                    (("\\$\\{qt_translations_dir\\}")
+                     "${CMAKE_INSTALL_PREFIX}/share/qt6/translations")))))))))))
+
 (define-public qtsolutions
   (let ((commit "9568abd142d581b67b86a5f63d823a34b0612702")
         (revision "53"))
@@ -5144,7 +5192,7 @@ and import their menus over DBus.")
 (define-public kdsoap
   (package
     (name "kdsoap")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -5152,18 +5200,18 @@ and import their menus over DBus.")
                            "kdsoap-" version "/kdsoap-" version ".tar.gz"))
        (sha256
         (base32
-         "1vh4rzb09kks1ilay1y60q7gf64gwzdwsca60hmx1xx69w8672fi"))))
+         "0mpkg9iyvzb6mxvhbi6zc052ids2r2nzpmjbljgpq6a2hja13vyr"))))
     (build-system qt-build-system)
-    (inputs `(("qtbase" ,qtbase-5)))
+    (inputs (list qtbase-5))
     (arguments
-     '(#:configure-flags '("-DKDSoap_TESTS=true")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "ctest" "-E" ;; These tests try connect to the internet.
-                       "(kdsoap-webcalls|kdsoap-webcalls_wsdl|kdsoap-test_calc)")))))))
+     (list #:configure-flags #~(list "-DKDSoap_TESTS=true")
+           #:phases
+           #~(modify-phases %standard-phases
+               (replace 'check
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "ctest" "-E" ;; These tests try connect to the internet.
+                             "(kdsoap-test_webcalls|kdsoap-test_webcalls_wsdl|kdsoap-test_calc)")))))))
     (home-page "https://www.kdab.com/development-resources/qt-tools/kd-soap/")
     (synopsis "Qt SOAP component")
     (description "KD SOAP is a tool for creating client applications for web
@@ -5171,10 +5219,20 @@ services using the XML based SOAP protocol and without the need for a dedicated
 web server.")
     (license (list license:gpl2 license:gpl3))))
 
+(define-public kdsoap-qt6
+  (package
+    (inherit kdsoap)
+    (name "kdsoap-qt6")
+    (arguments (substitute-keyword-arguments (package-arguments kdsoap)
+                 ((#:configure-flags flags #~(list))
+                  #~(cons "-DKDSoap_QT6=true" #$flags))))
+    (inputs (modify-inputs (package-inputs kdsoap)
+              (replace "qtbase" qtbase)))))
+
 (define-public libaccounts-qt
   (package
     (name "libaccounts-qt")
-    (version "1.16")
+    (version "1.17")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5183,7 +5241,7 @@ web server.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vmpjvysm0ld8dqnx8msa15hlhrkny02cqycsh4k2azrnijg0xjz"))))
+                "0859nsksgfrj6ynj74awj1fr6slwcjavs989xc7mbgpvi87n1xlq"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f                  ;TODO
@@ -5211,6 +5269,15 @@ wish to acquire, use and store web account details and credentials.  It
 handles the authentication process of an account and securely stores the
 credentials and service-specific settings.")
     (license license:lgpl2.1+)))
+
+(define-public libaccounts-qt6
+  (package
+    (inherit libaccounts-qt)
+    (name "libaccounts-qt6")
+    (native-inputs (modify-inputs (package-native-inputs libaccounts-qt)
+                     (replace "qtbase" qtbase)
+                     (replace "qttools" qttools)))
+    (synopsis "Qt6 bindings for libaccounts-glib")))
 
 (define-public libsignon-glib
   (package
@@ -5261,16 +5328,16 @@ GLib applications.")
 (define-public packagekit-qt5
   (package
     (name "packagekit-qt5")
-    (version "1.0.2")
+    (version "1.1.1")
     (source (origin
               (method git-fetch)
-			  (uri (git-reference
-			  (url "https://github.com/hughsie/PackageKit-Qt")
-			  (commit (string-append "v" version))))
+              (uri (git-reference
+                    (url "https://github.com/hughsie/PackageKit-Qt")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1d20r503msw1vix3nb6a8bmdqld7fj8k9jk33bkqsc610a2zsms6"))))
+                "0bajp6lxc9gdn7sy7rs7hwkhx854k5kqr3w9v07mv9l6vwnwq057"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ;no test suite
     (native-inputs (list pkg-config))
@@ -5281,6 +5348,20 @@ GLib applications.")
 abstraction layer that allows the session user to manage packages in
 a secure way.")
     (license license:lgpl2.1+)))
+
+(define-public packagekit-qt6
+  (package
+    (inherit packagekit-qt5)
+    (name "packagekit-qt6")
+    (arguments (substitute-keyword-arguments (package-arguments packagekit-qt5)
+                 ((#:configure-flags flags #~'())
+                  #~(cons "-DBUILD_WITH_QT6=ON" #$flags))))
+    (inputs (modify-inputs (package-inputs packagekit-qt5)
+              (replace "qtbase" qtbase)))
+    (synopsis "Qt6 bindings for PackageKit")
+    (description "Provides Qt6 bindings to PackageKit which is a DBUS
+abstraction layer that allows the session user to manage packages in
+a secure way.")))
 
 (define-public signond
   (package
@@ -5327,6 +5408,31 @@ a secure way.")
     (description "This package provides a D-Bus service which performs user
 authentication on behalf of its clients.")
     (license license:lgpl2.1+)))
+
+;; fork for support qt6
+(define-public signond-qt6
+  (let ((commit "c8ad98249af541514ff7a81634d3295e712f1a39")
+        (revision "0"))
+    (package
+      (inherit signond)
+      (name "signond-qt6")
+      (version (git-version "8.61" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/nicolasfella/signond")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "13cgdf6hhi2z3c8sax79dwi7450n8h228kpyl2w5lx0xglb2savq"))))
+      (native-inputs (modify-inputs (package-native-inputs signond)
+                       (delete "qtbase")
+                       (replace "qttools" qttools)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments signond)
+         ((#:qtbase _ #f)
+          qtbase))))))
 
 (define-public signon-plugin-oauth2
   (package

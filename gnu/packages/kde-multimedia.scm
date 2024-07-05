@@ -550,14 +550,14 @@ camera.  Use it to take pictures and make videos to share.")
 (define-public kmix
   (package
     (name "kmix")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/kmix-" version ".tar.xz"))
       (sha256
-       (base32 "09pfsa6y1phm6z24da60s47gc18w4cvv7r8sxh5qfww7b0dnhixj"))))
+       (base32 "0ic1zp4ixr36x6sqlfkwaq1frn7znrwxgd1r0wki95sibfhbmw5q"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools pkg-config))
@@ -595,8 +595,8 @@ This package is part of the KDE multimedia module.")
 (define-public kmplayer
   ;; The latest release was in 2016, and does not work with the newer
   ;; KDE libraries.
-  (let ((commit "88e85308b71dc5e58cc655b5b9a13cd71b78233f")
-        (revision "1"))
+  (let ((commit "0703e609ea34b51d86e95a59984c7d6bd14f32ab")
+        (revision "2"))
     (package
       (name "kmplayer")
       (version (git-version "0.12.0b" revision commit))
@@ -609,7 +609,7 @@ This package is part of the KDE multimedia module.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1pzk0js499diqabpwxjq6nnwpmj1ikpyyykzjbm844xcbm74cl19"))))
+           "06sd554pmrdn4grakkq563mq7ly3pf7jcam0m2zy537qnb72iaxc"))))
       (build-system qt-build-system)
       (native-inputs
        (list extra-cmake-modules pkg-config kdoctools))

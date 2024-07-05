@@ -4,6 +4,7 @@
 ;;; Copyright © 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2022 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,19 +50,20 @@
   #:use-module (gnu packages search)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml))
 
 (define-public akonadi
   (package
     (name "akonadi")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/akonadi-" version ".tar.xz"))
               (sha256
                (base32
-                "0jpp91d5rlblq6r981wxizmsv512kc43lfk8y29bdky6j4idflrb"))
+                "1jq92gs2jm2lfda71dkjs8czmly6wy0zp9la2pjfbvv9ykgdb5ga"))
               (patches (search-patches "akonadi-paths.patch"
                                        "akonadi-timestamps.patch"
                                        "akonadi-not-relocatable.patch"))))
@@ -69,31 +71,31 @@
     (native-inputs
      (list dbus
            extra-cmake-modules
-           qttools-5
+           qttools
            shared-mime-info
            pkg-config))
     (inputs
      (list boost
-           libaccounts-qt
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           ki18n
-           kiconthemes
-           kio
-           kitemmodels
-           kitemviews
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+           libaccounts-qt6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           kitemmodels-6
+           kitemviews-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            libxml2
            libxslt
            ;; Do NOT add mysql or postgresql to the inputs. Otherwise the binaries
            ;; and wrapped files will refer to them, even if the user choices none
            ;; of these.  Executables are searched on $PATH then.
            signond
-           qtbase-5))
+           qtbase))
     (propagated-inputs (list sqlite kaccounts-integration))
     (arguments
      (list #:tests? #f
@@ -288,19 +290,19 @@ with emails through Akonadi easier.")
 (define-public akonadi-notes
   (package
     (name "akonadi-notes")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/akonadi-notes-" version ".tar.xz"))
        (sha256
-        (base32 "0s5a414cdcz37srys2w3c2z5c63ha9ivsqj0srnfwwv0pxix266v"))))
+        (base32 "07sgmvia6x6pm8x7060wngl91jiz1lzxszxkzp7qik0yzl41bq58"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
-     (list akonadi kcodecs ki18n kmime qtbase-5))
+     (list akonadi kcodecs-6 ki18n-6 kmime qtbase))
     (home-page "https://api.kde.org/kdepim/akonadi/html/index.html")
     (synopsis "Akonadi notes access library")
     (description "Akonadi Notes is a library that effectively bridges the
@@ -575,26 +577,27 @@ one of the APIs mentioned above.")
 (define-public kaccounts-integration
   (package
     (name "kaccounts-integration")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1mn64xw5r2magy5y0qmg5r907jz1y8jar0qqkc6s1zjjr3s3knac"))))
+                "136vmibrh11dpqkhixlxs7k2mjy5nl81y4f6bz3lpzz4d37z7ij6"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kcmutils
-                  ki18n
-                  kcoreaddons
-                  kdbusaddons
-                  kdeclarative
-                  kwallet
-                  kio
-                  libaccounts-qt
-                  qcoro-qt5
-                  signond))
+    (inputs (list kcmutils-6
+                  ki18n-6
+                  kcoreaddons-6
+                  kdbusaddons-6
+                  kdeclarative-6
+                  kwallet-6
+                  kio-6
+                  libaccounts-qt6
+                  qcoro-qt6
+                  signond-qt6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/network/kaccounts-integration")
     (synopsis "Online account management system")
     (description "The Kaccounts Integration library provides online account
@@ -604,24 +607,26 @@ management system and its Plasma integration components.")
 (define-public kaccounts-providers
   (package
     (name "kaccounts-providers")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lrmj6r09ypnpl2s586i4rd3fk3760qlxyrhh91k43wkb8i6m8f0"))))
+                "1qcdm9183c810phbfacbckz6q6bl0w50iq41fz7l75n34a7pcc96"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules intltool))
     (inputs (list kaccounts-integration
-                  kcoreaddons
-                  kdeclarative
-                  ki18n
-                  kio
-                  libaccounts-qt
-                  qtwebengine-5
-                  signond))
+                  kcoreaddons-6
+                  kdeclarative-6
+                  kpackage-6
+                  ki18n-6
+                  kio-6
+                  libaccounts-qt6
+                  qtwebengine
+                  signond-qt6))
+    (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/network/kaccounts-providers")
     (synopsis "Online account providers for the KAccounts system")
     (description "This package provides online account providers for the
@@ -1107,38 +1112,38 @@ easier to do so.")
 (define-public kitinerary
   (package
     (name "kitinerary")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kitinerary-" version ".tar.xz"))
               (sha256
                (base32
-                "0fcqix7hgmv7qcfxzmqy61kg7dqi5zas5vqfs7pfycgcxma0g869"))))
+                "1rnhc9sbmqy5fxn8ghlqml53wvch874qyv8s01gxjvw2iq57ziz1"))))
     (build-system qt-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
                         (replace 'check
-                          (lambda* (#:key tests? #:allow-other-keys)
+                          (lambda* (#:key inputs tests? #:allow-other-keys)
                             (when tests?
+                              (setenv "TZDIR"
+                                      (search-input-directory inputs "share/zoneinfo"))
                               (invoke "dbus-launch" "ctest" "-E"
-                               "(jsonlddocumenttest|mergeutiltest|locationutiltest|knowledgedbtest|airportdbtest|extractorscriptenginetest|pkpassextractortest|postprocessortest|calendarhandlertest|extractortest)")))))))
-    (native-inputs (list dbus extra-cmake-modules))
+                                      "(jsonlddocumenttest|mergeutiltest|locationutiltest|knowledgedbtest|airportdbtest|extractorscriptenginetest|pkpassextractortest|postprocessortest|calendarhandlertest|extractortest)")))))))
+    (native-inputs (list dbus extra-cmake-modules tzdata-for-tests))
     (inputs (list kpkpass
-                  kcalendarcore
-                  karchive
-                  ki18n
-                  kcoreaddons
-                  kcontacts
+                  kcalendarcore-6
+                  karchive-6
+                  ki18n-6
+                  kcoreaddons-6
+                  kcontacts-6
                   kmime
-                  knotifications
+                  knotifications-6
                   shared-mime-info
                   openssl
                   poppler
-                  qtbase-5
-                  qtdeclarative-5
-                  qtlocation
-                  qtquickcontrols2-5
+                  qtbase
+                  qtdeclarative
                   libxml2
                   zlib
                   zxing-cpp))
@@ -1601,29 +1606,27 @@ kwebengineviewer.")
 (define-public kmime
   (package
     (name "kmime")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kmime-" version ".tar.xz"))
        (sha256
-        (base32 "1i38g0s98d24882kxyjay965nz3d3fjhb3mv1p4sllm2lnffrq2d"))))
+        (base32 "1yhyr409l7mk82bkihy4igh7cdmlnhgil22pkn7dxag8v48qw4zh"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules))
+     (list extra-cmake-modules tzdata-for-tests))
     (inputs
-     (list kcodecs ki18n qtbase-5))
+     (list kcodecs-6 ki18n-6 qtbase))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-test-case
-           (lambda _
-             ;; This is curious: autotests/CMakeLists.txt sets LC_TIME=C, but
-             ;; the Qt locale returns different. See kmime commit 3a9651d26a.
-             (substitute* "autotests/dateformattertest.cpp"
-               (("(Today|Yesterday) 12:34:56" line day)
-                (string-append day " 12:34 PM"))))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-test-case
+                 (lambda* (#:key inputs tests? #:allow-other-keys)
+                   (when tests?
+                     (setenv "TZDIR" (search-input-directory
+                                      inputs "share/zoneinfo"))))))))
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/")
     (synopsis "Library for handling MIME data")
     (description "This library provides an API for handling MIME
@@ -1707,26 +1710,26 @@ Features:
 (define-public kontactinterface
   (package
     (name "kontactinterface")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kontactinterface-" version ".tar.xz"))
        (sha256
-        (base32 "16fg24hz9vx912cffc94x5zx4jv3k72mbxgp5ck50lydypx6rfns"))))
+        (base32 "1gkqgg4k1p7hs02vcgmkbm3ly1cqig7cwqxqs1p1inmxm6vz73qm"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
-     (list kcoreaddons
-           ki18n
-           kiconthemes
-           kparts
-           kwindowsystem
-           kxmlgui
-           qtbase-5
-           qtx11extras))
+     (list kcoreaddons-6
+           ki18n-6
+           kiconthemes-6
+           kparts-6
+           kwindowsystem-6
+           kxmlgui-6
+           qtbase
+           libxkbcommon))
     (home-page "https://api.kde.org/kdepim/kontactinterface/html/index.html")
     (synopsis "Kontact interface library")
     (description "This library provides the glue necessary for
@@ -1852,17 +1855,17 @@ Virtual Contact File}) files to the KPeople contact management library.")
 (define-public kpkpass
   (package
     (name "kpkpass")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
-                           "/src/kpkpass-" version ".tar.xz"))
+                                  "/src/kpkpass-" version ".tar.xz"))
               (sha256
                (base32
-                "1l3k33yzfjzarc2rpf576ib86ifzrfmsvpcdmv060dy0k8lbm1k9"))))
+                "1j7ghlpbrnwnaz67c4yvgqvnn12sb980nvz06hvkxs360nj4c6gg"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list karchive qtbase-5 shared-mime-info))
+    (inputs (list karchive-6 qtbase shared-mime-info))
     (home-page "https://invent.kde.org/pim/kpkpass")
     (synopsis "Apple Wallet Pass reader")
     (description "This package provides library to deal with Apple Wallet
@@ -2009,25 +2012,25 @@ text in the text edit to all kinds of markup, like HTML or BBCODE.")
 (define-public ksmtp
   (package
     (name "ksmtp")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ksmtp-" version ".tar.xz"))
        (sha256
-        (base32 "0pz17vmn38n2xl35d9di1b9138dh54wgyal9hx412nh123w13h12"))))
+        (base32 "130g95j6f2mn2vcaw1incalgdsz486q5p7si2vrzsd3q4n2mf8vj"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list cyrus-sasl
-           kcodecs
-           kconfig
-           kcoreaddons
-           ki18n
-           kio
-           qtbase-5))
+           kcodecs-6
+           kconfig-6
+           kcoreaddons-6
+           ki18n-6
+           kio-6
+           qtbase))
     (arguments
      `(#:tests? #f ;; TODO: does not find sasl mechs
        #:phases
@@ -2127,31 +2130,31 @@ and allows one to view/extract message formatted text in Rich Text Format.")
 (define-public libkgapi
   (package
     (name "libkgapi")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/libkgapi-" version ".tar.xz"))
        (sha256
-        (base32 "18jcrp7qi35zxzb4b7mn6519bjw47s7kwfahd6a50p40j17k09bs"))))
+        (base32 "1d3q6p838jpbdjn51v3ssynj6c47c5msb8hg1vczbgarj3nzyc4j"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules qttools-5))
+     (list extra-cmake-modules qttools))
     (inputs
      (list cyrus-sasl
-           ki18n
-           kcontacts
-           kcalendarcore
-           kio
-           kwallet
-           kwindowsystem
-           qtbase-5
-           qtdeclarative-5
-           qtwebchannel-5
-           qtwebengine-5))
+           ki18n-6
+           kcontacts-6
+           kcalendarcore-6
+           kio-6
+           kwallet-6
+           kwindowsystem-6
+           qtdeclarative
+           qtwebchannel
+           qtwebengine))
     (arguments
-     `(#:tests? #f)) ;; TODO 6/48 tests fail
+     (list #:qtbase qtbase
+           #:tests? #f)) ;; TODO 6/48 tests fail
     (home-page "https://invent.kde.org/pim/libkgapi")
     (synopsis "Library for accessing various Google services via their public
 API")

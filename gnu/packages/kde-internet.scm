@@ -3,6 +3,7 @@
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2022 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +119,7 @@ Other notable features include:
 (define-public falkon
   (package
     (name "falkon")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
@@ -126,32 +127,36 @@ Other notable features include:
                            "/src/falkon-" version ".tar.xz"))
        (sha256
         (base32
-         "11r1iwimdzabfah68gsvw6xi67cj539anqa6s1rg33agsi5y56d3"))))
+         "0694kiahbj862jrjg2zffsjassi2ks5sz4rl8h3flksizrqh70xz"))))
     (build-system qt-build-system)
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
-               (replace 'check
-                 (lambda* (#:key tests? #:allow-other-keys)
-                   (when tests?
-                     (invoke "ctest" "-E"
-                             "(locationbartest|qmltabsapitest)")))))))
+               (add-after 'install 'wrap
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((qtwebengineprocess
+                          (search-input-file inputs
+                                             "lib/qt6/libexec/QtWebEngineProcess")))
+                     ;; The program fails to find the QtWebEngineProcess program, so
+                     ;; we set QTWEBENGINEPROCESS_PATH to help it.
+                     (wrap-program (string-append #$output "/bin/falkon")
+                       `("QTWEBENGINEPROCESS_PATH" =
+                         (,qtwebengineprocess)))))))))
     (native-inputs
-     (list extra-cmake-modules pkg-config qttools-5))
+     (list extra-cmake-modules pkg-config qttools))
     (inputs
-     (list karchive
-           kcoreaddons
-           kcrash
-           ki18n
-           kio
-           kwallet
+     (list karchive-6
+           kcoreaddons-6
+           kcrash-6
+           ki18n-6
+           kio-6
+           kwallet-6
            openssl
-           purpose
-           qtquickcontrols-5
-           qtsvg-5
-           qtwebengine-5
-           qtx11extras
-           qtwayland-5
+           purpose-6
+           qt5compat
+           qtsvg
+           qtwebengine
+           qtwayland
            xcb-util))
     (home-page "https://www.falkon.org/")
     (synopsis "Qt-based web browser for KDE")
@@ -377,14 +382,14 @@ This package is part of the KDE networking module.")
 (define-public krdc
   (package
     (name "krdc")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/krdc-" version ".tar.xz"))
        (sha256
-        (base32 "0jva74n11fpm4ix4sbi0y1xnbly97lnap7dfj0bliw5s2d0sdjr0"))))
+        (base32 "1d346f4p0w8062z9xl7svnq7mhr40q9p50sjn0wlpssa5zyy5442"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
@@ -396,6 +401,7 @@ This package is part of the KDE networking module.")
            kconfig
            kdnssd
            ki18n
+           kio
            kiconthemes
            knotifications
            knotifyconfig
@@ -422,49 +428,50 @@ This package is part of the KDE networking module.")
 (define-public ktorrent
   (package
     (name "ktorrent")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ktorrent-" version ".tar.xz"))
        (sha256
-        (base32 "17q6ivnbh4zxqnbm1bdzz3hri1434sq2rs9y57lvn4bb2xdwn1z5"))))
+        (base32 "1f8pjavj4dgq73yy9nfqp06n15vmq3j4spap419k6ksx32yciln0"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
      (list boost
            gmp
-           karchive
-           kcmutils
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kdnssd
-           ki18n
-           kiconthemes
-           kio
-           knotifications
-           knotifyconfig
-           kparts
-           kplotting
-           kross
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+           karchive-6
+           kcmutils-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kdnssd-6
+           kglobalaccel-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knotifications-6
+           knotifyconfig-6
+           kparts-6
+           kplotting-6
+           kstatusnotifieritem
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            libgcrypt
            libktorrent
            ;; TODO: LibKWorkspace -> plasma-workspace?
            breeze-icons ; default icon set
            phonon
-           qtbase-5
-           qtscript
-           qtwebengine-5
-           solid
-           syndication
+           qt5compat
+           qtwebengine
+           solid-6
+           syndication-6
            taglib))
     (home-page "https://apps.kde.org/ktorrent/")
     (synopsis "BitTorrent client")
@@ -477,30 +484,31 @@ a full-featured client for BitTorrent.")
 (define-public libktorrent
   (package
     (name "libktorrent")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/"
                            version "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1m6gyk1bids7qr9wfh6gcfq73ac9j5b2bljvfvfsw9f1ky1cmwab"))))
+        (base32 "1ra96avpv5d80wr44addscqy28hkv3h2kfr8zqnxhsdjy7sg1zvb"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list boost
            gmp
-           karchive
-           kcrash
-           ki18n
-           kio
+           karchive-6
+           kcrash-6
+           ki18n-6
+           kio-6
            libgcrypt
-           qca
-           qtbase-5
-           solid))
+           qca-qt6
+           qt5compat
+           solid-6))
     (home-page "https://invent.kde.org/network/libktorrent")
-    (synopsis "BitTorrent protocol library for C++ / Qt 5 / KDE Frameworks")
+    (synopsis "BitTorrent protocol library for C++ / Qt 6 / KDE Frameworks")
     (description "The KTorrent library supports connectivity to HTTP and UDP
 trackers, mainline DHT and the new generation Micro Transport
 Protocol (uTP).  In addition, it provides many powerful BitTorrent network

@@ -3,7 +3,7 @@
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2022 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
-;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,52 +40,53 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages search)
   #:use-module (gnu packages vnc)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public dolphin
   (package
     (name "dolphin")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-" version ".tar.xz"))
        (sha256
-        (base32 "0bys24i2a3a65ahq5p3q1zr2px8jqip1gjn5m7rngq4hcddb1ji8"))))
+        (base32 "1f5s0sl3rlkbpzfcvffg12ynwg621sy0r2w7gwwszj831ax4zz5a"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools ruby ruby-test-unit))
+     (list extra-cmake-modules kdoctools-6 ruby ruby-test-unit))
     (inputs
-     (list baloo
+     (list baloo-6
            baloo-widgets
-           kactivities
-           kbookmarks
-           kcmutils
-           kcompletion
-           kconfig
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kiconthemes
-           kinit
-           kio
-           knewstuff
-           knotifications
-           kparts
-           ktextwidgets
+           plasma-activities
+           kbookmarks-6
+           kcmutils-6
+           kcompletion-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           knotifications-6
+           kparts-6
+           ktextwidgets-6
            kuserfeedback
-           kwindowsystem
+           kwindowsystem-6
            breeze-icons ;; default icon set
            phonon
-           qtbase-5
-           qtx11extras
-           solid))
+           solid-6
+           libxkbcommon))
     (arguments
-     `(#:tests? #f)) ;; TODO: 4/15 tests fail even with offscreen
+     (list #:qtbase qtbase
+           #:tests? #f)) ;; TODO: 4/15 tests fail even with offscreen
     (home-page "https://apps.kde.org/dolphin/")
     (synopsis "File manager for KDE")
     (description "Dolphin is a file manager for KDE focusing on usability.
@@ -105,26 +106,28 @@ The main features of Dolphin are:
 (define-public dolphin-plugins
   (package
     (name "dolphin-plugins")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-plugins-" version ".tar.xz"))
        (sha256
-        (base32 "0h1b559icj5g3xrx5697a9rncpdcmsjg774c6m36ild56bwc048v"))))
+        (base32 "0cn3nq769j8yqqm4pj8m4w3p0430cqyphfgzgdhncldjx7bm034v"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list dolphin
-           ki18n
-           kio
-           ktexteditor
-           ksyntaxhighlighting
-           kxmlgui
+           ki18n-6
+           kio-6
+           ktexteditor-6
+           ktextwidgets-6
+           ksyntaxhighlighting-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5))
+           qtbase
+           qt5compat))
     (home-page "https://www.kde.org/")
     (synopsis "VCS-Plugins for Dolphin")
     (description "This package contains plugins that offer integration in
@@ -134,49 +137,57 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
 (define-public khelpcenter
   (package
     (name "khelpcenter")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/khelpcenter-" version ".tar.xz"))
        (sha256
-        (base32 "10rivj5c14v5hwk87z41gwk830sy35fz0jg1jpay43jzw0ss995y"))))
+        (base32 "06vr3578slr2y6wm5ycvvn0i6z1glkc1ncnar9aw0rmj48ba3bwp"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6 perl))
     (inputs
      (list grantlee
-           karchive
-           kbookmarks
-           kcodecs
-           kconfig
-           kcoreaddons
-           kdbusaddons
-           khtml
-           ki18n
-           kinit
-           kio
-           kjs
-           kparts
-           kservice
-           kwindowsystem
+           karchive-6
+           kbookmarks-6
+           kcodecs-6
+           kconfig-6
+           kcoreaddons-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           kparts-6
+           kservice-6
+           ktexttemplate
+           kwindowsystem-6
            libxml2
            breeze-icons ;; default icon set
-           qtbase-5
-           xapian))
+           qtbase
+           xapian
+           qtwebengine))
     (arguments
-     (list #:tests? #f ;;1/1 test fails
-           #:phases #~(modify-phases %standard-phases
-                        (add-after 'install 'wrap-executable
-                          (lambda* (#:key inputs #:allow-other-keys)
-                            ;; Since qt-wrap selectors do not wrap for /share/kf5
-                            ;; directories, we need this so khelpcenter can find html4.css.
-                            (wrap-program (string-append #$output
-                                                         "/bin/khelpcenter")
-                              `("XDG_DATA_DIRS" suffix
-                                (,(string-append (assoc-ref inputs "khtml")
-                                                 "/share")))))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'add-miss-package
+                 (lambda _
+                   ;; https://invent.kde.org/system/khelpcenter/-/merge_requests/50
+                   (substitute* "CMakeLists.txt"
+                     (("    WebEngineWidgets")
+                      "    WebEngineWidgets
+    PrintSupport")
+                     (("Qt6::WebEngineWidgets")
+                      "Qt6::PrintSupport
+    Qt6::WebEngineWidgets"))))
+               (add-after 'install 'wrap-executable
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (wrap-program (string-append #$output
+                                                "/bin/khelpcenter")
+                     `("QTWEBENGINEPROCESS_PATH" =
+                       (,(search-input-file
+                          inputs
+                          "lib/qt6/libexec/QtWebEngineProcess")))))))))
     (home-page "https://apps.kde.org/khelpcenter/")
     (synopsis "KDE documentation viewer")
     (description "KHelpCenter uses meta data files which describe the
@@ -193,48 +204,46 @@ document meta data file.")
 (define-public konsole
   (package
     (name "konsole")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/konsole-" version ".tar.xz"))
        (sha256
-        (base32 "1k68y1i3g3bsz1dz81jhkx1q2fb13rbm5ywh632bcyln0c6l0vz0"))))
+        (base32 "13vijgb9gvblszwdr1gqm3xklsdgzb2m6s2hmvpzw9xbdvsy2nlv"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools zlib))
+     (list extra-cmake-modules kdoctools-6 zlib))
     (inputs
-     (list kbookmarks
-           kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kguiaddons
-           ki18n
-           kiconthemes
-           kinit
-           kio
-           knewstuff
-           kglobalaccel
-           knotifications
-           knotifyconfig
-           kparts
-           kpty
-           kservice
-           ktextwidgets
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+     (list kbookmarks-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kguiaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           kglobalaccel-6
+           knotifications-6
+           knotifyconfig-6
+           kparts-6
+           kpty-6
+           kservice-6
+           ktextwidgets-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            breeze-icons ;; default icon set
-           qtbase-5
-           qtscript
-           qtmultimedia-5
+           qt5compat
+           qtmultimedia
            icu4c))
     (arguments
-     `(#:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
+     (list #:qtbase qtbase
+           #:tests? #f)) ;; TODO: 2/15 tests fail even with HOME, offscreen, SHELL, debus
     (home-page "https://www.kde.org/")
     (synopsis "Terminal emulator similar for KDE")
     (description "Konsole is a terminal emulator, similar to xterm, built on
@@ -249,43 +258,49 @@ This package is part of the KDE base applications module.")
 (define-public krfb
   (package
     (name "krfb")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/krfb-" version ".tar.xz"))
        (sha256
-        (base32 "0qbrvf2wa3af1z1dpq3pqkngfbrfdgqfz8xs1qpdpyb7jxnphry7"))))
+        (base32 "10hnv7sxn80rar554yxl8nhaafkaac2hs91n7yl7q796nl23qgg7"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase
+                     #:configure-flags
+                     #~(list (string-append "-DQtWaylandScanner_EXECUTABLE="
+                                            #$(this-package-native-input "qtwayland")
+                                            "/lib/qt6/libexec/qtwaylandscanner"))))
     (native-inputs
-     (list extra-cmake-modules pkg-config kdoctools))
+     (list extra-cmake-modules pkg-config kdoctools-6 qtwayland))
     (inputs
-     (list kcompletion
-           kconfig
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kdnssd
-           ki18n
-           knotifications
+     (list kcompletion-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kdnssd-6
+           ki18n-6
+           knotifications-6
            kpipewire
-           kwallet
-           kwayland
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+           kstatusnotifieritem
+           kwallet-6
+           kwayland-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
            libvnc
            libxcb
            libxtst
            breeze-icons ;; default icon set
            pipewire
            plasma-wayland-protocols
-           qtbase-5
-           qtwayland-5
-           qtx11extras
+           qtbase
+           qtwayland
            wayland
            xcb-util-image
+           libxkbcommon
            zlib))
     (home-page "https://apps.kde.org/krfb/")
     (synopsis "Desktop Sharing utility")
@@ -304,32 +319,32 @@ This package is part of the KDE networking module.")
 (define-public ksystemlog
   (package
     (name "ksystemlog")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ksystemlog-" version ".tar.xz"))
        (sha256
-        (base32 "15c1h1dlcgbx2adhjzry2zwia0alym7vc251zymyzhl2xjacvqlm"))))
+        (base32 "1afa0w9g628zasnmrr35jf6h2x01vngi6ii4vvpnkbplcscs6y9a"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
      ;; Not including Journald since this is not used in guix
-     (list karchive
-           kcompletion
-           kconfig
-           kcoreaddons
-           ki18n
-           kiconthemes
-           kio
-           kitemviews
-           ktextwidgets
-           kwidgetsaddons
-           kxmlgui
-           breeze-icons ;; default icon set
-           qtbase-5))
+     (list breeze-icons ;; default icon set
+           karchive-6
+           kcompletion-6
+           kconfig-6
+           kcoreaddons-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           kitemviews-6
+           ktextwidgets-6
+           kwidgetsaddons-6
+           kxmlgui-6))
     (home-page "https://apps.kde.org/ksystemlog/")
     (synopsis "System log viewer")
     (description "This program is developed for being used by beginner users,
@@ -343,35 +358,37 @@ This package is part of the KDE administration module.")
 (define-public kwalletmanager
   (package
     (name "kwalletmanager")
-    (version "23.04.3")
+    (version "24.05.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kwalletmanager-" version ".tar.xz"))
        (sha256
-        (base32 "1g3yw32kv7yij2ymk52fpp0srncr2ijfckfvz5hc0nsn7xhyqdby"))))
+        (base32 "1a1rq68qny932yz2kib3n62z8qm69wwdi845nxlwab5rags7na8w"))))
     (build-system qt-build-system)
+    (arguments (list #:qtbase qtbase))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list karchive
-           kauth
-           kcmutils
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           ki18n
-           kio
-           kjobwidgets
-           knotifications
-           kservice
-           ktextwidgets
-           kwallet
-           kwindowsystem
-           kxmlgui))
+     (list karchive-6
+           kauth-6
+           kcmutils-6
+           kconfig-6
+           kconfigwidgets-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           ki18n-6
+           kio-6
+           kjobwidgets-6
+           knotifications-6
+           kservice-6
+           kstatusnotifieritem
+           ktextwidgets-6
+           kwallet-6
+           kwindowsystem-6
+           kxmlgui-6))
     (home-page "https://apps.kde.org/kwalletmanager5/")
     (synopsis "Tool to manage passwords on KWallet")
     (description
@@ -381,17 +398,18 @@ This package is part of the KDE administration module.")
 (define-public spectacle
   (package
     (name "spectacle")
-    (version "23.04.3")
+    (version "24.02.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/spectacle-" version ".tar.xz"))
        (sha256
-        (base32 "1fyklcvz0zndxabflkka75rham6768rp01as7m5dv0ic4lipkf9m"))))
+        (base32 "0li1fhhvqk5y1j0jpazhjw1qh5mnwzn4dkl85bmlsn5hbqszf621"))))
     (build-system qt-build-system)
     (arguments
-     (list #:phases
+     (list #:qtbase qtbase
+           #:phases
            #~(modify-phases %standard-phases
                (replace 'check
                  (lambda* (#:key tests? #:allow-other-keys)
@@ -399,33 +417,33 @@ This package is part of the KDE administration module.")
                      (invoke "ctest" "-E"
                              "filename_test")))))))
     (native-inputs
-     (list extra-cmake-modules kdoctools))
+     (list extra-cmake-modules kdoctools-6))
     (inputs
-     (list kconfig
-           kcoreaddons
-           kdbusaddons
-           kglobalaccel
-           kguiaddons
-           ki18n
-           kio
-           kirigami
-           knotifications
+     (list kconfig-6
+           kcoreaddons-6
+           kdbusaddons-6
+           kglobalaccel-6
+           kguiaddons-6
+           ki18n-6
+           kio-6
+           kirigami-6
+           knotifications-6
            kpipewire
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
-           libxcb
-           purpose
-           qtdeclarative-5
-           qtquickcontrols2-5
-           qtwayland-5
-           qtx11extras
+           kwidgetsaddons-6
+           kwindowsystem-6
+           kxmlgui-6
+           purpose-6
+           layer-shell-qt
+           qtdeclarative
+           qtmultimedia
+           qtwayland
            wayland
            wayland-protocols
            plasma-wayland-protocols
            xcb-util
            xcb-util-cursor
-           xcb-util-image))
+           xcb-util-image
+           libxkbcommon))
     (home-page "https://apps.kde.org/spectacle/")
     (synopsis "Screenshot capture utility for KDE")
     (description "Spectacle is a screenshot taking utility for the KDE.")
@@ -434,39 +452,40 @@ This package is part of the KDE administration module.")
 (define-public yakuake
   (package
     (name "yakuake")
-    (version "23.04.3")
+    (version "24.05.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/yakuake-" version ".tar.xz"))
               (sha256
                (base32
-                "17ylm5z5lzjq5g4d48s0clpl3hg4rym9sc1p5hr0wfs9jx7197jy"))))
+                "0393cxws0vd0yyzv0qsrlwslxh2kyxx47wjblnadv35293qhy1qf"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
     (inputs
      (list breeze-icons
-           karchive
-           kconfig
-           kcoreaddons
-           kcrash
-           kdbusaddons
-           kglobalaccel
-           ki18n
-           kiconthemes
-           kio
-           knewstuff
-           knotifications
-           knotifyconfig
+           karchive-6
+           kconfig-6
+           kcoreaddons-6
+           kcrash-6
+           kdbusaddons-6
+           kglobalaccel-6
+           ki18n-6
+           kiconthemes-6
+           kio-6
+           knewstuff-6
+           knotifications-6
+           knotifyconfig-6
            konsole
-           kparts
-           kwayland
-           kwidgetsaddons
-           kwindowsystem
-           qtbase-5
-           qtsvg-5
-           qtx11extras))
+           kparts-6
+           kstatusnotifieritem
+           kwayland-6
+           kwidgetsaddons-6
+           kwindowsystem-6
+           libxkbcommon
+           qtbase
+           qtsvg))
     (home-page "https://apps.kde.org/yakuake/")
     (synopsis "Quad-style terminal emulator for KDE")
     (description "Yakuake is a drop-down terminal emulator based on KDE Konsole
