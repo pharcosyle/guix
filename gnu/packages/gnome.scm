@@ -9643,7 +9643,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "3.6.0")
+    (version "3.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker/"
@@ -9651,7 +9651,7 @@ easy, safe, and automatic.")
                                   "tracker-" version ".tar.xz"))
               (sha256
                (base32
-                "1whdqidxmagsc35pmz9kcc5vs3bmvbkmnis7prnx3zxs37z2qnaj"))))
+                "1yfi53fpfszfjajrqf1g80cri472k6wxpxj6g3nwa13yjd84lgdb"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -9705,18 +9705,7 @@ easy, safe, and automatic.")
                 ;; Some tests expect to write to $HOME.
                 (setenv "HOME" "/tmp")
                 (apply invoke "dbus-run-session" "--" "meson" "test"
-                       "--print-errorlogs" test-options))))
-          (add-after 'glib-or-gtk-wrap 'unwrap-libexec
-            (lambda* (#:key outputs #:allow-other-keys)
-              (with-directory-excursion (string-append (assoc-ref outputs "out")
-                                                       "/libexec/tracker3")
-                (for-each
-                 (lambda (f)
-                   (let ((real (string-append "." (basename f) "-real")))
-                     (when (file-exists? real)
-                       (delete-file f)
-                       (rename-file real f))))
-                 (find-files "."))))))))
+                       "--print-errorlogs" test-options)))))))
     (native-inputs
      (list gettext-minimal
            `(,glib "bin")
@@ -9777,7 +9766,7 @@ endpoint and it understands SPARQL.")
 (define-public tracker-miners
   (package
     (name "tracker-miners")
-    (version "3.6.1")
+    (version "3.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker-miners/"
@@ -9785,7 +9774,7 @@ endpoint and it understands SPARQL.")
                                   "/tracker-miners-" version ".tar.xz"))
               (sha256
                (base32
-                "13ljx0birrav728ik3bnlwzgas8q6rbhjbvxp7zzwy6ambafiw7f"))))
+                "1zm57pih7csgipw3w2b1sgadvfszik70sbz4gr5pn6aw9caqhhz7"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -9795,6 +9784,10 @@ endpoint and it understands SPARQL.")
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib/tracker-miners-3.0")
+             ;; TODO: Check if this is only a build-time failure, or add
+             ;; variants to explicitly enable this features, (see:
+             ;; https://gitlab.gnome.org/GNOME/tracker-miners/-/issues/300).
+             "-Dlandlock=disabled"
              ;; TODO: Enable functional tests. Currently, the following error
              ;; appears:
              ;; Exception: The functional tests require DConf to be the default
