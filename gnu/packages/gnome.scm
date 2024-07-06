@@ -372,30 +372,19 @@ features to enable users to create their discs easily and quickly.")
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
-       #:configure-flags (list "-Denable-gtk-doc=true") ;false by default
-       #:phases
-       #~(modify-phases %standard-phases
-           ;; The seed-webkit.patch patches configure.ac.
-           ;; So the source files need to be re-bootstrapped.
-           (add-after 'unpack 'trigger-bootstrap
-             (lambda _
-               (for-each delete-file
-                         (list "configure"
-                               "Makefile.in"))))
-           (add-after 'unpack 'patch-tests
-             (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* (find-files "." "\\.js$")
-                 (("#!/usr/bin/env seed")
-                  (string-append "#!" (getcwd) "/src/seed")))))
-           (add-after 'install 'move-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (doc (assoc-ref outputs "doc")))
-                 (mkdir-p (string-append doc "/share"))
-                 (rename-file
-                  (string-append out "/share/gtk-doc")
-                  (string-append doc "/share/gtk-doc"))))))))
+     (list
+      #:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
+      #:configure-flags #~(list "-Denable-gtk-doc=true") ;false by default
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'move-doc
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc")))
+                (mkdir-p (string-append doc "/share"))
+                (rename-file
+                 (string-append out "/share/gtk-doc")
+                 (string-append doc "/share/gtk-doc"))))))))
     (native-inputs
      (list `(,glib "bin")
            gobject-introspection
