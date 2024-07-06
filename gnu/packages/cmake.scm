@@ -46,8 +46,6 @@
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
-  ;; TODO module creates a circular dep?
-  ;; #:use-module (gnu packages debug)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages kde-frameworks)
@@ -370,7 +368,8 @@ and workspaces that can be used in the compiler environment of your choice.")
                                        "/share/vim/vimfiles/pack/guix/start/cmake")
                         "-DCMAKE_INFO_DIR=share/info"
                         "-DCMAKE_MAN_DIR=share/man")
-                  (delete "-DCMake_ENABLE_DEBUGGER=OFF" #$flags)))
+                  ;; (delete "-DCMake_ENABLE_DEBUGGER=OFF" #$flags)
+                  #$flags))
        ((#:phases phases)
         #~(modify-phases #$phases
             (delete 'delete-help-documentation)
@@ -385,8 +384,14 @@ and workspaces that can be used in the compiler environment of your choice.")
                   (delete-file-recursively (string-append #$output html)))))))))
     (inputs
      (modify-inputs (package-inputs cmake-minimal)
-       (prepend ;; cppdap
-                ncurses)))              ;required for ccmake
+       (prepend
+        ;; There's some sort of Guile weirdness where this module can't require
+        ;; from the debug packages module where 'cppdap' lives. Note this isn't
+        ;; (shouldn't be?) a circular package dependency since although cppdap
+        ;; uses cmake to build the cmake-build-system depends on cmake-minimal,
+        ;; not this package.
+        ;; cppdap
+        ncurses)))              ;required for ccmake
     ;; Extra inputs required to build the documentation.
     (native-inputs
      (modify-inputs (package-native-inputs cmake-minimal)
