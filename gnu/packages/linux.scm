@@ -9737,7 +9737,7 @@ types and interfaces and translates so that the X server can use them.")
 (define-public pipewire
   (package
     (name "pipewire")
-    (version "1.0.5")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9746,7 +9746,7 @@ types and interfaces and translates so that the X server can use them.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fzmdkmi62r2jdw84vji9vfysc01a07qmd69fq507jyyrlvz02ln"))))
+                "1ihasdjnzmx817z4k653bqna6yi69d1jcqg6lvbbdp1m7xa6qk0a"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -9802,7 +9802,7 @@ of Linux application development.")
 (define-public wireplumber
   (package
     (name "wireplumber")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
      (origin
        (method git-fetch)
@@ -9812,7 +9812,7 @@ of Linux application development.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jdfk02f7yc5lhy4r3k7m7dqr0711lvlc0fd1hjhmi4j7yn4i5kd"))))
+        (base32 "1s9p2hpi9v4w70j6hhqnsa4czhn3rzrk03j0qb7lz87qlw491yks"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dsystemd=disabled"
