@@ -2043,14 +2043,26 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
   (package
     (name "modem-manager")
     (version "1.18.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.freedesktop.org/software/ModemManager/"
-                    "ModemManager-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0c74n5jl1qvq2qlbwzfkgxny8smjcgkid1nhdnl6qnlmbn9f8r5l"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.freedesktop.org/software/ModemManager/"
+             "ModemManager-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0c74n5jl1qvq2qlbwzfkgxny8smjcgkid1nhdnl6qnlmbn9f8r5l"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://gitlab.freedesktop.org/mobile-broadband/ModemManager"
+                 "/-/commit/daa829287894273879799a383ed4dc373c6111b0.patch"))
+           (file-name (string-append name "-glib-2.80-fix.patch"))
+           (sha256
+            (base32
+             "04jig3sbkfkwil1nf32a7yg0rmmv5cwm4fjdc7kay9plybhncqpx")))))))
     (build-system gnu-build-system)
     (arguments
      (list
