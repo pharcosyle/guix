@@ -1989,23 +1989,34 @@ these interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.26.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.freedesktop.org/software/libmbim/"
-                    "libmbim-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1ncaarl4lgc7i52rwz50yq701wk2rr478cjybxbifsjqqk2cx27n"))))
-    (build-system gnu-build-system)
+    (version "1.30.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/mobile-broadband/libmbim")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "00kbjvpka51zrfjigzd3rk6r4x8hkg1xfj7d9zl9lccysnxyjx5h"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list (string-append "-Dudevdir=" #$output "/lib/udev"))))
     (native-inputs
      (list `(,glib "bin") ; for glib-mkenums
-           pkg-config python-wrapper))
+           gobject-introspection
+           help2man
+           pkg-config
+           python-wrapper))
     (propagated-inputs
      (list glib)) ; required by mbim-glib.pc
     (inputs
-     (list libgudev))
+     (list bash-minimal
+           bash-completion
+           libgudev))
     (synopsis "Library to communicate with MBIM-powered modems")
     (home-page "https://www.freedesktop.org/wiki/Software/libmbim/")
     (description
@@ -2019,21 +2030,34 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.30.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.freedesktop.org/software/libqmi/"
-                    "libqmi-" version ".tar.xz"))
-              (sha256
-               (base32
-                "140rmjw436rh6rqmnfw6yaflpffd27ilwcv4s9jvvl1skv784946"))))
-    (build-system gnu-build-system)
+    (version "1.34.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/mobile-broadband/libqmi")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m5y2sf14qd2i9mvbb68wxqlfwvpiprgz8zmcx6wb2cnjgsszmwp"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list (string-append "-Dudevdir=" #$output "/lib/udev")
+              "-Dqrtr=false")))
     (inputs
-     (list libgudev))
+     (list bash-minimal
+           bash-completion
+           libmbim
+           libgudev))
     (native-inputs
      (list `(,glib "bin") ; for glib-mkenums
-           pkg-config python-wrapper))
+           gobject-introspection
+           help2man
+           pkg-config
+           python-wrapper))
     (propagated-inputs
      (list glib)) ; required by qmi-glib.pc
     (synopsis "Library to communicate with QMI-powered modems")
@@ -2049,16 +2073,18 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
 (define-public modem-manager
   (package
     (name "modem-manager")
-    (version "1.18.12")
+    (version "1.22.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://www.freedesktop.org/software/ModemManager/"
-             "ModemManager-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/mobile-broadband/ModemManager")
+             (commit version)
+             (recursive? #true)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0c74n5jl1qvq2qlbwzfkgxny8smjcgkid1nhdnl6qnlmbn9f8r5l"))
+         "0fj4ibjfsxal3xfk3hrj4l9vg7zbj42k9lj7151illl2n3d5ngzw"))
        (patches
         (list
          (origin
@@ -2070,11 +2096,28 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
            (sha256
             (base32
              "04jig3sbkfkwil1nf32a7yg0rmmv5cwm4fjdc7kay9plybhncqpx")))))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
      (list
       #:configure-flags
-      #~(list (string-append "--with-udev-base-dir=" #$output "/lib/udev"))))
+      #~(list (string-append "-Dudevdir=" #$output "/lib/udev")
+              (string-append "-Ddbus_policy_dir="
+                             #$output "/etc/dbus-1/system.d")
+              "-Dsystemd_suspend_resume=false"
+              "-Dsystemd_journal=false"
+              "-Dsystemdsystemunitdir=no"
+              "-Dqrtr=false"
+              "-Dvapi=true")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'dont-install-to-/etc
+            (lambda _
+              (substitute* "data/dispatcher-connection/meson.build"
+                (("meson.add_install_script.*mm_prefix / mm_connectiondiruser.*")
+                 ""))
+              (substitute* "data/dispatcher-fcc-unlock/meson.build"
+                (("meson.add_install_script.*mm_prefix / mm_fccunlockdiruser.*")
+                 "")))))))
     (native-inputs
      (list dbus
            gettext-minimal
@@ -2084,11 +2127,17 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
            python
            python-dbus
            python-pygobject
+           libxslt
            vala))
     (propagated-inputs
      (list glib))                       ;required by mm-glib.pc
     (inputs
-     (list libgudev libmbim libqmi polkit))
+     (list bash-minimal
+           bash-completion
+           libgudev
+           libmbim
+           libqmi
+           polkit))
     (synopsis "Mobile broadband modems manager")
     (home-page "https://www.freedesktop.org/wiki/Software/ModemManager/")
     (description
