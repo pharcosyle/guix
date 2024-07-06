@@ -267,6 +267,15 @@ integrate Windows applications into your desktop.")
     (name "wine64")
     (inputs (modify-inputs (package-inputs wine)
               (prepend wine)))
+    ;; Additional stuff from Arch package
+    ;; (native-inputs
+    ;;  (modify-inputs (package-native-inputs wine)
+    ;;    (append
+    ;;     libxxf86vm
+    ;;     mesa
+    ;;     vulkan-loader
+    ;;     vulkan-headers
+    ;;     autoconf)))
     (arguments
      (substitute-keyword-arguments
          (strip-keyword-arguments '(#:system) (package-arguments wine))
