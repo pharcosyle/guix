@@ -5192,7 +5192,18 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     "libsecret-" version ".tar.xz"))
               (sha256
                (base32
-                "081bj59ws08kb261cd1w1mkdkhfbzsjbbkkrm6wllvdyhgbhhg8n"))))
+                "081bj59ws08kb261cd1w1mkdkhfbzsjbbkkrm6wllvdyhgbhhg8n"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://gitlab.gnome.org/GNOME/libsecret/-/commit"
+                        "/208989323211c756dff690115e5cbde5ef7491ce.patch"))
+                  (file-name (string-append name "-glib-2.80-fix.patch"))
+                  (sha256
+                   (base32
+                    "0dxiky94qf7xlam470wpp8xsp2jmd7r3js7r0qkyj7nh0sfisgl6")))))))
     (build-system meson-build-system)
     (arguments
      (list
