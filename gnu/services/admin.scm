@@ -206,6 +206,11 @@ for ROTATION."
   (jobs               rottlog-configuration-jobs                ;list of <mcron-job>
                       (default #f)))
 
+(define %rottlog-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/lib/rottlog")))
+
 (define (rottlog-etc config)
   `(("rottlog"
      ,(file-union "rottlog"
@@ -226,6 +231,8 @@ Old log files are removed or compressed according to the configuration.")
    (extensions (list (service-extension etc-service-type rottlog-etc)
                      (service-extension mcron-service-type
                                         rottlog-jobs-or-default)
+                     (service-extension activation-service-type
+                                        (const %rottlog-activation))
 
                      ;; Add Rottlog to the global profile so users can access
                      ;; the documentation.
