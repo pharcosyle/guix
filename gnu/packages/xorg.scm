@@ -5104,7 +5104,7 @@ by the Xorg server.")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "21.1.12")
+    (version "21.1.13")
     (source
      (origin
        (method url-fetch)
@@ -5112,7 +5112,7 @@ by the Xorg server.")
                            "/xserver/xorg-server-" version ".tar.xz"))
        (sha256
         (base32
-         "03x954bygi6sdynk5yy3yvsfhg6i9gjhisn3x9jxvk5mw4mnw08y"))
+         "033lvjihidc68v08izrr63va8jhkfmzcjg0d6rm26wizjkah4nml"))
        (patches
         (list
          ;; See:
@@ -5230,7 +5230,7 @@ draggable titlebars and borders.")
   (hidden-package
    (package
      (inherit xorg-server)
-     (version "21.1.10")
+     (version "21.1.13")
      (source
       (origin
         (method url-fetch)
@@ -5238,7 +5238,7 @@ draggable titlebars and borders.")
                             "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "1l0iaq83vbl9jr34sa7v7630c5bnp64drlw8yg6c6yn5xyib7c6f"))
+          "033lvjihidc68v08izrr63va8jhkfmzcjg0d6rm26wizjkah4nml"))
         (patches
          (list
           ;; See:
