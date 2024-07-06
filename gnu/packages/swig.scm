@@ -83,4 +83,7 @@ you tailor the wrapping process to suit your application.")
                (base32
                 "1z06m5zv87mha6hvys1iay810ghc1jngilfby1ms2n4d1mryjfym"))
               (patches (search-patches "swig-support-gcc-12.patch"))))
+    (native-inputs
+     (modify-inputs (package-native-inputs swig)
+       (prepend `(,pcre "bin")))) ;for 'pcre-config'
     (inputs (list pcre))))
