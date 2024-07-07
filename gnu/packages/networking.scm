@@ -1917,10 +1917,10 @@ round-robin fashion.")
                (mkdir-p man1)
                (with-output-to-file (string-append man1 "/gandi.1")
                  (lambda _
-                   (invoke "rst2man.py" "gandicli.man.rst")))
+                   (invoke "rst2man" "gandicli.man.rst")))
                #t))))))
     (native-inputs
-     (list python-docutils ; for rst2man.py
+     (list python-docutils ; for rst2man
            python-pytest python-pytest-cov python-tox))
     (propagated-inputs
      (list openssh))           ; used by gandi/cli/modules/iass.py

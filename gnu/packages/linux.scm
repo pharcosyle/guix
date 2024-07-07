@@ -6980,7 +6980,7 @@ from the ntfs-3g package.  It is meant to be used in initrds.")
                                      '())
                                (string-append "-DRST2MAN_EXECUTABLE="
                                               (search-input-file
-                                               %build-inputs "/bin/rst2man.py")))
+                                               %build-inputs "/bin/rst2man")))
        #:phases
        (modify-phases %standard-phases
          (replace 'build

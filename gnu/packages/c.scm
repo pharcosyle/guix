@@ -809,7 +809,7 @@ with essential JSON handling functions, sufficiently good JSON support (not
            automake
            pkg-config
            libtool
-           ;; For rst2man.py
+           ;; For rst2man
            python-docutils))
     (home-page "https://github.com/rsyslog/liblogging")
     (synopsis "Easy to use and lightweight signal-safe logging library")
