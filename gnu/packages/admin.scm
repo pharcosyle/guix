@@ -3965,13 +3965,7 @@ buffers.")
         (base32 "15mnsgzlpd4jkr2zy3jzx0b021g89fa61b8sdm8rjp27gxqkl8mm"))))
     (build-system meson-build-system)
     (arguments
-     `(#:tests? #f              ; many of the tests try to load kernel modules
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'find-rst2man.py
-           (lambda _
-             (substitute* "man/meson.build"
-               (("'rst2man'") "'rst2man.py'")))))))
+     `(#:tests? #f))            ; many of the tests try to load kernel modules
     (inputs
      (list cairo
            elfutils ; libdw
