@@ -804,7 +804,18 @@ other applications that need to directly deal with input devices.")
                       "# subproject('munit'")
                      ((", fallback: \\['munit', 'munit_dep'\\]")
                       ""))
-                   (delete-file-recursively "subprojects")))))
+                   (delete-file-recursively "subprojects")))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://gitlab.freedesktop.org/libinput/libei/-/commit"
+                        "/33b4a6199535868dba8446e5191223e83ea3fe0f.patch"))
+                  (file-name (string-append name "-test-fix.patch"))
+                  (sha256
+                   (base32
+                    "17lizqkc7aax96shcsv6wh8n8fv2vpbfa7mwpa9hj2z5i68arlws")))))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -826,23 +837,19 @@ other applications that need to directly deal with input devices.")
      ;; liboeffis-1.0.pc requires.private basu
      (list basu))
     (native-inputs
-     (append
-      (list doxygen
-            libxml2
-            munit
-            pkg-config
-            python
-            python-attrs
-            python-black
-            python-dbusmock
-            python-jinja2
-            python-pytest
-            ;; python-ruff      ; Not packaged in Guix yet.
-            python-structlog)
-      (if (member (%current-system)
-                  (package-supported-systems valgrind))
-          (list valgrind/interactive)
-          '())))
+     (list dbus ; Needed for 'dbus-monitor' in a test.
+           doxygen
+           libxml2
+           munit
+           pkg-config
+           python
+           python-attrs
+           python-dbusmock
+           python-jinja2
+           python-pytest
+           python-structlog
+           python-pyyaml
+           python-pytest-xdist))
     (home-page "https://libinput.pages.freedesktop.org/libei/")
     (synopsis "Emulated Input protocol implementation")
     (description
