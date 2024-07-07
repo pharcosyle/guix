@@ -1132,7 +1132,18 @@ application suites.")
        (sha256
         (base32 "0wp0w259rkwf6g8sk2b9jkms47vx5gp7mfs345grx9wq53plqq12"))
        (patches
-        (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))
+        (append
+         (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch")
+         (list
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gitlab.gnome.org/GNOME/gtk/-/commit"
+                  "/441b704afdf1dca214e7f71d49dcc164832773a9.patch"))
+            (file-name (string-append name "-gdk-pixbuf-xpm-test-fix.patch"))
+            (sha256
+             (base32
+              "0s3pgg098mb8dw8nws70y2yp81xc2xfrbwbkbn06c47nqq5rff3x"))))))
        (modules '((guix build utils)))))
     (build-system meson-build-system)
     (outputs '("out" "bin" "doc"))
