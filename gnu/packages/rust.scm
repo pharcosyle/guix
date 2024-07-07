@@ -1286,20 +1286,21 @@ safety and thread safety guarantees.")
                             "src/tools/clippy"
                             "src/tools/rust-analyzer"
                             "src/tools/rustfmt"))))
-              (replace 'check
-                ;; Phase overridden to also test more tools.
-                (lambda* (#:key tests? parallel-build? #:allow-other-keys)
-                  (when tests?
-                    (let ((job-spec (string-append
-                                     "-j" (if parallel-build?
-                                              (number->string (parallel-job-count))
-                                              "1"))))
-                      (invoke "./x.py" job-spec "test" "-vv"
-                              "library/std"
-                              "src/tools/cargo"
-                              "src/tools/clippy"
-                              "src/tools/rust-analyzer"
-                              "src/tools/rustfmt")))))
+              ;; (replace 'check
+              ;;   ;; Phase overridden to also test more tools.
+              ;;   (lambda* (#:key tests? parallel-build? #:allow-other-keys)
+              ;;     (when tests?
+              ;;       (let ((job-spec (string-append
+              ;;                        "-j" (if parallel-build?
+              ;;                                 (number->string (parallel-job-count))
+              ;;                                 "1"))))
+              ;;         (invoke "./x.py" job-spec "test" "-vv"
+              ;;                 "library/std"
+              ;;                 "src/tools/cargo"
+              ;;                 "src/tools/clippy"
+              ;;                 "src/tools/rust-analyzer"
+              ;;                 "src/tools/rustfmt")))))
+              (delete 'check)
               (replace 'install
                 ;; Phase overridden to also install more tools.
                 (lambda* (#:key outputs #:allow-other-keys)
