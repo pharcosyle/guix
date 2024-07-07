@@ -8426,7 +8426,7 @@ users.")
          "-Dnm_cloud_setup=false"
          "-Dlibaudit=yes"
          "-Dqt=false"
-         "-Ddocs=true"
+         "-Ddocs=false"
          "--sysconfdir=/etc"
          "--localstatedir=/var"
          (string-append "-Dudev_dir="
@@ -8482,7 +8482,9 @@ users.")
                                                            directory))
                           (delete-file-recursively
                            (string-append #$output directory)))
-                        '("/share/doc" "/share/gtk-doc")))))))
+                        '("/share/doc"
+                          ;; "/share/gtk-doc"
+                          )))))))
     (propagated-inputs
      (list glib))
     (native-inputs
