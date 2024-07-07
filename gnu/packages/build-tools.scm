@@ -465,56 +465,56 @@ other lower-level build files.")))
 (define-public scons
   (package
     (name "scons")
-    (version "4.5.2")
+    (version "4.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/SCons/scons")
                     (commit version)))
               (file-name (git-file-name name version))
-              (patches (search-patches "scons-test-environment.patch"))
+              (patches
+               (append
+                (search-patches "scons-test-environment.patch")
+                ;; Building docs has very burdensome requirements: rst2pdf,
+                ;; fop, ghostscript, sphinx. If you really want 'em:
+                ;; - maybe the prebuilt tarball has some
+                ;; - fiddle with this patch and see how much you can
+                ;;   selectively enable
+                ;; - create a seperate package e.g. 'scons-with-documentation'
+                ;;   with the heavy dependencies
+                (list
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "https://gitlab.archlinux.org/archlinux/packaging"
+                         "/packages/scons/-/raw"
+                         "/a09b03a9f09ab4c1f9a2a85ff522fd8f0a82f9c7"
+                         "/scons-4.4.0-dont_install_manpages.patch"))
+                   (file-name (string-append name "-no-docs.patch"))
+                   (sha256
+                    (base32
+                     "0w7b8hm9pdk5rc74qji7cfbnxbldcp2j9rw2bwvbnvpa4wjgf88z"))))))
               (sha256
                (base32
-                "1fk4w19gq919hfflq6mqnlvkzmyfgspmw3ywnvfc63i3dv7nq4mz"))))
-    (build-system python-build-system)
+                "1gcj5y3l46790sccy8bzbw7ijnflfczad10h65x420a27yxwcp7d"))))
+    (build-system pyproject-build-system)
     (arguments
      (list
-      #:modules (append %python-build-system-modules
-                        '((ice-9 ftw) (srfi srfi-26)))
       #:phases
-      #~(modify-phases (@ (guix build python-build-system) %standard-phases)
+      #~(modify-phases %standard-phases
           (add-after 'unpack 'adjust-hard-coded-paths
             (lambda _
               (substitute* "SCons/Script/Main.py"
                 (("/usr/share/scons")
                  (string-append #$output "/share/scons")))))
-          (add-before 'build 'bootstrap
-            (lambda _
-              ;; XXX: Otherwise setup.py bdist_wheel fails.
-              (setenv "PYTHONPATH" (getenv "GUIX_PYTHONPATH"))
-              (invoke "python" "scripts/scons.py")))
           (replace 'check
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
-                (invoke "python" "runtest.py" "--all" "--unit-only"))))
-          (add-after 'install 'move-manuals
-            (lambda _
-              ;; XXX: For some reason manuals get installed to the top-level
-              ;; #$output directory.
-              (with-directory-excursion #$output
-                (let ((man1 (string-append #$output "/share/man/man1"))
-                      (stray-manuals (scandir "."
-                                              (cut string-suffix? ".1" <>))))
-                  (mkdir-p man1)
-                  (for-each (lambda (manual)
-                              (link manual (string-append man1 "/" manual))
-                              (delete-file manual))
-                            stray-manuals))))))))
+                (invoke "python" "runtest.py" "--all" "--unit-only")))))))
     (native-inputs
-     ;; TODO: Add 'fop' when available in Guix to generate manuals.
      (list python-setuptools
            python-wheel
-           ;;For tests.
+           ;; For tests.
            python-psutil))
     (home-page "https://scons.org/")
     (synopsis "Software construction tool written in Python")
