@@ -1191,11 +1191,6 @@ application suites.")
           (add-after 'unpack 'generate-gdk-pixbuf-loaders-cache-file
             (assoc-ref glib-or-gtk:%standard-phases
                        'generate-gdk-pixbuf-loaders-cache-file))
-          (add-after 'unpack 'patch-rst2man
-            (lambda _
-              (substitute* "docs/reference/gtk/meson.build"
-                (("find_program\\('rst2man'")
-                 "find_program('rst2man.py'"))))
           (add-after 'unpack 'patch
             (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
               ;; Disable building of icon cache.
