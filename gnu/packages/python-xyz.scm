@@ -7668,14 +7668,14 @@ Google and Numpydoc format.")
 (define-public python-docutils
   (package
     (name "python-docutils")
-    (version "0.19")
+    (version "0.21.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "docutils" version))
               (sha256
                (base32
-                "1rprvir116g5rz2bgzkzgyn6mv0z8582rz7bgxbpy2y3adkmm69k"))))
-    (build-system python-build-system)
+                "0vwqzbmzdvwx23myx4cg8s8mdkrqnfxpa9yi7jm2s66z5rrihsrs"))))
+    (build-system pyproject-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (replace 'check
@@ -7683,6 +7683,8 @@ Google and Numpydoc format.")
                       (if tests?
                           (invoke "python" "test/alltests.py")
                           (format #t "test suite not run~%")))))))
+    (native-inputs
+     (list python-flit-core))
     (home-page "https://docutils.sourceforge.net/")
     (synopsis "Python Documentation Utilities")
     (description
