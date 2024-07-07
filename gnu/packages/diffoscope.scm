@@ -331,7 +331,7 @@ them in detail for later analysis.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((share (string-append (assoc-ref outputs "out") "/share/")))
                (mkdir-p (string-append share "/man/man1/" ))
-               (invoke "rst2man.py"
+               (invoke "rst2man"
                        "trydiffoscope.1.rst"
                        (string-append share "/man/man1/trydiffoscope.1"))
                (mkdir-p (string-append share "/doc/" ,name "-" ,version))
