@@ -302,7 +302,7 @@ integrate Windows applications into your desktop.")
                   ;; Copy the missing man file for the wine binary from wine.
                   (copy-file (search-input-file inputs "/share/man/man1/wine.1.gz")
                              (string-append out "/share/man/man1/wine.1.gz")))))))
-       ((#:configure-flags configure-flags '())
+       ((#:configure-flags configure-flags #~'())
         #~(cons "--enable-win64" #$configure-flags))))
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
