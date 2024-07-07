@@ -1081,7 +1081,13 @@ application suites.")
               ;; unknown reasons.
               (substitute* "testsuite/gtk/meson.build"
                 ((".*\\['defaultvalue'],.*") "")
-                ((".*\\['objects-finalize',.*") ""))))
+                ((".*\\['objects-finalize',.*") "")
+                ;; Fails due to an upstream change in gdk-pixbuf (disabling
+                ;; XPM loaders by default). Removing the XPM part of this test
+                ;; is already done in GTK4, hopefully it'll be backported to
+                ;; GTK3.
+                ;; https://gitlab.gnome.org/GNOME/gtk/-/commit/441b704afdf1dca214e7f71d49dcc164832773a9
+                ((".*\\['textbuffer'],.*") ""))))
           (add-after 'unpack 'generate-gdk-pixbuf-loaders-cache-file
             (assoc-ref glib-or-gtk:%standard-phases
                        'generate-gdk-pixbuf-loaders-cache-file))
