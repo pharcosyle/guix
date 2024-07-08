@@ -1237,7 +1237,7 @@ the PDF pages.")
     (build-system python-build-system)
     (propagated-inputs
      (list python-pikepdf python-pillow
-           `(,python "tk")))
+           `(,python-tkinter "tk")))
     (home-page "https://gitlab.mister-muffin.de/josch/img2pdf")
     (synopsis "Convert images to PDF via direct JPEG inclusion")
     (description
