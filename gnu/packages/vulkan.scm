@@ -32,6 +32,7 @@
   #:use-module (guix gexp)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
@@ -644,3 +645,45 @@ storage.")
     (synopsis "Utility libraries for Vulkan developers")
     (description "Utility libraries for Vulkan developers.")
     (license license:asl2.0)))
+
+(define-public vkroots
+  (let ((commit "5106d8a0df95de66cc58dc1ea37e69c99afc9540")
+        (revision "0"))
+    (package
+      (name "vkroots")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Joshua-Ashton/vkroots")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hrp0xqq93552ipw2bmryixgm1aywnz49xagsx5rwzg2d0hwa0aa"))))
+      (build-system meson-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-vulkan
+              (lambda _
+                (substitute* "gen/make_vkroots"
+                  (("\\.\\.") (getcwd)))))
+            (add-before 'install 'gen-vkroots
+              (lambda _
+                (invoke "python3"
+                        "../source/gen/make_vkroots"
+                        "-x"
+                        (string-append
+                         #$(this-package-native-input "vulkan-headers")
+                         "/share/vulkan/registry/vk.xml")))))))
+      (native-inputs
+       (list pkg-config
+             python
+             vulkan-headers))
+      (home-page "https://github.com/Joshua-Ashton/vkroots")
+      (synopsis "Simple method of making Vulkan layers")
+      (description "vkroots is a framework for writing Vulkan layers that
+takes all the complexity away from you.")
+      (license license:expat))))
