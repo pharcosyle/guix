@@ -176,6 +176,9 @@
                        "Lib/test/test_shutil.py"
                        "Lib/test/test_socket.py"
                        "Lib/test/test_subprocess.py"))))))
+    (outputs '("out"
+               "tk"                     ;tkinter; adds 50 MiB to the closure
+               "idle"))                 ;programming environment; weighs 5MB
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -469,6 +472,7 @@ data types.")
                   (substitute* "Modules/Setup"
                     ;; Link Expat instead of embedding the bundled one.
                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))))))
+    (outputs '("out"))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
        ((#:configure-flags flags)
@@ -1050,6 +1054,7 @@ data types.")
 (define-public python2-minimal
   (package/inherit python-2
     (name "python2-minimal")
+    (outputs '("out"))
 
     ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
     ;; is invoked upon 'make install'.  'pip' also expects 'ctypes' and thus
