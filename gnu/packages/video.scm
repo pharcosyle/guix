@@ -2845,7 +2845,7 @@ the last played position, etc.")
                                               ".appdata.xml") apps)
                  (install-file (string-append desktop-base package-id
                                               ".desktop") apps)))))))
-    (inputs (list `(,python "tk")
+    (inputs (list `(,python-tkinter "tk")
                   python-jellyfin-apiclient
                   python-jinja2
                   python-mpv
