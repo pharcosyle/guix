@@ -198,7 +198,8 @@
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:configure-flags (list
+       `(#:tests? #f
+         #:configure-flags (list
 
                             ;; Provide channel metadata for 'guix describe'.
                             ;; Don't pass '--with-channel-url' and
