@@ -8505,6 +8505,8 @@ services.")
        (modify-inputs (package-propagated-inputs base)
          (delete "elogind"))))))
 
+(define-public network-manager-no-logind network-manager)
+
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
