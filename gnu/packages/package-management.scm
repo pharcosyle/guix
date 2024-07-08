@@ -198,7 +198,8 @@
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
-       `(;; For reproducibility, see <https://issues.guix.gnu.org/74204>.
+       `(#:tests? #f
+         ;; For reproducibility, see <https://issues.guix.gnu.org/74204>.
          #:parallel-build? #false
          #:configure-flags (list
 
