@@ -419,7 +419,9 @@
            sqlite ; for sqlite extension
            openssl-1.1
            readline
-           zlib))
+           zlib
+           tcl
+           tk))                     ; for tkinter
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("sitecustomize.py" ,(local-file (search-auxiliary-file
@@ -639,7 +641,8 @@ def contents() -> str:
              ,(customize-site version))))))
     (inputs
      (modify-inputs (package-inputs python-2.7)
-       (replace "openssl" openssl)))
+       (replace "openssl" openssl)
+       (delete "tcl" "tk")))
     (native-inputs
      (let ((inputs (modify-inputs (package-native-inputs python-2)
                      (prepend tzdata-for-tests
