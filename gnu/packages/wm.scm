@@ -136,6 +136,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages hardware)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages haskell-xyz)
@@ -3248,34 +3249,30 @@ for wayland conceptually based on the X11 window manager
     (license license:expat)))
 
 (define-public libdisplay-info
-  (let ((commit "ebee35935dad01478ae1ae5ead298c4cd8018ac2")
-        (revision "0"))
-    (package
-      (name "libdisplay-info")
-      (version (git-version "0.2.0-dev" revision commit))
-      (home-page "https://gitlab.freedesktop.org/emersion/libdisplay-info")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference (url home-page) (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1ly8acdjxn8l55y0wc07n7pb6rzh9dpr1vbsakdib2zrl0i5yh3a"))))
-      (build-system meson-build-system)
-      (arguments
-       (list
-        #:phases #~(modify-phases %standard-phases
-                     (add-before 'configure 'fix-meson-file
-                       (lambda* (#:key native-inputs inputs #:allow-other-keys)
-                         (substitute* "meson.build"
-                           (("/usr/share/hwdata/pnp.ids")
-                            (string-append (assoc-ref (or native-inputs inputs)
-                                                      "hwdata")
-                                           "/share/hwdata/pnp.ids"))))))))
-      (native-inputs (list hwdata python))
-      (synopsis "EDID and DisplayID library")
-      (description
-       "This package provides a library to read @acronym{EDID, Extended
+  (package
+    (name "libdisplay-info")
+    (version "0.2.0")
+    (home-page "https://gitlab.freedesktop.org/emersion/libdisplay-info")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page) (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x5paiq0lfvq6kbn5hgf0h8m86mjkqqj1pldjgl1i0n7nc39c6gb"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (append
+      (list edid-decode
+            hwdata
+            pkg-config
+            python)
+      (if (%current-target-system)
+          (list pkg-config-for-build)
+          '())))
+    (synopsis "EDID and DisplayID library")
+    (description
+     "This package provides a library to read @acronym{EDID, Extended
 Display Identification Data} and DisplayID metadata from display devices.  It
 has the following goals:
 
@@ -3288,7 +3285,7 @@ Simplicity and correctness over performance and resource usage.
 @item
 Well-tested and fuzzed.
 @end enumerate")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public libucl
   (package
