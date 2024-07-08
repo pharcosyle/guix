@@ -226,7 +226,7 @@ This can give a much better understanding of the command's performance.")
 (define-public benchmark
   (package
     (name "benchmark")
-    (version "1.5.6")
+    (version "1.8.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -235,7 +235,7 @@ This can give a much better understanding of the command's performance.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "030g4d8vpn2442dsap0qw86lsw7xfl36k0x0x9bn0vvm11qvjn8c"))))
+                "1hpwz9nl7g4871isrb7jv0pa5fp07li0yjprvjrl4jj7lcfmkv9v"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("googletest-source" ,(package-source googletest))
