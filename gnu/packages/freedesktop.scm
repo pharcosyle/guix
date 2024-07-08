@@ -397,7 +397,7 @@ some of the freedesktop.org specifications.")
                 "163g8ndsbma7acy2k9mrnvlpb7yi4431hgkx1gygkafgwpq1ii1x"))))
     (build-system meson-build-system)
     (native-inputs (list pkg-config))
-    (inputs (list libdrm))
+    (propagated-inputs (list libdrm))
     (home-page "https://gitlab.freedesktop.org/emersion/libliftoff")
     (synopsis "Lightweight KMS plane library for compositors")
     (description "Libliftoff eases the use of
