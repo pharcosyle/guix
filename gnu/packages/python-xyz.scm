@@ -2406,7 +2406,7 @@ interacting with the low-level LibRaw C APIs.")
                 "1zmvmwgxyzvm83818skhn8b4wrci4kmnixaax8q3ia5cn7xrmj6v"))))
     (build-system python-build-system)
     (propagated-inputs
-     (list `(,python "tk")))
+     (list `(,python-tkinter "tk")))
     (home-page "https://github.com/robertlugg/easygui")
     (synopsis "GUI programming module for Python")
     (description "EasyGUI is a module for very simple, very easy GUI
@@ -7628,7 +7628,7 @@ operating_system/path_expansion.robot")))
            python-pygments
            python-pyyaml
            python-rellu
-           `(,python "tk")              ;used when building the HTML doc
+           `(,python-tkinter "tk")              ;used when building the HTML doc
            python-xmlschema
            scrot                        ;for taking screenshots
            tzdata-for-tests
@@ -9638,7 +9638,7 @@ tests = True~%" #$(this-package-input "tcl") #$(this-package-input "tk"))))))
            python-packaging
            python-pillow
            python-pyparsing
-           `(,python "tk")))
+           `(,python-tkinter "tk")))
     (inputs
      (list cairo
            freetype
@@ -14121,7 +14121,7 @@ multiprecision arithmetic.")
                (("from ScrolledText import ScrolledText")
                 "from tkinter.scrolledtext import ScrolledText")))))))
     (native-inputs
-     `(("python-tkinter" ,python "tk")))
+     `(("python-tkinter" ,python-tkinter "tk")))
     (home-page "https://github.com/ialbert/plac")
     (synopsis "Command line arguments parser")
     (description "This package can generate command line parameters from
