@@ -112,6 +112,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages benchmark)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -164,8 +165,10 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -3658,6 +3661,161 @@ Type=Application~%"
     (description
      "@code{berry} is a healthy, bite-sized window manager written in C using XLib.")
     (license license:expat)))
+
+(define (reshade-src commit hash)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/Joshua-Ashton/reshade")
+          (commit commit)))
+    (file-name
+     (git-file-name "reshade" (git-version "0" "1" commit)))
+    (sha256
+     (base32 hash))))
+
+(define-public gamescope
+  (package
+    (name "gamescope")
+    (version "3.14.24")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ValveSoftware/gamescope")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "17vk34ybqpn4hh02ilhdk2kcjggblc3b9g4hm0wvzn94mmm2nnwd"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-Denable_openvr_support=false"
+              "-Dforce_fallback_for=[]")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-deps+paths
+            (lambda _
+              (substitute* "meson.build"
+                (("error.*\"force_fallback_for\" is missing entries.*") ""))
+              (substitute* "src/meson.build"
+                (("dependency\\('stb'\\)")
+                 (format #f "declare_dependency(include_directories: ['~a'])"
+                         (string-join
+                          '#$(map (lambda (label)
+                                    (this-package-native-input label))
+                                  (list "stb-image"
+                                        "stb-image-resize"
+                                        "stb-image-write"))
+                          "','")))
+                (("< 0.2.0")
+                 (string-append
+                  "<= " #$(package-version
+                           (this-package-input "libdisplay-info"))))
+                (("reshade/") (string-append #$reshade-src-for-gamescope "/"))
+                (("../thirdparty/SPIRV-Headers")
+                 #$(this-package-native-input "spirv-headers"))
+                ;; HACK: Add pixman to gamescope executable dependencies to
+                ;; work around an error: "DSO missing from command line".
+                (("libdecor_dep, eis_dep,")
+                 "libdecor_dep, eis_dep, dependency('pixman-1')"))
+              (substitute* "src/reshade_effect_manager.cpp"
+                (("/usr") #$output))
+              (substitute* "src/Utils/Process.cpp"
+                (("\"gamescopereaper\"")
+                 (string-append "\""
+                                #$output "/bin/gamescopereaper"
+                                "\""))))))))
+    (inputs
+     (list glm
+           libavif                ; Support for saving .AVIF HDR screenshots
+           libcap
+           libdecor
+           libdisplay-info
+           libdrm
+           libei                  ; Support for XTest/Input emulation
+           libinput-minimal
+           libliftoff
+           libx11
+           libxcomposite
+           libxcursor
+           libxdamage
+           libxext
+           libxkbcommon
+           libxmu
+           libxrender
+           libxres
+           libxt
+           libxtst
+           pipewire               ; Screen capture via pipewire
+           sdl2                   ; SDL2 Window Backend
+           vulkan-loader
+           wayland
+           wlroots-for-gamescope))
+    (native-inputs
+     (append
+      (list pkg-config)
+      (if (%current-target-system)
+          (list pkg-config-for-build)
+          '())
+      (list benchmark             ; Build benchmark tools
+            glslang               ; For execuatable
+            hwdata
+            stb-image
+            stb-image-resize
+            stb-image-write
+            spirv-headers
+            vkroots
+            vulkan-headers        ; WSI layer.
+            wayland-protocols)))
+    (home-page "https://github.com/ValveSoftware/gamescope")
+    (synopsis "Micro-compositor for running games")
+    (description
+     "gamescope is a micro-compositor for running games.  Its goal is to
+provide an isolated compositor that is tailored towards gaming and supports
+many gaming-centric features such as:
+@itemize
+@item Spoofing resolutions.
+@item Upscaling.
+@item Limiting framerates.
+@end itemize")
+    (license license:bsd-2)))
+
+;; Gamescope really wants/needs you to use specific versions.
+
+(define reshade-src-for-gamescope
+  (reshade-src
+   "696b14cd6006ae9ca174e6164450619ace043283"
+   "1zvhf3pgd8bhn8bynrsh725xn1dszsf05j8c9g6zabgv7vnz04a5"))
+
+(define wlroots-for-gamescope
+  (package
+    (inherit wlroots)
+    (version "0.18.0-dev")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Joshua-Ashton/wlroots")
+             (commit "a5c9826e6d7d8b504b07d1c02425e6f62b020791")))
+       (file-name (git-file-name (package-name wlroots) version))
+       (sha256
+        (base32 "13my6xmym079j5b9s8zimvvzgzcidy37x8bmjald1j3b4jqszc0v"))))
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs wlroots)
+       (replace "libliftoff"
+         (package
+           (inherit libliftoff)
+           (version "0.4.1")
+           (source
+            (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.freedesktop.org/emersion/libliftoff")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name (package-name libliftoff) version))
+              (sha256
+               (base32
+                "1ikjp638d655ycaqkdnzhb12d29kkbb3a46lqhbhsfc8vsqj3z1l"))))))))))
 
 (define-public avizo
   (package
