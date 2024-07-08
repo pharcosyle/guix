@@ -624,8 +624,8 @@ through the Display Data Channel Command Interface (@dfn{DDC/CI}) protocol.")
     (license (list license:gpl2+))))
 
 (define-public edid-decode
-  (let ((commit "3d635499e4aca3319f0796ba787213c981c5a770") ; 2024-04-02
-        (revision "1"))
+  (let ((commit "6f117a8f8c0e76e85f599a8b05c21c5f51c5c3c1") ; 2024-07-03
+        (revision "2"))
     (package
       (name "edid-decode")
       (version (git-version "0.0.0" revision commit))
@@ -637,23 +637,8 @@ through the Display Data Channel Command Interface (@dfn{DDC/CI}) protocol.")
                (url "git://linuxtv.org/edid-decode.git")
                (commit commit)))
          (sha256
-          (base32 "18s2pwm45mzgm0rfw3wf0m349p6381i6iwbylxypizqcsvgwxb3f"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                     ; No test suite
-         #:make-flags
-         (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
-               "bindir=/bin" "mandir=/share/man")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-cross-compilation
-             (lambda* (#:key native-inputs target #:allow-other-keys)
-               (when target
-                 (substitute* "Makefile"
-                   (("\\$\\(CXX\\)")
-                    (string-append target "-g++"))))
-               #t))
-           (delete 'configure))))
+          (base32 "19xqf1yxcslvc28m1wy0ynwq1fhd1b671ifdcdng742ayl02gvvc"))))
+      (build-system meson-build-system)
       (home-page "https://git.linuxtv.org/edid-decode.git/")
       (synopsis "Decode @dfn{EDID} data in human-readable format")
       (description "edid-decode decodes @dfn{EDID} monitor description data in
