@@ -749,7 +749,7 @@ as logic programs.")
           python-networkx
           python-pillow
           python-pydantic
-          `(,python "tk")
+          `(,python-tkinter "tk")
           python-sphinx-rtd-theme
           python-traitlets
           python-uvicorn))

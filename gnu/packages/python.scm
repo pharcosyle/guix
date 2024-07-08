@@ -175,6 +175,9 @@
                        "Lib/test/test_shutil.py"
                        "Lib/test/test_socket.py"
                        "Lib/test/test_subprocess.py"))))))
+    (outputs '("out"
+               "tk"                     ;tkinter; adds 50 MiB to the closure
+               "idle"))                 ;programming environment; weighs 5MB
     (build-system gnu-build-system)
     (arguments
      (list
@@ -421,7 +424,9 @@
            sqlite                       ; for sqlite extension
            openssl-1.1
            readline
-           zlib))
+           zlib
+           tcl
+           tk))                     ; for tkinter
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("sitecustomize.py" ,(local-file (search-auxiliary-file
@@ -474,6 +479,7 @@ data types.")
                   (substitute* "Modules/Setup"
                     ;; Link Expat instead of embedding the bundled one.
                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))))))
+    (outputs '("out"))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
        ((#:configure-flags flags)
@@ -642,7 +648,8 @@ def contents() -> str:
               #$(customize-site version))))))
     (inputs
      (modify-inputs (package-inputs python-2.7)
-       (replace "openssl" openssl)))
+       (replace "openssl" openssl)
+       (delete "tcl" "tk")))
     (native-inputs
      (let ((inputs (modify-inputs (package-native-inputs python-2)
                      (prepend tzdata-for-tests
@@ -1062,6 +1069,7 @@ data types.")
 (define-public python2-minimal
   (package/inherit python-2
     (name "python2-minimal")
+    (outputs '("out"))
 
     ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
     ;; is invoked upon 'make install'.  'pip' also expects 'ctypes' and thus

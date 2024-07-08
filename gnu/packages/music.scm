@@ -4651,7 +4651,7 @@ standard MIDI file with the csvmidi program.")
        (list alsa-lib
              boost
              jack-2
-             `(,python "tk")
+             `(,python-tkinter "tk")
              python-dbus
              python-decorator
              python-pyinotify

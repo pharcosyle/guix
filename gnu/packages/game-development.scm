@@ -1659,7 +1659,7 @@ are only used to bootstrap it.")
                   python-requests
                   python-renpy
                   python-six
-                  `(,python "tk")
+                  `(,python-tkinter "tk")
                   xdg-utils))
     (propagated-inputs '())
     (native-inputs (list xorg-server-for-tests))
