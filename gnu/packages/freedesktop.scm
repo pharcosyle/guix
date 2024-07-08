@@ -355,6 +355,33 @@ tests.")
     (home-page "https://gitlab.gnome.org/pwithnall/libglib-testing")
     (license license:lgpl2.1+)))
 
+(define-public libliftoff
+  (package
+    (name "libliftoff")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/emersion/libliftoff")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "163g8ndsbma7acy2k9mrnvlpb7yi4431hgkx1gygkafgwpq1ii1x"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (propagated-inputs
+     (list libdrm))
+    (home-page "https://gitlab.freedesktop.org/emersion/libliftoff")
+    (synopsis "Lightweight KMS plane library")
+    (description
+     "libliftoff eases the use of KMS planes from userspace without standing in
+your way. Users create \"virtual planes\" called layers, set KMS properties on
+them,and libliftoff will pick hardware planes for these layers if possible.")
+    (license license:expat)))
+
 (define-public malcontent
   (package
     (name "malcontent")
