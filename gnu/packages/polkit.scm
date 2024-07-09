@@ -29,6 +29,7 @@
 
 (define-module (gnu packages polkit)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix gexp)
   #:use-module (guix memoization)
   #:use-module ((guix licenses) #:select (lgpl2.0+))
@@ -58,16 +59,16 @@
 (define-public polkit
   (package
     (name "polkit")
-    (version "121")
+    (version "125-pre")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.freedesktop.org/software/polkit/releases/"
-                    name "-" version ".tar.gz"))
-              (patches (search-patches "polkit-disable-systemd.patch"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/polkit-org/polkit")
+                    (commit "042897ed0efd5d622367c2ff4ac224d0b05cccee")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1apz3bh7nbpmlp1cr00pb8z8wp0c7yb23ninb959jz3r38saxiwx"))
+                "1by1jn3pgzn9vgwbkrqrlixypqrgmlppb3qdnzvbyxsx2as9cg4y"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -80,7 +81,9 @@
                   ;; Look up actions and rules from /etc/polkit ...
                   (substitute* "src/polkitbackend/meson.build"
                     (("'-DPACKAGE_SYSCONF_DIR=.*,")
-                     "'-DPACKAGE_SYSCONF_DIR=\"/etc\"',"))
+                     "'-DPACKAGE_SYSCONF_DIR=\"/etc\"',")
+                    (("pk_pkgdatadir / 'rules.d'")
+                     "pk_pkgsysconfdir / 'rules.d'"))
                   (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
                     (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")
                      "PACKAGE_SYSCONF_DIR \"/polkit-1/actions\""))
@@ -100,7 +103,8 @@
                   (ice-9 match))
       #:configure-flags
       #~(list "--sysconfdir=/etc"
-              "-Dsession_tracking=libelogind"
+              "-Dsession_tracking=elogind"
+              (string-append "-Dpam_prefix=" #$output "/etc/pam.d")
               "-Dman=true"
               "-Dtests=true"
               ;; Work around cross-compilation failure.  The build system
@@ -114,16 +118,16 @@
                      '()))
       #:phases
       #~(modify-phases %standard-phases
-          (add-before 'check 'patch-bash
+          (add-after 'unpack 'patch-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "test/data/etc/polkit-1/rules.d/10-testing.rules"
+                (("/bin/(false|true)" _ command)
+                 (search-input-file inputs (string-append "bin/" command))))))
+          (add-after 'configure 'patch-mocklibc-shebang
+            ;; Can't do this earlier, we have to wait for meson to unpack an
+            ;; archive.
             (lambda _
-              (substitute* (list "subprojects/mocklibc-1.0/bin/mocklibc"
-                                 (string-append "../polkit-v." #$version
-                                                "/test/data/etc/passwd")
-                                 (string-append "../polkit-v." #$version
-                                                "/test/data/etc/polkit-1"
-                                                "/rules.d/10-testing.rules"))
-                (("/bin/(bash|false|true)" _ command)
-                 (which command)))))
+              (patch-shebang "subprojects/mocklibc-1.0/bin/mocklibc")))
           (replace 'check
             (lambda* (#:key tests? test-options #:allow-other-keys)
               (when tests?
