@@ -921,7 +921,7 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "252.9")
+    (version "255.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -930,8 +930,7 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "049cfv97975x700s7lx4p9i22nv6v7j046iwkspxba7kr5qq7akw"))
-              (patches (search-patches "elogind-fix-rpath.patch"))))
+                "0j3f6xjhpcdzrngaxg86499i6i0qywjqckilfhrmq6d2v3y6p9p0"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -940,10 +939,8 @@ the freedesktop.org XDG Base Directory specification.")
                  (libexec (string-append out "/libexec/elogind"))
                  (dbus-data (string-append out "/share/dbus-1"))
                  (dbuspolicy (string-append dbus-data "/system.d"))
-                 (dbussessionservice (string-append dbus-data "/services"))
                  (dbussystemservice (string-append dbus-data
                                                    "/system-services"))
-                 (dbusinterfaces (string-append dbus-data "/interfaces"))
 
                  #$@(if (not (target-riscv64?))
                         #~((kexec-tools #$(this-package-input "kexec-tools")))
@@ -958,13 +955,11 @@ the freedesktop.org XDG Base Directory specification.")
                  (poweroff-path (string-append shepherd "/sbin/shutdown"))
                  (reboot-path (string-append shepherd "/sbin/reboot")))
             (list
-             (string-append "-Drootprefix=" out)
+             "-Dmode=release"
              (string-append "-Dsysconfdir=" sysconf)
-             (string-append "-Drootlibexecdir=" libexec)
+             (string-append "-Dlibexecdir=" libexec)
              (string-append "-Ddbuspolicydir=" dbuspolicy)
-             (string-append "-Ddbussessionservicedir=" dbussessionservice)
              (string-append "-Ddbussystemservicedir=" dbussystemservice)
-             (string-append "-Ddbus-interfaces-dir=" dbusinterfaces)
              (string-append "-Dc_link_args=-Wl,-rpath=" libexec)
              (string-append "-Dcpp_link_args=-Wl,-rpath=" libexec)
              (string-append "-Dhalt-path=" halt-path)
@@ -975,7 +970,7 @@ the freedesktop.org XDG Base Directory specification.")
              (string-append "-Dreboot-path=" reboot-path)
              (string-append "-Dnologin-path=" nologin-path)
              "-Dcgroup-controller=elogind"
-             "-Dman=true"
+             "-Dman=enabled"
              ;; Disable some tests.
              "-Dslow-tests=false"
              ;; Adjust the default user shell to /bin/sh (otherwise it is set
@@ -986,21 +981,31 @@ the freedesktop.org XDG Base Directory specification.")
          (add-after 'unpack 'fix-pkttyagent-path
            (lambda _
              (substitute* "meson.build"
-               (("join_paths\\(bindir, 'pkttyagent'\\)")
+               (("bindir, 'pkttyagent'")
                 "'\"/run/current-system/profile/bin/pkttyagent\"'"))))
+         (add-after 'unpack 'set-tzdata-dir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/basic/time-util.c"
+               (("/usr/share/zoneinfo")
+                (search-input-directory inputs "share/zoneinfo")))))
          (add-after 'unpack 'use-global-hook-directory
            ;; XXX There is no run-time setting to set this per-process, only a
            ;; build-time, hard-coded list of global directories.
            (lambda _
-             (substitute* (list "src/login/logind-core.c"
-                                "src/login/logind-dbus.c"
-                                "src/sleep/sleep.c"
-                                "src/shared/sleep-config.c")
-               (("PKGSYSCONFDIR") "\"/etc/elogind\""))))
+             (substitute* "meson.build"
+               (("pkgsysconfdir =.*")
+                "pkgsysconfdir = '/etc/elogind'\n"))))
          (add-after 'unpack 'adjust-tests
            (lambda _
              (substitute* "src/test/meson.build"
-               ((".*'test-cgroup.c'.*") "")) ;no cgroup in container
+               ;; No cgroup in container.
+               ((".*'test-cgroup.c'.*") "")
+               ((".*'test-cgroup-util.c'.*") "")
+               ;; Tries to do a lot of things with top-level diretories.
+               ((".*'test-chase.c'.*") ""))
+             (substitute* "src/libelogind/meson.build"
+                ; No /sys in container
+               ((".*'sd-bus/test-bus-creds.c'.*") ""))
              ;; This test tries to copy some bytes from /usr/lib/os-release,
              ;; which does not exist in the build container.  Choose something
              ;; more likely to be available.
@@ -1016,6 +1021,8 @@ the freedesktop.org XDG Base Directory specification.")
                (("#!/bin/sh")
                 (string-append "#!" (which "sh"))))
              ;; Do not look for files or directories that do not exist.
+             (substitute* "src/test/test-fd-util.c"
+               (("usr") "etc"))
              (substitute* "src/test/test-fs-util.c"
                (("usr") "etc")
                (("/etc/machine-id") "/etc/passwd"))
@@ -1027,19 +1034,38 @@ the freedesktop.org XDG Base Directory specification.")
              ;; This test expects that /sys is available.
              (substitute* "src/test/test-mountpoint-util.c"
                (("assert_se\\(path_is_mount_point\\(\"/sys.*")
-                ""))
+                "")
+               ;; Expects /run to exist.
+               (("TEST\\(path_get_mnt_id_at_null).*" all)
+                (string-append all "        return;\n")))
              ;; /bin/sh does not exist in the build container.
              (substitute* "src/test/test-path-util.c"
                (("/bin/sh") (which "sh")))
-             ;; This test uses sd_device_new_from_syspath to allocate a
+             (substitute* "src/test/test-xattr-util.c"
+               ;; Require /var/tmp
+               (("TEST\\(xsetxattr).*" all)
+                (string-append all "        return;\n"))
+               (("TEST\\(getxattr_at_malloc).*" all)
+                (string-append all "        return;\n")))
+             (substitute* "src/libelogind/meson.build"
+               ((".*'sd-device/test-sd-device.c'.*") "")
+               ((".*'sd-login/test-login.c'.*") ""))
+             ;; These tests use sd_device_new_from_syspath to allocate a
              ;; loopback device, but that fails because /sys is unavailable.
+             (substitute* "src/libelogind/sd-device/test-sd-device.c"
+               ((".*sd_device_new_from_syspath.*/sys/class/net/lo.*")
+                "return;"))
              (substitute* "src/libelogind/sd-device/test-sd-device-thread.c"
                ((".*sd_device_new_from_syspath.*/sys/class/net/lo.*")
                 "return 77;"))))
          (add-after 'unpack 'change-pid-file-path
            (lambda _
              (substitute* "src/login/elogind.c"
-               (("\"/run/elogind.pid\"") "\"/run/systemd/elogind.pid\"")))))))
+               (("\"/run/elogind.pid\"") "\"/run/systemd/elogind.pid\""))))
+         (add-after 'unpack 'dont-create-/var/lib
+           (lambda _
+             (substitute* "meson.build"
+               (("install_emptydir\\(elogindstatedir\\)") "")))))))
     (native-inputs
      (list docbook-xml-4.5
            docbook-xml-4.2
@@ -1058,14 +1084,14 @@ the freedesktop.org XDG Base Directory specification.")
           '())
       (list linux-pam
             libcap
-            libxcrypt
             `(,util-linux "lib")        ;for 'libmount'
             shadow                      ;for 'nologin'
             shepherd                    ;for 'halt' and 'reboot', invoked
                                         ;when pressing the power button
             dbus
             eudev
-            acl)))             ; to add individual users to ACLs on /dev nodes
+            acl                ; to add individual users to ACLs on /dev nodes
+            tzdata)))
     (home-page "https://github.com/elogind/elogind")
     (synopsis "User, seat, and session management service")
     (description "Elogind is the systemd project's \"logind\" service,
