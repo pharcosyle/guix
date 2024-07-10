@@ -74,7 +74,7 @@
 (define-public libwpe
   (package
     (name "libwpe")
-    (version "1.14.1")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
@@ -82,7 +82,7 @@
         (string-append "https://wpewebkit.org/releases/libwpe-"
                        version ".tar.xz"))
        (sha256
-        (base32 "1plsprnql8yip6vzpx2p1nddl1ki6lz93xxhcm74kfwd1z7wvl5i"))))
+        (base32 "0ajb6c7z0lzwgp23pwq7vqly7lmnlbnwrivd906pj1nhng3a7wy7"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
