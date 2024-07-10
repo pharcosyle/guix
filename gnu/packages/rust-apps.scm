@@ -1945,7 +1945,7 @@ rebase.")
                        ("rust-tempfile" ,rust-tempfile-3)
                        ("rust-toml" ,rust-toml-0.5))
        #:cargo-development-inputs (("rust-serial-test" ,rust-serial-test-0.5))))
-    (native-inputs (list python-cython))
+    (native-inputs (list python-cython-3))
     (home-page "https://github.com/eqrion/cbindgen/")
     (synopsis "Tool for generating C bindings to Rust code")
     (description
@@ -2040,6 +2040,15 @@ rebase.")
 bindings to C and C++ libraries.  This package provides the @command{bindgen}
 command.")
     (license license:bsd-3)))
+
+(define-public rust-bindgen
+  (package
+    (inherit rust-bindgen-cli)
+    (arguments
+     (substitute-keyword-arguments (package-arguments rust-bindgen-cli)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'install-completions)))))))
 
 (define-public sniffglue
   (package
