@@ -39608,7 +39608,7 @@ hacker.")
       (license license:expat))))
 
 (define-public doom-emacs
-  (let ((commit "bea81278fd2ecb65db6a63dbcd6db2f52921ee41")
+  (let ((commit "b9f1d5d2616751defd838266f6c8506faf642097")
         (revision "1"))
     (package
       (name "doom-emacs")
@@ -39621,7 +39621,7 @@ hacker.")
                (commit commit)))
          (sha256
           (base32
-           "1hqnajkr0yqj1vkgxcy10gp018dsvbxri9la6iqiz962wq7j3fjx"))
+           "1x89m8gksvxii0x843bm7sj5c42wlq4dk3wf7phavk7l82695kma"))
          (file-name (git-file-name name version))
          (patches
           (list
@@ -39629,11 +39629,11 @@ hacker.")
              (method url-fetch)
              (uri (string-append
                    "https://github.com/pharcosyle/doomemacs/commit/"
-                   "7ae2e75c63c534be9e41a3fb3758389e95b663d5.patch"))
+                   "a73ad3e2bfe687a9aa898b36b974045724d9405e.patch"))
              (file-name (string-append name "-dirvish.patch"))
              (sha256
               (base32
-               "1b8655zwvhicd7azmamw63dqfpfbqdyfd62f6a83508b61iwdkcl")))
+               "1biah6ca4fs31hnqjf0j4g9wc5z8gby5sd546pf3iyjbls8k2h1m")))
            (origin
              (method url-fetch)
              (uri "https://github.com/doomemacs/doomemacs/pull/7683.patch")
@@ -39677,8 +39677,8 @@ hacker.")
         (with-git-commit
          font-symbols-nerd-mono
          #:upstream-version "0.1.0"
-         #:commit "c6a4acf19454b415cba1c43daf4bfca8fccdd9ba"
-         #:hash "1pnlp54f0c2wgc65p932xyk71lyw361x17w71fnxgp72j1a3y6dz")))
+         #:commit "4322290303f2e12efd5685a0d22d76ed76ec7349"
+         #:hash "0z360gr820a1xig9samxzgzmc99hjx17hkfrmpqwb8bzix37n84j")))
       (outputs '("out" "bin"))
       (synopsis "An Emacs framework for the stubborn martian hacker")
       (description "Doom is a configuration framework for GNU Emacs tailored for
