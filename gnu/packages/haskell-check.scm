@@ -45,18 +45,18 @@
 (define-public ghc-tasty-ant-xml
   (package
     (name "ghc-tasty-ant-xml")
-    (version "1.1.8")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (hackage-uri "tasty-ant-xml" version))
        (sha256
         (base32
-         "0h9mllhw9cd0rn34xhj8grwmbny7z7hpd8qmp9lfcdj0s4qx9vx8"))))
+         "00zgsd6jjfwasr69d0y781vhjr7d8p1jbaaz4pn75ljf33akd92l"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "tasty-ant-xml")))
     (inputs
-     (list ghc-generic-deriving ghc-xml ghc-tagged ghc-tasty))
+     (list ghc-generic-deriving ghc-tagged ghc-tasty ghc-xml))
     (home-page
      "https://github.com/ocharles/tasty-ant-xml")
     (synopsis
@@ -215,14 +215,14 @@ framework}.")
 (define-public ghc-tasty-hunit
   (package
     (name "ghc-tasty-hunit")
-    (version "0.10.0.3")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (hackage-uri "tasty-hunit" version))
        (sha256
         (base32
-         "0gz6zz3w7s44pymw33xcxnawryl27zk33766sab96nz2xh91kvxp"))))
+         "10r05j6cl5clxzi2y2gxg9y4izxpa17l6hwb7f4lrc2qs8xl5sww"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "tasty-hunit")))
     (inputs
@@ -362,38 +362,38 @@ development.")
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
-    (version "0.3.29.1")
+    (version "0.3.30")
     (source
      (origin
        (method url-fetch)
        (uri (hackage-uri "quickcheck-instances" version))
        (sha256
-        (base32 "0jx2wfy7y5dr14s9i457g2aah4isjxry4mlbqhj7vlav6ib84gdj"))))
+        (base32 "07c4ipssd4q823x2biry43h182y3rg26yqsv14z4yiajmz9rlvmx"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "quickcheck-instances")))
-    (inputs (list ghc-quickcheck
-                  ghc-splitmix
-                  ghc-case-insensitive
+    (inputs (list ghc-case-insensitive
+                  ghc-data-array-byte
                   ghc-data-fix
                   ghc-hashable
                   ghc-integer-logarithms
                   ghc-old-time
                   ghc-onetuple
                   ghc-primitive
+                  ghc-quickcheck
                   ghc-scientific
+                  ghc-splitmix
                   ghc-strict
                   ghc-tagged
+                  ghc-text-short
                   ghc-these
                   ghc-time-compat
                   ghc-transformers-compat
                   ghc-unordered-containers
                   ghc-uuid-types
-                  ghc-vector
-                  ghc-data-array-byte
-                  ghc-text-short))
+                  ghc-vector))
     (arguments
-     `(#:cabal-revision ("2"
-                         "118xy4z4dy4bpkzsp98daiv3l4n5j7ph9my0saca7cqjybqwkcip")))
+     `(#:cabal-revision ("1"
+                         "0khr8jyxb0kxqmpi8sn7f0i89cwj4fq2chsygl4f02kflkji53dp")))
     (home-page "https://github.com/haskellari/qc-instances")
     (synopsis "Common quickcheck instances")
     (description "This package provides QuickCheck instances for types
@@ -507,7 +507,7 @@ HUnit.")
     (arguments
      `(#:tests? #f  ; FIXME: Tests do not build.
        #:cabal-revision
-       ("6" "0wbq9wiaag69nsqxwijzhs5y1hb9kbpkp1x65dvx158cxp8i9w9r")))
+       ("12" "16g2xbsmyjal05xka6ib0vca8bjnspsin4aph1xjgqvnma6jv9lz")))
     ;(native-inputs
     ; (list ghc-hunit ghc-quickcheck))
     (inputs
@@ -660,13 +660,13 @@ JUnit tool for Java.")
 (define-public hspec-discover
   (package
     (name "hspec-discover")
-    (version "2.9.7")
+    (version "2.10.10")
     (source (origin
               (method url-fetch)
               (uri (hackage-uri "hspec-discover" version))
               (sha256
                (base32
-                "0536kdxjw6p8b6gcwvmr22jbmb6cgzbddi0fkd01b2m847z37sb5"))))
+                "0cig2l1l8wgxrg2s2srzsrws5vqa0fgf249gb1g222x91s63h2d8"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "hspec-discover")))
     (native-inputs (list ghc-quickcheck ghc-hspec-meta ghc-mockery-bootstrap))
@@ -679,21 +679,21 @@ runs Hspec tests.")
 (define-public ghc-hspec-core
   (package
     (name "ghc-hspec-core")
-    (version "2.9.7")
+    (version "2.10.10")
     (source (origin
               (method url-fetch)
               (uri (hackage-uri "hspec-core" version))
               (sha256
                (base32
-                "040rzqiqwkp373jjpij8lkmv08pp2ya92zzcf95bw8px215rp08n"))))
+                "1djmiy5xjnx71bjagmvipc5dsnvhakm03y72g3vyg7iggxqr6iv4"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "hspec-core")))
-    (inputs (list ghc-hunit
-                  ghc-quickcheck
-                  ghc-ansi-terminal
+    (inputs (list ghc-ansi-terminal
                   ghc-call-stack
-                  ghc-clock
+                  ghc-haskell-lexer
                   ghc-hspec-expectations
+                  ghc-hunit
+                  ghc-quickcheck
                   ghc-quickcheck-io
                   ghc-random
                   ghc-setenv
@@ -709,19 +709,19 @@ be used to extend Hspec's functionality.")
 (define-public ghc-hspec-meta
   (package
     (name "ghc-hspec-meta")
-    (version "2.9.3")
+    (version "2.10.5")
     (source (origin
               (method url-fetch)
               (uri (hackage-uri "hspec-meta" version))
               (sha256
                (base32
-                "1raxwpsmcijl3x2h5naw6aydhbiknxvhj3x7v384bi1rqi51ainm"))))
+                "0jgagvmvp3nvz9vdgvr42x0xv7nnjzz1rshs6x4wzc38qvcrssbn"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "hspec-meta")))
-    (inputs (list ghc-quickcheck
-                  ghc-ansi-terminal
-                  ghc-call-stack-boot
+    (inputs (list ghc-ansi-terminal
+                  ghc-call-stack
                   ghc-clock
+                  ghc-quickcheck
                   ghc-quickcheck-io
                   ghc-random
                   ghc-setenv))
@@ -734,17 +734,17 @@ used to test the in-development version of Hspec.")
 (define-public ghc-hspec
   (package
     (name "ghc-hspec")
-    (version "2.9.7")
+    (version "2.10.10")
     (source (origin
               (method url-fetch)
               (uri (hackage-uri "hspec" version))
               (sha256
                (base32
-                "092sfqjkargxxszp9jjqa8ldjz0xv34jwn6k21q59ys5ckvsrpc1"))))
+                "1903bm001vh9cxmhh87p3c76136dl6aq82srqgvdb5hpsmimwjws"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "hspec")))
-    (inputs (list ghc-quickcheck ghc-hspec-core hspec-discover
-                  ghc-hspec-expectations))
+    (inputs (list ghc-hspec-core hspec-discover ghc-hspec-expectations
+                  ghc-quickcheck))
     (home-page "http://hspec.github.io/")
     (synopsis "Testing Framework for Haskell")
     (description "This library provides the Hspec testing framework for
