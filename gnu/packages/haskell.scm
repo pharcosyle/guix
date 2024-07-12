@@ -853,7 +853,7 @@ interactive environment for the functional language Haskell.")
              ghc-bootstrap-i686-7.8.4))))
     (arguments
      (list
-       #:tests? #f
+       ;; #:tests? #f
 
        #:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
@@ -1016,7 +1016,7 @@ interactive environment for the functional language Haskell.")
             (base32 "1wjc3x68l305bl1h1ijd3yhqp2vqj83lkp3kqbr94qmmkqlms8sj")))) ))
     (arguments
      (list
-       #:tests? #f
+       ;; #:tests? #f
 
        #:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
@@ -1118,6 +1118,8 @@ interactive environment for the functional language Haskell.")
                 "collections.abc.Iterable")))))))
     (arguments
      (substitute-keyword-arguments (package-arguments ghc-8.0)
+       ((#:tests? _ #t)
+          #f)
        ((#:phases phases)
         #~(modify-phases #$phases
             ;; This phase patches the 'ghc-pkg' command so that it sorts the list
@@ -1575,7 +1577,7 @@ interactive environment for the functional language Haskell.")
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:tests? _ #t)
-          #t)
+          #f)
          ((#:phases phases '%standard-phases)
           #~(modify-phases #$phases
              ;; Files don’t exist any more.
