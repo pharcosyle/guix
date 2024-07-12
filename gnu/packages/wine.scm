@@ -135,42 +135,43 @@
      ;; is technically bundling, it's quite defensible.  It might be possible
      ;; to build some of these from Guix PACKAGE-SOURCE but attempts were not
      ;; fruitful so far.  See <https://www.winehq.org/announce/7.0>.
-     (list alsa-lib
-           bash-minimal
-           cups
-           dbus
-           eudev
-           fontconfig
-           freetype
-           gnutls
-           gst-plugins-base
-           libgphoto2
-           openldap
-           samba
-           sane-backends
-           libpcap
-           libusb
-           libice
-           libx11
-           libxi
-           libxext
-           libxcursor
-           libxkbcommon
-           libxrender
-           libxrandr
-           libxinerama
-           libxxf86vm
-           libxcomposite
-           mesa
-           mit-krb5
-           openal
-           pulseaudio-minimal
-           sdl2
-           unixodbc
-           v4l-utils
-           vulkan-loader
-           wayland
-           wayland-protocols))
+     (list ;; alsa-lib
+           ;; bash-minimal
+           ;; cups
+           ;; dbus
+           ;; eudev
+           ;; fontconfig
+           ;; freetype
+           ;; gnutls
+           ;; gst-plugins-base
+           ;; libgphoto2
+           ;; openldap
+           ;; samba
+           ;; sane-backends
+           ;; libpcap
+           ;; libusb
+           ;; libice
+           ;; libx11
+           ;; libxi
+           ;; libxext
+           ;; libxcursor
+           ;; libxkbcommon
+           ;; libxrender
+           ;; libxrandr
+           ;; libxinerama
+           ;; libxxf86vm
+           ;; libxcomposite
+           ;; mesa
+           ;; mit-krb5
+           ;; openal
+           ;; pulseaudio-minimal
+           ;; sdl2
+           ;; unixodbc
+           ;; v4l-utils
+           ;; vulkan-loader
+           ;; wayland
+           ;; wayland-protocols
+           ))
     (arguments
      (list
       ;; Force a 32-bit build targeting a similar architecture, i.e.:
@@ -184,6 +185,9 @@
       #:make-flags
       #~(list "SHELL=bash"
               (string-append "libdir=" #$output "/lib/wine32"))
+      #:configure-flags
+      #~(list "--without-freetype"
+              "--without-x")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-SHELL
@@ -216,37 +220,38 @@
           ;; Explicitly set the 32-bit version of vulkan-loader when installing
           ;; to i686-linux or x86_64-linux.
           ;; TODO: Add more JSON files as they become available in Mesa.
-          #$@(match (%current-system)
-               ((or "i686-linux" "x86_64-linux")
-                `((add-after 'install 'wrap-executable
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (icd (string-append out "/share/vulkan/icd.d")))
-                       (mkdir-p icd)
-                       (copy-file (search-input-file
-                                   inputs
-                                   "/share/vulkan/icd.d/radeon_icd.i686.json")
-                                  (string-append icd "/radeon_icd.i686.json"))
-                       (copy-file (search-input-file
-                                   inputs
-                                   "/share/vulkan/icd.d/intel_icd.i686.json")
-                                  (string-append icd "/intel_icd.i686.json"))
-                       (wrap-program (string-append out "/bin/wine-preloader")
-                         `("VK_ICD_FILENAMES" ":" =
-                           (,(string-append icd
-                                            "/radeon_icd.i686.json" ":"
-                                            icd "/intel_icd.i686.json")))))))))
-               (_
-                `()))
-          (add-after 'install 'install-mono
-            #$(install-wine-mono
-               "8.1.0"
-               "1m7d1rznh226s9n1x69fsajgkn5fy7jfn735kqz9wk4yf908lgjf"))
-          (add-after 'install 'install-gecko32
-            #$(install-wine-gecko
-               '32
-               "2.47.4"
-               "1dmg221nxmgyhz7clwlnvwrx1wi630z62y4azwgf40l6jif8vz1c")))))
+          ;; #$@(match (%current-system)
+          ;;      ((or "i686-linux" "x86_64-linux")
+          ;;       `((add-after 'install 'wrap-executable
+          ;;          (lambda* (#:key inputs outputs #:allow-other-keys)
+          ;;            (let* ((out (assoc-ref outputs "out"))
+          ;;                   (icd (string-append out "/share/vulkan/icd.d")))
+          ;;              (mkdir-p icd)
+          ;;              (copy-file (search-input-file
+          ;;                          inputs
+          ;;                          "/share/vulkan/icd.d/radeon_icd.i686.json")
+          ;;                         (string-append icd "/radeon_icd.i686.json"))
+          ;;              (copy-file (search-input-file
+          ;;                          inputs
+          ;;                          "/share/vulkan/icd.d/intel_icd.i686.json")
+          ;;                         (string-append icd "/intel_icd.i686.json"))
+          ;;              (wrap-program (string-append out "/bin/wine-preloader")
+          ;;                `("VK_ICD_FILENAMES" ":" =
+          ;;                  (,(string-append icd
+          ;;                                   "/radeon_icd.i686.json" ":"
+          ;;                                   icd "/intel_icd.i686.json")))))))))
+          ;;      (_
+          ;;       `()))
+          ;; (add-after 'install 'install-mono
+          ;;   #$(install-wine-mono
+          ;;      "8.1.0"
+          ;;      "1m7d1rznh226s9n1x69fsajgkn5fy7jfn735kqz9wk4yf908lgjf"))
+          ;; (add-after 'install 'install-gecko32
+          ;;   #$(install-wine-gecko
+          ;;      '32
+          ;;      "2.47.4"
+          ;;      "1dmg221nxmgyhz7clwlnvwrx1wi630z62y4azwgf40l6jif8vz1c"))
+          )))
     (home-page "https://www.winehq.org/")
     (synopsis "Implementation of the Windows API (32-bit only)")
     (description
@@ -266,7 +271,44 @@ integrate Windows applications into your desktop.")
     (inherit wine)
     (name "wine64")
     (inputs (modify-inputs (package-inputs wine)
-              (prepend wine)))
+              (prepend wine
+
+                       alsa-lib
+                       bash-minimal
+                       cups
+                       dbus
+                       eudev
+                       fontconfig
+                       freetype
+                       gnutls
+                       gst-plugins-base
+                       libgphoto2
+                       openldap
+                       samba
+                       sane-backends
+                       libpcap
+                       libusb
+                       libice
+                       libx11
+                       libxi
+                       libxext
+                       libxcursor
+                       libxkbcommon
+                       libxrender
+                       libxrandr
+                       libxinerama
+                       libxxf86vm
+                       libxcomposite
+                       mesa
+                       mit-krb5
+                       openal
+                       pulseaudio-minimal
+                       sdl2
+                       unixodbc
+                       v4l-utils
+                       vulkan-loader
+                       wayland
+                       wayland-protocols)))
     ;; Additional stuff from Arch package
     ;; (native-inputs
     ;;  (modify-inputs (package-native-inputs wine)
@@ -293,14 +335,14 @@ integrate Windows applications into your desktop.")
                              (string-append out "/bin/wine"))
                   ;; Copy the real 32-bit wine-preloader instead of the wrapped
                   ;; version.
-                  (copy-file (search-input-file inputs "/bin/.wine-preloader-real")
+                  (copy-file (search-input-file inputs "/bin/wine-preloader")
                              (string-append out "/bin/wine-preloader")))))
             ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
             ;; when installing to x86_64-linux so both are available.
             ;; TODO: Add more JSON files as they become available in Mesa.
             #$@(match (%current-system)
                  ((or "x86_64-linux")
-                  `((delete 'wrap-executable)
+                  `(;; (delete 'wrap-executable)
                     (add-after 'copy-wine32-binaries 'wrap-executable
                       (lambda* (#:key inputs outputs #:allow-other-keys)
                         (let* ((out (assoc-ref outputs "out"))
@@ -311,11 +353,14 @@ integrate Windows applications into your desktop.")
                                               (string-append "/share/vulkan/icd.d/"
                                                              basename)))
                                            '("radeon_icd.x86_64.json"
-                                             "intel_icd.x86_64.json"
-                                             "radeon_icd.i686.json"
-                                             "intel_icd.i686.json"))))
-                          (wrap-program (string-append out "/bin/wine-preloader")
-                            `("VK_ICD_FILENAMES" ":" = ,icd-files))
+                                             ;; "intel_icd.x86_64.json"
+                                             "nouveau_icd.x86_64.json"
+                                             "lvp_icd.x86_64.json"
+                                             ;; "radeon_icd.i686.json"
+                                             ;; "intel_icd.i686.json"
+                                             ))))
+                          ;; (wrap-program (string-append out "/bin/wine-preloader")
+                          ;;   `("VK_ICD_FILENAMES" ":" = ,icd-files))
                           (wrap-program (string-append out "/bin/wine64-preloader")
                             `("VK_ICD_FILENAMES" ":" = ,icd-files)))))))
                  (_
@@ -325,7 +370,7 @@ integrate Windows applications into your desktop.")
                 (let* ((out (assoc-ref %outputs "out")))
                   (copy-recursively (search-input-directory inputs "/lib/wine32")
                                     (string-append out "/lib/wine32")))))
-            (add-after 'install-gecko32 'install-gecko64
+            (add-after 'install 'install-gecko64
               #$(install-wine-gecko
                  '64
                  "2.47.4"
@@ -337,7 +382,9 @@ integrate Windows applications into your desktop.")
                   (copy-file (search-input-file inputs "/share/man/man1/wine.1.gz")
                              (string-append out "/share/man/man1/wine.1.gz")))))))
        ((#:configure-flags configure-flags #~'())
-        #~(cons "--enable-win64" #$configure-flags))))
+        #~(list "--enable-win64")
+        ;; #~(cons "--enable-win64" #$configure-flags)
+        )))
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
@@ -351,14 +398,15 @@ integrate Windows applications into your desktop.")
     (source
      (wine-source version
                   "1xkaq9z0gxapglfsyy6wx1dfsg5z1dja02wphy0z3ydj43kml509"))
-    (arguments
-     (substitute-keyword-arguments (package-arguments wine)
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (replace 'install-mono
-              #$(install-wine-mono
-                 "9.2.0"
-                 "0myp1hz6dd1zqikx4phc436v64vf95jphv2bi20wacjzabz5vcsr"))))))))
+    ;; (arguments
+    ;;  (substitute-keyword-arguments (package-arguments wine)
+    ;;    ((#:phases phases)
+    ;;     #~(modify-phases #$phases
+    ;;         (replace 'install-mono
+    ;;           #$(install-wine-mono
+    ;;              "9.2.0"
+    ;;              "0myp1hz6dd1zqikx4phc436v64vf95jphv2bi20wacjzabz5vcsr"))))))
+    ))
 
 (define-public wine64-devel
   (package
@@ -368,11 +416,14 @@ integrate Windows applications into your desktop.")
     (source
      (wine-source version
                   "1xkaq9z0gxapglfsyy6wx1dfsg5z1dja02wphy0z3ydj43kml509"))
+    (inputs (modify-inputs (package-inputs wine64)
+              (replace "wine" wine-devel)))
     (arguments
      (substitute-keyword-arguments (package-arguments wine64)
        ((#:phases phases)
         #~(modify-phases #$phases
-            (replace 'install-mono
+            (;; replace 'install-mono
+             add-after 'install 'install-mono
               #$(install-wine-mono
                  "9.2.0"
                  "0myp1hz6dd1zqikx4phc436v64vf95jphv2bi20wacjzabz5vcsr"))
