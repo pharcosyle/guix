@@ -635,47 +635,37 @@ and mIRC chat codes.")
           (base32 "08ybif2lw0jy9h2hrlvx3469a3hkvih9gsg60kp9qnklzvqjdy5i"))))
       (build-system haskell-build-system)
       (arguments
-       `(#:haddock? #f ; Haddock fails to generate docs
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-git-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "src/KMonad/Args/TH.hs"
-                 (("\"git\"")
-                  (string-append "\"" (search-input-file inputs "/bin/git") "\"")))))
-           (add-after 'install 'install-udev-rules
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (rules (string-append out "/lib/udev/rules.d")))
-                 (mkdir-p rules)
-                 (call-with-output-file (string-append rules "/70-kmonad.rules")
-                   (lambda (port)
-                     (display
-                      (string-append
-                       "KERNEL==\"uinput\", MODE=\"0660\", "
-                       "GROUP=\"uinput\", OPTIONS+=\"static_node=uinput\"\n")
-                      port)))
-                 #t)))
-           (add-after 'install-udev-rules 'install-documentation
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (doc (string-append out "/share/doc/kmonad-" ,version)))
-                 (install-file "README.md" doc)
-                 (copy-recursively "doc" doc)
-                 (copy-recursively "keymap" (string-append doc "/keymap"))
-                 #t))))))
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'install 'install-udev-rules
+              (lambda _
+                (let ((rules (string-append #$output "/lib/udev/rules.d")))
+                  (mkdir-p rules)
+                  (call-with-output-file (string-append rules "/70-kmonad.rules")
+                    (lambda (port)
+                      (display
+                       (string-append
+                        "KERNEL==\"uinput\", MODE=\"0660\", "
+                        "GROUP=\"uinput\", OPTIONS+=\"static_node=uinput\"\n")
+                       port))))))
+            (add-after 'install 'install-help-and-examples
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let ((doc (string-append #$output "/share/doc/kmonad-" #$version)))
+                  (install-file "README.md" doc)
+                  (copy-recursively "doc" doc)
+                  (copy-recursively "keymap" (string-append doc "/keymap"))))))))
       (inputs
        (list ghc-cereal
-             ghc-exceptions
              ghc-lens
              ghc-megaparsec
              ghc-optparse-applicative
              ghc-resourcet
              ghc-rio
-             ghc-unliftio
-             ghc-unordered-containers
-             ghc-template-haskell))
-      (native-inputs (list ghc-hspec hspec-discover git))
+             ghc-unliftio))
+      (native-inputs
+       (list ghc-hspec
+             hspec-discover))
       (home-page "https://github.com/david-janssen/kmonad")
       (synopsis "Advanced keyboard manager")
       (description "KMonad is a keyboard remapping utility that supports
