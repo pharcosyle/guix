@@ -853,6 +853,8 @@ interactive environment for the functional language Haskell.")
              ghc-bootstrap-i686-7.8.4))))
     (arguments
      (list
+       #:tests? #f
+
        #:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
        ;; execution.
@@ -1014,6 +1016,8 @@ interactive environment for the functional language Haskell.")
             (base32 "1wjc3x68l305bl1h1ijd3yhqp2vqj83lkp3kqbr94qmmkqlms8sj")))) ))
     (arguments
      (list
+       #:tests? #f
+
        #:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
        ;; execution.
@@ -1495,12 +1499,6 @@ interactive environment for the functional language Haskell.")
               (file-pattern ".*\\.conf\\.d$")
               (file-type 'directory)))))))
 
-;; Versions newer than ghc defined below (i.e. the compiler
-;; haskell-build-system uses) should use ghc-next as their name to
-;; ensure ghc (without version specification) and ghc-* packages are
-;; always compatible. See https://issues.guix.gnu.org/issue/47335.
-(define-public ghc ghc-9.2)
-
 ;; 9.4 is the last version to support the make-based build system,
 ;; but it boot with 9.2, only 9.0 is supported.
 (define ghc-bootstrap-for-9.4 ghc-9.0)
@@ -1564,18 +1562,20 @@ interactive environment for the functional language Haskell.")
   (let ((base ghc-9.2))
     (package
       (inherit base)
-      (name "ghc-next")
-      (version "9.4.4")
+      (name "ghc")
+      (version "9.4.8")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://www.haskell.org/ghc/dist/" version
                                     "/ghc-" version "-src.tar.xz"))
                 (sha256
                  (base32
-                  "1qk7rlqf02s3b6m6sqqngmjq1mxnrz88h159lz6k25gddmdg5kp8"))
+                  "0pmqg9846lanb0hcyxhgr9ipzq33rfldxj7ln0j3qgpyczmhgx0b"))
                 (patches (search-patches "ghc-9-StgCRunAsm-only-when-needed.patch"))))
       (arguments
        (substitute-keyword-arguments (package-arguments base)
+         ((#:tests? _ #t)
+          #t)
          ((#:phases phases '%standard-phases)
           #~(modify-phases #$phases
              ;; Files don’t exist any more.
@@ -1591,7 +1591,7 @@ interactive environment for the functional language Haskell.")
                     version "/ghc-" version "-testsuite.tar.xz"))
              (sha256
               (base32
-               "04p2lawxxg3nyv6frzhyjyh3arhqqyh5ka3alxa2pxhcd2hdcja3"))
+               "159wsqnqpqb0pxa3zyhvyg07wxr2zz7v52h52wkplw4pn12dsidc"))
              (patches (search-patches "ghc-testsuite-recomp015-execstack.patch"))))
          ("ghc-alex" ,ghc-alex-bootstrap-for-9.4)
          ("ghc-happy" ,ghc-happy-bootstrap-for-9.4)
@@ -1606,5 +1606,7 @@ interactive environment for the functional language Haskell.")
               (files (list (string-append "lib/ghc-" version)))
               (file-pattern ".*\\.conf\\.d$")
               (file-type 'directory)))))))
+
+(define-public ghc ghc-9.4)
 
 ;;; haskell.scm ends here
