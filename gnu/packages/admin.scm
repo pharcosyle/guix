@@ -5541,17 +5541,41 @@ it won't take longer to install 15 machines than it would to install just 2.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-nix" ,rust-nix-0.27)
+       (;; greetd
+        ("rust-async-trait" ,rust-async-trait-0.1)
+        ("rust-enquote" ,rust-enquote-1)
+        ("rust-getopts" ,rust-getopts-0.2)
+        ;; ("rust-greetd-ipc" ,rust-greetd-ipc-0.10)
+        ;; ("rust-inish" ,rust-inish-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-nix" ,rust-nix-0.27)
         ("rust-pam-sys" ,rust-pam-sys-0.5)
-        ("rust-rpassword" ,rust-rpassword-5)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-tokio" ,rust-tokio-1)
-        ("rust-getopts" ,rust-getopts-0.2)
         ("rust-thiserror" ,rust-thiserror-1)
-        ("rust-async-trait" ,rust-async-trait-0.1)
-        ("rust-enquote" ,rust-enquote-1))
+        ("rust-tokio" ,rust-tokio-1)
+
+        ;; greetd_ipc
+        ;; ("rust-async-trait" ,rust-async-trait-0.1)
+        ;; ("rust-serde" ,rust-serde-1)
+        ;; ("rust-serde-json" ,rust-serde-json-1)
+        ;; ("rust-thiserror" ,rust-thiserror-1)
+        ;; ("rust-tokio" ,rust-tokio-1)
+
+        ;; agreety
+        ;; ("rust-enquote" ,rust-enquote-1)
+        ;; ("rust-getopts" ,rust-getopts-0.2)
+        ;; ("rust-greetd-ipc" ,rust-greetd-ipc-0.10)
+        ;; ("rust-inish" ,rust-inish-0.1)
+        ;; ("rust-nix" ,rust-nix-0.27)
+        ("rust-rpassword" ,rust-rpassword-5)
+
+        ;; fakegreet
+        ;; ("rust-greetd-ipc" ,rust-greetd-ipc-0.10)
+        ;; ("rust-serde" ,rust-serde-1)
+        ;; ("rust-thiserror" ,rust-thiserror-1)
+        ;; ("rust-tokio" ,rust-tokio-1)
+        )
        #:phases
        (modify-phases %standard-phases
          (delete 'package)
