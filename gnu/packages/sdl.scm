@@ -50,6 +50,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -92,59 +93,90 @@
                   (sha256
                    (base32
                     "0acj5myymz9knsk1qg4bhxgr28i1qw7n9j97v6w8gavbjmwii5sg")))))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
      (list
       #:tests? #f                  ;no check target
-      ;; Explicitly link against shared libraries instead of dlopening them.
-      ;; For X11, ALSA, and PulseAudio.
-      ;; OpenGL library is still dlopened at runtime.
       #:configure-flags
-      #~(append
-         '("--disable-wayland-shared"
-           "--enable-video-kmsdrm"
-           "--disable-kmsdrm-shared")
-         '("--disable-alsa-shared"
-           "--disable-pulseaudio-shared"
-           "--disable-x11-shared"
-           ;; Explicitly link with mesa.
-           ;; This add mesa to libsdl's RUNPATH, to make dlopen
-           ;; finding the libGL from mesa at runtime.
-           "LDFLAGS=-lGL"))
-      #:make-flags
-      #~(cons*
-         ;; SDL dlopens libudev and libvulkan, so make sure they are in
-         ;; rpath. This overrides the LDFLAG set in sdl’s configure-flags,
-         ;; which isn’t necessary as sdl2 includes Mesa by default.
-         (string-append "LDFLAGS=-Wl,-rpath,"
-                        #$(this-package-input "eudev") "/lib"
-                        ",-rpath,"
-                        #$(this-package-input "vulkan-loader") "/lib")
-         '("V=1"))))                  ;build verbosely
+      #~(list "-DSDL_STATIC=OFF" ; Might create fewer possible complications?
+              "-DEXTRA_LDFLAGS=-lGL" ; Explicitly link with Mesa.
+              ;; Explicitly link against shared libraries instead of
+              ;; dynamically loading them.
+              "-DSDL_ALSA_SHARED=OFF"
+              "-DSDL_KMSDRM_SHARED=OFF"
+              ;; "-DSDL_PIPEWIRE_SHARED=OFF"
+              "-DSDL_PULSEAUDIO_SHARED=OFF"
+              "-DSDL_WAYLAND_SHARED=OFF"
+              "-DSDL_WAYLAND_LIBDECOR_SHARED=OFF"
+              "-DSDL_X11_SHARED=OFF")
+      #:modules '((guix build cmake-build-system)
+                  (guix build utils)
+                  (ice-9 rdelim)
+                  (ice-9 popen))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'fix-rpath
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((rpath
+                     (string-join
+                      (map (lambda (input)
+                             (string-append (assoc-ref inputs input)
+                                            "/lib"))
+                           (list "alsa-lib"
+                                 "dbus"
+                                 "eudev"
+                                 "mesa"
+                                 "libdecor"
+                                 "libdrm"
+                                 "libx11"
+                                 "libxkbcommon"
+                                 "libxcursor"
+                                 "libxrandr"
+                                 ;; "pipewire"
+                                 "pulseaudio-minimal"
+                                 "vulkan-loader"
+                                 "wayland"))
+                      ":")))
+                (for-each
+                 (lambda (file)
+                   (let* ((pipe (open-pipe* OPEN_READ "patchelf"
+                                            "--print-rpath" file))
+                          (line (read-line pipe)))
+                     (and (zero? (close-pipe pipe))
+                          (invoke "patchelf" "--set-rpath"
+                                  (string-append line ":" rpath)
+                                  file))))
+                 (filter
+                  (lambda (f)
+                    (not (eq? 'symlink (stat:type (lstat f)))))
+                  (find-files (string-append #$output "/lib") ".*\\.so.*")))))))))
+    (native-inputs
+     (list patchelf
+           pkg-config))
+    (inputs
+     (list alsa-lib
+           dbus
+           eudev                             ;for discovering input devices
+           glib
+           glu
+           ibus-minimal
+           libdecor
+           libdrm
+           libxkbcommon
+           libxcursor                        ;enables X11 cursor support
+           libxrandr
+           ;; pipewire      ; Resolve the dependency cycle and enable this.
+           pulseaudio-minimal
+           vulkan-loader
+           wayland
+           wayland-protocols))
     (propagated-inputs
      ;; SDL headers include X11 headers.
      (list libx11
-           libcap ; 'libSDL.la' contain `-lcap'.
            ;; TODO: Since building Mesa with Meson it is now necessary that Mesa is
            ;; a propogated input. We still need to figure out why, possibly due to a
            ;; change in pkg-config.
            mesa))
-    (native-inputs (list pkg-config))
-    (inputs
-     (list
-      libxrandr
-      glu
-      alsa-lib
-      pulseaudio-minimal
-      dbus
-      eudev                             ;for discovering input devices
-      glib
-      ibus-minimal
-      libxkbcommon
-      libxcursor                        ;enables X11 cursor support
-      vulkan-loader
-      wayland
-      wayland-protocols))
     (outputs '("out" "debug"))
     (synopsis "Cross platform game development library")
     (description
