@@ -38,7 +38,7 @@
 (define-public less
   (package
     (name "less")
-    (version "643")
+    (version "661")
     (source
      (origin
        (method url-fetch)
@@ -46,9 +46,9 @@
                                  version ".tar.gz")
                   (string-append "http://www.greenwoodsoftware.com/less/less-"
                                  version ".tar.gz")))
-       (patches (search-patches "less-hurd-path-max.patch"))
+       ;; (patches (search-patches "less-hurd-path-max.patch"))
        (sha256
-        (base32 "1s2jc25iqwv2i2lsm3x54v0748risrn8zrm2r22a0vw35i1va499"))))
+        (base32 "1v9qwyv869sw66p5sg929rg07sw7w9sc6c8crgzz0gkf45kh2prb"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags #~'("CC=gcc") ; 'lesstest/Makefile' borks without this.
