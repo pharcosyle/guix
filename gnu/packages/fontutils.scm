@@ -1890,7 +1890,7 @@ generated list of fallback fonts are checked.")
 (define-public fontmanager
   (package
    (name "fontmanager")
-   (version "0.8.9")
+   (version "0.9.0")
    (source
     (origin
       (method git-fetch)
@@ -1899,11 +1899,22 @@ generated list of fallback fonts are checked.")
             (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1m77y4mrvkzl1wzx9lr4n4zlp283mbk2ib8v2l4mggd3l35jpi1f"))))
+       (base32 "0pxdwpjzsmld4j2m4q423vdrkx23bb6jqszjgk5wqbr2ln772hcx"))))
    (build-system meson-build-system)
    (arguments
     (list #:glib-or-gtk? #t
-          #:configure-flags #~(list "-Dreproducible=true")))
+          #:configure-flags #~(list "-Dreproducible=true")
+          #:phases
+          #~(modify-phases %standard-phases
+              (add-after 'unpack 'skip-post-installation
+                (lambda _
+                  (substitute* "meson.build"
+                    (("gtk_update_icon_cache: true")
+                     "gtk_update_icon_cache: false")
+                    (("glib_compile_schemas: true")
+                     "glib_compile_schemas: false")
+                    (("update_desktop_database: true")
+                     "update_desktop_database: false")))))))
    (native-inputs
     (list desktop-file-utils
           gettext-minimal
@@ -1915,11 +1926,11 @@ generated list of fallback fonts are checked.")
           yelp-tools))
    (inputs
     (list gsettings-desktop-schemas
-          gtk+
+          gtk
           json-glib
           sqlite
           ;; For googlefonts.
-          webkitgtk-for-gtk3))
+          webkitgtk))
    (home-page "https://fontmanager.github.io/")
    (synopsis "Simple font management for GTK+ desktop environments")
    (description "Font Manager is intended to provide a way for users to
@@ -1939,7 +1950,7 @@ work well with other GTK+ desktop environments.")
         #~(cons* "-Dwebkit=false" #$configure-flags))))
     (inputs
      (modify-inputs (package-inputs fontmanager)
-       (delete "webkitgtk-for-gtk3")))))
+       (delete "webkitgtk")))))
 
 (define-public fntsample
   (package
