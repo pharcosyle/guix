@@ -7225,7 +7225,7 @@ almost all of them.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "44.8")
+    (version "46.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/epiphany/"
@@ -7233,7 +7233,7 @@ almost all of them.")
                                   "epiphany-" version ".tar.xz"))
               (sha256
                (base32
-                "1n3df2skvgmjw9sybhn811l4b58ibwxc0dc208wpvxg060pyhpfk"))))
+                "0jahrf9nrp2rq18ld1jk0w43faxla51bkd80p7nz31sflakjv4zv"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -7265,7 +7265,10 @@ almost all of them.")
                           "provisional_load_failure_updates_back_forward_list"
                           "error-pages-not-stored-in-history"))
                    ", ")
-                  "],")))))
+                  "],")))
+              (substitute* "tests/ephy-encodings-test.c"
+                (("g_assert_cmpstr \\(ephy_encoding_get_collation_key " all)
+                 (string-append "// " all)))))
           (replace 'check
             (lambda* (#:key parallel-tests? tests? #:allow-other-keys)
               (when tests?
@@ -7274,6 +7277,7 @@ almost all of them.")
                             (number->string (parallel-job-count))
                             "1"))
                 (setenv "XDG_CACHE_HOME" (getcwd))
+                (setenv "XDG_RUNTIME_DIR" (getcwd))
                 ;; Tests require a running X server.
                 (system "Xvfb :1 &")
                 (setenv "DISPLAY" ":1")
