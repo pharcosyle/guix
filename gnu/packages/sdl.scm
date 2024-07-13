@@ -141,6 +141,7 @@
       dbus
       eudev                             ;for discovering input devices
       glib
+      ibus-minimal
       libxkbcommon
       libxcursor                        ;enables X11 cursor support
       vulkan-loader
