@@ -102,7 +102,8 @@
                     (("deps/zlib/zlib.gyp") ""))))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--shared-cares"
+     `(#:tests? #f
+       #:configure-flags '("--shared-cares"
                            "--shared-http-parser"
                            "--shared-libuv"
                            "--shared-nghttp2"
@@ -309,18 +310,19 @@
                    (format #t "nodedir=~a\n" out)))))))))
     (native-inputs
      ;; Runtime dependencies for binaries used as a bootstrap.
-     (list gcc-11 ; Fails to build on newer GCC.
+     (list ;; gcc-11 ; Fails to build on newer GCC.
            c-ares
            http-parser
-           ;; I think icu4c keeps references to the GCC with which it was
-           ;; built in its runpath. Since we need to build with gcc-11 here
-           ;; which is not the default GCC version this causes build errors
-           ;; with icu4c when it's a native input. Or something.
-           (package
-             (inherit icu4c)
-             (native-inputs
-              (modify-inputs (package-native-inputs icu4c)
-                (prepend gcc-11))))
+           icu4c
+           ;; ;; I think icu4c keeps references to the GCC with which it was
+           ;; ;; built in its runpath. Since we need to build with gcc-11 here
+           ;; ;; which is not the default GCC version this causes build errors
+           ;; ;; with icu4c when it's a native input. Or something.
+           ;; (package
+           ;;   (inherit icu4c)
+           ;;   (native-inputs
+           ;;    (modify-inputs (package-native-inputs icu4c)
+           ;;      (prepend gcc-11))))
            libuv-for-node
            `(,nghttp2-for-node "lib")
            openssl-1.1
@@ -804,6 +806,10 @@ source files.")
                     (("deps/zlib/zlib.gyp") ""))))))
     (arguments
      (substitute-keyword-arguments (package-arguments node-bootstrap)
+       ((#:tests? _ #t)
+          #f
+          ;; #t
+          )
        ((#:configure-flags configure-flags)
         ''("--shared-cares"
            "--shared-libuv"
