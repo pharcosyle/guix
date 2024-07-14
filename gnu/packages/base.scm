@@ -599,19 +599,6 @@ change.  GNU make offers many powerful extensions over the standard utility.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/make/")))
 
-(define-public gnu-make-4.3
-  (package
-    (inherit gnu-make)
-    (version "4.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/make/make-" version
-                                  ".tar.gz"))
-              (sha256
-               (base32
-                "06cfqzpqsvdnsxbysl5p2fgdgxgl9y4p7scpnrfa8z2zgkjdspz0"))
-              (patches (search-patches "make-impure-dirs.patch"))))))
-
 (define-public gnu-make-4.2
   (package
     (inherit gnu-make)
