@@ -1127,8 +1127,8 @@ then
 fi\n")))
     (service etc-service-type
      `(("os-release" ,os-release)
-       ("services" ,(file-append net-base "/etc/services"))
-       ("protocols" ,(file-append net-base "/etc/protocols"))
+       ("services" ,(file-append iana-etc "/etc/services"))
+       ("protocols" ,(file-append iana-etc "/etc/protocols"))
        ("rpc" ,(file-append net-base "/etc/rpc"))
        ("login.defs" ,login.defs)
        ("issue" ,issue)
