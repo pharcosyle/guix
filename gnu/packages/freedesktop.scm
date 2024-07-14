@@ -3274,46 +3274,48 @@ compatible with the well-known scripts of the same name.")
     (version "1.16.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/flatpak/xdg-desktop-portal/releases/download/"
-             version "/xdg-desktop-portal-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/flatpak/xdg-desktop-portal")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "06cczlh39kc41rvav06v37sad827y61rffy3v29i918ibj8sahav"))))
+         "105xd71401675q1rak6w2gcykz9gmvx3zwhcd799mgfk56x5llz5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("glib:bin" ,glib "bin")
-       ("which" ,which)
-       ("gettext" ,gettext-minimal)))
+     (list pkg-config
+           autoconf
+           automake
+           libtool
+           `(,glib "bin")
+           which
+           gettext-minimal))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("flatpak" ,flatpak)
-       ("fontconfig" ,fontconfig)
-       ("json-glib" ,json-glib)
-       ("libportal" ,libportal)
-       ("dbus" ,dbus)
-       ("geoclue" ,geoclue)
-       ("pipewire" ,pipewire)
-       ("fuse" ,fuse)))
+     (list gdk-pixbuf
+           glib
+           flatpak
+           fontconfig
+           json-glib
+           libportal
+           dbus
+           geoclue
+           pipewire
+           fuse))
     (arguments
-     `(#:configure-flags
-       (list "--with-systemd=no")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'po-chmod
-           (lambda _
-             ;; Make sure 'msgmerge' can modify the PO files.
-             (for-each (lambda (po)
-                         (chmod po #o666))
-                       (find-files "po" "\\.po$"))))
-         (add-after 'unpack 'set-home-directory
-           (lambda _ (setenv "HOME" "/tmp"))))))
+     (list
+      #:configure-flags
+      #~(list "--with-systemd=no")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'po-chmod
+            (lambda _
+              ;; Make sure 'msgmerge' can modify the PO files.
+              (for-each (lambda (po)
+                          (chmod po #o666))
+                        (find-files "po" "\\.po$"))))
+          (add-after 'unpack 'set-home-directory
+            (lambda _ (setenv "HOME" "/tmp"))))))
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DESKTOP_PORTAL_DIR")
