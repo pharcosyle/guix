@@ -6695,7 +6695,7 @@ verifies checksums.")
            libadwaita
            libbs2b
            libebur128
-           libportal
+           libportal-gtk4
            libsamplerate
            libsigc++
            libsndfile
