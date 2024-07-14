@@ -47,6 +47,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix store)
   #:use-module (gnu packages)
@@ -137,6 +138,191 @@ reference manual.")
 data structure with good performance characteristics for concatenation and
 slicing.")
      (license license:boost1.0))))
+
+(define-public c-dvar
+  (package
+    (name "c-dvar")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/c-util/c-dvar")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gi4j1iqyrjm0x5q97d5c0zyyk9bv07xajfn18g5p5aw9c3bxw57"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list c-stdaux
+           c-utf8))
+    (home-page "https://github.com/c-util/c-dvar")
+    (synopsis "D-Bus Variant Type-System")
+    (description "The c-dvar project implements the D-Bus Variant Type-System.
+It is a simple stream encoder and decoder, according to the D-Bus
+Specification. It is a self-contained implementation centered around the D-Bus
+Variant Type-System, suitable for any project handling D-Bus.")
+    (license license:asl2.0)))
+
+(define-public c-ini
+  (package
+    (name "ini")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/c-util/c-ini")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pqbi0av9m32z6b73qbcc1v470fi7x204f3pygzld1mlblvdmbn1"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list c-list
+           c-rbtree
+           c-stdaux
+           c-utf8))
+    (home-page "https://github.com/c-util/ini")
+    (synopsis "Ini-File Handling")
+    (description "The c-ini project implements APIs to deal with ini-files.
+Different formats can be supported, but all share common ini-file properties,
+mainly that they are human-readable, grouped key-value pairs. For API
+documentation, see the public header files, as well as the docbook comments
+for each function.")
+    (license license:asl2.0)))
+
+(define-public c-list
+  (package
+    (name "c-list")
+    (version "3.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/c-util/c-list")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "175n08d9d98b2ill3n32gbbrgzf0nfsb8b319zd2450vlw1c97by"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (home-page "https://github.com/c-util/c-list")
+    (synopsis "Circular Intrusive Double Linked List Collection")
+    (description "The c-list project implements an intrusive collection based
+on circular double linked lists in ISO-C11. It aims for minimal API
+constraints, leaving maximum control over the data-structures to the API
+consumer.")
+    (license license:asl2.0)))
+
+(define-public c-rbtree
+  (package
+    (name "c-rbtree")
+    (version "3.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/c-util/c-rbtree")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zszgvmp7fm0mpz7njza3si9s876scm5rpy5pi3inbag11miwcvm"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list c-stdaux))
+    (home-page "https://github.com/c-util/c-rbtree")
+    (synopsis "Intrusive Red-Black Tree Collection")
+    (description "The c-rbtree project implements an intrusive collection
+based on red-black trees in ISO-C11. Its API guarantees the user full control
+over its data-structures, and rather limits itself to just the tree-specific
+rebalancing and coloring operations. For API documentation,see the c-rbtree.h
+header file, as well as the docbook comments for each function.")
+    (license license:asl2.0)))
+
+(define-public c-shquote
+  (package
+    (name "c-shquote")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/c-util/c-shquote")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1i6c1291lrbxh4i17j7qyfv8c5mk3yww8py3h0kq0299z51nka6g"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list c-stdaux))
+    (home-page "https://github.com/c-util/c-shquote")
+    (synopsis "POSIX Shell Compatible Argument Parser")
+    (description "The c-shquote project is a standalone implementation of POSIX
+Shell compatible argument parsing written in Standard ISO-C11. To use
+c-shquote, include c-shquote.h and link to the libcshquote.so library. A
+pkg-config entry is provided as well. For API documentation, see the
+c-shquote.h header file, as well as the docbook comments for each function.")
+    (license license:asl2.0)))
+
+(define-public c-stdaux
+  (package
+    (name "c-stdaux")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/c-util/c-stdaux")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vdm37h6riw2l4blf87ir3iykmdhiyndd25fzqmy56224l9yxj9j"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (home-page "https://github.com/c-util/c-stdaux")
+    (synopsis "Auxiliary macros and functions for the C standard library")
+    (description "The c-stdaux project contains support macros and auxiliary
+functions around the functionality of common C standard libraries. This
+includes helpers for the ISO C Standard Library, but also other common
+specifications like POSIX or common extended features of widespread compilers
+like gcc and clang.")
+    (license license:asl2.0)))
+
+(define-public c-utf8
+  (package
+    (name "c-utf8")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/c-util/c-utf8")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bbrakl447rs5gzwjq8mxs3rw2w8x3gja440q14jmmzdav55iw7n"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list c-stdaux))
+    (home-page "https://github.com/c-util/c-utf8")
+    (synopsis "UTF-8 Handling in Standard ISO C11")
+    (description "The c-utf8 project implements utility functions around
+handling UTF-8 in standard ISO C11. For API documentation, see the c-utf8.h
+header file, as well as the docbook comments for each function.")
+    (license license:asl2.0)))
 
 (define-public cproc
   (let ((commit "70fe9ef1810cc6c05bde9eb0970363c35fa7e802")
