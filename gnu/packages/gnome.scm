@@ -883,7 +883,7 @@ tomorrow, the rest of the week and for special occasions.")
            libgdata
            libhandy
            libjpeg-turbo
-           libportal
+           libportal-gtk3
            libpng
            (librsvg-for-system)
            python-pygobject
@@ -2239,7 +2239,7 @@ commonly used macros.")
            gtk
            libadwaita
            libgee
-           libportal
+           libportal-gtk4
            qrencode
            telepathy-glib
            vala))
@@ -6920,7 +6920,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
            libexif
            libjpeg-turbo
            libpeas
-           libportal
+           libportal-gtk4
            librsvg
            shared-mime-info))
     (home-page "https://wiki.gnome.org/Apps/EyeOfGnome")
@@ -7268,7 +7268,7 @@ almost all of them.")
            libadwaita
            libarchive
            libnotify
-           libportal
+           libportal-gtk4
            (librsvg-for-system)         ; for loading SVG files
            libsecret
            libsoup
@@ -7626,7 +7626,7 @@ metadata in photo and video files of various formats.")
            gst-plugins-base
            gstreamer
            json-glib
-           libportal
+           libportal-gtk3
            libgdata
            libgee
            libgphoto2
@@ -9955,7 +9955,7 @@ shared object databases, search tools and indexing.")
            gst-plugins-base
            json-glib
            libadwaita
-           libportal
+           libportal-gtk4
            libseccomp
            libselinux
            tracker
@@ -11267,7 +11267,7 @@ only know by its Unicode name or code point.")
            `(,glib "bin")
            `(,gtk+ "bin") pkg-config))
     (inputs
-     (list gsettings-desktop-schemas gtk+ libportal))
+     (list gsettings-desktop-schemas gtk+ libportal-gtk3))
     (home-page "https://www.hjdskes.nl/projects/gcolor3/")
     (synopsis "Simple color chooser written in GTK3")
     (description "Color Picker is a simple color chooser written in GTK3.  It
@@ -13498,7 +13498,7 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
            libgit2-glib
            libpanel
            libpeas
-           libportal
+           libportal-gtk4
            libsoup
            llvm
            libostree
