@@ -149,7 +149,7 @@
            libsodium
            spice-gtk                    ; for spice plugin
            telepathy-glib
-           vte                          ; for st plugin
+           vte/gtk+-3                   ; for st plugin
            wayland
            webkitgtk-for-gtk3           ; for www plugin
            libx11
