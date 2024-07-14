@@ -3180,9 +3180,8 @@ compatible with the well-known scripts of the same name.")
     (inputs
      (list gtk
            gtk+
-           ;; qtbase-5
-           ;; qtx11extras
-           ))
+           qtbase-5
+           qtx11extras))
     (propagated-inputs
      (list glib))
     (home-page "https://github.com/flatpak/libportal")
