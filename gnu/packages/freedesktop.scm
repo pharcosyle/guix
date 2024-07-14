@@ -3145,9 +3145,12 @@ compatible with the well-known scripts of the same name.")
     (home-page "https://github.com/flatpak/flatpak-xdg-utils")
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
 
-(define-public libportal
+(define* (make-libportal #:optional backend)
   (package
-    (name "libportal")
+    (name (string-append "libportal"
+                         (if backend
+                             (string-append "-" (symbol->string backend))
+                             "")))
     (version "0.7.1")
     (source (origin
               (method git-fetch)
@@ -3157,38 +3160,80 @@ compatible with the well-known scripts of the same name.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ypl9ds5g5jzyirjg4ic0r7lzv39w67yrh8njz1cw566g4j1kfny"))))
+                "0ypl9ds5g5jzyirjg4ic0r7lzv39w67yrh8njz1cw566g4j1kfny"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/flatpak/libportal/commit/"
+                        "7ce883525754befd366034c8f0433351dd01f503.patch"))
+                  (file-name (string-append name "-dbus-tests-fix.patch"))
+                  (sha256
+                   (base32
+                    "1hd67c479lsnpzdm5ygfk1wic51qaqmbg0s7gjhdp4bjh4s6qw2c")))))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
      (list
-      #:configure-flags
-      #~(list "-Ddocs=false")          ; requires unpackaged gi-docgen
       #:phases
       #~(modify-phases %standard-phases
-          (add-before 'check 'set-qt-environment-variables
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; Required for tests
-              (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+          (add-after 'unpack 'fix-test-env
+            ;; Explanation here:
+            ;; https://gitlab.gnome.org/GNOME/libsecret/-/commit/20898932
+            (lambda _
+              (substitute* "tests/meson.build"
+                (("test_env.set\\('LD_LIBRARY_PATH'")
+                 "test_env.prepend('LD_LIBRARY_PATH'")
+                (("test_env.set\\('GI_TYPELIB_PATH'")
+                 "test_env.prepend('GI_TYPELIB_PATH'"))))
+          #$@(if (member backend '(qt5 qt6))
+                 #~((add-before 'check 'set-qt-environment-variables
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        ;; Required for tests
+                        (setenv "QT_QPA_PLATFORM" "offscreen"))))
+                 '())
+          (add-after 'install 'move-docs
+            (lambda _
+              (mkdir-p (string-append #$output:doc "/share"))
+              (rename-file
+               (string-append #$output "/share/doc")
+               (string-append #$output:doc "/share/doc")))))))
     (native-inputs
-     (list pkg-config
-           docbook-xsl
-           docbook-xml
-           `(,glib "bin")
-           gobject-introspection
-           libxml2
-           vala))
-    (inputs
-     (list gtk
-           gtk+
-           qtbase-5
-           qtx11extras))
+     (append
+      (list pkg-config
+            gi-docgen
+            `(,glib "bin")
+            gobject-introspection
+            vala
+            ;; For tests.
+            dbus   ; For 'dbus-monitor'.
+            python
+            python-pytest
+            python-dbusmock)))
     (propagated-inputs
-     (list glib))
+     (append
+      (list glib)
+      (if backend
+          (case backend
+            ((gtk3) (list gtk+))
+            ((gtk4) (list gtk))
+            ((qt5) (list qtbase-5
+                         qtx11extras))
+            ((qt6) (list qtbase)))
+          '())))
     (home-page "https://github.com/flatpak/libportal")
     (synopsis "Flatpak portal library")
     (description
      "libportal provides GIO-style async APIs for most Flatpak portals.")
     (license license:lgpl2.1+)))
+
+(define-public libportal (make-libportal))
+(define-public libportal-gtk3 (make-libportal 'gtk3))
+(define-public libportal-gtk4 (make-libportal 'gtk4))
+(define-public libportal-qt5 (make-libportal 'qt5))
+;; Not released yet: https://github.com/flatpak/libportal/commit/f375bfab
+;; (define-public libportal-qt6 (make-libportal 'qt6))
 
 (define-public xdg-desktop-portal
   (package
