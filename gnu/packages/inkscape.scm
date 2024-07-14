@@ -75,6 +75,17 @@
                             "inkscape-" version ".tar.xz"))
         (sha256
          (base32 "0sq81smxwypgnp7r3wgza8w25dsz9qa8ga79sc85xzj3qi6q9lfv"))
+        (patches
+         (list
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gitlab.com/inkscape/inkscape/-/commit/"
+                  "694d8ae43d06efff21adebf377ce614d660b24cd.patch"))
+            (file-name (string-append name "-libxml-2.12-fix.patch"))
+            (sha256
+             (base32
+              "07zwdmgmsqq1b0wrwiyn0kdk8lx351czq93mfdilqq0vfz85migd")))))
         (modules '((guix build utils)
                    (ice-9 format)))
         (snippet
