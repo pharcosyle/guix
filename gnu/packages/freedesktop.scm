@@ -3239,7 +3239,7 @@ compatible with the well-known scripts of the same name.")
 (define-public xdg-desktop-portal
   (package
     (name "xdg-desktop-portal")
-    (version "1.16.0")
+    (version "1.18.4")
     (source
      (origin
        (method git-fetch)
@@ -3249,31 +3249,42 @@ compatible with the well-known scripts of the same name.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "105xd71401675q1rak6w2gcykz9gmvx3zwhcd799mgfk56x5llz5"))))
-    (build-system gnu-build-system)
+         "0m249vcsx1ahllxqvjjb42ma4sqkqagrm803nvmk7h4yw7p8xrm3"))
+       ;; Disable portal tests since they try to use fuse.
+       (patches (search-patches "xdg-desktop-portal-disable-portal-tests.patch"))))
+    (build-system meson-build-system)
     (native-inputs
-     (list pkg-config
-           autoconf
-           automake
-           libtool
+     (list docbook-xml-4.3
+           docbook-xml-4.1.2
+           docbook-xsl
+           gettext-minimal
            `(,glib "bin")
-           which
-           gettext-minimal))
+           pkg-config
+           python-docutils       ; For man pages (via rst2man).
+           xmlto
+           ;; For tests.
+           python
+           python-dbusmock
+           python-pytest
+           python-pytest-xdist))
     (inputs
-     (list gdk-pixbuf
+     (list flatpak
+           fuse
+           geoclue               ; For geolocation, optional.
            glib
-           flatpak
-           fontconfig
            json-glib
            libportal
-           dbus
-           geoclue
            pipewire
-           fuse))
+           ;; For image validation.
+           bubblewrap
+           gdk-pixbuf))
     (arguments
      (list
-      #:configure-flags
-      #~(list "--with-systemd=no")
+      #:glib-or-gtk? #t
+      ;; FIXME: One test failure:
+      ;; "3/10 xdg-desktop-portal / test-permission-store"
+      #:tests? #f
+      #:configure-flags #~(list "--sysconfdir=/etc")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'po-chmod
@@ -3282,8 +3293,13 @@ compatible with the well-known scripts of the same name.")
               (for-each (lambda (po)
                           (chmod po #o666))
                         (find-files "po" "\\.po$"))))
-          (add-after 'unpack 'set-home-directory
-            (lambda _ (setenv "HOME" "/tmp"))))))
+          (add-before 'check 'pre-check
+            (lambda* (#:key inputs #:allow-other-keys)
+              (setenv "HOME" "/tmp")
+              ;; Disables some tests unreliable in CI, sets some timeouts
+              ;; longer, etc. This might spare someone down the line a
+              ;; headache.
+              (setenv "TEST_IN_CI" "1"))))))
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DESKTOP_PORTAL_DIR")
@@ -3302,36 +3318,7 @@ The portal interfaces include APIs for file access, opening URIs, printing
 and others.")
     (license license:lgpl2.1+)))
 
-(define-public xdg-desktop-portal-next
-  (package
-    (inherit xdg-desktop-portal)
-    (version "1.18.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/flatpak/xdg-desktop-portal/releases/download/"
-             version "/xdg-desktop-portal-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0r8y8qmzcfj7b7brqcxr9lg8pavfds815ffvj0kqc378fhgaln5q"))
-       ;; Disable portal tests since they try to use fuse.
-       (patches (search-patches "xdg-desktop-portal-disable-portal-tests.patch"))))
-    (build-system meson-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments xdg-desktop-portal)
-       ((#:configure-flags _ ''())
-        #~(list "-Dsystemd=disabled"))))
-    (native-inputs
-     (list pkg-config
-           `(,glib "bin")
-           gettext-minimal
-           python
-           python-dbusmock
-           python-pytest
-           python-pytest-xdist))
-    (inputs (modify-inputs (package-inputs xdg-desktop-portal)
-              (prepend bubblewrap)))))
+(define-public xdg-desktop-portal-next xdg-desktop-portal)
 
 (define-public xdg-desktop-portal-gtk
   (package
