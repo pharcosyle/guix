@@ -87,6 +87,7 @@
 (define-module (gnu packages admin)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -1146,6 +1147,30 @@ login, passwd, su, groupadd, and useradd.")
 asks for a login name and then transfers over to @code{login}.  It is extended
 to allow automatic login and starting any app.")
     (license license:gpl2+)))
+
+(define-public iana-etc
+  (package
+    (name "iana-etc")
+    (version "20240701")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Mic92/iana-etc/releases/download/"
+                    version "/iana-etc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "198qvvd6bk8kvv0v3bzdqc73ahqapjd7mwcdy90jgycca7hhwg64"))))
+    (build-system copy-build-system)
+    (arguments
+     (list #:install-plan
+           #~'(("protocols" "etc/")
+               ("services" "etc/"))))
+    (synopsis "IANA protocol and port number assignments")
+    (description
+     "The /etc/protocols and /etc/services files built from data provided by
+IANA. New releases are created automatically.")
+    (home-page "https://github.com/Mic92/iana-etc")
+    (license license:expat)))
 
 (define-public net-base
   (package
