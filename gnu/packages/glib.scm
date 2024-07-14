@@ -44,6 +44,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
@@ -239,6 +240,51 @@ shared NFS home directories.")
 eases debugging of D-Bus services by printing various debug information when
 the @code{DBUS_VERBOSE} environment variable is set to @samp{1}.  For more
 information, refer to the @samp{dbus-daemon(1)} man page.")))
+
+(define-public dbus-broker
+  (package
+    (name "dbus-broker")
+    (version "35")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bus1/dbus-broker")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0gbs9cmfbql8flh58nqhk7y7rg57zwxpz7p59hvj87npk1gvs223"))
+       (patches
+        (search-patches "dbus-broker-skip-fs-test.patch"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-Dlinux-4-17=true" ; Make use of newer (4.17+) kernel features.
+              "-Ddocs=true"
+              "-Dlauncher=false")))
+    (native-inputs
+     (list pkg-config
+           python-docutils
+           dbus)) ; For tests.
+    (inputs
+     (list c-dvar
+           c-ini
+           c-list
+           c-rbtree
+           c-shquote
+           c-stdaux
+           c-utf8))
+    (home-page "https://github.com/bus1/dbus-broker")
+    (synopsis "Linux D-Bus Message Broker")
+    (description
+     "The dbus-broker project is an implementation of a message bus as defined
+by the D-Bus specification. Its aim is to provide high performance and
+reliability, while keeping compatibility to the D-Bus reference implementation.
+It is exclusively written for Linux systems, and makes use of many modern
+features provided by recent linux kernel releases.")
+    (license license:asl2.0)))
 
 (define glib
   (package
