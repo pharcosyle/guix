@@ -150,7 +150,7 @@
              (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
                     (ld (string-append (assoc-ref inputs "libc") "/lib"))
                     (loader (car (find-files ld "^ld-linux.+")))
-                    (net-base (assoc-ref inputs "net-base"))
+                    (iana-etc (assoc-ref inputs "iana-etc"))
                     (tzdata-path
                      (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
                     (output (assoc-ref outputs "out")))
@@ -206,7 +206,7 @@
                   ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")))
 
                (substitute* "net/lookup_unix.go"
-                 (("/etc/protocols") (string-append net-base "/etc/protocols")))
+                 (("/etc/protocols") (string-append iana-etc "/etc/protocols")))
                (substitute* "time/zoneinfo_unix.go"
                  (("/usr/share/zoneinfo/") tzdata-path))
                (substitute* (find-files "cmd" "asm.c")
@@ -254,7 +254,7 @@
        ("pcre" ,pcre)
        ("gcc:lib" ,(canonical-package gcc) "lib")))
     (native-inputs
-     (list pkg-config which net-base perl))
+     (list pkg-config which iana-etc perl))
 
     (home-page "https://go.dev/")
     (synopsis "Compiler and libraries for Go, a statically-typed language")
@@ -293,7 +293,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
            (replace 'prebuild
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
-                      (net-base (assoc-ref inputs "net-base"))
+                      (iana-etc (assoc-ref inputs "iana-etc"))
                       (tzdata-path
                        (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
 
@@ -385,9 +385,9 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                    (("#!/usr/bin/env") (string-append "#!" (which "env"))))
 
                  (substitute* "net/lookup_unix.go"
-                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
+                   (("/etc/protocols") (string-append iana-etc "/etc/protocols")))
                  (substitute* "net/port_unix.go"
-                   (("/etc/services") (string-append net-base "/etc/services")))
+                   (("/etc/services") (string-append iana-etc "/etc/services")))
                  (substitute* "time/zoneinfo_unix.go"
                    (("/usr/share/zoneinfo/") tzdata-path)))))
            (add-before 'build 'set-bootstrap-variables
@@ -518,7 +518,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                (setenv "GOCACHE" "/tmp/go-cache"))))
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((net-base (assoc-ref inputs "net-base"))
+             (let* ((iana-etc (assoc-ref inputs "iana-etc"))
                     (tzdata-path (string-append (assoc-ref inputs "tzdata")
                                                 "/share/zoneinfo")))
                ;; XXX: Remove when #49729 is merged?
@@ -546,10 +546,10 @@ in the style of communicating sequential processes (@dfn{CSP}).")
 
                (substitute* "src/net/lookup_unix.go"
                  (("/etc/protocols")
-                  (string-append net-base "/etc/protocols")))
+                  (string-append iana-etc "/etc/protocols")))
                (substitute* "src/net/port_unix.go"
                  (("/etc/services")
-                  (string-append net-base "/etc/services")))
+                  (string-append iana-etc "/etc/services")))
                (substitute* "src/time/zoneinfo_unix.go"
                  (("/usr/share/zoneinfo/") tzdata-path)))))
          ;; Keep this synchronized with the package inputs.
@@ -852,13 +852,13 @@ in the style of communicating sequential processes (@dfn{CSP}).")
 
             (add-after 'unpack 'patch-src/net
               (lambda* (#:key inputs #:allow-other-keys)
-                (let ((net-base (assoc-ref inputs "net-base")))
+                (let ((iana-etc (assoc-ref inputs "iana-etc")))
                   (substitute* "src/net/lookup_unix.go"
                     (("/etc/protocols")
-                     (string-append net-base "/etc/protocols")))
+                     (string-append iana-etc "/etc/protocols")))
                   (substitute* "src/net/port_unix.go"
                     (("/etc/services")
-                     (string-append net-base "/etc/services"))))))
+                     (string-append iana-etc "/etc/services"))))))
 
             (add-after 'unpack 'patch-zoneinfo
               (lambda* (#:key inputs #:allow-other-keys)
