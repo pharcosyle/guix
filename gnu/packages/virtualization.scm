@@ -2489,7 +2489,7 @@ virtual machines.")
 (define-public bubblewrap
   (package
     (name "bubblewrap")
-    (version "0.8.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/containers/bubblewrap/"
@@ -2497,9 +2497,9 @@ virtual machines.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0fik7l8rm4yjkasskj7gw52s8jg3xfy152wqisw3s0xrklad2ylm"))
+                "1qcls1fx1wmrp91irg088kmfdrc9n2ivnikgk50h3b29xnn7wd66"))
                (patches (search-patches "bubblewrap-fix-locale-in-tests.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2539,7 +2539,7 @@ virtual machines.")
              (delete-file-recursively (string-append (assoc-ref outputs "out") "/tmp"))
              #t)))))
     (inputs (list libcap))
-    (native-inputs (list python-wrapper util-linux))
+    (native-inputs (list pkg-config python-wrapper util-linux))
     (home-page "https://github.com/containers/bubblewrap")
     (synopsis "Unprivileged sandboxing tool")
     (description "Bubblewrap is aimed at running applications in a sandbox,
