@@ -388,7 +388,7 @@ integrate Windows applications into your desktop.")
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
 
-(define %wine-devel-version "9.12")
+(define %wine-devel-version "9.13")
 
 (define-public wine-devel
   (package
@@ -397,7 +397,7 @@ integrate Windows applications into your desktop.")
     (version %wine-devel-version)
     (source
      (wine-source version
-                  "1xkaq9z0gxapglfsyy6wx1dfsg5z1dja02wphy0z3ydj43kml509"))
+                  "0j3kpxx4hv9x42zrxqkrb49gqby007q4bqyrrf2gxpiqzv8535np"))
     ;; (arguments
     ;;  (substitute-keyword-arguments (package-arguments wine)
     ;;    ((#:phases phases)
@@ -415,7 +415,7 @@ integrate Windows applications into your desktop.")
     (version %wine-devel-version)
     (source
      (wine-source version
-                  "1xkaq9z0gxapglfsyy6wx1dfsg5z1dja02wphy0z3ydj43kml509"))
+                  "0j3kpxx4hv9x42zrxqkrb49gqby007q4bqyrrf2gxpiqzv8535np"))
     (inputs (modify-inputs (package-inputs wine64)
               (replace "wine" wine-devel)))
     (arguments
