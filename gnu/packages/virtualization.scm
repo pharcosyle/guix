@@ -470,15 +470,20 @@
 exec smbd $@")))
                 (chmod "samba-wrapper" #o755)
                 (install-file "samba-wrapper" libexec))))
-          (add-after 'install 'move-html-doc
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let* ((out #$output)
-                     (doc #$output:doc)
-                     (qemu-doc (string-append doc "/share/doc/qemu-"
-                                              #$(package-version this-package))))
-                (mkdir-p qemu-doc)
-                (rename-file (string-append out "/share/doc/qemu")
-                             (string-append qemu-doc "/html"))))))))
+          #$@(if (supported-package? python-sphinx)
+                 #~((add-after 'install 'move-docs
+                      (lambda* (#:key inputs outputs #:allow-other-keys)
+                        (let* ((out #$output)
+                               (doc #$output:doc)
+                               (qemu-doc (string-append doc "/share/doc/qemu-"
+                                                        #$(package-version this-package))))
+                          (mkdir-p qemu-doc)
+                          (rename-file (string-append out "/share/doc/qemu")
+                                       (string-append qemu-doc "/html"))))))
+                 #~((add-after 'install 'stub-docs
+                      (lambda _
+                        ;; The daemon doesn't like empty output paths.
+                        (mkdir #$output:doc))))))))
     (inputs
      (append
        (if (supported-package? ipxe-qemu)
