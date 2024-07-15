@@ -3487,11 +3487,11 @@ for xdg-desktop-portal that is using Qt/KF5.")
                            (string-append (assoc-ref outputs "out")
                                           "/share/doc/" ,name)))))))
     (native-inputs
-     (list cmake-minimal pkg-config))
+     (list pkg-config
+           scdoc))
     (inputs (list bash-minimal
                   basu
                   grim
-                  iniparser
                   mesa
                   libinih
                   pipewire
