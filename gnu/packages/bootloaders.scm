@@ -98,10 +98,10 @@
   (origin
     (method url-fetch)
     (uri
-     "http://unifoundry.com/pub/unifont-7.0.06/font-builds/unifont-7.0.06.bdf.gz")
+     "https://unifoundry.com/pub/unifont/unifont-15.1.05/font-builds/unifont-15.1.05.bdf.gz")
     (sha256
      (base32
-      "0p2vhnc18cnbmb39vq4m7hzv4mhnm2l0a2s7gx3ar277fwng3hys"))))
+      "07fr3zhnx4jm8qlxivaw50gav66ii1fkydza3wykbqvi9nhvb9cf"))))
 
 (define-public grub
   (package
