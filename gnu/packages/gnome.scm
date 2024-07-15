@@ -4876,7 +4876,7 @@ indicators etc).")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.78.1")
+    (version "2.80.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -4884,8 +4884,23 @@ indicators etc).")
                                   "glib-networking-" version ".tar.xz"))
               (sha256
                (base32
-                "17zhkf2pjwrghdgk5nhfvzqakb2xwk2jj19316xjr0s9n3djv3z4"))))
+                "1krspgafp6492zp1w0l5wz4vrrjxmffva5qn6pirl5qknamg3x6q"))))
     (build-system meson-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'skip-tests
+            ;; Since https://gitlab.gnome.org/GNOME/glib-networking/-/commit/16e48f1674
+            ;; three tests fail because GIO complains loudly that there are no
+            ;; certificates in the build container. Skip them.
+            ;; 4/6 file-database-gnutls     FAIL
+            ;; 5/6 connection-gnutls        FAIL
+            ;; 6/6 connection-gnutls-tls1.2 FAIL
+            (lambda _
+              (substitute* "tls/tests/meson.build"
+                ((".*'file-database'.*") "")
+                ((".*'connection'.*'mock-interaction.c'.*") "")))))))
     (native-inputs
      (list `(,glib "bin") ; for gio-querymodules
            pkg-config gettext-minimal))
