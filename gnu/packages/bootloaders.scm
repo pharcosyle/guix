@@ -649,7 +649,18 @@ The SUBDIR argument defaults to \"efi/Guix\", as it is also the case for
                (base32
                 "0cij9399snpn672pdbda8qbxljdkfg068kvv3g5811rz6yslx124"))
               (patches
-               (search-patches "dtc-meson-cell-overflow.patch"))))
+               (append
+                (search-patches "dtc-meson-cell-overflow.patch")
+                (list
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "https://github.com/dgibson/dtc/commit"
+                         "/822123856980f84562406cc7bd1d4d6c2b8bc184.patch"))
+                   (file-name (string-append name "-python-3.12-fix.patch"))
+                   (sha256
+                    (base32
+                     "11ilwj7d20j9l7v1qja7niy0qhb03l8v6z9wi1h9dc1347q9x0xx"))))))))
     (build-system meson-build-system)
     (arguments
      (list
