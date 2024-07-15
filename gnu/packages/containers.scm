@@ -231,7 +231,7 @@ containers highly integrated with the hosts.")
 (define-public libslirp
   (package
     (name "libslirp")
-    (version "4.7.0")
+    (version "4.8.0")
     (source
      (origin
        (method git-fetch)
@@ -239,7 +239,7 @@ containers highly integrated with the hosts.")
              (url "https://gitlab.freedesktop.org/slirp/libslirp")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0dny8187a8qh6akaa37aa9b5pjxx88f02wh6achp4mygff0ipxba"))
+        (base32 "1v02c732h0rs546lgqzcd66wagqybl8zpxqb0n06hjvyzhwfjqmp"))
        (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (propagated-inputs
