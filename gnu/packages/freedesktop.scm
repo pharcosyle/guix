@@ -3353,25 +3353,27 @@ and others.")
   (package
     (name "xdg-desktop-portal-gtk")
     (version "1.14.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/flatpak/xdg-desktop-portal-gtk/releases/download/"
-                    version "/xdg-desktop-portal-gtk-" version ".tar.xz"))
-              (sha256
-               (base32
-                "002p19j1q3fc8x338ndzxnicwframpgafw31lwvv5avy329akqiy"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/flatpak/xdg-desktop-portal-gtk")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1k634lvmlw7wdmh179ffb7n95yyv3xlpx5d1jv3bzpc9i1x9dv7i"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'po-chmod
-           (lambda _
-             ;; Make sure 'msgmerge' can modify the PO files.
-             (for-each (lambda (po)
-                         (chmod po #o666))
-                       (find-files "po" "\\.po$"))
-             #t)))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'po-chmod
+            (lambda _
+              ;; Make sure 'msgmerge' can modify the PO files.
+              (for-each (lambda (po)
+                          (chmod po #o666))
+                        (find-files "po" "\\.po$")))))
        ;; Enable Gnome portal backends
        #:configure-flags
        (list
@@ -3382,20 +3384,20 @@ and others.")
         "--enable-background"
         "--enable-settings")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("libxml2" ,libxml2)
-       ("glib:bin" ,glib "bin")
-       ("which" ,which)
-       ("gettext" ,gettext-minimal)))
+     (list pkg-config
+           autoconf
+           automake
+           libtool
+           libxml2
+           `(,glib "bin")
+           which
+           gettext-minimal))
     (inputs
-     `(("glib" ,glib)
-       ("gtk" ,gtk+)
-       ("fontconfig" ,fontconfig)
-       ("gnome-desktop" ,gnome-desktop)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+     (list glib
+           gtk+
+           fontconfig
+           gnome-desktop
+           gsettings-desktop-schemas))
     (propagated-inputs
      (list xdg-desktop-portal))
     (home-page "https://github.com/flatpak/xdg-desktop-portal-gtk")
