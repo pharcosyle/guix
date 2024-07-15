@@ -3352,7 +3352,7 @@ and others.")
 (define-public xdg-desktop-portal-gtk
   (package
     (name "xdg-desktop-portal-gtk")
-    (version "1.14.1")
+    (version "1.15.1")
     (source
      (origin
        (method git-fetch)
@@ -3362,10 +3362,11 @@ and others.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1k634lvmlw7wdmh179ffb7n95yyv3xlpx5d1jv3bzpc9i1x9dv7i"))))
-    (build-system glib-or-gtk-build-system)
+         "1fk23hhfrdrgxdjycwrkp4lqcjnca52g0sjjia4kl8m8r8m66xdr"))))
+    (build-system meson-build-system)
     (arguments
      (list
+      #:glib-or-gtk? #t
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'po-chmod
@@ -3373,30 +3374,18 @@ and others.")
               ;; Make sure 'msgmerge' can modify the PO files.
               (for-each (lambda (po)
                           (chmod po #o666))
-                        (find-files "po" "\\.po$")))))
-       ;; Enable Gnome portal backends
-       #:configure-flags
-       (list
-        "--enable-appchooser"
-        "--enable-wallpaper"
-        "--enable-screenshot"
-        "--enable-screencast"
-        "--enable-background"
-        "--enable-settings")))
+                        (find-files "po" "\\.po$")))))))
     (native-inputs
      (list pkg-config
-           autoconf
-           automake
-           libtool
-           libxml2
            `(,glib "bin")
-           which
            gettext-minimal))
     (inputs
      (list glib
            gtk+
-           fontconfig
+           ;; For Wallpaper portal
            gnome-desktop
+           ;; For Settings portal
+           fontconfig
            gsettings-desktop-schemas))
     (propagated-inputs
      (list xdg-desktop-portal))
