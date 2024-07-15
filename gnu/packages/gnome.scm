@@ -5706,19 +5706,26 @@ output devices.")
     (arguments
      '(#:configure-flags (list "-Ddbus-srv-user=geoclue")))
     (native-inputs
-     (list pkg-config
-           gobject-introspection
-           modem-manager
-           libnotify
-           gtk-doc/stable
+     (list docbook-xml-4.1.2
+           docbook-xsl
            gettext-minimal
+           `(,glib "bin")
+           gobject-introspection
+           gtk-doc/stable
+           modem-manager
+           pkg-config
+           python-minimal
            vala))
     (inputs
      (list avahi
-           `(,glib "bin")
            glib-networking
            json-glib
-           libsoup-minimal))
+           libsoup-minimal
+           ;; For the demo agent.
+           libnotify))
+    (propagated-inputs
+     ;; In 'Requires' of libgeoclue.pc
+     (list glib))
     (home-page "https://gitlab.freedesktop.org/geoclue/geoclue/-/wikis/home")
     (synopsis "Geolocation service")
     (description "Geoclue is a D-Bus service that provides location

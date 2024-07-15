@@ -1,9 +1,9 @@
 Allow the configuration file and directory to be specified via environment
-variables and remove a warning it would give us if the latter doesn't exist.
+variables.
 
 --- a/src/gclue-config.c
 +++ b/src/gclue-config.c
-@@ -555,22 +555,30 @@
+@@ -555,22 +555,32 @@
          char *name;
          gsize i;
  
@@ -33,12 +33,13 @@ variables and remove a warning it would give us if the latter doesn't exist.
 +        dir = g_dir_open (config_d_dir, 0, &error);
  
          if (error != NULL) {
--                g_warning ("Failed to open %s: %s",
+                 g_warning ("Failed to open %s: %s",
 -                           CONFIG_D_DIRECTORY, error->message);
++                           config_d_dir, error->message);
                  goto out;
          }
  
-@@ -587,7 +595,7 @@
+@@ -587,7 +597,7 @@
          for (i = 0; i < files->len; i++) {
                  g_autofree char *path = NULL;
  
