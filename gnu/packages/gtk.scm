@@ -767,6 +767,15 @@ scaled, composited, modified, saved, or rendered.")
     (home-page "https://wiki.gnome.org/Projects/GdkPixbuf")
     (license license:lgpl2.1+)))
 
+(define-public gdk-pixbuf-with-fringe-loaders
+  (package
+    (inherit gdk-pixbuf)
+    (name "gdk-pixbuf-with-fringe-loaders")
+    (arguments
+     (substitute-keyword-arguments (package-arguments gdk-pixbuf)
+       ((#:configure-flags flags #~'())
+        #~(cons "-Dothers=enabled" #$flags))))))
+
 (define-public gdk-pixbuf-xlib
   (package
     (name "gdk-pixbuf-xlib")
