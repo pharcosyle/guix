@@ -470,6 +470,7 @@ editor (console only)")
               (prepend
                cairo
                dbus
+               gdk-pixbuf-with-fringe-loaders
                gtk+
                giflib
                harfbuzz
