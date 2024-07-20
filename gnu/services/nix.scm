@@ -154,7 +154,9 @@ GID."
       (shepherd-service
        (provision '(nix-daemon))
        (documentation "Run nix-daemon.")
-       (requirement '(user-processes file-system-/nix/store))
+       (requirement '(user-processes
+                      ;; file-system-/nix/store
+                      ))
        (start #~(make-forkexec-constructor
                  (list (string-append #$package "/bin/nix-daemon")
                        #$@extra-options)
@@ -174,8 +176,9 @@ GID."
           (service-extension etc-service-type nix-service-etc)
           (service-extension profile-service-type
                              (compose list nix-configuration-package))
-          (service-extension file-system-service-type
-                             (const %immutable-nix-store))))
+          ;; (service-extension file-system-service-type
+          ;;                    (const %immutable-nix-store))
+          ))
    (description "Run the Nix daemon.")
    (default-value (nix-configuration))))
 
