@@ -3501,6 +3501,42 @@ notifies the user using any notification daemon implementing
 @code{org.freedesktop.Notifications}.")
     (license license:gpl3+)))
 
+(define-public switchd
+  ;; No official release.
+  (let ((commit "4d3a076e324f442d02f69eb0ee7ea6ab6b7856f0")
+        (revision "1"))
+    (package
+      (name "switchd")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.sr.ht/~kennylevinsen/switchd")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cnsc112vfdg3ysbcl50lckyzvrqh2gdkjhansbsm50s50g0zsgr"))))
+      (build-system meson-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'build-without-Werror
+              ;; Otherwise the build fails with "idx may be used uninitialized"
+              (lambda _
+                (substitute* "meson.build"
+                  (("'werror=true',") ""))))
+            (add-after 'unpack 'patch-shell-path
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "main.c"
+                  (("/bin/sh")
+                   (search-input-file inputs "bin/sh"))))))))
+      (home-page "https://sr.ht/~kennylevinsen/switchd")
+      (synopsis "Switch management daemon")
+      (description "Runs commands when system button/switch states trigger.")
+      (license license:expat))))
+
 (define-public waypipe
   (package
     (name "waypipe")
