@@ -3672,48 +3672,10 @@ Type=Application~%"
     (sha256
      (base32 hash))))
 
-
-;; Gamescope really wants/needs you to use specific versions.
-
-(define reshade-src-for-gamescope
-  (reshade-src
-   "696b14cd6006ae9ca174e6164450619ace043283"
-   "1zvhf3pgd8bhn8bynrsh725xn1dszsf05j8c9g6zabgv7vnz04a5"))
-
-(define wlroots-for-gamescope
-  (package
-    (inherit wlroots)
-    (version "0.18.0-dev")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Joshua-Ashton/wlroots")
-             (commit "a5c9826e6d7d8b504b07d1c02425e6f62b020791")))
-       (file-name (git-file-name (package-name wlroots) version))
-       (sha256
-        (base32 "13my6xmym079j5b9s8zimvvzgzcidy37x8bmjald1j3b4jqszc0v"))))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs wlroots)
-       (replace "libliftoff"
-         (package
-           (inherit libliftoff)
-           (version "0.4.1")
-           (source
-            (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://gitlab.freedesktop.org/emersion/libliftoff")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name (package-name libliftoff) version))
-              (sha256
-               (base32
-                "1ikjp638d655ycaqkdnzhb12d29kkbb3a46lqhbhsfc8vsqj3z1l"))))))))))
-
 (define-public gamescope
   (package
     (name "gamescope")
-    (version "3.14.23")
+    (version "3.14.24")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3721,7 +3683,7 @@ Type=Application~%"
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "073223ry5i6h2l01makc9g4lzkn3gla0lry5d0d8j1n6lmcslanr"))))
+               (base32 "17vk34ybqpn4hh02ilhdk2kcjggblc3b9g4hm0wvzn94mmm2nnwd"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -3730,7 +3692,7 @@ Type=Application~%"
               "-Dforce_fallback_for=[]")
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-deps
+          (add-after 'unpack 'patch-deps+paths
             (lambda _
               (substitute* "meson.build"
                 (("error.*\"force_fallback_for\" is missing entries.*") ""))
@@ -3756,7 +3718,12 @@ Type=Application~%"
                 (("libdecor_dep, eis_dep,")
                  "libdecor_dep, eis_dep, dependency('pixman-1')"))
               (substitute* "src/reshade_effect_manager.cpp"
-                (("/usr") #$output)))))))
+                (("/usr") #$output))
+              (substitute* "src/Utils/Process.cpp"
+                (("\"gamescopereaper\"")
+                 (string-append "\""
+                                #$output "/bin/gamescopereaper"
+                                "\""))))))))
     (inputs
      (list glm
            libavif                ; Support for saving .AVIF HDR screenshots
@@ -3812,6 +3779,42 @@ many gaming-centric features such as:
 @end itemize")
     (license license:bsd-2)))
 
+;; Gamescope really wants/needs you to use specific versions.
+
+(define reshade-src-for-gamescope
+  (reshade-src
+   "696b14cd6006ae9ca174e6164450619ace043283"
+   "1zvhf3pgd8bhn8bynrsh725xn1dszsf05j8c9g6zabgv7vnz04a5"))
+
+(define wlroots-for-gamescope
+  (package
+    (inherit wlroots)
+    (version "0.18.0-dev")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Joshua-Ashton/wlroots")
+             (commit "a5c9826e6d7d8b504b07d1c02425e6f62b020791")))
+       (file-name (git-file-name (package-name wlroots) version))
+       (sha256
+        (base32 "13my6xmym079j5b9s8zimvvzgzcidy37x8bmjald1j3b4jqszc0v"))))
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs wlroots)
+       (replace "libliftoff"
+         (package
+           (inherit libliftoff)
+           (version "0.4.1")
+           (source
+            (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.freedesktop.org/emersion/libliftoff")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name (package-name libliftoff) version))
+              (sha256
+               (base32
+                "1ikjp638d655ycaqkdnzhb12d29kkbb3a46lqhbhsfc8vsqj3z1l"))))))))))
 
 (define-public avizo
   (package
