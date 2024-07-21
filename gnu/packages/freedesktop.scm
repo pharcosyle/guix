@@ -1579,6 +1579,30 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
                       (base32
                        "14kyxywpfkgpjpkrybs28q1s2prnz30k1b4zap5a3ybrbvh4vzbi"))))))
 
+(define-public hyprland-protocols
+  (package
+    (name "hyprland-protocols")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/hyprland-protocols")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1drjznj7fn6m5m6skhzh0p031cb5x0bb4i56jxnxwpwaa71g1z20"))))
+    (build-system meson-build-system)
+    (home-page "https://hyprland.org")
+    (synopsis "Wayland protocol extensions for Hyprland")
+    (description
+     "This package provides Wayland protocol extensions for Hyprland and it
+exists in an effort to bridge the gap between Hyprland and KDE/Gnome's
+functionality.  Since @code{wlr-protocols} is closed for new submissions, and
+@code{wayland-protocols} is very slow with changes, this package will hold
+protocols used by Hyprland to bridge the aforementioned gap.")
+    (license license:bsd-3)))
+
 (define-public wayland-utils
   (package
     (name "wayland-utils")
@@ -3473,6 +3497,55 @@ seeks to add support for the screenshot, screencast, and possibly
 remote-desktop @code{xdg-desktop-portal} interfaces for wlroots based
 compositors.")
     (license license:expat)))
+
+(define-public xdg-desktop-portal-hyprland
+  (package
+    (name "xdg-desktop-portal-hyprland")
+    (version "1.2.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/xdg-desktop-portal-hyprland")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1cfrqirvpxnj6dapm8q30vx040nzg4f9g622s5pdiv684yd3z2jz"))))
+    (build-system meson-build-system)
+    (arguments
+     (list #:tests? #f                  ;No tests
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* (find-files "." "\\.cp?*$")
+                     (("/bin/sh") "sh")
+                     (("\\<(sh|grim|hyprctl|slurp)\\>" _ cmd)
+                      (search-input-file inputs (string-append "/bin/" cmd)))
+                     (("\\<(hyprland-share-picker)\\>" _ cmd)
+                      (string-append #$output "/bin/" cmd))))))))
+    (native-inputs
+     (list pkg-config
+           wayland))
+    (inputs
+     (list bash-minimal
+           grim
+           ;; hyprland
+           hyprland-protocols
+           mesa
+           pipewire
+           qtbase-5
+           sdbus-c++
+           slurp
+           wayland-protocols))
+    (home-page "https://github.com/hyprwm/xdg-desktop-portal-hyprland")
+    (synopsis "XDG Desktop Portal backend for Hyprland")
+    (description
+     "This package provides @code{xdg-desktop-portal-hyprland}, which extends
+@code{xdg-desktop-portal-wlr} for Hyprland with support for
+@code{xdg-desktop-portal} screenshot and casting interfaces, while adding a few
+extra portals specific to Hyprland, mostly for window sharing.")
+    (license license:bsd-3)))
 
 (define-public poweralertd
   (package
