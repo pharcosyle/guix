@@ -1,0 +1,13 @@
+--- a/libhyprcursor/hyprcursor.cpp
++++ b/libhyprcursor/hyprcursor.cpp
+@@ -16,8 +16,8 @@
+ using namespace Hyprcursor;
+ 
+ // directories for lookup
+-constexpr const std::array<const char*, 1> systemThemeDirs = {"/usr/share/icons"};
+-constexpr const std::array<const char*, 2> userThemeDirs   = {"/.local/share/icons", "/.icons"};
++constexpr const std::array<const char*, 1> systemThemeDirs = {"/usr/share/icons", "/run/current-system/profile/share/icons"};
++constexpr const std::array<const char*, 2> userThemeDirs   = {"/.local/share/icons", "/.icons", "/.guix-profile/share/icons", "/.guix-home/profile/share/icons"};
+ 
+ //
+ static std::string themeNameFromEnv(PHYPRCURSORLOGFUNC logfn) {
