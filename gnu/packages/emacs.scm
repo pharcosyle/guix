@@ -24,7 +24,7 @@
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2022 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2023 Declan Tsien <declantsien@riseup.net>
-;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,14 +100,18 @@
 (define-public emacs-minimal
   (package
     (name "emacs-minimal")
-    (version "29.3")
+    (version "29.4")
+    ;; Note: When using (replacement …), ensure that comp-native-version-dir
+    ;; stays the same across grafts.
+    ;; Run `make check-system TESTS=emacs-native-comp' to ensure that grafts
+    ;; can meaningfully be applied.
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emacs/emacs-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1822swrk4ifmkd4h9l0h37zifcpa1w3sy3vsgyffsrp6mk9hak63"))
+                "0dd2mh6maa7dc5f49qdzj7bi4hda4wfm1cvvgq560djcz537k2ds"))
               (patches (search-patches "emacs-disable-jit-compilation.patch"
                                        "emacs-exec-path.patch"
                                        "emacs-fix-scheme-indent-function.patch"
@@ -553,12 +557,12 @@ editor (with wide ints)" )
         #~(cons "--with-wide-int" #$flags))))))
 
 (define-public emacs-next-minimal
-  (let ((commit "170c6557922dad7e6e9bc0d6dadf6c080108fd42")
-        (revision "2"))
+  (let ((commit "4e22ef870c4b650f29c4441ac51b6a2ac506ea57")
+        (revision "1"))
    (package
     (inherit emacs-minimal)
     (name "emacs-next-minimal")
-    (version (git-version "30.0.50" revision commit))
+    (version (git-version "30.0.60" revision commit))
     (source
      (origin
        (method git-fetch)
@@ -567,7 +571,7 @@ editor (with wide ints)" )
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04carva3b6h9fnlzazrsxsj41hcnjc26kxjij07l159azi40l6sk"))
+        (base32 "1zl9ffj3ph4msr1r4qw09x1wljpv2lbr7ypqd0p3q89m2qpvfn80"))
        (patches
         (search-patches "emacs-next-exec-path.patch"
                         "emacs-fix-scheme-indent-function.patch"
@@ -585,7 +589,28 @@ editor (with wide ints)" )
                                   (string-drop (package-name emacs)
                                                (string-length "emacs"))))))
     (version version)
-    (source source)))
+    (source source)
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (replace 'validate-comp-integrity
+              (lambda* (#:key outputs #:allow-other-keys)
+                #$(cond
+                   ((%current-target-system)
+                    #~(display
+                       "Cannot validate native compilation on cross builds.\n"))
+                   ((member (%current-system) '("armhf-linux" "i686-linux"))
+                    #~(display "Integrity test is broken on 32 bit systems.\n"))
+                   (else
+                    #~(invoke
+                       (string-append (assoc-ref outputs "out") "/bin/emacs")
+                       "--batch"
+                       "--load"
+                       #$(local-file
+                          (search-auxiliary-file
+                           "emacs/comp-integrity-next.el"))
+                       "-f" "ert-run-tests-batch-and-exit")))))))))))
 
 (define-public emacs-next (emacs->emacs-next emacs))
 (define-public emacs-next-pgtk (emacs->emacs-next emacs-pgtk))

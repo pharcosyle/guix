@@ -39,6 +39,7 @@
 ;;; Copyright © 2023 Theofilos Pechlivanis <theofilos.pechlivanis@gmail.com>
 ;;; Copyright © 2023 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2023 pinoaffe <pinoaffe@gmail.com>
+;;; Copyright © 2024 Juliana Sims <juli@incana.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -818,7 +819,7 @@ required for Fritzing app.")
     (native-inputs
      (list pkg-config qttools-5))
     (inputs
-     (list kcoreaddons kwidgetsaddons qtbase-5 qtsvg-5 sqlite))
+     (list kcoreaddons-5 kwidgetsaddons-5 qtbase-5 qtsvg-5 sqlite))
     (home-page "https://qelectrotech.org/")
     (synopsis "CAD/CAE editor focusing on schematics drawing features")
     (description "QElectroTech, or QET in short, is a desktop application to
@@ -1669,7 +1670,7 @@ fully-vectorial and three-dimensional methods.")
 (define-public meep
   (package
     (name "meep")
-    (version "1.8.0")
+    (version "1.29.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1678,27 +1679,27 @@ fully-vectorial and three-dimensional methods.")
                 version "/meep-" version ".tar.gz"))
               (sha256
                (base32
-                "14zyxmm3p80j5fz5b89sl7hgkgcisqjny5hjh4pi274ziqjqz8bm"))))
+                "1511849g6wlpa42kfrj6zvmc3ivad9ync8r01xp2ld7r5j39y9v8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "--with-libctl="
-                            (assoc-ref %build-inputs "libctl")
-                            "/share/libctl"))))
+     (list #:configure-flags
+           #~(list (string-append "--with-libctl="
+                                  #$(this-package-input "guile-libctl")
+                                  "/share/libctl"))))
     (native-inputs
-     `(("fortran" ,gfortran)
-       ("pkg-config" ,pkg-config)
-       ("swig" ,swig)))
+     (list gfortran
+           pkg-config
+           swig))
     (inputs
-     `(("fftw" ,fftw)
-       ("gsl" ,gsl)
-       ("guile" ,guile-2.2)
-       ("harminv" ,harminv)
-       ("hdf5" ,hdf5)
-       ("openblas" ,openblas)
-       ("libctl" ,guile-libctl)
-       ("mpb" ,mpb)
-       ("zlib" ,zlib)))
+     (list fftw
+           gsl
+           guile-2.2
+           guile-libctl
+           harminv
+           hdf5
+           mpb
+           openblas
+           zlib))
     (home-page "http://ab-initio.mit.edu/wiki/index.php/Meep")
     (synopsis "Finite-difference time-domain (FDTD) simulation software")
     (description
@@ -1786,6 +1787,7 @@ analyzer (FFT) and frequency sweep plot.")
     (version "5.0.1")
     (source (origin
               (method git-fetch)
+              (patches (search-patches "capstone-fix-python-constants.patch"))
               (uri (git-reference
                     (url "https://github.com/capstone-engine/capstone")
                     (commit version)))
@@ -1797,7 +1799,7 @@ analyzer (FFT) and frequency sweep plot.")
     (arguments
      `(#:tests? #f
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "CC=gcc")
+                          (string-append "CC=" ,(cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -2048,7 +2050,7 @@ an embedded event driven algorithm.")
                  (("^SUBDIRS = misc maths frontend spicelib include/ngspice")
                   "SUBDIRS = misc maths frontend spicelib"))))
            (delete 'delete-program-manuals)
-           (delete 'delete-script-files)))))
+           (delete 'delete-scripts)))))
     (inputs
      (list libngspice readline))))
 
@@ -2492,67 +2494,43 @@ analysis and AC analysis.  The engine is designed to do true mixed-mode
 simulation.")
     (license license:gpl3+)))
 
-(define-public radare2-for-cutter
-  (package
-    (inherit radare2)
-    (name "radare2")
-    (version "5.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/radareorg/radare2")
-                    (commit version)))
-              (sha256
-               (base32
-                "0aa7c27kd0l55fy5qfvxqmakp4pz6240v3hn84095qmqkzcbs420"))
-              (file-name (git-file-name name version))))))
-
 (define-public cutter
   (package
     (name "cutter")
-    (version "1.12.0")
+    (version "2.3.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/rizinorg/cutter")
-             (commit (string-append "v" version))))
+             (commit (string-append "v" version))
+             (recursive? #t)))
+       (modules '((guix build utils)))
+       (snippet #~(delete-file-recursively "rizin"))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ljj3j3apbbw628n2nyrxpbnclixx20bqjxm0xwggqzz9vywsar0"))))
-    (build-system gnu-build-system)
+        (base32 "0d10g1wpw8p8hcxvw5q7ymfdxyrp4xqs6a49lf3gdgnmcpb248ad"))))
+    (build-system qt-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (radare2 (assoc-ref inputs "radare2")))
-               ;; Fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
-               ;; override `qmake PREFIX=`.
-               (substitute* "./src/lib_radare2.pri"
-                 (("PREFIX") "R2PREFIX")
-                 (("R2PREFIX=/usr") (string-append "R2PREFIX=" radare2)))
-               (invoke "qmake"
-                       (string-append "PREFIX=" out)
-                       "./src/Cutter.pro")))))))
-    (native-inputs
-     (list pkg-config))
-    (inputs
-     (list qtbase-5
-           qtsvg-5
-           openssl
-           ;; Depends on radare2 4.5.1 officially, builds and works fine with
-           ;; radare2 5.0.0 but fails to build with radare2 5.1.1.
-           radare2-for-cutter))
+     (list
+      #:configure-flags #~(list "-DCUTTER_USE_BUNDLED_RIZIN=OFF")
+      #:tests? #f)) ;no tests
+    (native-inputs (list pkgconf))
+    (inputs (list libzip
+                  openssl
+                  qtsvg-5
+                  qttools-5
+                  rizin
+                  zlib))
     (home-page "https://cutter.re")
-    (synopsis "GUI for radare2 reverse engineering framework")
-    (description "Cutter is a GUI for radare2 reverse engineering framework.
-Its goal is making an advanced andcustomizable reverse-engineering platform
-while keeping the user experience at mind.  Cutter is created by reverse
-engineers for reverse engineers.")
-    (license (list license:cc-by-sa3.0  ;the "Iconic" icon set
-                   license:gpl3+))))    ;everything else
+    (synopsis "Software reverse engineering platform")
+    (description
+     "Cutter is a reverse engineering platform powered by @code{rizin}.  It
+aims to be an advanced and customizable reverse engineering platform while
+keeping the user experience in mind.  Cutter is created by reverse engineers
+for reverse engineers.")
+    (license (list license:cc-by-sa3.0 ;the "Iconic" icon set
+                   license:gpl3+))))   ;everything else
 
 (define-public lib3mf
   (package
@@ -2649,10 +2627,69 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
 measurement devices and test equipment via GPIB, RS232, Ethernet or USB.")
     (license license:expat)))
 
+(define-public python-pandapower
+  (package
+    (name "python-pandapower")
+    (version "2.14.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pandapower" version ".zip"))
+       (sha256
+        (base32 "0c5vgiq795kd5q4wcy2x7s3l7x9xdj2nqyfx188dmhgqckrym161"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list python-pyproj python-pytest unzip))
+    (propagated-inputs (list python-deepdiff
+                             python-geojson
+                             python-networkx
+                             python-numpy
+                             python-packaging
+                             python-pandas
+                             python-scipy
+                             python-tqdm
+                             python-typing-extensions))
+    (home-page "https://www.pandapower.org/")
+    (synopsis "Power system modelling and analysis")
+    (description "@code{pandapower} is an easy to use network calculation
+program aimed to automate the analysis and optimization of power systems.
+It uses the data analysis library @code{pandas} and is compatible with the
+commonly used @code{MATPOWER} / @code{PYPOWER} case format.  @code{pandapower}
+allows using different solvers including an improved Newton-Raphson power flow
+implementation, all @code{PYPOWER} solvers, the C++ library solvers for fast
+steady-state distribution power system analysis of @code{PowerGridModel}, the
+Newton-Raphson power flow solvers in the C++ library lightsim2grid, and the
+@code{PowerModels.jl} library.")
+    (license license:bsd-3)))
+
+(define-public python-pandapipes
+  (package
+    (name "python-pandapipes")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pandapipes" version ".zip"))
+       (sha256
+        (base32 "06yqqd25hxa6q49qcbpy0njwxkqzfhbff4frrrxd84391njgvdhq"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list python-nbmake
+                         python-pytest
+                         python-pytest-xdist
+                         unzip))
+    (propagated-inputs (list python-matplotlib
+                             python-pandapower
+                             python-shapely))
+    (home-page "http://www.pandapipes.org")
+    (synopsis "Simulation of multi energy grids")
+    (description
+     "This package provides a pipeflow calculation tool that complements
+@code{pandapower} in the simulation of multi energy grids.")
+    (license license:bsd-3)))
+
 (define-public python-scikit-rf
   (package
     (name "python-scikit-rf")
-    (version "0.31.0")
+    (version "1.1.0")
     (source (origin
               (method git-fetch) ;PyPI misses some files required for tests
               (uri (git-reference
@@ -2660,7 +2697,7 @@ measurement devices and test equipment via GPIB, RS232, Ethernet or USB.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1cidv2373lwxy26kbzg4slaqvn2gpq67mvijgp0rydfx6mm6a89i"))
+                "0ji1c8b9cbgb0w18dx976hza690npkypz8kav4a3yin2wysjvf64"))
               (file-name (git-file-name name version))))
     (build-system pyproject-build-system)
     (arguments
@@ -2691,6 +2728,41 @@ measurement devices and test equipment via GPIB, RS232, Ethernet or USB.")
     (description "Scikit-rf, or @code{skrf}, is a Python package for RF and
 Microwave engineering.")
     (license license:bsd-3)))
+
+(define-public python-lcapy
+  (package
+    (name "python-lcapy")
+    (version "1.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lcapy" version))
+       (sha256
+        (base32 "13swd2nd2s20hixy4as924sr223flcvcy9zw3qlzsrcvhppzb84n"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; This test fails by FileNotFoundError (a schematic file), possibly
+      ;; because it's not included in PyPI.
+      #:test-flags #~(list "-k" "not test_circuitgraph")))
+    (propagated-inputs (list python-ipython
+                             python-matplotlib
+                             python-networkx
+                             python-numpy
+                             python-property-cached
+                             python-scipy
+                             python-sympy
+                             python-wheel))
+    (native-inputs (list python-pytest))
+    (home-page "https://github.com/mph-/lcapy")
+    (synopsis "Symbolic linear circuit analysis")
+    (description "Lcapy is a Python package for linear circuit analysis.  It
+uses SymPy for symbolic mathematics.
+
+Lcapy can symbolically analyse circuits described with netlists or by
+series/parallel combinations of components.  It can also manipulate
+ontinuous-time and discret-time expressions.")
+    (license license:lgpl2.1+)))
 
 (define-public openscad
   (package
@@ -2812,7 +2884,9 @@ comments.")))
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s720q6vxlh78jzahqp69nl8wagb42l05dym5aqhfnr31dx666hc"))))
+        (base32 "0s720q6vxlh78jzahqp69nl8wagb42l05dym5aqhfnr31dx666hc"))
+       ;; https://github.com/FreeCAD/FreeCAD/pull/11496
+       (patches (search-patches "freecad-vtk-9.3.patch"))))
     (build-system qt-build-system)
     (native-inputs
      (list doxygen
@@ -3186,13 +3260,13 @@ program that can perform mesh processing tasks in batch mode, without a GUI.")
 (define-public poke
   (package
     (name "poke")
-    (version "3.3")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/poke/poke-" version
                                   ".tar.gz"))
               (sha256
-               (base32 "0vlm9xcr7rrfli2x4hi2q41nh8vjd2izpz4zd0xwhqshx2flb000"))
+               (base32 "1plv26x38jy2g97f7gj2kivjwlgcx5cja3m41qa56yin3vk3dbwa"))
               (modules '((guix build utils)))
               (snippet
                '(begin

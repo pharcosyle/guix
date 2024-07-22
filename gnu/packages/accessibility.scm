@@ -3,7 +3,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018, 2021, 2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Andrew Miloradovsky <andrew@interpretmath.pw>
-;;; Copyright © 2020, 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020, 2023, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2022 Hunter Jozwiak <hunter.t.joz@gmail.com>
 ;;; Copyright © 2023 Ivan Gankevich <igankevich@capybaramail.xyz>
 ;;;
@@ -33,6 +33,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages pcre)
@@ -77,11 +78,31 @@
     (arguments
      `(#:tests? #f                      ; Tests require drivers
        #:configure-flags
-       (list
-        "--disable-static"
-        "--enable-fake")))
+       (list "--disable-static"
+             "--enable-fake")
+       #:phases
+       (modify-phases %standard-phases
+         ,@(if (this-package-native-input "config")
+               `((add-after 'unpack 'update-config-scripts
+                   (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                     (for-each
+                       (lambda (dir)
+                         (for-each (lambda (file)
+                                     (install-file
+                                       (search-input-file
+                                         (or native-inputs inputs)
+                                         (string-append "/bin/" file)) dir))
+                                   '("config.guess" "config.sub")))
+                       '("." "libltdl")))))
+               '()))))
     (native-inputs
-     (list latex2html pkg-config python-wrapper swig))
+     (append
+       (if (or (target-aarch64?)
+               (target-ppc64le?)
+               (target-riscv64?))
+           (list config)
+           '())
+       (list latex2html pkg-config python-wrapper swig)))
     (inputs
      (list glib gtk+-2 libusb-compat))
     (synopsis "Portable Braille Library")
@@ -152,17 +173,22 @@ terminals.")
             (assoc-ref python:%standard-phases
                        'add-install-to-pythonpath)))))
     (native-inputs
-     (list clisp
-           python-cython
-           doxygen
-           gettext-minimal
-           `(,icedtea "jdk")
-           ;; ("linuxdoc" ,linuxdoc-tools)
-           ocaml
-           ocaml-findlib
-           pkg-config
-           python-wrapper
-           tcl))
+     (append
+       (list clisp
+             python-cython
+             doxygen
+             gettext-minimal)
+       ;; icedtea doesn't build reliably on all architectures.
+       (if (or (target-x86?)
+               (target-aarch64?))
+           (list `(,icedtea "jdk"))
+           '())
+       (list ;; ("linuxdoc" ,linuxdoc-tools)
+             ocaml
+             ocaml-findlib
+             pkg-config
+             python-wrapper
+             tcl)))
     (inputs
      (list alsa-lib
            at-spi2-core
@@ -359,28 +385,34 @@ CONFIG_SPEAKUP_SOFT=m
         (method url-fetch)
         (uri (string-append "mirror://sourceforge/" name "/" name "/v" version
                             "/" name "-v" version ".tar.gz"))
-        (sha256 (base32 "0cvdkfakw7cix07j0c4iy10fkbqn6n8l1gr5dd3iy4f2d9bkza43"))))
+        (sha256
+         (base32 "0cvdkfakw7cix07j0c4iy10fkbqn6n8l1gr5dd3iy4f2d9bkza43"))
+        (snippet
+         #~(begin (use-modules (guix build utils))
+                  (substitute* "Makefile"
+                    (("-D__i386__") ""))))))
     (build-system gnu-build-system)
     (arguments
-      `(#:tests? #f ; there are no tests
-        #:phases
-        (modify-phases %standard-phases
-          (delete 'configure)
-          (add-before 'build 'strtof
-            (lambda _
-              (substitute* "mouseloupe.c"
-                (("\\bstrtof\\b") "mouseloupe_strtof"))))
-          (replace 'install
-            (lambda _
-              (define out (assoc-ref %outputs "out"))
-              (install-file "mouseloupe" (string-append out "/bin"))
-              (install-file "mouseloupe.1.gz" (string-append out "/share/man/man1")))))))
+     (list
+       #:tests? #f  ; there are no tests
+       #:phases
+       #~(modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'strtof
+             (lambda _
+               (substitute* "mouseloupe.c"
+                 (("\\bstrtof\\b") "mouseloupe_strtof"))))
+           (replace 'install
+             (lambda _
+               (install-file "mouseloupe" (string-append #$output "/bin"))
+               (install-file "mouseloupe.1.gz"
+                             (string-append #$output "/share/man/man1")))))))
     (native-inputs
-      (list pkg-config))
+     (list pkg-config))
     (inputs
-      (list libx11 libxext libxcomposite libxdamage libxrender))
+     (list libx11 libxext libxcomposite libxdamage libxrender))
     (synopsis "Screen magnifier tool for people with low vision")
-    (description "MouseLoupe is a kind of magnifying glass combined with the mouse pointer
-which allows an easy and pleasant web navigation.")
+    (description "MouseLoupe is a kind of magnifying glass combined with the
+mouse pointer which allows an easy and pleasant web navigation.")
     (home-page "https://sourceforge.net/projects/mouseloupe/")
     (license license:gpl2+)))

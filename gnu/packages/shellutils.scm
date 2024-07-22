@@ -18,6 +18,7 @@
 ;;; Copyright © 2023 Timo Wilken <guix@twilken.net>
 ;;; Copyright © 2023 Camilo Q.S. (Distopico) <distopico@riseup.net>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -69,29 +71,30 @@
 (define-public ascii
   (package
     (name "ascii")
-    (version "3.18")
+    (version "3.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/ascii/"
                                   "ascii-" version ".tar.gz"))
               (sha256
                (base32
-                "0b87vy06s8s3a8q70pqavsbk4m4ff034sdml2xxa6qfsykaj513j"))))
+                "0hr4k4mvnq4zpjxdjkvbbyzz7c1iwxhfal1hz0mdm1qv7sbxqbzd"))))
     (build-system gnu-build-system)
-    (arguments `(#:make-flags
-                 (list (string-append "CC=" ,(cc-for-target))
-                       (string-append "PREFIX=" %output))
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure)
-                   (add-before 'install 'create-directories
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (let* ((out (assoc-ref outputs "out"))
-                              (bin (string-append out "/bin"))
-                              (man1 (string-append out "/share/man/man1")))
-                         (mkdir-p bin)
-                         (mkdir-p man1)))))
-                 #:tests? #f))
+    (arguments
+     (list #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   (string-append "PREFIX=" #$output))
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-before 'install 'create-directories
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (bin (string-append out "/bin"))
+                          (man1 (string-append out "/share/man/man1")))
+                     (mkdir-p bin)
+                     (mkdir-p man1)))))
+           #:tests? #f))
     (home-page "http://www.catb.org/~esr/ascii/")
     (synopsis "ASCII name and synonym chart")
     (description
@@ -483,6 +486,55 @@ environments.  It can move files to the trash, and remove or list files that
 are already there.")
     (license license:gpl2+)))
 
+(define-public tran
+  ;; There is no new release yet, but there are some changes in master brunch,
+  ;; see <https://github.com/kilobyte/tran/issues/4>.
+  (let ((commit "039df9529d5dfb8283edfb3c8b3cc16c01f0bfce")
+        (revision "0"))
+    (package
+      (name "tran")
+      ;; The latest upstream version seems to be "v5".
+      (version (git-version "5.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kilobyte/tran")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "1kzr3lfhi5f8wpwjzrzlwkxjv9rasdr9ndjdns9kd16vsh0gl2rd"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:tests? #f ;no tests
+        #:phases
+        #~(modify-phases %standard-phases
+            (delete 'configure) ;no configure provided
+            (add-after 'unpack 'patch
+              (lambda _
+                (substitute* "tran"
+                  (("my \\$DATA=\"data\"")
+                   (format #f "my $DATA=\"~a/share/tran/data\"" #$output)))))
+            (replace 'build
+              (lambda _
+                (invoke "make")))
+            (delete 'strip)
+            (replace 'install
+              (lambda _
+                (install-file "tran" (string-append #$output "/bin/"))
+                (install-file "tran.1" (string-append
+                                        #$output "/share/man/man1/"))
+                (copy-recursively "data" (string-append
+                                          #$output "/share/tran/data/")))))))
+      (inputs (list perl))
+      (home-page "https://github.com/kilobyte/tran")
+      (synopsis "Transcription between character scripts")
+      (description
+       "This tool can transliterate/transcribe text both ways between the
+Latin script and other languages.")
+      (license license:expat))))
+
 (define-public direnv
   (package
     (name "direnv")
@@ -860,3 +912,30 @@ with Guix Home:
                                      \"source \" liquidprompt \"/share/liquidprompt/themes/powerline/powerline.theme\"))))))
 @end example\n")
     (license license:agpl3+)))
+
+(define-public fzf-tab
+  (package
+  (name "fzf-tab")
+  (version "1.1.2")
+  (home-page "https://github.com/Aloxaf/fzf-tab")
+  (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/Aloxaf/fzf-tab")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "061jjpgghn8d5q2m2cd2qdjwbz38qrcarldj16xvxbid4c137zs2"))))
+  (build-system copy-build-system)
+  (arguments
+   '(#:install-plan '(("lib" "/share/zsh/plugins/fzf-tab/")
+                      ("modules" "/share/zsh/plugins/fzf-tab/")
+                      ("fzf-tab.plugin.zsh" "/share/zsh/plugins/fzf-tab/")
+                      ("fzf-tab.zsh" "/share/zsh/plugins/fzf-tab/")
+                      ("README.md" "/share/doc/fzf-tab/"))))
+  (synopsis "Replace the zsh default completion menu with fzf")
+  (description
+   "The fzf-tab package replaces the default completion menu of the zsh
+shell with fzf, enabling fuzzy finding and multi-selection.")
+  (license license:expat)))

@@ -112,6 +112,7 @@ between aspif and smodels format or to a human-readable text format.")
                     (url "https://github.com/potassco/clasp")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (patches (search-patches "clasp-hide-event-ids.patch"))
               (sha256
                (base32
                 "0qap7rar8a5mkqz28n2hnvr4cfv5x0rh4zs3wdp919dw4d034chr"))))
@@ -200,22 +201,7 @@ satisfiability checking (SAT).")
               (substitute* "cmake/ClingoConfig.cmake.in"
                 (("find_package\\(Clasp") "find_package(clasp"))
               (rename-file "cmake/ClingoConfig.cmake.in"
-                           "cmake/clingo-config.cmake.in")))
-          (add-after 'unpack 'skip-failing-tests
-            (lambda _
-              (with-directory-excursion "libclingo/tests"
-                (substitute* "CMakeLists.txt"
-                  (("COMMAND test_clingo" all)
-                   (string-append all
-                                  " -f "
-                                  "\"${CMAKE_CURRENT_SOURCE_DIR}/good.txt\"")))
-                (call-with-output-file "good.txt"
-                  (lambda (port)
-                    (for-each (lambda (test) (format port "~s~%" test))
-                              '("parse-ast-v2" "add-ast-v2" "build-ast-v2"
-                                "unpool-ast-v2" "parse_term"
-                                "propagator" "propgator-sequence-mining"
-                                "symbol" "visitor"))))))))))
+                           "cmake/clingo-config.cmake.in"))))))
     (inputs (list catch2-3 clasp libpotassco))
     (native-inputs (list bison re2c
                          mpark-variant
@@ -465,10 +451,7 @@ directly from the python command line.")))
                  (lambda _
                    ;; noclingo tests rely on this being set
                    (setenv "CLORM_NOCLINGO" "1")
-                   (delete-file "tests/test_mypy_query.py")
-                   (substitute* "tests/test_clingo.py"
-                     (("self\\.assertTrue\\(os_called\\)" all)
-                      (string-append "# " all))))))))
+                   (delete-file "tests/test_mypy_query.py"))))))
     (propagated-inputs (list python-clingo))
     (native-inputs (list python-typing-extensions python-setuptools python-wheel))
     (home-page "https://potassco.org")
@@ -617,3 +600,28 @@ as logic programs.")
    (description "Clinguin is a graphical user interface toolkit for clingo,
 which allows user interfaces to be specified entirely as a logic program.")
    (license license:expat)))
+
+(define-public python-clintest
+  (package
+    (name "python-clintest")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/potassco/clintest")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xzbby9ram55h87ykm652kgm45b8rlhbjc8gjkz308h1jnjllmmy"))))
+    (build-system pyproject-build-system)
+    (inputs (list python-clingo))
+    (native-inputs (list python-pytest))
+    (home-page "https://potassco.org/clintest/")
+    (synopsis "Test framework for clingo programs")
+    (description "Clintest is a framework for unit testing clingo programs.
+It provides various components to assemble the most commonly used tests quickly,
+but also works fine along custom-built test.  Clintest monitors the test
+outcome while solving to abort the search for solutions once the outcome is
+certain.")
+    (license license:expat)))

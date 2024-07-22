@@ -1,9 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
-;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
@@ -62,10 +62,36 @@
 ;;; Libraries:
 ;;;
 
+(define-public go-atomicgo-dev-assert
+  (package
+    (name "go-atomicgo-dev-assert")
+    (version "0.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atomicgo/assert")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ra5bx3w6vynwbxgsz5knibk2xwmfi6654fsi29zsmk77f39g8vv"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "atomicgo.dev/assert"))
+    (home-page "https://atomicgo.dev/assert")
+    (synopsis "Go package with tons of assertions")
+    (description
+     "Package assert provides obj set of assertion functions.  Every assertion
+function returns obj boolean.  This package does not integrate into the
+testing package automatically and requires to check the returning boolean
+value and call @code{t.Fatal()} if the assertion fails.")
+    (license license:expat)))
+
 (define-public go-github-com-alecthomas-assert-v2
   (package
     (name "go-github-com-alecthomas-assert-v2")
-    (version "2.5.0")
+    (version "2.10.0")
     (source
      (origin
        (method git-fetch)
@@ -74,11 +100,11 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ai26ncfcwzg47rqaigs5v1fzfz6i8p11ki75ni5429xkjs77riz"))))
+        (base32 "05jak1v9s2wrwrn6ar0s4388f7qg15q0qfmhfcswgl88720196z3"))))
     (build-system go-build-system)
     (arguments
-     (list #:go go-1.18
-           #:import-path "github.com/alecthomas/assert/v2"))
+     (list
+      #:import-path "github.com/alecthomas/assert/v2"))
     (propagated-inputs
      (list go-github-com-alecthomas-repr
            go-github-com-hexops-gotextdiff))
@@ -191,6 +217,35 @@ includes offsets, byte values in hex, and ASCII output (only when using Dump
 style).
 @end itemize")
     (license license:isc)))
+
+(define-public go-github-com-elgris-jsondiff
+  (package
+    (name "go-github-com-elgris-jsondiff")
+    (version "0.0.0-20160530203242-765b5c24c302")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/elgris/jsondiff")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jm1q0s531hmkqdx8jqphfpmzysn44aphkpwlzqwp3hkz89g4d4q"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/elgris/jsondiff"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (propagated-inputs
+     (list go-github-com-mgutz-ansi))
+    (home-page "https://github.com/elgris/jsondiff")
+    (synopsis "JSON diff diagnostics for Golang")
+    (description
+     "This package provides a simple little tool that produces readable diff
+of 2 JSON-able and convertible to @code{map[string]interface{}} objects.
+Useful for diagnostics or debugging")
+    (license license:expat)))
 
 (define-public go-github-com-felixge-fgprof
   (package
@@ -548,6 +603,50 @@ Many times certain facilities are not available, or tests must run
 differently.")
     (license license:expat)))
 
+(define-public go-github-com-marvinjwendt-testza
+  (package
+    (name "go-github-com-marvinjwendt-testza")
+    (version "0.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MarvinJWendt/testza")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mqvs9142wx3a352yj0zxcm8f3mclyqzzxjlpn1rsb3vrskgs8v9"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/MarvinJWendt/testza"
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; An error that should be nil is not nil.  Error message: "creating
+          ;; snapshot failed: <...> permission denied
+          (add-before 'check 'writable-test-file
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/"
+                                                       import-path
+                                                       "/testdata/snapshots")
+                (for-each make-file-writable
+                          (list "TestSnapshotCreate_file_content.testza"
+                                "TestSnapshotCreate_file_content_string.testza"))))))))
+    (propagated-inputs
+     (list go-atomicgo-dev-assert
+           go-github-com-sergi-go-diff
+           go-github-com-davecgh-go-spew
+           go-github-com-klauspost-cpuid-v2
+           go-github-com-pterm-pterm))
+    (home-page "https://github.com/MarvinJWendt/testza")
+    (synopsis "Full-featured test framework for Golang")
+    (description
+     "Package testza is a full-featured testing framework for Go.  It
+integrates with the default test runner, so you can use it with the standard
+@code{go test} tool.  Testza contains easy to use methods, like assertions,
+output capturing, mocking, and much more.")
+    (license license:expat)))
+
 (define-public go-github-com-onsi-ginkgo
   (package
     (name "go-github-com-onsi-ginkgo")
@@ -583,7 +682,7 @@ Gomega matcher library.")
   (package
     (inherit go-github-com-onsi-ginkgo)
     (name "go-github-com-onsi-ginkgo-v2")
-    (version "2.17.1")
+    (version "2.18.0")
     (source
      (origin
        (method git-fetch)
@@ -592,16 +691,15 @@ Gomega matcher library.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "089x6pz5563ldbxiwaqvd2g4dqfzlr25dflmas3gfq51ibwzh4vz"))))
+        (base32 "1w5dldjjcz2kpyxml4zd9yah7galfpmhcpc2l4zc5pr3skpwpibv"))))
     (arguments
      (list
-      #:go go-1.20
       #:import-path "github.com/onsi/ginkgo/v2"))
     (propagated-inputs
      (list go-github-com-go-logr-logr
-           ;; go-github-com-google-pprof ; not packed yet in Guix, for profiling
+           go-github-com-go-task-slim-sprig-v3
+           go-github-com-google-pprof
            go-github-com-onsi-gomega
-           go-github-com-go-task-slim-sprig
            go-golang-org-x-net
            go-golang-org-x-sys
            go-golang-org-x-tools))))
@@ -609,7 +707,7 @@ Gomega matcher library.")
 (define-public go-github-com-onsi-gomega
   (package
     (name "go-github-com-onsi-gomega")
-    (version "1.19.0")
+    (version "1.33.1")
     (source
      (origin
        (method git-fetch)
@@ -618,25 +716,50 @@ Gomega matcher library.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "092phwk97sk4sv0nbx5pfhqs6x3x1lnrjwyda1m6b6zwrfmq5c6i"))))
+        (base32 "1jygwi2lz3q7ri85dxdxf187l1hm7r3i0c843l47iakivmld31x1"))))
     (build-system go-build-system)
     (arguments
-     (list #:import-path "github.com/onsi/gomega"
-           ;; Unless we disable the tests, we have a circular dependency on
-           ;; ginkgo/v2.
-           #:tests? #f))
+     (list
+      ;; Unless we disable the tests, we have a circular dependency on
+      ;; ginkgo/v2.
+      #:tests? #f
+      #:import-path "github.com/onsi/gomega"))
     (propagated-inputs
-     (list go-github-com-golang-protobuf-proto
+     (list go-github-com-golang-protobuf
            go-golang-org-x-net
            go-golang-org-x-sys
            go-golang-org-x-text
            go-google-golang-org-protobuf
-           go-gopkg-in-yaml-v2))
+           go-gopkg-in-yaml-v3))
     (home-page "https://github.com/onsi/gomega")
     (synopsis "Matcher library for Ginkgo")
     (description
      "Gomega is the preferred matcher/assertion library for the Ginkgo test
 framework.")
+    (license license:expat)))
+
+(define-public go-github-com-otiai10-mint
+  (package
+    (name "go-github-com-otiai10-mint")
+    (version "1.6.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/otiai10/mint")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g5zhz4znp68427p2a1yvrxbq90y7caagdd7zsb4iygnhdszfm7w"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/otiai10/mint"))
+    (home-page "https://github.com/otiai10/mint")
+    (synopsis "Minimal assertion for Golang testing framework")
+    (description
+     "Mint (@code{mint.Mint}) is wrapper for @code{*testing.T} blending
+testing type to omit repeated @code{t}.")
     (license license:expat)))
 
 (define-public go-github-com-pkg-profile
@@ -700,6 +823,57 @@ Go application.")
      "Package gostub is used for stubbing variables in tests, and resetting the
 original value once the test has been run.")
     (license license:expat)))
+
+(define-public go-github-com-petermattis-goid
+  (let ((commit "bb94eb51e7a772d09cef11768f3248ac25adf9f9")
+        (revision "2"))
+    (package
+      (name "go-github-com-petermattis-goid")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/petermattis/goid")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hr94frr0rhac4mb9r7ixdgr6hm63rxh6z43rhn2wn7fdy8csw11"))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:import-path "github.com/petermattis/goid"))
+      (home-page "https://github.com/petermattis/goid")
+      (synopsis "Identify the running goroutine")
+      (description
+       "This package offers a method of programmatically retrieving the
+current goroutine's ID.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-sasha-s-go-deadlock
+  (package
+    (name "go-github-com-sasha-s-go-deadlock")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sasha-s/go-deadlock")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0arb35idnyz4n118xz7p2snazqi35gk1975h1xfk0y4riiks58yz"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/sasha-s/go-deadlock"))
+    (propagated-inputs
+     (list go-github-com-petermattis-goid))
+    (home-page "https://github.com/sasha-s/go-deadlock")
+    (synopsis "Deadlock detection in go")
+    (description
+     "This package provides tools for detecting deadlocks at run-time in Go.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-stretchr-testify
   (package
@@ -874,6 +1048,37 @@ makes extraction of setup/teardown behavior (as well as invoking the system
 under test) much simpler.")
     (license license:expat)))
 
+(define-public go-go-etcd-io-gofail
+  (package
+    (name "go-go-etcd-io-gofail")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/etcd-io/gofail")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jh0qjgfb2irshwj7an3lj0w9bv6c5gbnkdhisgpdr7x7hk682m1"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "go.etcd.io/gofail"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'remove-examples
+            (lambda* (#:key import-path #:allow-other-keys)
+              (delete-file-recursively
+               (string-append "src/" import-path "/examples")))))))
+    (native-inputs (list go-github-com-stretchr-testify))
+    (home-page "https://pkg.go.dev/go.etcd.io/gofail")
+    (synopsis "Failpoints for go")
+    (description
+     "This package provides an implementation of
+@url{http://www.freebsd.org/cgi/man.cgi?query=fail,failpoints} for Golang.")
+    (license license:asl2.0)))
+
 (define-public go-golang-org-sql-mock
   (let ((commit "e98392b8111b45f8126e00af035a0dd95dc12e8b")
         (version "1.3.3")
@@ -1003,6 +1208,59 @@ custom assertions to be used alongside native Go testing.")
     (arguments
      (list #:import-path "github.com/go-playground/assert/v2"))))
 
+(define-public go-github-com-warpfork-go-testmark
+  (package
+    (name "go-github-com-warpfork-go-testmark")
+    (version "0.12.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/warpfork/go-testmark")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06v2x3c5qgbj585a2abksr3hgvgdx61j153rjarqi9cvvzwh1xpr"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/warpfork/go-testmark"))
+    (home-page "https://github.com/warpfork/go-testmark")
+    (synopsis "Parser for @code{testmark} format")
+    (description
+     "@code{go-testmark} is a library to parse, patch data and test fixtures from
+Markdown files, using the
+@url{https://github.com/warpfork/go-testmark?tab=readme-ov-file#what-is-the-testmark-format,
+testmark} format, which itself is a subset of Markdown format.")
+    (license (list license:asl2.0 license:expat))))
+
+(define-public go-github-com-warpfork-go-wish
+  (package
+    (name "go-github-com-warpfork-go-wish")
+    (version "0.0.0-20220906213052-39a1cc7a02d0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/warpfork/go-wish")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rqbxmqwzy1q2zwy3mszp0li0pg8zzh3j9l8wlzr6p1pq2idallq"))
+       (patches (search-patches
+                 "go-github-com-warpfork-go-wish-fix-tests.patch"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/warpfork/go-wish"))
+    (home-page "https://github.com/warpfork/go-wish")
+    (synopsis "Test assertions for Golang")
+    (description
+     "@code{wish} is a test assertion library for Golang, designed to
+gracefully enhance standard library testing package and behaviors of the
+@command{go test} command.")
+    (license license:expat)))
+
 (define-public go-go-uber-org-goleak
   (package
     (name "go-go-uber-org-goleak")
@@ -1030,10 +1288,42 @@ custom assertions to be used alongside native Go testing.")
 the end of a test.")
     (license license:expat)))
 
+(define-public go-go-uber-org-mock
+  (package
+    (name "go-go-uber-org-mock")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uber-go/mock")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mz1cy02m70mdh7hyaqks8bkh9iyv4jgj6h4psww52nr3b9pnyyy"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; XXX: The project contains subdirectory which complicate it's testing
+      ;; and it does not produce any binary.
+      #:tests? #f
+      #:import-path "go.uber.org/mock"
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'build))))
+    (propagated-inputs
+     (list go-golang-org-x-mod go-golang-org-x-tools))
+    (home-page "https://pkg.go.dev/go.uber.org/mock")
+    (synopsis "Mocking framework for the Golang")
+    (description
+     "This package provides a mocking framework which integrates well with
+built-in @code{testing} package, but can be used in other contexts too.")
+    (license license:asl2.0)))
+
 (define-public go-honnef-co-go-tools
   (package
     (name "go-honnef-co-go-tools")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method git-fetch)
@@ -1043,17 +1333,23 @@ the end of a test.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qikkhanmc0vrpgvs0c44y853n88m8qqsk08zry6mvm8f41pgjhi"))))
+         "1n58skq2a0vhsgdfdkyqi00d3vv13kiw9b4mxx6xfyb6ysrdy7d1"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "honnef.co/go/tools"
-       #:tests? #f
-       ;; Source-only package
-       #:phases (modify-phases %standard-phases
-                  (delete 'build))))
+     (list
+      #:import-path "honnef.co/go/tools"
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; XXX: Workaround for go-build-system's lack of Go modules support.
+          (delete 'build)
+          (replace 'check
+            (lambda* (#:key tests? import-path #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  (invoke "go" "test" "-v" "./..."))))))))
     (propagated-inputs
      (list go-github-com-burntsushi-toml
-           go-golang-org-x-exp
+           go-golang-org-x-exp-typeparams
            go-golang-org-x-mod
            go-golang-org-x-tools))
     (home-page "https://staticcheck.dev/")
@@ -1106,13 +1402,26 @@ thoroughly
 ;;; Executables:
 ;;;
 
+(define-public go-ginkgo
+  (package
+    (inherit go-github-com-onsi-ginkgo-v2)
+    (name "ginkgo")
+    (arguments
+     (list
+       #:import-path "github.com/onsi/ginkgo/ginkgo"
+       #:unpack-path "github.com/onsi/ginkgo"
+       #:install-source? #f))
+    (description
+     (string-append (package-description go-github-com-onsi-ginkgo-v2)
+                    "  This package provides an command line interface (CLI)
+tool."))))
+
 (define-public go-keyify
   (package
     (inherit go-honnef-co-go-tools)
     (name "go-keyify")
     (arguments
-     `(#:go ,go-1.20
-       #:import-path "honnef.co/go/tools/cmd/keyify"
+     `(#:import-path "honnef.co/go/tools/cmd/keyify"
        #:unpack-path "honnef.co/go/tools"
        #:install-source? #f))
     (synopsis "Transform an unkeyed struct literal into a keyed one in Go")
@@ -1126,7 +1435,6 @@ thoroughly
     (arguments
      (list
       #:install-source? #f
-      #:go go-1.19
       #:import-path "github.com/google/pprof"))
     (description
      (string-append (package-description go-github-com-google-pprof)
@@ -1138,8 +1446,7 @@ tool."))))
     (inherit go-honnef-co-go-tools)
     (name "go-staticcheck")
     (arguments
-     `(#:go ,go-1.20
-       #:import-path "honnef.co/go/tools/cmd/staticcheck"
+     `(#:import-path "honnef.co/go/tools/cmd/staticcheck"
        #:unpack-path "honnef.co/go/tools"
        #:install-source? #f))
     (synopsis "Staticcheck advanced Go linter")
@@ -1153,8 +1460,7 @@ simplifications, and enforces style rules.")))
     (inherit go-honnef-co-go-tools)
     (name "go-structlayout")
     (arguments
-     `(#:go ,go-1.20
-       #:import-path "honnef.co/go/tools/cmd/structlayout"
+     `(#:import-path "honnef.co/go/tools/cmd/structlayout"
        #:unpack-path "honnef.co/go/tools"
        #:install-source? #f))
     (synopsis "Display the layout (field sizes and padding) of structs in Go")
@@ -1168,8 +1474,7 @@ flag.")))
     (inherit go-honnef-co-go-tools)
     (name "go-structlayout-optimize")
     (arguments
-     `(#:go ,go-1.20
-       #:import-path "honnef.co/go/tools/cmd/structlayout-optimize"
+     `(#:import-path "honnef.co/go/tools/cmd/structlayout-optimize"
        #:unpack-path "honnef.co/go/tools"
        #:install-source? #f))
     (synopsis "Reorder struct fields to minimize the amount of padding in Go")
@@ -1182,8 +1487,7 @@ into @code{go-structlayout-pretty}.")))
     (inherit go-honnef-co-go-tools)
     (name "go-structlayout-pretty")
     (arguments
-     `(#:go ,go-1.20
-       #:import-path "honnef.co/go/tools/cmd/structlayout-pretty"
+     `(#:import-path "honnef.co/go/tools/cmd/structlayout-pretty"
        #:unpack-path "honnef.co/go/tools"
        #:install-source? #f))
     (synopsis "Format the output of go-structlayout with ASCII art in Go")

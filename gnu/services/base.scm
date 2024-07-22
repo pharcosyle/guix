@@ -404,6 +404,7 @@ upon boot."
         (create? (file-system-create-mount-point? file-system))
         (mount?  (file-system-mount? file-system))
         (dependencies (file-system-dependencies file-system))
+        (requirements (file-system-shepherd-requirements file-system))
         (packages (file-system-packages (list file-system))))
     (and (or mount? create?)
          (with-imported-modules (source-module-closure
@@ -412,7 +413,8 @@ upon boot."
             (provision (list (file-system->shepherd-service-name file-system)))
             (requirement `(root-file-system
                            udev
-                           ,@(map dependency->shepherd-service-name dependencies)))
+                           ,@(map dependency->shepherd-service-name dependencies)
+                           ,@requirements))
             (documentation "Check, mount, and unmount the given file system.")
             (start #~(lambda args
                        #$(if create?
@@ -446,7 +448,11 @@ upon boot."
                       ;; Make sure PID 1 doesn't keep TARGET busy.
                       (chdir "/")
 
-                      (umount #$target)
+                      #$(if (file-system-mount-may-fail? file-system)
+                            #~(catch 'system-error
+                                (lambda () (umount #$target))
+                                (const #f))
+                            #~(umount #$target))
                       #f))
 
             ;; We need additional modules.
@@ -461,12 +467,20 @@ upon boot."
                                  (or (file-system-mount? x)
                                      (file-system-create-mount-point? x)))
                                file-systems)))
+
     (define sink
       (shepherd-service
        (provision '(file-systems))
        (requirement (cons* 'root-file-system 'user-file-systems
                            (map file-system->shepherd-service-name
-                                file-systems)))
+                                ;; Do not require file systems with Shepherd
+                                ;; requirements to provision
+                                ;; 'file-systems. Many Shepherd services
+                                ;; require 'file-systems, so we would likely
+                                ;; deadlock.
+                                (filter (lambda (file-system)
+                                          (null? (file-system-shepherd-requirements file-system)))
+                                        file-systems))))
        (documentation "Target for all the initially-mounted file systems")
        (start #~(const #t))
        (stop #~(const #f))))
@@ -1285,7 +1299,7 @@ the tty to run, among other things."
   make-nscd-configuration
   nscd-configuration?
   (log-file    nscd-configuration-log-file        ;string
-               (default "/var/log/nscd.log"))
+               (default #f))
   (debug-level nscd-debug-level                   ;integer
                (default 0))
   ;; TODO: See nscd.conf in glibc for other options to add.
@@ -1340,7 +1354,22 @@ the tty to run, among other things."
                     (positive-time-to-live (* 3600 24))
                     (negative-time-to-live 3600)
                     (check-files? #t)             ;check /etc/services changes
-                    (persistent? #t))))
+                    (persistent? #t))
+
+        ;; Enable minimal caching of the user databases, not so much for
+        ;; caching but rather to allow that uses of NSS plugins like LDAP
+        ;; don't lead user processes to dlopen them (which is likely to fail
+        ;; due to them not being found in $LD_LIBRARY_PATH).
+        (nscd-cache (database 'passwd)
+                    (positive-time-to-live 600)
+                    (negative-time-to-live 20)
+                    (check-files? #t)             ;check /etc/passwd changes
+                    (persistent? #f))
+        (nscd-cache (database 'group)
+                    (positive-time-to-live 600)
+                    (negative-time-to-live 20)
+                    (check-files? #t)             ;check /etc/group changes
+                    (persistent? #f))))
 
 (define-deprecated %nscd-default-configuration
   #f
@@ -1830,7 +1859,7 @@ archive' public keys, with GUIX."
   (generate-substitute-key? guix-configuration-generate-substitute-key?
                             (default #t))         ;Boolean
   (channels         guix-configuration-channels ;file-like
-                    (default %default-channels))
+                    (default #f))
   (chroot-directories guix-configuration-chroot-directories ;list of file-like/strings
                       (default '()))
   (max-silent-time  guix-configuration-max-silent-time ;integer

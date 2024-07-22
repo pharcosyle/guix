@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2019, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016-2019, 2021, 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016-2019, 2021, 2023, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018–2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2022, 2023 John Kehayias <john.kehayias@protonmail.com>
 ;;; Copyright © 2022 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2023 Bruno Victal <mirai@makinata.eu>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,14 +187,14 @@ cards and generate meaningful file and folder names.")
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.20.0")
+    (version "0.21.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "18wlsvj6c1rv036ph3695kknpgzc3lk2ikgshy8417yfl8ykh2hz"))))
+                "00sbscniqrwj341gyvzkgcidfkmscgxx05s4dsplp186680qhwpy"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -398,7 +399,7 @@ overlapping images, as well as some command line tools.")
            graphviz-minimal  ; for 'dot'
            font-ghostscript
            imagemagick/stable
-           librsvg
+           (librsvg-for-system)
            m4
            perl-readonly
            texlive-texloganalyser
@@ -530,7 +531,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "4.6.1")
+    (version "4.8.0")
     (source
      (origin
        (method url-fetch)
@@ -538,7 +539,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "1zbsrx5cfyifzbi657izw8rfkgd9pm4hx8afv8y2sgi9f2hc1v8n"))))
+        (base32 "0mcjgz8kmsmj5icik3zsrk61qg9dafswch93bw3y8w2j07llk621"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -818,14 +819,14 @@ a complete panorama and stitch any series of overlapping pictures.")
 (define-public rawtherapee
   (package
     (name "rawtherapee")
-    (version "5.9")
+    (version "5.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://rawtherapee.com/shared/source/"
                                   "rawtherapee-" version ".tar.xz"))
               (sha256
                (base32
-                "08s81mxnrj183bss2rb0hac1qyn7bmcnk3x2ymg1cp0q5322ibwf"))))
+                "1nnjxc6xyfn1biys5hynsd21rny5r7zl5qvr2hhlmfjdslybb6d7"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -848,6 +849,7 @@ a complete panorama and stitch any series of overlapping pictures.")
      (list pkg-config))
     (inputs
      (list expat
+           exiv2
            fftwf
            glib
            glibmm

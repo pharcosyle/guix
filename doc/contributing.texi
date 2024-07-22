@@ -235,7 +235,7 @@ more information.
 Then, run:
 
 @example
-./configure --localstatedir=/var --sysconfdir=/etc
+./configure
 @end example
 
 @noindent
@@ -245,19 +245,6 @@ normal @code{sysconfdir} value.  Note that you will probably not run
 @command{make install} at the end (you don't have to) but it's still
 important to pass the right @code{localstatedir} and @code{sysconfdir}
 values, which get recorded in the @code{(guix config)} Guile module.
-
-When configuring Guix on a system that already has a Guix installation,
-be sure to specify the same state directory as the existing installation
-using the @option{--localstatedir} option of the @command{configure}
-script (@pxref{Directory Variables, @code{localstatedir},, standards,
-GNU Coding Standards}).  Usually, this @var{localstatedir} option is set
-to the value @file{/var}.  The @command{configure} script protects
-against unintended misconfiguration of @var{localstatedir} so you do not
-inadvertently corrupt your store (@pxref{The Store}).  The configuration
-directory should also be configured by setting the @option{--sysconfdir}
-option to the @file{/etc} value, which is the location used by Guix to
-store for example the access control list of authorized machines and the
-definition of offload machines.
 
 Finally, you can build Guix and, if you feel so inclined, run the tests
 (@pxref{Running the Test Suite}):
@@ -276,25 +263,41 @@ From there on, you can authenticate all the commits included in your
 checkout by running:
 
 @example
-make authenticate
+guix git authenticate \
+  9edb3f66fd807b096b48283debdcddccfea34bad \
+  "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"
 @end example
 
 The first run takes a couple of minutes, but subsequent runs are faster.
+On subsequent runs, you can run the command without any arguments since
+the @dfn{introduction} (the commit ID and OpenPGP fingerprints above)
+will have been recorded@footnote{This requires a recent version of Guix,
+from May 2024 or more recent.}:
 
-Or, when your configuration for your local Git repository doesn't match
+@example
+guix git authenticate
+@end example
+
+When your configuration for your local Git repository doesn't match
 the default one, you can provide the reference for the @code{keyring}
-branch through the variable @code{GUIX_GIT_KEYRING}.  The following
+branch @i{via} the @option{-k} option.  The following
 example assumes that you have a Git remote called @samp{myremote}
 pointing to the official repository:
 
 @example
-make authenticate GUIX_GIT_KEYRING=myremote/keyring
+guix git authenticate \
+  -k myremote/keyring \
+  9edb3f66fd807b096b48283debdcddccfea34bad \
+  "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"
 @end example
 
+@xref{Invoking guix git authenticate}, for more information on this
+command.
+
 @quotation Note
-You are advised to run @command{make authenticate} after every
-@command{git pull} invocation.  This ensures you keep receiving valid
-changes to the repository.
+By default, hooks are installed such that @command{guix git
+authenticate} is invoked anytime you run @command{git pull} or
+@command{git push}.
 @end quotation
 
 After updating the repository, @command{make} might fail with an error
@@ -407,6 +410,20 @@ lightweight instrumentation in a virtual machine (VM).  They can be
 computationally intensive or rather cheap, depending on whether
 substitutes are available for their dependencies (@pxref{Substitutes}).
 Some of them require a lot of storage space to hold VM images.
+
+If you encounter an error like:
+
+@example
+Compiling Scheme modules...
+ice-9/eval.scm:142:16: In procedure compile-top-call:
+error: all-system-tests: unbound variable
+hint: Did you forget `(use-modules (gnu tests))'?
+@end example
+
+@noindent
+there may be inconsistencies in the work tree from previous builds.  To
+resolve this, try running @command{make clean-go} followed by
+@command{make}.
 
 Again in case of test failures, please send @email{bug-guix@@gnu.org}
 all the details.
@@ -2018,11 +2035,12 @@ a subject, if your patch is to be applied on a branch other than
 @code{master}, say @code{core-updates}, specify it in the subject like
 @samp{[PATCH core-updates] @dots{}}.
 
-You may use your email client or the @command{git send-email} command
-(@pxref{Sending a Patch Series}).  We prefer to get patches in plain
-text messages, either inline or as MIME attachments.  You are advised to
-pay attention if your email client changes anything like line breaks or
-indentation which could potentially break the patches.
+You may use your email client, the @command{git send-email} command
+(@pxref{Sending a Patch Series}) or the @command{mumi send-email}
+command (@pxref{Debbugs User Interfaces}).  We prefer to get patches in
+plain text messages, either inline or as MIME attachments.  You are
+advised to pay attention if your email client changes anything like line
+breaks or indentation which could potentially break the patches.
 
 Expect some delay when you submit your very first patch to
 @email{guix-patches@@gnu.org}. You have to wait until you get an
@@ -2298,9 +2316,9 @@ indication of its build status on various platforms.
 
 @cindex feature branches, coordination
 To help coordinate the merging of branches, you must create a new
-guix-patches issue each time you wish to merge a branch (@pxref{The
-Issue Tracker}).  The title of the issue requesting to merge a branch
-should have the following format:
+guix-patches issue each time you create a branch (@pxref{The Issue
+Tracker}).  The title of the issue requesting to merge a branch should
+have the following format:
 
 @cindex merge requests, template
 @example
@@ -2308,20 +2326,51 @@ Request for merging "@var{name}" branch
 @end example
 
 The @url{https://qa.guix.gnu.org/, QA infrastructure} recognizes such
-issues and lists the merge requests on its main page.  Normally branches
-will be merged in a ``first come, first merged'' manner, tracked through
-the guix-patches issues.
+issues and lists the merge requests on its main page.  The following
+points apply to managing these branches:
 
-If you agree on a different order with those involved, you can track
-this by updating which issues block@footnote{You can mark an issue as
-blocked by another by emailing @email{control@@debbugs.gnu.org} with the
-following line in the body of the email: @code{block XXXXX by YYYYY}.
-Where @code{XXXXX} is the number for the blocked issue, and @code{YYYYY}
-is the number for the issue blocking it.} which other issues.
-Therefore, to know which branch is at the front of the queue, look for
-the oldest issue, or the issue that isn't @dfn{blocked} by any other
-branch merges.  An ordered list of branches with the open issues is
-available at @url{https://qa.guix.gnu.org}.
+@enumerate
+@item
+The commits on the branch should be a combination of the patches
+relevant to the branch.  Patches not related to the topic of the branch
+should go elsewhere.
+
+@item
+Any changes that can be made on the master branch, should be made on the
+master branch.  If a commit can be split to apply part of the changes on
+master, this is good to do.
+
+@item
+It should be possible to re-create the branch by starting from master
+and applying the relevant patches.
+
+@item
+Avoid merging master in to the branch.  Prefer rebasing or re-creating
+the branch on top of an updated master revision.
+
+@item
+Minimise the changes on master that are missing on the branch prior to
+merging the branch in to master.  This means that the state of the
+branch better reflects the state of master should the branch be merged.
+
+@item
+If you don't have commit access, create the ``Request for merging''
+issue and request that someone creates the branch.  Include a list of
+issues/patches to include on the branch.
+@end enumerate
+
+Normally branches will be merged in a ``first come, first merged''
+manner, tracked through the guix-patches issues.  If you agree on a
+different order with those involved, you can track this by updating
+which issues block@footnote{You can mark an issue as blocked by another
+by emailing @email{control@@debbugs.gnu.org} with the following line in
+the body of the email: @code{block XXXXX by YYYYY}.  Where @code{XXXXX}
+is the number for the blocked issue, and @code{YYYYY} is the number for
+the issue blocking it.} which other issues.  Therefore, to know which
+branch is at the front of the queue, look for the oldest issue, or the
+issue that isn't @dfn{blocked} by any other branch merges.  An ordered
+list of branches with the open issues is available at
+@url{https://qa.guix.gnu.org}.
 
 Once a branch is at the front of the queue, wait until sufficient time
 has passed for the build farms to have processed the changes, and for
@@ -2329,22 +2378,26 @@ the necessary testing to have happened.  For example, you can check
 @indicateurl{https://qa.guix.gnu.org/branch/@var{branch}} to see
 information on some builds and substitute availability.
 
+Once the branch has been merged, the issue should be closed and the
+branch deleted.
+
 @node Debbugs User Interfaces
 @subsection Debbugs User Interfaces
 
 @subsubsection Web interface
 
+@cindex mumi, web interface for issues
 A web interface (actually @emph{two} web interfaces!) are available to
 browse issues:
 
 @itemize
 @item
-@url{https://issues.guix.gnu.org} provides a pleasant
-interface@footnote{The web interface at
-@url{https://issues.guix.gnu.org} is powered by Mumi, a nice piece of
-software written in Guile, and you can help!  See
-@url{https://git.savannah.gnu.org/cgit/guix/mumi.git}.} to browse
-bug reports and patches, and to participate in discussions;
+@url{https://issues.guix.gnu.org} provides a pleasant interface powered
+by mumi@footnote{Mumi is a nice piece of software written in Guile, and
+you can help!  See
+@url{https://git.savannah.gnu.org/cgit/guix/mumi.git}.} to browse bug
+reports and patches, and to participate in discussions; mumi also has a
+command-line interface as we will see below;
 @item
 @url{https://bugs.gnu.org/guix} lists bug reports;
 @item
@@ -2355,12 +2408,17 @@ To view discussions related to issue number @var{n}, go to
 @indicateurl{https://issues.guix.gnu.org/@var{n}} or
 @indicateurl{https://bugs.gnu.org/@var{n}}.
 
-@subsubsection Command-line interface
+@subsubsection Command-Line Interface
 
+@cindex mumi command-line interface
+@cindex mumi am
+@cindex mumi compose
+@cindex mumi send-email
+@cindex mumi www
 Mumi also comes with a command-line interface that can be used to search
-existing issues, open new issues and send patches.  You do not need to
-use Emacs to use the mumi command-line client.  You interact with it
-only on the command-line.
+existing issues, open new issues, compose replies, apply and send
+patches.  You do not need to use Emacs to use the mumi command-line
+client.  You interact with it only on the command-line.
 
 To use the mumi command-line interface, navigate to a local clone of the
 Guix git repository, and drop into a shell with mumi, git and
@@ -2397,8 +2455,61 @@ Pick an issue and make it the "current" issue.
 opened on 24 Jan 09:42 Z by Efraim Flashner
 @end example
 
-Once an issue is the current issue, you can easily create and send
-patches to it using
+Once an issue is the current issue, you can open the issue in a web
+browser, compose replies, apply patches, send patches, etc. with short
+succinct commands.
+
+Open the issue in your web browser using
+
+@example
+~/guix [env]$ mumi www
+@end example
+
+Compose a reply using
+
+@example
+~/guix [env]$ mumi compose
+@end example
+
+Compose a reply and close the issue using
+
+@example
+~/guix [env]$ mumi compose --close
+@end example
+
+@command{mumi compose} opens your mail client by passing @samp{mailto:}
+URIs to @command{xdg-open}.  So, you need to have @command{xdg-open} set
+up to open your mail client correctly.
+
+Apply the latest patchset from the issue using
+
+@example
+~/guix [env]$ mumi am
+@end example
+
+You may also apply a patchset of a specific version (say, v3) using
+
+@example
+~/guix [env]$ mumi am v3
+@end example
+
+Or, you may apply a patch from a specific e-mail message.  For example,
+to apply the patch from the 4th message (message index starts from 0),
+run
+
+@example
+~/guix [env]$ mumi am @@4
+@end example
+
+@command{mumi am} is a wrapper around @command{git am}.  You can pass
+@command{git am} arguments to it after a @samp{--}.  For example, to add
+a Signed-off-by trailer, run
+
+@example
+~/guix [env]$ mumi am -- -s
+@end example
+
+Create and send patches to the issue using
 
 @example
 ~/guix [env]$ git format-patch origin/master
@@ -2415,11 +2526,8 @@ To open a new issue, run
 ~/guix [env]$ mumi new
 @end example
 
-and send patches
-
-@example
-~/guix [env]$ mumi send-email foo.patch bar.patch
-@end example
+and send an email (using @command{mumi compose}) or patches (using
+@command{mumi send-email}).
 
 @command{mumi send-email} is really a wrapper around @command{git
 send-email} that automates away all the nitty-gritty of sending patches.
@@ -2435,7 +2543,7 @@ so by sending the first patch, polling the server for a response, and
 then sending the remaining patches.  This polling can unfortunately take
 a few minutes.  So, please be patient.
 
-@subsubsection Emacs interface
+@subsubsection Emacs Interface
 
 If you use Emacs, you may find it more convenient to interact with
 issues using @file{debbugs.el}, which you can install with:
@@ -2676,8 +2784,11 @@ git config user.signingkey CABBA6EA1DC0FF33
 To check that commits are signed with correct key, use:
 
 @example
-make authenticate
+guix git authenticate
 @end example
+
+@xref{Building from Git} for running the first authentication of a Guix
+checkout.
 
 To avoid accidentally pushing unsigned or signed with the wrong key
 commits to Savannah, make sure to configure Git according to
@@ -2853,7 +2964,7 @@ account the submitter's motivation for doing things in a certain way.
 @cindex Reviewed-by, git trailer
 When you deem the proposed change adequate and ready for inclusion
 within Guix, the following well understood/codified
-@samp{Reviewed-by:@tie{}Your@tie{}Name<your-email@@example.com>}
+@samp{Reviewed-by:@tie{}Your@tie{}Name@tie{}<your-email@@example.com>}
 @footnote{The @samp{Reviewed-by} Git trailer is used by other projects
 such as Linux, and is understood by third-party tools such as the
 @samp{b4 am} sub-command, which is able to retrieve the complete
@@ -2865,7 +2976,8 @@ looks good to you:
 @itemize
 @item
 If the @emph{whole} series (containing multiple commits) looks good to
-you, reply with @samp{Reviewed-by:@tie{}Your@tie{}Name<your-email@@example.com>}
+you, reply with
+@samp{Reviewed-by:@tie{}Your@tie{}Name@tie{}<your-email@@example.com>}
 to the cover page if it has one, or to the last patch of the series
 otherwise, adding another @samp{(for the whole series)} comment on the
 line below to explicit this fact.
@@ -2873,8 +2985,8 @@ line below to explicit this fact.
 @item
 If you instead want to mark a @emph{single commit} as reviewed (but not
 the whole series), simply reply with
-@samp{Reviewed-by:@tie{}Your@tie{}Name<your-email@@example.com>} to that
-commit message.
+@samp{Reviewed-by:@tie{}Your@tie{}Name@tie{}<your-email@@example.com>}
+to that commit message.
 @end itemize
 
 If you are not a committer, you can help others find a @emph{series} you

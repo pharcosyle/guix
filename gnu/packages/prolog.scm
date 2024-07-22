@@ -2,8 +2,9 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
-;;; Copyright © 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2021, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2024 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
@@ -41,6 +43,9 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
@@ -172,16 +177,62 @@ small environment which enables substantial applications to be developed with
 it.")
     (license license:bsd-2)))
 
+(define-public trealla
+  (package
+    (name "trealla")
+    (version "2.54.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/trealla-prolog/trealla")
+         (commit (string-append "v" version))))
+       (sha256
+        (base32 "1iwgss8jz16cddb286dv772f5hpassmxf4xv4rnrm1g6xf1ngi0h"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     (append
+       (if (supported-package? valgrind)
+           (list valgrind)
+           '())
+       (list xxd)))
+    (inputs
+     (list libffi openssl readline))
+    (arguments
+     (list
+      #:make-flags #~(list (string-append "CC=" #$(cc-for-target)))
+      #:test-target (if (this-package-native-input "valgrind")
+                        "check"
+                        "test")
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Upstream does not use a configure script.
+          (delete 'configure)
+          (replace 'install
+            ;; Upstream does not provide an install target.
+            (lambda _
+              (install-file "tpl" (string-append #$output "/bin")))))))
+    (home-page "https://trealla-prolog.org/")
+    (synopsis "Compact and efficient Prolog interpreter")
+    (description "This package provides a compact and efficient Prolog
+interpreter with ISO Prolog aspirations.")
+    (license
+     (list license:expat
+           ;; The tiny-regex-c library uses the Unlicense license.
+           license:unlicense))))
+
 (define-public logtalk
   (package
     (name "logtalk")
-    (version "3.75.0")
+    (version "3.80.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://logtalk.org/files/logtalk-"
                            version ".tar.bz2"))
-       (sha256 (base32 "0w35br03l307wk2fwh67rybqjgvjlwpy9j5r4c3pkrywd7lhrc54"))))
+       (sha256 (base32 "0g4cc0qv921234548k3rkv1sdayicaa6zzh15vgn82ri9apwm3nh"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f                  ;no tests

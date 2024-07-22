@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012-2021, 2021-2023 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2021, 2021-2024 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
@@ -63,7 +63,7 @@
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021, 2022 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2021 Ryan Sundberg <ryan@arctype.co>
-;;; Copyright © 2022 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2022-2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;; Copyright © 2022 Rene Saavedra <nanuui@protonmail.com>
 ;;; Copyright © 2022 muradm <mail@muradm.net>
 ;;; Copyright © 2022, 2023 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
@@ -100,6 +100,7 @@
 (define-module (gnu packages linux)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apparmor)
@@ -114,10 +115,12 @@
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cpio)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages dbm)
@@ -166,12 +169,15 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages regex)
+  #:use-module (gnu packages rpc)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages samba)
@@ -179,11 +185,13 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tbb)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
@@ -505,71 +513,72 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
 
-(define-public linux-libre-6.8-version "6.8.8")
-(define-public linux-libre-6.8-gnu-revision "gnu")
-(define deblob-scripts-6.8
+(define-public linux-libre-6.9-version "6.9.9")
+(define-public linux-libre-6.9-gnu-revision "gnu")
+(define deblob-scripts-6.9
   (linux-libre-deblob-scripts
-   linux-libre-6.8-version
-   linux-libre-6.8-gnu-revision
-   (base32 "1kqwcm8baq3zx1z8jrgnvm9yps3y9jbf4pv1pbqqprpdscgl9089")
-   (base32 "1x7lmy8lff4g4hm67c97797ws594xv5c6l2v5mahj4xh4pb3b8d6")))
-(define-public linux-libre-6.8-pristine-source
-  (let ((version linux-libre-6.8-version)
-        (hash (base32 "1fiiyvwi6frn83z730w4mng2z4nwpspvhb6vjpxx3yk0snwxqk0w")))
+   linux-libre-6.9-version
+   linux-libre-6.9-gnu-revision
+   (base32 "1izfwmk0mxikx3bblcwiyrxdd4bg9v0jsph3i8gvrpjb7kw0lhna")
+   (base32 "18vfz1fx4vjssfh1w7aqfjf91y2g34a2qnzbl9pyawa7qnqxq33n")))
+(define-public linux-libre-6.9-pristine-source
+  (let ((version linux-libre-6.9-version)
+        (hash (base32 "1f8y88rif3z5lp1bq00g66fd0xs1227qlqkxd2zs6fdjgr45pq1b")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
-                            deblob-scripts-6.8)))
+                            deblob-scripts-6.9)))
+
 
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
 
-(define-public linux-libre-6.6-version "6.6.29")
+(define-public linux-libre-6.6-version "6.6.40")
 (define-public linux-libre-6.6-gnu-revision "gnu")
 (define deblob-scripts-6.6
   (linux-libre-deblob-scripts
    linux-libre-6.6-version
    linux-libre-6.6-gnu-revision
-   (base32 "1qm8f3fq4yx59f7b6yky5ryyf229ypxnry922sr8cy0s7mp62cmv")
-   (base32 "0s8ys7nz4p50c766f3z9h68vxnrsrgps1i5zskk3cjwik3q60an8")))
+   (base32 "1a28pdl645bj4d8gac71dmwmll6a2kgd3k7gkpfvi94yqkzd9r2z")
+   (base32 "15xb4miirfmi1khlq4zhb8zmmh82f41jhsfbsfpv8v98yfka2nmb")))
 (define-public linux-libre-6.6-pristine-source
   (let ((version linux-libre-6.6-version)
-        (hash (base32 "1l6bcz0pwiby6q79va063767d0jxkkaf8rpqvaqqcb08116gf9kz")))
+        (hash (base32 "0f7mmw5pzd174376m7r928xbi9mdcla0vy6plq0xdf2mq01kqfjw")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.6)))
 
-(define-public linux-libre-6.1-version "6.1.89")
+(define-public linux-libre-6.1-version "6.1.99")
 (define-public linux-libre-6.1-gnu-revision "gnu")
 (define deblob-scripts-6.1
   (linux-libre-deblob-scripts
    linux-libre-6.1-version
    linux-libre-6.1-gnu-revision
    (base32 "1sf80f2i4vf888xjcn84ymn4w5ynn30ib9033zwmv7f09yvfhapy")
-   (base32 "0104m61mqhlmsjjprj51njwbffjcqgjln5bf1wknb6y3iiazl6ng")))
+   (base32 "11jbnj0d3262grf9vkn0668kvfxifxw98ccvn81wkaykll01k5nx")))
 (define-public linux-libre-6.1-pristine-source
   (let ((version linux-libre-6.1-version)
-        (hash (base32 "06a74sq0isgh9zc6p5cqc64r8k05f1p1w87lx971v3b1jbhbifhj")))
+        (hash (base32 "1lsdwdx7i7xw1rzq88k3bz8sar77gb4rnmjx11pbmvmiwaffx1n0")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.1)))
 
-(define-public linux-libre-5.15-version "5.15.157")
+(define-public linux-libre-5.15-version "5.15.162")
 (define-public linux-libre-5.15-gnu-revision "gnu")
 (define deblob-scripts-5.15
   (linux-libre-deblob-scripts
    linux-libre-5.15-version
    linux-libre-5.15-gnu-revision
    (base32 "18ac30kxg2mf2f6gk3p935hzhz2qs110jy4xwk21kblnnkskbxj8")
-   (base32 "121shkzgixmywa19xx5f2yxg1primarpg4bxin3jyw0214xbfh2n")))
+   (base32 "0p6spfkf3smm4wlgfmqahzcfnlzij5nkhqh297h91r3xqxis0l1y")))
 (define-public linux-libre-5.15-pristine-source
   (let ((version linux-libre-5.15-version)
-        (hash (base32 "0554qxnai66mpm3p5dln9dfsb392zr8zvwfwc9ks2sadsd8j7wmg")))
+        (hash (base32 "0z0s5gk8akcbpb99jp08px78fhr8r6kkb7dpl01b3rrc2pmc1gwi")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.15)))
 
-(define-public linux-libre-5.10-version "5.10.215")
+(define-public linux-libre-5.10-version "5.10.221")
 (define-public linux-libre-5.10-gnu-revision "gnu1")
 (define deblob-scripts-5.10
   (linux-libre-deblob-scripts
@@ -579,12 +588,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "12csh2zyjrqzgqcv799gv8h4xaw1irxh2zqddn4jqp5p7psx4j5k")))
 (define-public linux-libre-5.10-pristine-source
   (let ((version linux-libre-5.10-version)
-        (hash (base32 "1af6h86flx96pszg006agpak2f9dkk2jqaazfykd7aafqdcs3747")))
+        (hash (base32 "09975sby114mwfb8x2rlpaps6vb60dvs8f20cmb7hkxcxdzx87fs")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.10)))
 
-(define-public linux-libre-5.4-version "5.4.274")
+(define-public linux-libre-5.4-version "5.4.279")
 (define-public linux-libre-5.4-gnu-revision "gnu1")
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -594,12 +603,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0x0xg0fcykpd117x3q0gim8jilhx922ashhckjvafxv2gk2zzjhj")))
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1m4yyyv48mfkzhqms88dv1jf39zsfp88az5zpqynmm1wlhhv9iza")))
+        (hash (base32 "0pja69n66hsl1r5jbzqww1hwsmqdlxmq6qv9rqx5qnrr4rml765j")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.312")
+(define-public linux-libre-4.19-version "4.19.317")
 (define-public linux-libre-4.19-gnu-revision "gnu1")
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -609,7 +618,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "0fgkp3v7qgqpn7l1987xcwwlrmwsbscqnxfv06p8nkavrhymrv3c")))
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0jppa4p73pssd7m3jpc7i6rgnj9gawjcgk4wmqyy87ijzrgzm553")))
+        (hash (base32 "109mk4zscm8611xs3bchnr94gasvw3vxsi6zhp3f2y132g670aq6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -642,8 +651,8 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
-(define-public linux-libre-6.8-source
-  (source-with-patches linux-libre-6.8-pristine-source
+(define-public linux-libre-6.9-source
+  (source-with-patches linux-libre-6.9-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -762,10 +771,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define-public linux-libre-headers-6.8
-  (make-linux-libre-headers* linux-libre-6.8-version
-                             linux-libre-6.8-gnu-revision
-                             linux-libre-6.8-source))
+(define-public linux-libre-headers-6.9
+  (make-linux-libre-headers* linux-libre-6.9-version
+                             linux-libre-6.9-gnu-revision
+                             linux-libre-6.9-source))
 
 (define-public linux-libre-headers-6.6
   (make-linux-libre-headers* linux-libre-6.6-version
@@ -819,10 +828,34 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
          (config (search-auxiliary-file file)))
     (and config (local-file config))))
 
-(define %default-extra-linux-options
+(define (default-extra-linux-options version)
   `(;; Make the kernel config available at /proc/config.gz
     ("CONFIG_IKCONFIG" . #t)
     ("CONFIG_IKCONFIG_PROC" . #t)
+    ;; Debugging options.
+    ("CONFIG_DEBUG_INFO" . #t)          ;required by BTF
+    ,@(if (version>=? version "5.1")
+          '(("CONFIG_DEBUG_INFO_BTF" . #t))
+          '())
+    ,@(if (version>=? version "5.12")
+          '(("CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT" . #t))
+          '())
+    ("CONFIG_DEBUG_INFO_REDUCED" . #f)  ;incompatible with BTF
+    ;; Tracing and related options.
+    ,@(if (version>=? version "5.1")
+          '(("CONFIG_BPF_JIT" . #t)
+            ("CONFIG_BPF_JIT_ALWAYS_ON" . #t)
+            ("CONFIG_BPF_SYSCALL" . #t))
+          '())
+    ,@(if (version>=? version "5.13")
+          '(("BPF_UNPRIV_DEFAULT_OFF" . #t))
+          '())
+    ("CONFIG_NET_CLS_BPF" . m)         ;classify packets based on BPF filters
+    ("CONFIG_NET_ACT_BPF" . m)         ;to execute BPF code on packets
+    ;; Compress kernel modules via Zstd.
+    ,(if (version>=? version "5.13")
+         '("CONFIG_MODULE_COMPRESS_ZSTD" . #t)
+         '("CONFIG_MODULE_COMPRESS_GZIP" . #t))
     ;; Some very mild hardening.
     ("CONFIG_SECURITY_DMESG_RESTRICT" . #t)
     ;; All kernels should have NAMESPACES options enabled
@@ -875,30 +908,6 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
     ("CONFIG_CIFS" . m)
     ("CONFIG_9P_FS" . m)))
 
-;; See https://github.com/iovisor/bcc/blob/master/INSTALL.md#kernel-configuration
-(define %bpf-extra-linux-options
-  `(;; Needed for probes
-    ("CONFIG_UPROBE_EVENTS" . #t)
-    ("CONFIG_KPROBE_EVENTS" . #t)
-    ;; kheaders module also helpful for tracing
-    ("CONFIG_IKHEADERS" . #t)
-    ("CONFIG_BPF" . #t)
-    ("CONFIG_BPF_SYSCALL" . #t)
-    ("CONFIG_BPF_JIT_ALWAYS_ON" . #t)
-    ;; optional, for tc filters
-    ("CONFIG_NET_CLS_BPF" . m)
-    ;; optional, for tc actions
-    ("CONFIG_NET_ACT_BPF" . m)
-    ("CONFIG_BPF_JIT" . #t)
-    ;; for Linux kernel versions 4.1 through 4.6
-    ;; ("CONFIG_HAVE_BPF_JIT" . y)
-    ;; for Linux kernel versions 4.7 and later
-    ("CONFIG_HAVE_EBPF_JIT" . #t)
-    ;; optional, for kprobes
-    ("CONFIG_BPF_EVENTS" . #t)
-    ;; kheaders module
-    ("CONFIG_IKHEADERS" . #t)))
-
 (define (config->string options)
   (string-join (map (match-lambda
                       ((option . 'm)
@@ -932,7 +941,7 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
                            ;; for an example.
                            (configuration-file #f)
                            (defconfig "defconfig")
-                           (extra-options %default-extra-linux-options)
+                           (extra-options (default-extra-linux-options version))
                            (patches
                             `(,%boot-logo-patch
                               ,@(if (apply-infodoc-patch? version)
@@ -958,7 +967,7 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
                             ;; See kernel-config for an example.
                             (configuration-file #f)
                             (defconfig "defconfig")
-                            (extra-options %default-extra-linux-options))
+                            (extra-options (default-extra-linux-options version)))
   (package
     (name (if extra-version
               (string-append "linux-libre-" extra-version)
@@ -990,6 +999,7 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
               (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
 
               ;; Other variables useful for reproducibility.
+              (setenv "KBUILD_BUILD_VERSION" "1")
               (setenv "KBUILD_BUILD_USER" "guix")
               (setenv "KBUILD_BUILD_HOST" "guix")
 
@@ -1011,7 +1021,10 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
                  "EXTRAVERSION ?="))
               (setenv "EXTRAVERSION"
                       #$(and extra-version
-                             (string-append "-" extra-version)))))
+                             (string-append "-" extra-version)))
+              ;; Use the maximum compression available for Zstd-compressed
+              ;; modules.
+              (setenv "ZSTD_CLEVEL" "19")))
           (replace 'configure
             (lambda _
               (let ((config
@@ -1042,9 +1055,15 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
                   (close-port port))
                 (invoke "make" "oldconfig"))))
           (replace 'install
-            (lambda _
+            (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
               (let ((moddir (string-append #$output "/lib/modules"))
-                    (dtbdir (string-append #$output "/lib/dtbs")))
+                    (dtbdir (string-append #$output "/lib/dtbs"))
+                    (make-flags
+                     (append make-flags
+                             (list "-j"
+                                   (if parallel-build?
+                                       (number->string (parallel-job-count))
+                                       "1")))))
                 ;; Install kernel image, kernel configuration and link map.
                 (for-each (lambda (file) (install-file file #$output))
                           (find-files "." "^(\\.config|bzImage|zImage|Image\
@@ -1052,22 +1071,23 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
                 ;; Install device tree files
                 (unless (null? (find-files "." "\\.dtb$"))
                   (mkdir-p dtbdir)
-                  (invoke "make" (string-append "INSTALL_DTBS_PATH=" dtbdir)
-                          "dtbs_install"))
+                  (apply invoke "make"
+                         (string-append "INSTALL_DTBS_PATH=" dtbdir)
+                         "dtbs_install" make-flags))
                 ;; Install kernel modules
                 (mkdir-p moddir)
-                (invoke "make"
-                        ;; Disable depmod because the Guix system's module
-                        ;; directory is an union of potentially multiple
-                        ;; packages.  It is not possible to use depmod to
-                        ;; usefully calculate a dependency graph while
-                        ;; building only one of them.
-                        "DEPMOD=true"
-                        (string-append "MODULE_DIR=" moddir)
-                        (string-append "INSTALL_PATH=" #$output)
-                        (string-append "INSTALL_MOD_PATH=" #$output)
-                        "INSTALL_MOD_STRIP=1"
-                        "modules_install")
+                (apply invoke "make"
+                       ;; Disable depmod because the Guix system's module
+                       ;; directory is an union of potentially multiple
+                       ;; packages.  It is not possible to use depmod to
+                       ;; usefully calculate a dependency graph while building
+                       ;; only one of them.
+                       "DEPMOD=true"
+                       (string-append "MODULE_DIR=" moddir)
+                       (string-append "INSTALL_PATH=" #$output)
+                       (string-append "INSTALL_MOD_PATH=" #$output)
+                       "INSTALL_MOD_STRIP=1"
+                       "modules_install" make-flags)
                 (let* ((versions (filter (lambda (name)
                                            (not (string-prefix? "." name)))
                                          (scandir moddir)))
@@ -1089,11 +1109,18 @@ ARCH and optionally VARIANT, or #f if there is no such configuration."
            elfutils                  ;needed to enable CONFIG_STACK_VALIDATION
            flex
            bison
-           util-linux                ;needed for hexdump
+           util-linux          ;needed for hexdump
            ;; These are needed to compile the GCC plugins.
            gmp
            mpfr
-           mpc))
+           mpc
+           ;; These are needed when building with the CONFIG_DEBUG_INFO_BTF
+           ;; support.
+           dwarves                      ;for pahole
+           python-wrapper
+           zlib
+           ;; For Zstd compression of kernel modules.
+           zstd))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description "GNU Linux-Libre is a free (as in freedom) variant of the
@@ -1106,19 +1133,19 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
-(define-public linux-libre-6.8
-  (make-linux-libre* linux-libre-6.8-version
-                     linux-libre-6.8-gnu-revision
-                     linux-libre-6.8-source
+(define-public linux-libre-6.9
+  (make-linux-libre* linux-libre-6.9-version
+                     linux-libre-6.9-gnu-revision
+                     linux-libre-6.9-source
                      '("x86_64-linux" "i686-linux" "armhf-linux"
                        "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-version         linux-libre-6.8-version)
-(define-public linux-libre-gnu-revision    linux-libre-6.8-gnu-revision)
-(define-public linux-libre-pristine-source linux-libre-6.8-pristine-source)
-(define-public linux-libre-source          linux-libre-6.8-source)
-(define-public linux-libre                 linux-libre-6.8)
+(define-public linux-libre-version         linux-libre-6.9-version)
+(define-public linux-libre-gnu-revision    linux-libre-6.9-gnu-revision)
+(define-public linux-libre-pristine-source linux-libre-6.9-pristine-source)
+(define-public linux-libre-source          linux-libre-6.9-source)
+(define-public linux-libre                 linux-libre-6.9)
 
 (define-public linux-libre-6.6
   (make-linux-libre* linux-libre-6.6-version
@@ -1194,7 +1221,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                      (append
                       `(;; needed to fix the RTC on rockchip platforms
                         ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-version))))
 
 (define-public linux-libre-arm-generic-5.10
   (make-linux-libre* linux-libre-5.10-version
@@ -1207,7 +1234,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                      (append
                       `(;; needed to fix the RTC on rockchip platforms
                         ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-5.10-version))))
 
 (define-public linux-libre-arm-generic-5.4
   (make-linux-libre* linux-libre-5.4-version
@@ -1220,7 +1247,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                      (append
                       `(;; needed to fix the RTC on rockchip platforms
                         ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-5.4-version))))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre* linux-libre-4.19-version
@@ -1272,7 +1299,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_BATTERY_CW2015" . m)
                         ("CONFIG_CHARGER_GPIO" . m)
                         ("CONFIG_SND_SOC_ES8316" . m))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-version))))
 
 (define-public linux-libre-arm64-generic-5.10
   (make-linux-libre* linux-libre-5.10-version
@@ -1298,7 +1325,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_BATTERY_CW2015" . m)
                         ("CONFIG_CHARGER_GPIO" . m)
                         ("CONFIG_SND_SOC_ES8316" . m))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-5.10-version))))
 
 (define-public linux-libre-arm64-generic-5.4
   (make-linux-libre* linux-libre-5.4-version
@@ -1311,7 +1338,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                      (append
                       `(;; needed to fix the RTC on rockchip platforms
                         ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-5.4-version))))
 
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version
@@ -1335,7 +1362,7 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_HW_RANDOM_VIRTIO" . m)
                         ("CONFIG_VIRTIO_CONSOLE" . m)
                         ("CONFIG_CRYPTO_XTS" . m))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-version))))
 
 (define-public linux-libre-mips64el-fuloong2e
   (make-linux-libre* linux-libre-version
@@ -1347,28 +1374,10 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                      #:extra-options
                      (append
                       `(("CONFIG_OVERLAY_FS" . m))
-                      %default-extra-linux-options)))
+                      (default-extra-linux-options linux-libre-version))))
 
 (define-public linux-libre-with-bpf
-  (let ((base-linux-libre
-         (make-linux-libre*
-          linux-libre-6.8-version
-          linux-libre-6.8-gnu-revision
-          linux-libre-6.8-source
-          '("x86_64-linux" "i686-linux" "armhf-linux"
-            "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
-          #:extra-version "bpf"
-          #:configuration-file kernel-config
-          #:extra-options
-          (append %bpf-extra-linux-options
-                  %default-extra-linux-options))))
-    (package
-      (inherit base-linux-libre)
-      (inputs (modify-inputs (package-inputs base-linux-libre)
-                (prepend cpio)))
-      (synopsis "Linux-libre with BPF support")
-      (description "This package provides GNU Linux-Libre with support
-for @acronym{BPF, the Berkeley Packet Filter}."))))
+  (deprecated-package "linux-libre-with-bpf" linux-libre))
 
 
 ;;;
@@ -1566,7 +1575,7 @@ is also needed for the @code{tuxedo-control-center} (short tcc) package.")
 (define-public evdi
   (package
     (name "evdi")
-    (version "1.14.1")                  ;inherited by libevdi
+    (version "1.14.4")                  ;inherited by libevdi
     (source
      (origin
        (method git-fetch)
@@ -1575,7 +1584,7 @@ is also needed for the @code{tuxedo-control-center} (short tcc) package.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vfbph6bdb206zgdp0bvpqck2zvkx1367xdxbavv41qsmgkxhvbs"))))
+        (base32 "1r9gd4ffr8sh9y3ic8fxwgp4gjls2yd6bgsgvcf0vy571s2aqggr"))))
     (build-system linux-module-build-system)
     (arguments
      (list #:tests? #f                  ;no test suite
@@ -1618,6 +1627,7 @@ display settings applets in graphical environments")
                               (mkdir-p lib)
                               (install-file "libevdi.so" lib)))))))
     (inputs (list libdrm))
+    (native-inputs (list pkg-config))
     (synopsis
      "@acronym{EVDI, Extensible Virtual Display Interface} user-space library")
     (description
@@ -1748,7 +1758,8 @@ graphics card on Optimus laptops.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19vi7dk4jv5wm18cznz4lj2fb1c7m7j3ig62x4a6qy9djxf9z472"))))
+        (base32 "19vi7dk4jv5wm18cznz4lj2fb1c7m7j3ig62x4a6qy9djxf9z472"))
+       (patches (search-patches "ddcci-driver-linux-linux-6.8.patch"))))
     (build-system linux-module-build-system)
     (arguments
      (list #:tests? #f                  ; no tests
@@ -2368,6 +2379,54 @@ by Robert Shea and Robert Anton Wilson.")
 partitions.  Write functionality is also provided but check the README.")
     (license license:gpl2+)))
 
+(define-public dwarves
+  (package
+    (name "dwarves")
+    (version "1.26")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/acmel/dwarves")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xfq0r3whc3dk922ss8i5vwyfcqhgc95dy27mm69j5niy7i5kzrd"))
+              (patches
+               (search-patches "dwarves-threading-reproducibility.patch"))))
+    (build-system cmake-build-system)
+    (arguments (list #:configure-flags #~(list "-D__LIB=lib"
+                                               "-DLIBBPF_EMBEDDED=OFF")
+                     #:tests? #f))      ;no test suite
+    (native-inputs (list pkg-config))
+    (inputs (list libbpf))
+    (home-page "https://github.com/acmel/dwarves")
+    (synopsis "Debugging information processing library and utilities")
+    (description "Dwarves is a set of tools that use the debugging information
+inserted in ELF binaries by compilers such as GCC, used by well known
+debuggers such as GDB.
+
+Utilities in the Dwarves suite include @command{pahole}, that can be used to
+find alignment holes in structures and classes in languages such as C, C++,
+but not limited to these.  These tools can also be used to encode and read the
+BTF type information format used with the kernel Linux @code{bpf} syscall.
+
+The @command{codiff} command can be used to compare the effects changes in
+source code generate on the resulting binaries.
+
+The @command{pfunct} command can be used to find all sorts of information
+about functions, inlines, decisions made by the compiler about inlining, etc.
+
+The @command{pahole} command can be used to use all this type information to
+pretty print raw data according to command line directions.
+
+Headers can have its data format described from debugging info and offsets from
+it can be used to further format a number of records.
+
+Finally, the @command{btfdiff} command can be used to compare the output of
+pahole from BTF and DWARF, to make sure they produce the same results. ")
+    (license license:gpl2+)))
+
 (define-public fbset
   (package
     (name "fbset")
@@ -2619,7 +2678,12 @@ module.")
                                (chmod file #o666))
                              archives)))))
            ,@(if (system-hurd?)
-                 '((add-after 'unpack 'skip-tests
+                 '((add-after 'unpack 'set-PATH_MAX
+                     (lambda _
+                       ;; Shamelessly introduce an arbitrary limit.
+                       (substitute* "misc/tune2fs.c"
+                         (("PATH_MAX") "4096"))))
+                   (add-after 'unpack 'skip-tests
                      (lambda _
                        (with-directory-excursion "tests"
                          (for-each
@@ -4578,6 +4642,7 @@ one to send arbitrary keycodes when a given key is tapped or held.")
               (sha256
                (base32
                 "0z6w6bknhwh1n3qfkb5ij6x57q3wjf28lq3l8kh7rkhsplinjnjc"))
+              (patches (search-patches "lvm2-no-systemd.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -5921,12 +5986,12 @@ applications.")
     (license license:lgpl2.1+)))
 
 (define-public blktrace
-  ;; Take a newer commit to get the fix for CVE-2018-10689.
-  (let ((commit "db4f6340e04716285ea56fe26d76381c3adabe58")
+  ;; Take a newer commit to get the latest patches.
+  (let ((commit "b9ea6e507e8849f01d06aa48c0c59c5cee4820be")
         (revision "1"))
     (package
       (name "blktrace")
-      (version (git-version "1.2.0" revision commit))
+      (version (git-version "1.3.0" revision commit))
       (home-page
         "https://git.kernel.org/pub/scm/linux/kernel/git/axboe/blktrace.git")
       (source (origin
@@ -5935,24 +6000,23 @@ applications.")
                       (url home-page)
                       (commit commit)))
                 (sha256
-                 (base32 "0ah7xn4qnx09k6bm39p69av7d0c8cl6863drv6a1nf914sq1kpgp"))
+                 (base32 "0a4830mlqckbhchar1xcn2w4f24bzb75bigdig5wpm2axl0zc8cq"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:make-flags
-         (list ,(string-append "CC=" (cc-for-target))
-               (string-append "prefix=" %output))
-         #:tests? #f                    ; no tests
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)          ; no configure script
-           (add-after 'unpack 'fix-gnuplot-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((gnuplot (assoc-ref inputs "gnuplot")))
-                 (substitute* "btt/bno_plot.py"
-                   (("gnuplot %s")
-                    (string-append gnuplot "/bin/gnuplot %s")))
-                 #t))))))
+       (list #:make-flags
+             #~(list (string-append "CC=" #$(cc-for-target))
+                     (string-append "prefix=" #$output))
+             #:tests? #f                    ; no tests
+             #:phases
+             #~(modify-phases %standard-phases
+                 (delete 'configure)          ; no configure script
+                 (add-after 'unpack 'fix-gnuplot-path
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((gnuplot (assoc-ref inputs "gnuplot")))
+                       (substitute* "btt/bno_plot.py"
+                         (("gnuplot %s")
+                          (string-append gnuplot "/bin/gnuplot %s")))))))))
       (inputs
        `(("libaio" ,libaio)
          ("gnuplot" ,gnuplot)
@@ -7109,7 +7173,7 @@ not as a replacement for it.")
 (define-public hotspot
   (package
     (name "hotspot")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7121,7 +7185,7 @@ not as a replacement for it.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17m96h0iahfjhbsa9flmsmbczvliy34vqvayzyh8bhldd8yh768l"))))
+                "04k2rvf2lgi8hp7dzqzn65fcd2lsiylwr04d44q75j0wvgbjjv1v"))))
     (build-system qt-build-system)
     (arguments
      (list
@@ -7129,7 +7193,9 @@ not as a replacement for it.")
       ;; installed to a custom prefix and the build fails with "file cannot
       ;; create directory: /polkit-1/actions.  Maybe need administrative"
       ;; (see: https://bugs.kde.org/show_bug.cgi?id=363678).
-      #:configure-flags #~(list "-DINSTALL_KAUTH_HELPER=OFF")
+      #:configure-flags #~(list "-DINSTALL_KAUTH_HELPER=OFF"
+                                "-DQT6_BUILD=ON")
+      #:qtbase qtbase
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-perfparser
@@ -7200,6 +7266,7 @@ not as a replacement for it.")
             kcoreaddons
             kddockwidgets
             kgraphviewer
+            ki18n
             kio
             kiconthemes
             kitemmodels
@@ -7210,12 +7277,8 @@ not as a replacement for it.")
             kwindowsystem
             libxkbcommon
             perf
-            qcustomplot
-            qtbase-5
-            qtdeclarative-5
-            qtquickcontrols2-5
-            qtsvg-5
-            qtx11extras
+            qtdeclarative
+            qtsvg
             solid
             threadweaver
             `(,zstd "lib"))
@@ -9539,6 +9602,91 @@ set as @code{LD_PRELOAD} to override the C library file system functions.")
       (home-page "https://github.com/dex4er/fakechroot/")
       (license license:lgpl2.1+))))
 
+(define-public falcosecurity-libs
+  (package
+    (name "falcosecurity-libs")
+    (version "0.16.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/falcosecurity/libs/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vzymzkfipb3bnjjd9m8ykzj0l94fm8mnpcxfm8mpxz3jbd8xnv9"))
+              (patches
+               (search-patches
+                "falcosecurity-libs-pkg-config.patch"
+                "falcosecurity-libs-install-pman.patch"
+                "falcosecurity-libs-libscap-pc.patch"
+                "falcosecurity-libs-shared-library-fix.patch"
+                "falcosecurity-libs-libsinsp-pkg-config.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DUSE_BUNDLED_DEPS=OFF"
+              "-DBUILD_DRIVER=OFF"
+              "-DENABLE_DKMS=OFF"
+              "-DBUILD_LIBSCAP_MODERN_BPF=ON"
+              "-DSCAP_FILES_SUITE_ENABLE=OFF" ;attempts to download scap files
+              "-DBUILD_SHARED_LIBS=ON"
+              #$(string-append "-DFALCOSECURITY_LIBS_VERSION=" version))
+      ;; Only the libsinsp test suite is run, as the one for libscap requires
+      ;; elevated privileges.
+      #:test-target "run-unit-test-libsinsp"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-problematic-tests
+            (lambda _
+              (substitute* "userspace/libsinsp/test/user.ut.cpp"
+                ;; The 'system_lookup' test assumes a root user
+                ;; exists in the build environment.
+                (("TEST_F\\(usergroup_manager_test, system_lookup)")
+                 "TEST_F(usergroup_manager_test, DISABLED_system_lookup)"))))
+          (add-after 'install 'delete-src
+            (lambda _
+              (delete-file-recursively
+               (string-append #$output "/src")))))))
+    (native-inputs (list bpftool
+                         clang
+                         googletest
+                         pkg-config
+                         valijson))     ;header-only library
+    (inputs
+     (list elfutils
+           libbpf
+           libelf))
+    (propagated-inputs
+     ;; The following inputs are in the 'Requires' field of libscap.pc and
+     ;; libsinp.pc.
+     (list c-ares
+           grpc
+           jsoncpp
+           openssl
+           protobuf
+           uthash                       ;included in libscap headers
+           zlib
+           ;; These are in the 'Requires.private' field of libscap.pc and
+           ;; libsinp.pc.  They are required because the headers are installed
+           ;; to a non-standard directory, and thus need to be found via the
+           ;; 'Cflags' field, which in turn mandates that both the pkg-config
+           ;; modules listed in the 'Requires' and 'Requires.private' be
+           ;; available.
+           curl
+           re2
+           tbb))
+    (home-page "https://github.com/falcosecurity/libs/")
+    (synopsis "libscap and lisbinsp Falco security libraries")
+    (description "The Falco security libraries include @code{libsinsp} and
+@code{libscap}.  @code{libscap} manages the data capture process, while
+@code{libsinsp} is a system inspection library that enriches events from
+@code{libscap} with machine state.  @code{libsinsp} also performs events
+filtering with rule evaluation through its internal rule engine.  These
+libraries are used by the @command{sysdig} command-line utility.")
+    (license license:asl2.0)))
+
 (define-public inputattach
   (package
     (name "inputattach")
@@ -9647,7 +9795,7 @@ of Linux application development.")
 (define-public wireplumber
   (package
     (name "wireplumber")
-    (version "0.4.17")
+    (version "0.5.3")
     (source
      (origin
        (method git-fetch)
@@ -9657,7 +9805,7 @@ of Linux application development.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00jzn0pxy2ws819yg4p8xxhngqai3labd1alaxb8zwzymr7m06my"))))
+        (base32 "1jdfk02f7yc5lhy4r3k7m7dqr0711lvlc0fd1hjhmi4j7yn4i5kd"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dsystemd=disabled"
@@ -9783,6 +9931,69 @@ persistent over reboots.")
 (define-public libbpf
   (package
     (name "libbpf")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libbpf/libbpf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d0bx4bmn80nkdh0dqjfwq6j37is3qwl49cjvx4yxb4vrxq3x05x"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;self-tests run in QEMU
+      #:make-flags
+      #~(list (string-append "PREFIX=" #$output)
+              (string-append "LIBDIR=$(PREFIX)/lib")
+              (string-append "CC=" #$(cc-for-target)))
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure)
+          (add-before 'build 'pre-build
+            (lambda _
+              (chdir "src")))
+          (add-after 'install 'install-linux-bpf-headers
+            ;; Workaround users such as 'dwarves' requiring btf_enum64
+            ;; definition from the kernel Linux >= 6 headers (see:
+            ;; https://github.com/acmel/dwarves/issues/49).
+            ;; TODO: Remove once our 'linux-libre-headers' package is
+            ;; upgraded to a >= 6 release.
+            (lambda _
+              (let ((linux-libre-headers #$(this-package-native-input
+                                            "linux-libre-headers")))
+                (for-each (lambda (f)
+                            (install-file (string-append linux-libre-headers
+                                                         "/include/" f)
+                                          (string-append #$output "/include/"
+                                                         (dirname f))))
+                          ;; This list contains btf.h and its transitive
+                          ;; dependencies.
+                          (list "asm/posix_types.h"
+                                "asm/types.h"
+                                "asm-generic/types.h"
+                                "asm-generic/int-ll64.h"
+                                "linux/btf.h"
+                                "linux/posix_types.h"
+                                "linux/stddef.h"
+                                "linux/types.h"))))))))
+    (native-inputs (list linux-libre-headers-6.9 pkg-config))
+    (propagated-inputs (list elfutils zlib)) ;in Requires.private of libbpf.pc
+    (home-page "https://github.com/libbpf/libbpf")
+    (synopsis "BPF CO-RE (Compile Once – Run Everywhere)")
+    (description
+     "Libbpf supports building BPF CO-RE-enabled applications, which, in
+contrast to BCC, do not require the Clang/LLVM runtime or linux kernel
+headers.")
+    (license (list license:lgpl2.1 license:bsd-2))))
+
+(define-public libbpf-0.8
+  (package
+    (inherit libbpf)
+    (name "libbpf")
     (version "0.8.1")
     (source
      (origin
@@ -9794,37 +10005,25 @@ persistent over reboots.")
        (sha256
         (base32
          "1zzpkk4x3f20483dzw43b3ml03d63vvkmqf4j8y3b61b67wm59bm"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     (list pkg-config))
-    (propagated-inputs
-     ;; In Requires.private of libbpf.pc.
-     (list elfutils zlib))
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags
-       (list
-        (string-append "PREFIX=" (assoc-ref %outputs "out"))
-        (string-append "LIBDIR=$(PREFIX)/lib")
-        (string-append "CC=" ,(cc-for-target)))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'pre-build
-           (lambda _
-             (chdir "src"))))))
-    (home-page "https://github.com/libbpf/libbpf")
-    (synopsis "BPF CO-RE (Compile Once – Run Everywhere)")
-    (description
-     "Libbpf supports building BPF CO-RE-enabled applications, which, in
-contrast to BCC, do not require the Clang/LLVM runtime or linux kernel
-headers.")
-    (license `(,license:lgpl2.1 ,license:bsd-2))))
+     (list
+      #:tests? #f                       ;self-tests run in QEMU
+      #:make-flags
+      #~(list (string-append "PREFIX=" #$output)
+              (string-append "LIBDIR=$(PREFIX)/lib")
+              (string-append "CC=" #$(cc-for-target)))
+      #:phases #~(modify-phases %standard-phases
+                   (delete 'configure)
+                   (add-before 'build 'pre-build
+                     (lambda _
+                       (chdir "src"))))))
+    (native-inputs (list pkg-config))
+    (propagated-inputs (list elfutils zlib)))) ;in Requires.private of libbpf.pc
 
 (define-public bcc
   (package
     (name "bcc")
-    (version "0.24.0")
+    (version "0.30.0")
     (source
      (origin
        (method git-fetch)
@@ -9834,63 +10033,54 @@ headers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1i6xikkxf2nasfkqa91hjzdq0a88mgyzrvia4fi2i2v1d8pbmnp4"))))
+         "0b5la0yn6x6ll73drnrm5v5yibbrzkvl86hqivkrmnpgy8cqn0cy"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list bison flex))
+     (list bison
+           flex
+           (@ (gnu packages compression) zip)))
     (inputs
-     `(("clang-toolchain" ,clang-toolchain-9)
-       ("libbpf" ,(package-source libbpf))
-       ;; LibElf required but libelf does not contain
-       ;; archives, only object files.
-       ;; https://github.com/iovisor/bcc/issues/504
-       ("elfutils" ,elfutils)
-       ("luajit" ,luajit)
-       ("python-wrapper" ,python-wrapper)))
+     (list bash-minimal                 ;for wrap-program
+           clang-15
+           elfutils
+           luajit
+           libbpf
+           python-wrapper))
     (arguments
-     `(;; Tests all require root permissions and a "standard" file hierarchy.
-       #:tests? #f
-       #:configure-flags
-       (let ((revision ,version))
-         `(,(string-append "-DREVISION=" revision)))
-       #:phases
-       (modify-phases %standard-phases
-         ;; FIXME: Use "-DCMAKE_USE_LIBBPF_PACKAGE=ON".
-         (add-after 'unpack 'copy-libbpf
-           (lambda* (#:key inputs #:allow-other-keys)
-             (delete-file-recursively "src/cc/libbpf")
-             (copy-recursively
-              (assoc-ref inputs "libbpf") "src/cc/libbpf")))
-         (add-after 'copy-libbpf 'substitute-libbc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "src/python/bcc/libbcc.py"
-               (("(libbcc\\.so.*)\\b" _ libbcc)
-                (string-append
-                 (assoc-ref outputs "out") "/lib/" libbcc)))))
-         (add-after 'install 'wrap-tools
-           (lambda* (#:key outputs #:allow-other-keys)
-             (use-modules (ice-9 textual-ports))
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (tools (string-append out "/share/bcc/tools"))
-                    (python-executable?
-                     (lambda (filename _)
-                       (call-with-input-file filename
-                         (lambda (port)
-                           (string-contains (get-line port)
-                                            "/bin/python"))))))
-               (for-each
-                (lambda (python-executable)
-                  (format #t "Wrapping: ~A.~%" python-executable)
-                  (wrap-program python-executable
-                    `("GUIX_PYTHONPATH" ":" prefix
-                      (,(string-append lib
-                                       "/python"
-                                       ,(version-major+minor
-                                         (package-version python))
-                                       "/site-packages")))))
-                (find-files tools python-executable?))
-               #t))))))
+     (list
+      ;; Tests all require root permissions and a "standard" file hierarchy.
+      #:tests? #f
+      #:configure-flags #~(list (string-append "-DREVISION=" #$version)
+                                "-DCMAKE_USE_LIBBPF_PACKAGE=ON")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'substitute-libbc
+            (lambda _
+              (substitute* "src/python/bcc/libbcc.py"
+                (("(libbcc\\.so.*)\\b" _ libbcc)
+                 (string-append #$output "/lib/" libbcc)))))
+          (add-after 'install 'wrap-tools
+            (lambda _
+              (use-modules (ice-9 textual-ports))
+              (let* ((out #$output)
+                     (lib (string-append out "/lib"))
+                     (tools (string-append out "/share/bcc/tools"))
+                     (python-executable?
+                      (lambda (filename _)
+                        (call-with-input-file filename
+                          (lambda (port)
+                            (string-contains (get-line port)
+                                             "/bin/python"))))))
+                (for-each (lambda (python-executable)
+                            (format #t "Wrapping: ~A.~%" python-executable)
+                            (wrap-program python-executable
+                              `("GUIX_PYTHONPATH" ":" prefix
+                                (,(string-append lib
+                                                 "/python"
+                                                 #$(version-major+minor
+                                                    (package-version python))
+                                                 "/site-packages")))))
+                          (find-files tools python-executable?))))))))
     (home-page "https://github.com/iovisor/bcc")
     (synopsis "Tools for BPF on Linux")
     (description
@@ -9942,30 +10132,37 @@ modification of BPF objects on the system.")
 (define-public bpftrace
   (package
     (name "bpftrace")
-    (version "0.18.1")
+    (version "0.21.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/iovisor/bpftrace")
+             (url "https://github.com/bpftrace/bpftrace")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0j8ba2j98d3j8lilgx3z2n162r26ryg7zw5ldwd9m36xnjp40347"))
-       (patches (search-patches "bpftrace-disable-bfd-disasm.patch"))))
+        (base32 "06yg3w80kdq0i003w2gvn0czbh8z9d3rfgmglp37dkir7g3dc6iz"))))
     (build-system cmake-build-system)
-    (native-inputs
-     (list bison flex))
-    (inputs
-     (list bcc clang-toolchain-9 elfutils libbpf cereal))
-    (arguments
-     `(#:tests? #f ;Tests require googletest sources.
-       #:configure-flags
-       '("-DBUILD_TESTING=OFF"
-         ;; FIXME: libbfd misses some link dependencies, when fixed, remove
-         ;; the associated patch.
-         "-DHAVE_BFD_DISASM=OFF")))
-    (home-page "https://github.com/iovisor/bpftrace")
+    (arguments (list #:configure-flags #~(list "-DBUILD_TESTING=ON")
+                     ;; Only run the unit tests suite, as the other ones
+                     ;; (runtime_tests, tools-parsing-test) require to run as
+                     ;; 'root'.
+                     #:test-target "bpftrace_test"
+                     #:phases #~(modify-phases %standard-phases
+                                  (add-after 'unpack 'patch-paths
+                                    (lambda _
+                                      (with-directory-excursion "tests"
+                                        (substitute* (find-files ".")
+                                          (("/bin/sh")
+                                           (which "sh")))
+                                        (substitute* '("child.cpp"
+                                                       "runtime/call"
+                                                       "procmon.cpp")
+                                          (("/bin/ls")
+                                           (which "ls")))))))))
+    (native-inputs (list bison dwarves flex googletest xxd))
+    (inputs (list bcc clang-15 elfutils libbpf libiberty cereal))
+    (home-page "https://github.com/bpftrace/bpftrace")
     (synopsis "High-level tracing language for Linux eBPF")
     (description
      "bpftrace is a high-level tracing language for Linux enhanced Berkeley

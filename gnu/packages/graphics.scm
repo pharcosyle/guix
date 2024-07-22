@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019, 2023 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2018, 2021, 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2021, 2023, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -36,7 +36,7 @@
 ;;; Copyright © 2023 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2023 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2023 Eric Bavier <bavier@posteo.net>
-;;; Copyright © 2023 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2023, 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -496,14 +496,14 @@ typically encountered in feature film production.")
 (define-public blender
   (package
     (name "blender")
-    (version "3.6.10")                   ;3.6.x is the current LTS version
+    (version "3.6.13")                   ;3.6.x is the current LTS version
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.xz"))
               (sha256
                (base32
-                "1srwr365y40hhpjmfsg52rphdybvin0ay2r23pknm7b9pkpw0wqs"))))
+                "1sx2yz1y37h8g2p6k8cjf2935p3nlvn9nvjc9yfzp79bg4ypfpbz"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -715,7 +715,7 @@ baking tools to produce normal maps.")
 (define-public openshadinglanguage
   (package
     (name "openshadinglanguage")
-    (version "1.13.8.0")
+    (version "1.13.10.0")
     (source
      (origin
        (method git-fetch)
@@ -724,7 +724,7 @@ baking tools to produce normal maps.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ji4bw8z4ylsh0jvir3d40p6xyhr63g588gh3bag7bzsr3flsb02"))))
+        (base32 "1x97w4infifw33r4ii53q3v1ia0p21lbacd7z01vsz4vq7sy0dxn"))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags
@@ -1325,16 +1325,17 @@ with strong support for multi-part, multi-channel use cases.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "2.5.10.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/OpenImageIO/oiio")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "06x3lqj9qjh5m0zbr5g2g9ii6jk340pgzrhr4fb353y1y2pkx5sw"))))
+    (version "2.5.13.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AcademySoftwareFoundation/OpenImageIO")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bqalfcfjjk31a7zv2hyx0jz8jpdhpsmc3sqwmfl4zf431g45hpb"))))
     (build-system cmake-build-system)
     (arguments
      (list #:tests? #f ; half the tests require online data or use redirection
@@ -1344,14 +1345,22 @@ with strong support for multi-part, multi-channel use cases.")
      (list pkg-config))
     (inputs
      (list boost
+           dcmtk
            fmt
+           freetype
            giflib
            imath
+           libglvnd
            libheif
            libjpeg-turbo
            libpng
+           libraw
            libtiff
+           libwebp
+           opencolorio
            openexr
+           openjpeg
+           ;; openvdb ; OpenVDB needs OIIO to be built with C++17 or higher
            pugixml
            pybind11
            python-wrapper
@@ -1363,7 +1372,7 @@ with strong support for multi-part, multi-channel use cases.")
 related classes, utilities, and applications.  There is a particular emphasis
 on formats and functionality used in professional, large-scale animation and
 visual effects work for film.")
-    (home-page "https://www.openimageio.org")
+    (home-page "https://github.com/AcademySoftwareFoundation/OpenImageIO")
     (license license:bsd-3)))
 
 (define-public openscenegraph
@@ -1599,19 +1608,21 @@ realistic reflections, shading, perspective and other effects.")
 (define-public ctl
   (package
     (name "ctl")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ampas/CTL/archive/ctl-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ampas/CTL")
+                     (commit (string-append "ctl-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gg04pyvw0m398akn0s1l07g5b1haqv5na1wpi5dii1jjd1w3ynp"))))
+                "1qhfp9b90czvxjkf66sbnqyw3wvmdvl1pkh6201fxhqg7grbfvwc"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))                    ;no 'test' target
 
     ;; Headers include OpenEXR and IlmBase headers.
     (propagated-inputs (list openexr-2))
+    (inputs (list libtiff))
 
     (home-page "https://ampasctl.sourceforge.net")
     (synopsis "Color Transformation Language")
@@ -2349,8 +2360,8 @@ Automated palette selection is supported.")
        (list extra-cmake-modules pkg-config))
       (inputs
        (list giflib
-             karchive
-             kdnssd
+             karchive-5
+             kdnssd-5
              libmicrohttpd
              libsodium
              libvpx
@@ -2412,6 +2423,73 @@ Some feature highlights:
 and build scripts for the OpenXR loader.")
     ;; Dual licensed.  Either license applies.
     (license (list license:asl2.0 license:expat))))
+
+(define-public tinygltf
+  (package
+    (name "tinygltf")
+    (version "2.8.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syoyo/tinygltf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14712lndwlk4y001jxf2rxhwrw0w5gbc2hyh9kpik1galdzg41ii"))
+       (modules '((guix build utils)))
+       (snippet #~(begin
+                    (for-each delete-file-recursively
+                              (list "examples" ".github" "tools"))
+                    ;; tinygltf bundles json, stb-image and stb-image-write
+                    ;; headers. Delete those, and use symlink ours instead.
+                    (for-each delete-file
+                              (list "json.hpp"
+                                    "stb_image.h"
+                                    "stb_image_write.h"
+                                    "tests/catch.hpp"))))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'use-our-packages
+            (lambda* (#:key inputs #:allow-other-keys)
+              (symlink (search-input-file inputs "include/nlohmann/json.hpp")
+                       "json.hpp")
+              (symlink (search-input-file inputs "include/stb_image.h")
+                       "stb_image.h")
+              (symlink (search-input-file inputs "include/stb_image_write.h")
+                       "stb_image_write.h")
+              (symlink (search-input-file inputs "include/catch.hpp")
+                       "catch.hpp")))
+          (add-after 'install 'delete-static-lib
+            (lambda _
+              (delete-file (string-append #$output
+                                          "/lib/libtinygltf.a"))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (if tests?
+                  (with-directory-excursion "../source/tests"
+                    (invoke "make")
+                    (invoke "./tester")
+                    (invoke "./tester_noexcept"))
+                  (format #t "test suite not run~%")))))))
+    (inputs (list nlohmann-json stb-image stb-image-write))
+    (native-inputs (list catch-framework clang))
+    (home-page "https://github.com/syoyo/tinygltf")
+    (synopsis "Header only GL Transmission Format library")
+    (description "This package provides a header only C++11
+@url{https://github.com/KhronosGroup/glTF, glTF} (GL Transmission Format) 2.0
+library.
+
+GL Transmission Format (glTF) is a royalty-free specification for the
+efficient transmission and loading of 3D scenes and models by applications.
+glTF minimizes both the size of 3D assets, and the runtime processing needed
+to unpack and use those assets. glTF defines an extensible, common publishing
+format for 3D content tools and services that streamlines authoring workflows
+and enables interoperable use of content across the industry.")
+    (license license:expat)))
 
 (define-public monado
   (package
@@ -2798,7 +2876,7 @@ desired local properties.")
 (define-public f3d
   (package
     (name "f3d")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
@@ -2807,7 +2885,7 @@ desired local properties.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0f076754zsxb4gwk6bxj94iyjj0dfxmmc8w88f55xd6hbm3qdnwd"))
+        (base32 "1vls3jbq8r5ph937a2d1i8dv2zjhjjm9cmfgyap5424z7k5anv40"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -2884,7 +2962,7 @@ desired local properties.")
            openexr
            vtk
            zlib))
-    (home-page "https://f3d-app.github.io/f3d/")
+    (home-page "https://f3d.app/")
     (synopsis "VTK-based 3D viewer")
     (description "F3D (pronounced @samp{/fɛd/}) is a VTK-based 3D viewer with
 simple interaction mechanisms and which is fully controllable using arguments

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
@@ -65,6 +65,7 @@
 ;;; Copyright © 2024 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2024 normally_js <normally_js@posteo.net>
 ;;; Copyright © 2024 Markku Korkeala <markku.korkeala@iki.fi>
+;;; Copyright © 2024 Nguyễn Gia Phong <mcsinyx@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
 
 (define-module (gnu packages python-web)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system pyproject)
   #:use-module (guix build-system python)
@@ -96,6 +98,8 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages crates-web)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
@@ -122,6 +126,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages rpc)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
@@ -3467,6 +3472,46 @@ verification of the SSL peer.")
     (home-page "https://github.com/cedadev/ndg_httpsclient/")
     (license license:bsd-3)))
 
+(define-public python-nh3
+  (package
+    (name "python-nh3")
+    (version "0.2.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "nh3" version))
+       (sha256
+        (base32 "0a7hrca5bbbrz20cbqy16n8vaxf4v2q1r9zv9vjlbmn334d79l20"))))
+    (build-system cargo-build-system)
+    (arguments
+     (list
+      #:imported-modules `(,@%cargo-build-system-modules
+                           ,@%pyproject-build-system-modules)
+      #:modules '((guix build cargo-build-system)
+                  ((guix build pyproject-build-system) #:prefix py:)
+                  (guix build utils))
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'build (assoc-ref py:%standard-phases 'build))
+          (replace 'install (assoc-ref py:%standard-phases 'install))
+          ;; cargo-build-system's %standard-phases has 'check before 'install.
+          (delete 'check)
+          (add-after 'install 'check
+            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+              (when tests?
+                (py:add-installed-pythonpath inputs outputs)
+                (invoke "pytest" "-vv" "tests")))))
+      #:cargo-inputs
+      `(("rust-ammonia" ,rust-ammonia-4)
+        ("rust-pyo3" ,rust-pyo3-0.21))
+      #:install-source? #false))
+    (native-inputs (list maturin python-pytest python-wrapper))
+    (home-page "https://nh3.readthedocs.io")
+    (synopsis "Python bindings to Ammonia HTML sanitization library")
+    (description "This package provides Python bindings to Ammonia HTML
+sanitizer Rust crate.")
+    (license license:expat)))
+
 (define-public python-noiseprotocol
   (package
     (name "python-noiseprotocol")
@@ -3624,6 +3669,32 @@ APIs.")
            python-setuptools
            python-wheel))
     (home-page "https://requests.readthedocs.io/")
+    (synopsis "Python HTTP library")
+    (description
+     "Requests is a Python HTTP client library.  It aims to be easier to use
+than Python’s urllib2 library.")
+    (license license:asl2.0)))
+
+(define-public python-requests-next
+  (package
+    (name "python-requests")
+    (version "2.32.3")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests" version))
+             (sha256
+              (base32
+               "0q5742pnibwy74169kacin3dmqg9jzmzk7qab5aq5caffcbm8djm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     (list python-certifi
+           python-charset-normalizer
+           python-idna
+           python-urllib3))
+    (arguments
+     ;; FIXME: Some tests require network access.
+     '(#:tests? #f))
+    (home-page "http://python-requests.org/")
     (synopsis "Python HTTP library")
     (description
      "Requests is a Python HTTP client library.  It aims to be easier to use
@@ -4024,6 +4095,41 @@ addon for removing tracking fields from URLs.")
           (list python-pyopenssl)
           '())
       (list python-pysocks)))
+    (home-page "https://urllib3.readthedocs.io/")
+    (synopsis "HTTP library with thread-safe connection pooling")
+    (description
+     "Urllib3 supports features left out of urllib and urllib2 libraries.  It
+can reuse the same socket connection for multiple requests, it can POST files,
+supports url redirection and retries, and also gzip and deflate decoding.")
+    (license license:expat)))
+
+(define-public python-urllib3-next
+  (package
+    (name "python-urllib3")
+    (version "1.26.17")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "urllib3" version))
+        (sha256
+         (base32
+          "08fzhaf77kbjj5abpl9xag6fpfxkdp1k5s7sqd3ayacdq91a5mi4"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     (append
+       ;; These 5 inputs are used to build urrlib3[secure]
+       (list python-certifi)
+       (if (member (%current-system)
+                   (package-transitive-supported-systems python-cryptography))
+         (list python-cryptography)
+         '())
+       (list python-idna)
+       (if (member (%current-system)
+                   (package-transitive-supported-systems python-pyopenssl))
+         (list python-pyopenssl)
+         '())
+       (list python-pysocks)))
     (home-page "https://urllib3.readthedocs.io/")
     (synopsis "HTTP library with thread-safe connection pooling")
     (description
@@ -5298,41 +5404,46 @@ addon modules.")
 (define-public python-wtforms
   (package
     (name "python-wtforms")
-    (version "2.3.3")
+    (version "3.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "WTForms" version))
+       (uri (pypi-uri "wtforms" version))
        (sha256
-        (base32
-         "17427m7p9nn9byzva697dkykykwcp2br3bxvi8vciywlmkh5s6c1"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-test
-           (lambda _
-             ;; Delete test copied from a third party package that fails
-             ;; with newer SQLAlchemy.  This can be removed for 3.0.
-             ;; See <https://github.com/wtforms/wtforms/issues/696>.
-             (delete-file "tests/ext_sqlalchemy.py")))
-         (replace 'check
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             (when tests?
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python" "setup.py" "compile_catalog")
-               (invoke "python" "tests/runtests.py")))))))
-    (native-inputs
-     (list python-dateutil python-sqlalchemy))
-    (propagated-inputs
-     (list python-babel python-email-validator python-markupsafe))
-    (home-page "http://wtforms.simplecodes.com/")
+        (base32 "1fblnkzvs6339glwx8bskdjy7nhn2ap90y9g6b399713sy063mzq"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list python-hatchling python-pytest))
+    (propagated-inputs (list python-babel python-email-validator
+                             python-markupsafe))
+    (home-page "https://wtforms.readthedocs.io/")
     (synopsis
      "Form validation and rendering library for Python web development")
     (description
      "WTForms is a flexible forms validation and rendering library
 for Python web development.  It is very similar to the web form API
 available in Django, but is a standalone package.")
+    (license license:bsd-3)))
+
+(define-public python-wtforms-sqlalchemy
+  (package
+    (name "python-wtforms-sqlalchemy")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "WTForms-SQLAlchemy" version))
+       (sha256
+        (base32 "1nx4x0ifanlbrzh3f9ns8ihnchlkzf54ilvqmgcgcz2j72vm43rp"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list python-pytest))
+    (propagated-inputs (list python-sqlalchemy python-wtforms))
+    (home-page "https://github.com/wtforms/wtforms-sqlalchemy/")
+    (synopsis "SQLAlchemy tools for WTForms")
+    (description
+     "WTForms-SQLAlchemy is a fork of the @code{wtforms.ext.sqlalchemy}
+package from WTForms.  The package has been renamed to
+@code{wtforms_sqlalchemy} but otherwise should function the same as
+@code{wtforms.ext.sqlalchemy} did.")
     (license license:bsd-3)))
 
 (define-public python-paste
@@ -5854,22 +5965,37 @@ library to create slugs from unicode strings while keeping it DRY.")
 (define-public python-branca
   (package
     (name "python-branca")
-    (version "0.3.1")
+    (version "0.7.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "branca" version))
+       (method git-fetch) ; no tests in PyPI
+       (uri (git-reference
+             (url "https://github.com/python-visualization/branca")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0pmigd521j2228xf8x34vbx0niwvms7xl7za0lymywj0vydjqxiy"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     (list python-jinja2 python-six))
-    (native-inputs
-     (list python-pytest))
+        (base32 "1vs94nqa7r6iwm8mj3m29hg090gmgz4ywnayxh8qiz9ij8jv96wa"))))
+    (build-system pyproject-build-system)
+    (arguments
+     ;; This file requires Selenium.
+     (list #:test-flags #~(list "--ignore" "tests/test_iframe.py"
+                                ;; This test passes but is very slow.
+                                "-k" "not test_color_brewer_extendability")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'build 'pretend-version
+                 ;; The version string is usually derived via setuptools-scm,
+                 ;; but without the git metadata available, the version string
+                 ;; is set to '0.0.0'.
+                 (lambda _
+                   (setenv "SETUPTOOLS_SCM_PRETEND_VERSION"
+                           #$(package-version this-package)))))))
+    (propagated-inputs (list python-jinja2))
+    (native-inputs (list python-numpy python-pytest python-setuptools-scm))
     (home-page "https://github.com/python-visualization/branca")
     (synopsis "Generate complex HTML+JS pages with Python")
-    (description "Generate complex HTML+JS pages with Python")
+    (description "This library is a spinoff from @code{folium} that would host
+the non-map-specific features.  It can be used to generate HTML + JS.")
     (license license:expat)))
 
 (define-public python-tinycss
@@ -6083,7 +6209,23 @@ event loop.  It is implemented in Cython and uses libuv under the hood.")
                (copy-recursively "examples" examples)
                (for-each (lambda (file)
                            (copy-file file (string-append doc "/" file)))
-                         '("README.rst" "NOTICE" "LICENSE" "THANKS"))))))))
+                         '("README.rst" "NOTICE" "LICENSE" "THANKS")))))
+         ;; XXX: The wrap phase includes native inputs on PYTHONPATH, (see
+         ;; <https://bugs.gnu.org/25235>), leading to an inflated closure
+         ;; size.  Override it to only add the essential entries.
+         (replace 'wrap
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python (assoc-ref (or native-inputs inputs) "python"))
+                    (sitedir (string-append "/lib/python"
+                                            (python-version python)
+                                            "/site-packages")))
+               (wrap-program (string-append out "/bin/gunicorn")
+                 `("PYTHONPATH" ":" prefix
+                   ,(map (lambda (output)
+                           (string-append output sitedir))
+                         (list python out))))))))))
+    (inputs (list bash-minimal))
     (native-inputs
      (list binutils ;; for ctypes.util.find_library()
            python-aiohttp
@@ -6101,6 +6243,21 @@ Unicorn project.  The Gunicorn server is broadly compatible with
 various web frameworks, simply implemented, light on server resources,
 and fairly speedy.")
   (license license:expat)))
+
+(define-public gunicorn-next
+  (package
+    (inherit gunicorn)
+    (name "gunicorn")
+    (version "22.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gunicorn" version))
+       (sha256
+        (base32
+         "0qzc3ghayc137hlwrqqwkkhaf8f5h9ja21qwy4rznxpz75i462sa"))))
+    ;; CVE-2024-1135 is fixed in version 22.0.0.
+    (properties `((lint-hidden-cve . ("CVE-2024-1135"))))))
 
 ;; break cyclic dependency for python-aiohttp, which depends on gunicorn for
 ;; its tests
@@ -6908,15 +7065,24 @@ changed the process is restarted.")
 (define-public python-pyowm
   (package
     (name "python-pyowm")
-    (version "3.2.0")
+    (version "3.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyowm" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/csparpa/pyowm")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1pm8w6phr4m3xayndfndid366vhf1fpvdgjsp2zicxarmgc0pm53"))))
-    (build-system python-build-system)
-    (propagated-inputs (list python-geojson python-pysocks python-requests))
+        (base32
+         "1ha4pp96y3jk33qnyir5851cnj4dc06q6wqn1b0w54l3fsds28vi"))))
+    (build-system pyproject-build-system)
+    (arguments (list #:test-flags #~(list "tests/unit")))
+    (native-inputs (list python-pytest))
+    (propagated-inputs
+     (list python-geojson-for-pyowm
+           python-pysocks
+           python-requests))
     (home-page "https://github.com/csparpa/pyowm")
     (synopsis "Python wrapper around OpenWeatherMap web APIs")
     (description
@@ -7326,7 +7492,7 @@ Encoding for HTTP.")
 (define-public python-cloud-init
   (package
     (name "python-cloud-init")
-    (version "23.4.3")
+    (version "24.2")
     (source
      (origin
        (method git-fetch)
@@ -7335,7 +7501,7 @@ Encoding for HTTP.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0przjj2j1ws6b7sbgqxnffsarbbwl00lhq3bn7yiksp8kg8np1m1"))))
+        (base32 "18872z2y9wkh558y1bx5r0rksb4i584jbc8z4g8marwawhwxq506"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -7349,6 +7515,7 @@ Encoding for HTTP.")
         (string-append
          ;; This test messes with PATH, so it cannot find mkdir
          "not test_path_env_gets_set_from_main"
+         " and not test_apt_configure_sources_list_"
          ;; These all fail because /bin/sh doesn't exist.  We cannot patch
          ;; this because the generated scripts must use /bin/sh as they are
          ;; supposed to be run on minimal systems.
@@ -7357,11 +7524,19 @@ Encoding for HTTP.")
          " and not test_subp_combined_stderr_stdout"
          " and not test_handle_part"))
       #:phases
-      '(modify-phases %standard-phases
-         (add-after 'unpack 'patch-references
-           (lambda _
-             (substitute* "tests/unittests/cmd/test_clean.py"
-               (("#!/bin/sh") (string-append "#!" (which "sh")))))))))
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-references
+            (lambda _
+              (substitute* "tests/unittests/cmd/test_clean.py"
+                (("#!/bin/sh") (string-append "#!" (which "sh"))))))
+          (add-after 'install 'move-files
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (for-each (lambda (dir)
+                          (let ((source (string-append (site-packages inputs outputs) "/" dir))
+                                (target (string-append #$output "/" (basename dir))))
+                            (copy-recursively source target)
+                            (delete-file-recursively source)))
+                        (list "etc" "lib" "usr/lib" "usr/share")))))))
     (propagated-inputs
      (list python-configobj
            python-jinja2
@@ -8855,6 +9030,14 @@ possible, supporting most common functionality.")
                            (use-modules (guix build utils))
                            (delete-file "tests/profile.py")))))
     (build-system python-build-system)
+    (arguments
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-tests
+                 (lambda _
+                   ;; The test expects the copyright to be updated each year.
+                   (substitute* "tests/test_daterange.py"
+                     (("time\\.strftime\\(\"%Y\"\\)") "2022")))))))
     (synopsis "HTTP REST client for Python")
     (description
      "This package provides access to any RESTful or RESTful-like API.")
@@ -9212,6 +9395,39 @@ list, create, update, or delete resources (e.g. Order, Product, Collection).")
     (description
      "This package provides a library to parse and apply patches.")
     (license license:expat)))
+
+(define-public python-pybadges
+  (package
+    (name "python-pybadges")
+    (version "3.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/pybadges")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               "1zgb9idz7m3mzf8wvik0gwmyrxp753axqjv2pab326cr5myj1s4b")))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~'("-k"
+          ;; Disable network dependent tests.
+          "not test_changes and not test_not_image_url and not test_http_url")))
+    (propagated-inputs (list python-jinja2 python-requests))
+    (native-inputs (list python-flask
+                         python-fonttools
+                         python-nox
+                         python-pillow
+                         python-pytest
+                         python-xmldiff))
+    (home-page "https://github.com/google/pybadges")
+    (synopsis "Generate Github-style badges on the command-line")
+    (description
+     "This package provides @code{python-pybadges}: a library and command-line
+tool for generating Github-style badges as SVG images.")
+    (license license:asl2.0)))
 
 (define-public python-grid5000
   (package

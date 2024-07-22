@@ -242,14 +242,14 @@ Python 3.3 and later, rather than on Python 2.")
 (define-public git
   (package
    (name "git")
-   (version "2.41.0")
+   (version "2.45.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0h40arw08xbpi2cbf7pvc947v963rjxz3inb2ar81zjc8byvlj77"))))
+              "1nws1vjgj54sv32wxl1h3n1jkcpabqv7a605hhafsby0n5zfigsi"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -269,7 +269,7 @@ Python 3.3 and later, rather than on Python 2.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0xsqakgy0s60zpa13ilj6zj420kdh8pf4v3nrp1nziwj8ja4qymw"))))
+            "1pqrp46kwbxycqld39027ph1cvkq9am156y3sswn6w2khsg30f09"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook2x" ,docbook2x)
@@ -975,6 +975,20 @@ write native speed custom Git applications in any language with bindings.")
                               "deps/winhttp"
                               "deps/zlib"))))))))
 
+(define-public libgit2-1.8
+  (package
+    (inherit libgit2-1.7)
+    (version "1.8.0")
+    (source (origin
+              (inherit (package-source libgit2-1.7))
+              (uri (git-reference
+                    (url "https://github.com/libgit2/libgit2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "libgit2" version))
+              (sha256
+               (base32
+                "0f0vqml6fp94z07xkpim2sdj2xvpxnsrwbm1q1dibx4vqjd7mh3q"))))))
+
 (define-public libgit2-1.6
   (package
     (inherit libgit2)
@@ -1131,8 +1145,8 @@ collaboration using typical untrusted file hosts or services.")
    (license license:gpl3+)))
 
 (define-public cgit
-  (let ((commit "8905003cba637e5b18069e625cd4f4c05ac30251")
-        (rev "2"))
+  (let ((commit "b2c939af4bbd24882fcd28aa6b75319ca61c7c5b")
+        (rev "4"))
     (package
       (name "cgit")
       ;; Update the ‘git-source’ input as well.
@@ -1144,7 +1158,7 @@ collaboration using typical untrusted file hosts or services.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1ha8d2n59mv89vv4bqgg3dk82n1rqh8kd8y654vqx7v1v7m645qz"))
+                  "09la0xhs9mn8k5j5z5s44pa2fv73akn4lhqpbma08f3xdhjpb3fv"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -1220,9 +1234,9 @@ collaboration using typical untrusted file hosts or services.")
              (method url-fetch)
              ;; cgit is tightly bound to git.  Use GIT_VER from the Makefile,
              ;; which may not match the current (package-version git).
-             (uri "mirror://kernel.org/software/scm/git/git-2.44.0.tar.xz")
+             (uri "mirror://kernel.org/software/scm/git/git-2.45.2.tar.xz")
              (sha256
-              (base32 "1qqxd3pdsca6m93lxxkz9s06xs1sq0ah02lhrr0a6pjvrf6p6n73"))))
+              (base32 "1nws1vjgj54sv32wxl1h3n1jkcpabqv7a605hhafsby0n5zfigsi"))))
          ("bash-minimal" ,bash-minimal)
          ("openssl" ,openssl)
          ("python" ,python)
@@ -1621,7 +1635,12 @@ lot easier.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cgv7chxqkjaqmzi4691in26j2fm8r0vanw8xzb9cqnz6350wvvj"))))
+        (base32 "0cgv7chxqkjaqmzi4691in26j2fm8r0vanw8xzb9cqnz6350wvvj"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin (substitute* (find-files "." "^Cargo\\.toml$")
+                  (("\"~([[:digit:]]+(\\.[[:digit:]]+)*)" _ version)
+                   (string-append "\"^" version)))))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-anstyle" ,rust-anstyle-1)
@@ -2357,14 +2376,14 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.14.2")
+    (version "1.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/subversion/"
                                   "subversion-" version ".tar.bz2"))
               (sha256
                (base32
-                "0a6csc84hfymm8b5cnvq1n1p3rjjf33qy0z7y1k8lwkm1f6hw4y9"))))
+                "0h54l4p2dlk1rm4zm428hi6ij6xpqxqlqmvkhmz5yhq9392zv7ll"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -2774,43 +2793,39 @@ any project with more than one developer, is one of Aegis's major functions.")
 (define-public tig
   (package
     (name "tig")
-    (version "2.5.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/jonas/tig/releases/download/tig-"
-                    version "/tig-" version ".tar.gz"))
-              (sha256
-               (base32
-                "14b38200bmwvi3030hqnwdsp34854ck3bzncj0wlljnpmr10l3mp"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; TODO: Delete and rebuild doc/*.(1|5|7).
-                  (for-each delete-file (find-files "doc" "\\.html$"))))))
+    (version "2.5.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jonas/tig")
+             (commit (string-append "tig-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m7v6xkvly3cbc5hs7plxdny4r41x3vkx7xylygjva4jcvnz0fjr"))))
     (build-system gnu-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-doc
+            (lambda _
+              (invoke "make" "install-doc")))
+          (add-after 'install 'install-completions
+            (lambda _
+              (let ((share (string-append #$output "/share")))
+                (mkdir-p (string-append share "/bash-completion/completions"))
+                (mkdir-p (string-append share "/zsh/site-functions"))
+                (copy-file "contrib/tig-completion.bash"
+                           (string-append share "/bash-completion/completions/tig"))
+                (copy-file "contrib/tig-completion.zsh"
+                           (string-append share "/zsh/site-functions/_tig"))))))
+      #:test-target "test"
+      #:tests? #f))                    ; tests require access to /dev/tty
     (native-inputs
-     (list asciidoc xmlto))
+     (list asciidoc autoconf automake docbook-xsl libxml2 pkg-config xmlto))
     (inputs
      (list ncurses readline))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda _
-             (invoke "make" "install-doc")))
-         (add-after 'install 'install-completions
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (share (string-append out "/share")))
-               (mkdir-p (string-append share "/bash-completion/completions"))
-               (mkdir-p (string-append share "/zsh/site-functions"))
-               (copy-file "contrib/tig-completion.bash"
-                          (string-append share "/bash-completion/completions/tig"))
-               (copy-file "contrib/tig-completion.zsh"
-                          (string-append share "/zsh/site-functions/_tig"))))))
-       #:test-target "test"
-       #:tests? #f))                    ; tests require access to /dev/tty
     (home-page "https://jonas.github.io/tig/")
     (synopsis "Ncurses-based text user interface for Git")
     (description
@@ -3497,7 +3512,7 @@ will reconstruct the object along its delta-base chain and return it.")
            go-github-com-xeipuuv-gojsonreference
            go-github-com-xeipuuv-gojsonpointer
            go-golang-org-x-net
-           go-golang.org-x-sync-semaphore
+           go-golang-org-x-sync
            go-github-com-ssgelm-cookiejarparser
            go-github-com-rubyist-tracerx
            go-github-com-olekukonko-ts
@@ -3802,7 +3817,7 @@ If several repos are related, it helps to see their status together.")
 (define-public ghq
   (package
     (name "ghq")
-    (version "1.1.7")
+    (version "1.6.2")
     (home-page "https://github.com/x-motemen/ghq")
     (source (origin
               (method git-fetch)
@@ -3812,12 +3827,11 @@ If several repos are related, it helps to see their status together.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "155sfmhmh4ia3iinm1s8fk7fxyn5dxdryad9xkbg7mr3i3ikqjwh"))))
+                "00rrm0gykmj60i0lnr4js6d4193c92zm3cimimb03xva4n9frvxw"))))
     (build-system go-build-system)
     (arguments
      (list
       #:install-source? #f
-      #:go go-1.21
       #:import-path "github.com/x-motemen/ghq"
       #:phases
       #~(modify-phases %standard-phases
@@ -3841,8 +3855,8 @@ If several repos are related, it helps to see their status together.")
            go-github-com-motemen-go-colorine
            go-github-com-saracen-walker
            go-github-com-urfave-cli-v2
-           go-golang-org-x-net-html
-           go-golang.org-x-sync-errgroup))
+           go-golang-org-x-net
+           go-golang-org-x-sync))
     (synopsis "Manage remote repository clones")
     (description
      "@code{ghq} provides a way to organize remote repository clones, like

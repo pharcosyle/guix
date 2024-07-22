@@ -22,6 +22,8 @@
 ;;; Copyright © 2022 Roman Scherer <roman.scherer@burningswell.com>
 ;;; Copyright © 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2022 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
+;;; Copyright © 2024 Wilko Meyer <w@wmeyer.eu>
+;;; Copyright © 2024 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +85,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -474,7 +477,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "44.5")
+    (version "46.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -482,7 +485,7 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "026488yb6azwb2sm0yy0iaipk914l3agvb7d8azks4kyjqlslyb8"))))
+                "1br1ak0cwvvv8rszj9ffyvir7qcbxys940ygy22dzzn2l2byw9az"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -498,6 +501,12 @@ topology functions.")
                                     "update_desktop_database"))
                    (string-append option ": false"))
                   (else all))))))
+          (add-before 'check 'check-setup
+            (lambda* (#:key native-inputs inputs #:allow-other-keys)
+              ;; for timeTest
+              (setenv "TZDIR"
+                      (search-input-directory (or native-inputs inputs)
+                                              "share/zoneinfo"))))
           (add-after 'install 'wrap
             (lambda _
               (let ((gi-typelib-path (getenv "GI_TYPELIB_PATH")))
@@ -512,7 +521,9 @@ topology functions.")
      (list gettext-minimal
            `(,glib "bin")
            gobject-introspection
-           pkg-config))
+           libportal
+           pkg-config
+           tzdata-for-tests))
     (inputs
      (list folks
            evolution-data-server
@@ -950,6 +961,32 @@ systems and integrates readily with other Python GIS packages such as
 pyproj, Rtree, and Shapely.")
     (license license:bsd-3)))
 
+(define-public python-geopack
+  (package
+    (name "python-geopack")
+    (version "1.0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "geopack" version))
+       (sha256
+        (base32 "0mryjp7m4h99qlpvnn40s81sygr73qcv8rkmjp9pcli1gz829kjf"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; XXX Reported upstream <https://github.com/tsssss/geopack/issues/21>.
+      #:tests? #f))
+    (native-inputs
+     (list python-pytest))
+    (propagated-inputs
+     (list python-numpy python-scipy))
+    (home-page "https://github.com/tsssss/geopack")
+    (synopsis "Python version of geopack and Tsyganenko models")
+    (description
+     "Python version of geopack and Tsyganenko models, compatible with
+@code{geopack05} and @code{geopack08}.")
+    (license license:expat)))
+
 (define-public python-geopandas
   (package
     (name "python-geopandas")
@@ -987,6 +1024,30 @@ high-level interface to multiple geometries to Shapely.  GeoPandas
 enables you to easily do operations in Python that would otherwise
 require a spatial database such as PostGIS.")
     (license license:bsd-3)))
+
+(define-public python-overpass
+  (package
+    (name "python-overpass")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "overpass" version))
+       (sha256
+        (base32 "0l2n01j0vslag8cf3sp7jif0d4ql6i99fvfv2mgc3ajws69aqzr6"))))
+    (build-system pyproject-build-system)
+    (arguments
+     ;; tests disabled, as they require network
+     (list #:tests? #f))
+    (propagated-inputs (list python-geojson
+                             python-requests
+                             python-shapely))
+    (native-inputs (list python-pytest))
+    (home-page "https://github.com/mvexel/overpass-api-python-wrapper")
+    (synopsis "Python wrapper for the OpenStreetMap Overpass API")
+    (description "This package provides python-overpass, a Python wrapper
+for the @code{OpenStreetMap} Overpass API.")
+    (license license:asl2.0)))
 
 (define-public python-ogr2osm
   (package
@@ -1048,7 +1109,7 @@ during conversion.")
 (define-public python-osmnx
   (package
     (name "python-osmnx")
-    (version "1.8.1")
+    (version "1.9.3")
     (source
      (origin
        ;; Fetch from github as the pypi package is missing the tests dir.
@@ -1058,7 +1119,7 @@ during conversion.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n238n07pp5jw9cg8nqw9qhpkw8plzb5imz1gxbliw2l1idqyjcl"))))
+        (base32 "0yi9al6rrc584y24vigi7w52dq9k2l2zgblrj5ajwgk8079k8zsf"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -1432,13 +1493,13 @@ surface (i.e., gridding) with a hint of machine learning.")
 (define-public python-cartopy
   (package
     (name "python-cartopy")
-    (version "0.22.0")
+    (version "0.23.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cartopy" version))
        (sha256
-        (base32 "0jdv92az0b7qxdvalh29kasw3knsl570cz7q3vql67ck400zj05k"))))
+        (base32 "0xknmq73pvkm3k718zrsx8p4r83dbskwqna9v4qvmwh1ayrkf7r3"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -1449,8 +1510,16 @@ surface (i.e., gridding) with a hint of machine learning.")
         "-m" "not natural_earth and not network"
         "-k"
         (string-append
-         ;; This one too but it's not marked as such.
-         "not test_gridliner_labels_bbox_style"
+         ;; These ones too but are not marked as such.
+         "not test_feature_artist_draw"
+         " and not test_feature_artist_draw_facecolor_list"
+         " and not test_feature_artist_draw_cmap"
+         " and not test_feature_artist_draw_styled_feature"
+         " and not test_feature_artist_draw_styler"
+         " and not test_gridliner_constrained_adjust_datalim"
+         " and not test_gridliner_remove"
+         " and not test_gridliner_title_adjust"
+         " and not test_gridliner_labels_bbox_style"
          ;; Accuracy problems
          " and not test_single_spole"
          " and not test_single_npole"
@@ -1637,13 +1706,13 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public python-metpy
   (package
     (name "python-metpy")
-    (version "1.6.1")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "MetPy" version))
               (sha256
                (base32
-                "1pzzanar797wkn6ljs47vni1fwli570d5qsiw1kpw0j1xymcmfsm"))))
+                "1fvnfhk4x2a1cn3f9x4snlars3bjzrnwk9lgldzmh63q1nn5n1pb"))))
     (build-system pyproject-build-system)
     (arguments
      ;; Too many of the tests in the files below require online data.
@@ -2320,15 +2389,15 @@ associated with an address.")
 (define-public python-maxminddb
   (package
     (name "python-maxminddb")
-    (version "2.2.0")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "maxminddb" version))
        (sha256
         (base32
-         "1rc4a403r3b4vhmhb03gidd0fmsbvfpbf3qfcw25h4db9zn0fxz3"))))
-    (build-system python-build-system)
+         "0r7jcqzr3hy9jims0ygjdhndysbs02hsaybx9f4vq2k2w8r2v13x"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:tests? #f)) ;; Tests require a copy of the maxmind database
     (inputs
@@ -2343,19 +2412,21 @@ MaxMind DB files.")
 (define-public python-geoip2
   (package
     (name "python-geoip2")
-    (version "2.9.0")
+    (version "4.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "geoip2" version))
        (sha256
         (base32
-         "1w7cay5q6zawjzivqbwz5cqx1qbdjw6kbriccb7l46p7b39fkzzp"))))
-    (build-system python-build-system)
+         "0ddcm6a0f5xr66r84hpn6jr6b7hl77axb0d41qj285ylny0c376x"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:tests? #f)) ;; Tests require a copy of the maxmind database
     (inputs
-     (list python-maxminddb python-requests))
+     (list python-maxminddb
+           python-requests
+           python-aiohttp))
     (home-page "https://www.maxmind.com/")
     (synopsis "MaxMind GeoIP2 API")
     (description "Provides an API for the GeoIP2 web services and databases.
@@ -2450,7 +2521,7 @@ data.")
            proj
            qtbase-5
            qtdeclarative-5
-           qtlocation
+           qtlocation-5
            qtwebchannel-5
            qtwebengine-5
            quazip
@@ -2686,7 +2757,7 @@ track your position right from your laptop.")
            proj
            qtbase-5
            qtimageformats-5
-           qtlocation
+           qtlocation-5
            qtsensors-5
            zlib))
     (native-inputs
@@ -2881,193 +2952,248 @@ growing set of geoscientific methods.")
 (define-public qgis
   (package
     (name "qgis")
-    (version "3.30.1")
+    (version "3.34.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://qgis.org/downloads/qgis-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0mdgqyqr3nswp5qfpjrpr35lxizcrz73a1gs3ddxsd1xr9amzb5s"))))
+        (base32 "1zqyyrbv53vrrh372g503qh8kmy2dlsxcck28khhkh2262m5qfap"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
+     (list
+      #:modules '((guix build cmake-build-system)
                   ((guix build python-build-system) #:prefix python:)
                   (guix build qt-utils)
                   (guix build utils))
-       #:imported-modules (,@%cmake-build-system-modules
+      #:imported-modules `(,@%cmake-build-system-modules
                            (guix build python-build-system)
                            (guix build qt-utils))
-       #:configure-flags
-       '("-DWITH_QTWEBKIT=NO")
-       #:phases
-       (modify-phases %standard-phases
-         ;; Configure correct path to PyQt5 SIP directory
-         (add-after 'unpack 'configure-pyqt5-sip-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((sip-dir (string-append
-                             (assoc-ref inputs "python-pyqt+qscintilla")
-                             "/lib/python"
-                             (python:python-version (assoc-ref inputs "python"))
-                             "/site-packages/PyQt5/bindings")))
-               (substitute* "cmake/FindPyQt5.py"
-                 (("sip_dir = cfg.default_sip_dir")
-                  (string-append "sip_dir = \"" sip-dir "\"")))
-               (substitute* "cmake/FindPyQt5.cmake"
-                 (("SET\\(PYQT5_SIP_DIR \"\\$\\{Python_SITEARCH\\}/PyQt5/bindings\"\\)")
-                  (string-append "SET(PYQT5_SIP_DIR \"" sip-dir "\")"))))
-             (substitute* (list "tests/code_layout/test_qt_imports.sh"
-                                "tests/code_layout/test_qgsscrollarea.sh")
-               (("\\$\\(git rev-parse --show-toplevel\\)")
-                (getcwd)))))
-         (replace 'check
-           (lambda* (#:key inputs outputs tests? parallel-tests?
-                     #:allow-other-keys)
-             (when tests?
-             (setenv "HOME" "/tmp")
-             (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             (setenv "TRAVIS" "true")
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-             (let* ((out (assoc-ref outputs "out"))
-                    (grass-version ,(package-version grass))
-                    (grass-majorminor (string-join
-                                       (list-head
-                                        (string-split grass-version #\.) 2)
-                                       ""))
-                    (grass (string-append (assoc-ref inputs "grass")
-                                          "/grass" grass-majorminor)))
-               (setenv "GISBASE" grass))
-             (invoke "ctest"
-                     "-j" (if parallel-tests?
-                              (number->string (parallel-job-count))
-                              "1")
-                     "-E" (string-join
-                           '(;; Disable tests that require network access
-                             "PyQgsExternalStorageAwsS3"
-                             "PyQgsExternalStorageWebDav"
-                             "qgis_filedownloader"
-                             "test_core_networkaccessmanager"
-                             "test_core_tiledownloadmanager"
-                             "test_gui_filedownloader"
-                             "test_provider_wcsprovider"
-                             ;; Disable tests that need OGR built with
-                             ;; libspatialite support
-                             "PyQgsAttributeTableModel"
-                             "PyQgsOGRProviderSqlite"
-                             "PyQgsWFSProvider"
-                             "PyQgsOapifProvider"
-                             ;; Disable tests that need Python compiled
-                             ;; with loadable SQLite extensions.
-                             "PyQgsFieldFormattersTest"
-                             "PyQgsSpatialiteProvider"
-                             "PyQgsLayerDependencies"
-                             "PyQgsDBManagerGpkg"
-                             "PyQgsDBManagerSpatialite"
-                             ;; Disable tests that need poppler (with Cairo)
-                             "PyQgsLayoutExporter"
-                             "PyQgsPalLabelingLayout"
-                             ;; Disable tests that need Orfeo ToolBox
-                             "ProcessingOtbAlgorithmsTest"
-                             ;; TODO: Find why the following tests fail
-                             "ProcessingQgisAlgorithmsTestPt1"
-                             "ProcessingQgisAlgorithmsTestPt3"
-                             "ProcessingQgisAlgorithmsTestPt4"
-                             "ProcessingGdalAlgorithmsRasterTest"
-                             "ProcessingGdalAlgorithmsVectorTest"
-                             "ProcessingGrass7AlgorithmsImageryTest"
-                             "ProcessingGrass7AlgorithmsRasterTestPt1"
-                             "ProcessingGrass7AlgorithmsRasterTestPt2"
-                             "ProcessingGrass7AlgorithmsVectorTest"
-                             "test_core_authconfig"
-                             "test_core_authmanager"
-                             "test_core_compositionconverter"
-                             "test_core_expression"
-                             "test_core_gdalutils"
-                             "test_core_labelingengine"
-                             "test_core_layoutpicture"
-                             "test_core_layouttable"
-                             "test_core_pointcloudlayerexporter"
-                             "test_core_projectstorage"
-                             "test_core_coordinatereferencesystem"
-                             "test_core_overlayexpression"
-                             "test_gui_queryresultwidget"
-                             "test_provider_copcprovider"
-                             "test_provider_eptprovider"
-                             "test_analysis_processingalgspt1"
-                             "test_analysis_processingalgspt2"
-                             "test_analysis_processing"
-                             "test_app_gpsintegration"
-                             "PyQgsAnnotation"
-                             "PyQgsAuthenticationSystem"
-                             "PyQgsConnectionRegistry"
-                             "PyQgsDatumTransform"
-                             "PyQgsFileUtils"
-                             "PyQgsGeometryTest"
-                             "PyQgsGoogleMapsGeocoder"
-                             "PyQgsGroupLayer"
-                             "PyQgsHashLineSymbolLayer"
-                             "PyQgsLayerMetadataProviderPython"
-                             "PyQgsLayoutHtml"
-                             "PyQgsLineSymbolLayers"
-                             "PyQgsMapLayer"
-                             "PyQgsOGRProviderGpkg"
-                             "PyQgsProcessExecutablePt1"
-                             "PyQgsProcessExecutablePt2"
-                             "PyQgsProjectionSelectionWidgets"
-                             "PyQgsProviderConnectionGpkg"
-                             "PyQgsProviderConnectionSpatialite"
-                             "PyQgsOGRProvider"
-                             "PyQgsSettingsTreeNode"
-                             "PyQgsTextRenderer"
-                             "PyQgsVectorFileWriter"
-                             "PyQgsVectorLayerEditBuffer"
-                             "PyQgsVirtualLayerProvider"
-                             "PyQgsAuxiliaryStorage"
-                             "PyQgsSelectiveMasking"
-                             "qgis_sipify"
-                             "qgis_sip_include"
-                             "qgis_sip_uptodate")
-                           "|")))))
-         (add-after 'install 'wrap-python
-           (assoc-ref python:%standard-phases 'wrap))
-         (add-after 'wrap-python 'wrap-qt
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-qt-program "qgis" #:output out #:inputs inputs))))
-         (add-after 'wrap-qt 'wrap-gis
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; TODO: Find if there is a way to get SAGA to work.
-             ;; Currently QGIS says "version of SAGA not supported".
-             ;; Disable it for now.
-             (let* ((out (assoc-ref outputs "out"))
-                    ;;(saga (string-append (assoc-ref inputs "saga") "/bin"))
-                    (grass-version ,(package-version grass))
-                    (grass-majorminor (string-join
-                                       (list-head
-                                        (string-split grass-version #\.) 2)
-                                       ""))
-                    (grass (string-append (assoc-ref inputs "grass")
-                                          "/grass" grass-majorminor)))
-               (wrap-program (string-append out "/bin/qgis")
-                 ;;`("PATH" ":" prefix (,saga))
-                 `("QGIS_PREFIX_PATH" = (,out))
-                 `("GISBASE" = (,grass)))))))))
+      #:configure-flags
+      #~(list "-DWITH_QTWEBKIT=NO")
+      #:phases
+      #~(let* ((ignored-tests (list
+                               ;; Disable tests that require network access
+                               "PyQgsExternalStorageAwsS3"
+                               "PyQgsExternalStorageWebDav"
+                               "test_core_networkaccessmanager"
+                               "test_core_tiledownloadmanager"
+                               "test_gui_filedownloader"
+                               "test_provider_wcsprovider"
+                               ;; Disable tests that need OGR built with
+                               ;; libspatialite support
+                               "PyQgsAttributeTableModel"
+                               "PyQgsOGRProviderSqlite"
+                               "PyQgsWFSProvider"
+                               "PyQgsOapifProvider"
+                               ;; Disable tests that need Python compiled
+                               ;; with loadable SQLite extensions.
+                               "PyQgsFieldFormattersTest"
+                               "PyQgsSpatialiteProvider"
+                               "PyQgsLayerDependencies"
+                               "PyQgsDBManagerGpkg"
+                               "PyQgsDBManagerSpatialite"
+                               ;; Disable tests that need poppler (with Cairo)
+                               "PyQgsLayoutExporter"
+                               "PyQgsPalLabelingLayout"
+                               ;; Disable tests that need Orfeo ToolBox
+                               "ProcessingOtbAlgorithmsTest"
+                               ;; TODO: Find why the following tests fail
+                               "ProcessingQgisAlgorithmsTestPt1"
+                               "ProcessingQgisAlgorithmsTestPt2"
+                               "ProcessingQgisAlgorithmsTestPt3"
+                               "ProcessingQgisAlgorithmsTestPt4"
+                               "ProcessingGdalAlgorithmsVectorTest"
+                               "ProcessingGrass7AlgorithmsImageryTest"
+                               "ProcessingGrass7AlgorithmsRasterTestPt1"
+                               "ProcessingGrass7AlgorithmsRasterTestPt2"
+                               "ProcessingGrass7AlgorithmsVectorTest"
+                               "test_core_authconfig"
+                               "test_core_authmanager"
+                               "test_core_compositionconverter"
+                               "test_core_expression"
+                               "test_core_gdalutils"
+                               "test_core_labelingengine"
+                               "test_core_layoutpicture"
+                               "test_core_project"
+                               "test_core_coordinatereferencesystem"
+                               "test_core_overlayexpression"
+                               "test_gui_queryresultwidget"
+                               "test_provider_eptprovider"
+                               "test_analysis_processingalgspt2"
+                               "test_analysis_processingpdalalgs"
+                               "test_analysis_processing"
+                               "test_app_gpsintegration"
+                               "test_3d_mesh3drendering"
+                               "PyQgsAnnotation"
+                               "PyQgsAnnotationLayer"
+                               "PyQgsAnnotationLineItem"
+                               "PyQgsAnnotationLineTextItem"
+                               "PyQgsAnnotationPolygonItem"
+                               "PyQgsAuthenticationSystem"
+                               "PyQgsDatumTransform"
+                               "PyQgsFileUtils"
+                               "PyQgsGeometryTest"
+                               "PyQgsGoogleMapsGeocoder"
+                               "PyQgsHashLineSymbolLayer"
+                               "PyQgsLayoutHtml"
+                               "PyQgsLineSymbolLayers"
+                               "PyQgsMapLayer"
+                               "PyQgsOGRProviderGpkg"
+                               "PyQgsProcessExecutablePt1"
+                               "PyQgsProcessExecutablePt2"
+                               "PyQgsProjectionSelectionWidgets"
+                               "PyQgsProviderConnectionGpkg"
+                               "PyQgsProviderConnectionSpatialite"
+                               "PyQgsOGRProvider"
+                               "PyQgsTextRenderer"
+                               "PyQgsVectorFileWriter"
+                               "PyQgsVirtualLayerProvider"
+                               "PyQgsAuxiliaryStorage"
+                               "PyQgsSelectiveMasking"
+                               "PyPythonRepr"
+                               "PyQgsAnimatedMarkerSymbolLayer"
+                               "PyQgsPythonProvider"
+                               "PyQgsCategorizedSymbolRenderer"
+                               "PyQgsColorRampLegendNode"
+                               "PyQgsEmbeddedSymbolRenderer"
+                               "PyQgsFillSymbolLayers"
+                               "PyQgsGeometryGeneratorSymbolLayer"
+                               "PyQgsGpsLogger"
+                               "PyQgsGraduatedSymbolRenderer"
+                               "PyQgsHighlight"
+                               "PyQgsInterpolatedLineSymbolLayer"
+                               "PyQgsJsonUtils"
+                               "PyQgsLayerTreeView"
+                               "PyQgsLayoutAtlas"
+                               "PyQgsLayoutElevationProfile"
+                               "PyQgsLayoutPageCollection"
+                               "PyQgsLayoutItem"
+                               "PyQgsLayoutLegend"
+                               "PyQgsLayoutMap"
+                               "PyQgsLayoutPage"
+                               "PyQgsLineburstSymbolLayer"
+                               "PyQgsMapCanvas"
+                               "PyQgsMapCanvasAnnotationItem"
+                               "PyQgsMapHitTest"
+                               "PyQgsMarkerLineSymbolLayer"
+                               "PyQgsMergedFeatureRenderer"
+                               "PyQgsMeshLayerProfileGenerator"
+                               "PyQgsPalLabelingPlacement"
+                               "PyQgsPointCloudAttributeByRampRenderer"
+                               "PyQgsPointCloudExtentRenderer"
+                               "PyQgsPointCloudLayerProfileGenerator"
+                               "PyQgsPointClusterRenderer"
+                               "PyQgsPointDisplacementRenderer"
+                               "PyQgsProfileExporter"
+                               "PyQgsProfileRequest"
+                               "TestQgsRandomMarkerSymbolLayer"
+                               "PyQgsRasterAttributeTable"
+                               "PyQgsRasterFileWriterTask"
+                               "PyQgsRasterLayer"
+                               "PyQgsRasterLayerProfileGenerator"
+                               "PyQgsRasterColorRampShader"
+                               "PyQgsRasterLineSymbolLayer"
+                               "PyQgsRasterPipe"
+                               "PyQgsSingleSymbolRenderer"
+                               "PyQgsSimpleFillSymbolLayer"
+                               "PyQgsSimpleLineSymbolLayer"
+                               "PyQgsSymbolLayer"
+                               "PyQgsRasterRendererCreateSld"
+                               "PyQgsSymbolLayerCreateSld"
+                               "PyQgsArrowSymbolLayer"
+                               "PyQgsSymbolExpressionVariables"
+                               "PyQgsStyleModel"
+                               "PyQgsSymbol"
+                               "PyQgsSymbolLayerUtils"
+                               "PyQgsTextFormatWidget"
+                               "PyQgsVectorFieldMarkerSymbolLayer"
+                               "PyQgsVectorLayer"
+                               "PyQgsVectorLayerProfileGenerator"
+                               "PyQgsVectorLayerRenderer"
+                               "qgis_sipify"
+                               "qgis_sip_include"
+                               "qgis_sip_uptodate"))
+               (grass-version #$(package-version (this-package-input "grass")))
+               (grass-majorminor (string-join
+                                  (list-head
+                                   (string-split grass-version #\.) 2)
+                                  ""))
+               (grass-dir (string-append #$(this-package-input "grass")
+                                         "/grass" grass-majorminor)))
+          (modify-phases %standard-phases
+            ;; Configure correct path to PyQt5 SIP directory
+            (add-after 'unpack 'configure-pyqt5-sip-path
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((sip-dir (string-append
+                                (assoc-ref inputs "python-pyqt+qscintilla")
+                                "/lib/python"
+                                (python:python-version (assoc-ref inputs "python"))
+                                "/site-packages/PyQt5/bindings")))
+                  (substitute* "cmake/FindPyQt5.py"
+                    (("sip_dir = cfg.default_sip_dir")
+                     (string-append "sip_dir = \"" sip-dir "\"")))
+                  (substitute* "cmake/FindPyQt5.cmake"
+                    (("\
+SET\\(PYQT5_SIP_DIR \"\\$\\{Python_SITEARCH\\}/PyQt5/bindings\"\\)")
+                     (string-append "SET(PYQT5_SIP_DIR \"" sip-dir "\")"))))
+                (substitute* (list "tests/code_layout/test_qt_imports.sh"
+                                   "tests/code_layout/test_qgsscrollarea.sh")
+                  (("\\$\\(git rev-parse --show-toplevel\\)")
+                   (getcwd)))))
+            (replace 'check
+              (lambda* (#:key inputs outputs tests? parallel-tests?
+                        #:allow-other-keys)
+                (if tests?
+                    (begin
+                      (setenv "HOME" "/tmp")
+                      (system "Xvfb :1 &")
+                      (setenv "DISPLAY" ":1")
+                      (setenv "TRAVIS" "true")
+                      (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+                      (setenv "GISBASE" grass-dir)
+                      (invoke "ctest"
+                              "-j" (if parallel-tests?
+                                       (number->string (parallel-job-count))
+                                       "1")
+                              "-E" (string-join ignored-tests "|")))
+                    (format #t "test suite not run~%"))))
+            (add-after 'install 'wrap-python
+              (assoc-ref python:%standard-phases 'wrap))
+            (add-after 'wrap-python 'wrap-qt
+              (lambda* (#:key inputs #:allow-other-keys)
+                (wrap-qt-program "qgis" #:output #$output #:inputs inputs)))
+            (add-after 'wrap-qt 'wrap-gis
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; TODO: Find if there is a way to get SAGA to work.
+                ;; Currently QGIS says "version of SAGA not supported".
+                ;; Disable it for now.
+                (wrap-program (string-append #$output "/bin/qgis")
+                  ;; `("PATH" ":" prefix
+                  ;; (,(dirname (search-input-file inputs "/bin/saga_cmd"))))
+                  `("QGIS_PREFIX_PATH" = (,#$output))
+                  `("GISBASE" = (,grass-dir)))))))))
     (inputs
      (list bash-minimal
+           draco
            exiv2
            expat
+           freexl
            gdal
            geos
            gpsbabel
            grass
            gsl
            hdf5
+           librttopo
            libspatialindex
            libspatialite
            libxml2
            libzip
+           minizip
            netcdf
+           pdal
            postgresql
            proj
            protobuf
@@ -3089,10 +3215,11 @@ growing set of geoscientific methods.")
            python-urllib3
            qca
            qscintilla
+           qt3d-5
            qtbase-5
            qtdeclarative-5
            qtkeychain
-           qtlocation
+           qtlocation-5
            qtmultimedia-5
            qtserialport-5
            qtsvg-5
@@ -3102,19 +3229,19 @@ growing set of geoscientific methods.")
            (list zstd "lib")))
     (native-inputs
      (append
-       (list bison
-             flex
-             perl
-             perl-yaml-tiny
-             pkg-config
-             python-mock
-             python-nose2
-             python-pyqt-builder
-             qttools-5)
-       (if (supported-package? shellcheck)
-         (list shellcheck)
-         '())
-       (list xorg-server-for-tests)))
+      (list bison
+            flex
+            perl
+            perl-yaml-tiny
+            pkg-config
+            python-mock
+            python-nose2
+            python-pyqt-builder
+            qttools-5)
+      (if (supported-package? shellcheck)
+          (list shellcheck)
+          '())
+      (list xorg-server-for-tests)))
     (home-page "https://qgis.org")
     (synopsis "Geographical information system")
     (description "QGIS is an easy to use Geographical Information
@@ -3305,7 +3432,7 @@ latitude and longitude.")
 (define-public gplates
   (package
     (name "gplates")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3313,7 +3440,7 @@ latitude and longitude.")
                     (commit (string-append "GPlates-" version))))
               (sha256
                (base32
-                "1awb4igchgpmrvj6blxd1w81c617bs66w6cfrwvf30n6rjlyn6q5"))
+                "1qrislbgrsn6l1ikd3mffsqxvy61w3l53wmr8mfd8aqaj6dk1wfx"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments

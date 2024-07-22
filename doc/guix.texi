@@ -53,7 +53,7 @@ Copyright @copyright{} 2017, 2019, 2020, 2021, 2022, 2023 Maxim Cournoyer@*
 Copyright @copyright{} 2017–2022 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
-Copyright @copyright{} 2017, 2018, 2019, 2020, 2023 Arun Isaac@*
+Copyright @copyright{} 2017, 2018, 2019, 2020, 2023, 2024 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018, 2021, 2023 Oleg Pykhalov@*
@@ -116,17 +116,19 @@ Copyright @copyright{} 2022 Antero Mejr@*
 Copyright @copyright{} 2023 Karl Hallsby@*
 Copyright @copyright{} 2023 Nathaniel Nicandro@*
 Copyright @copyright{} 2023 Tanguy Le Carrour@*
-Copyright @copyright{} 2023 Zheng Junjie@*
+Copyright @copyright{} 2023, 2024 Zheng Junjie@*
 Copyright @copyright{} 2023 Brian Cully@*
 Copyright @copyright{} 2023 Felix Lechner@*
 Copyright @copyright{} 2023 Foundation Devices, Inc.@*
 Copyright @copyright{} 2023 Thomas Ieong@*
 Copyright @copyright{} 2023 Saku Laesvuori@*
 Copyright @copyright{} 2023 Graham James Addis@*
-Copyright @copyright{} 2023 Tomas Volf@*
+Copyright @copyright{} 2023, 2024 Tomas Volf@*
 Copyright @copyright{} 2024 Herman Rimm@*
 Copyright @copyright{} 2024 Matthew Trzcinski@*
 Copyright @copyright{} 2024 Richard Sent@*
+Copyright @copyright{} 2024 Dariqq@*
+Copyright @copyright{} 2024 Denis 'GNUtoo' Carikli@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -742,7 +744,12 @@ provide Guix through their own package managers.  The version of Guix
 may be older than @value{VERSION} but you can update it afterwards by
 running @samp{guix pull}.
 
-For Debian or a derivative such as Ubuntu, call:
+We advise system administrators who install Guix, both from the
+installation script or @i{via} the native package manager of their
+foreign distribution, to also regularly read and follow security
+notices, as shown by @command{guix pull}.
+
+For Debian or derivatives such as Ubuntu or Trisquel, call:
 
 @example
 sudo apt install guix
@@ -752,6 +759,12 @@ Likewise, on openSUSE:
 
 @example
 sudo zypper install guix
+@end example
+
+If you are running Parabola, after enabling the pcr (Parabola
+Community Repo) repository, you can install Guix with:
+@example
+sudo pacman -S guix
 @end example
 
 The Guix project also provides a shell script, @file{guix-install.sh},
@@ -777,6 +790,13 @@ As root, run:
 # wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
 # chmod +x guix-install.sh
 # ./guix-install.sh
+@end example
+
+The script to install Guix is also packaged in Parabola (in the pcr
+repository). You can install and run it with:
+@example
+sudo pacman -S guix-installer
+sudo guix-install.sh
 @end example
 
 @quotation Note
@@ -1858,15 +1878,28 @@ running Emacs with the @option{--no-site-file} option (@pxref{Init
 File,,, emacs, The GNU Emacs Manual}).
 
 @quotation Note
-Emacs can now compile packages natively.  Under the default
-configuration, this means that Emacs packages will now be
-just-in-time (JIT) compiled as you use them, and the results
-stored in a subdirectory of your @code{user-emacs-directory}.
+Most Emacs variants are now capable of doing native compilation.
+The approach taken by Guix Emacs however differs greatly
+from the approach taken upstream.
 
-Furthermore, the build system for Emacs packages transparently
-supports native compilation, but note, that
-@code{emacs-minimal}---the default Emacs for building
-packages---has been configured without native compilation.
+Upstream Emacs compiles packages just-in-time and typically places
+shared object files  in a special folder within your
+@code{user-emacs-directory}.
+These shared objects within said folder are organized in a
+flat hierarchy, and their file names contain two hashes to
+verify the original file name and contents of the source code.
+
+Guix Emacs on the other hand prefers to compile packages ahead-of-time.
+Shared objects retain much of the original file name and no hashes
+are added to verify the original file name or the contents of the file.
+Crucially, this allows Guix Emacs and packages built against it
+to be grafted (@pxref{Security Updates, grafts}), but at the same time,
+Guix Emacs lacks the hash-based verification of source code baked
+into upstream Emacs.  As this naming schema is trivial to exploit,
+we disable just-in-time compilation.
+
+Further note, that @code{emacs-minimal}---the default Emacs
+for building packages---has been configured without native compilation.
 To natively compile your emacs packages ahead of time, use a
 transformation like @option{--with-input=emacs-minimal=emacs}.
 @end quotation
@@ -2383,21 +2416,12 @@ the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
 @uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
 @code{man cryptsetup}} for more information).
 
-@quotation Warning
-While efforts are in progress to extend support to LUKS2, please note
-that Guix only supports devices of type LUKS1 at the moment. You can
-verify that your existing LUKS device is of the right type by running
-@command{cryptsetup luksDump @var{device}}. Alternatively, you can
-create a new LUKS1 device with @command{cryptsetup luksFormat --type
-luks1 @var{device}}.
-@end quotation
-
 Assuming you want to store the root partition on @file{/dev/sda2}, the
-command sequence to format it as a LUKS1 partition would be along these
+command sequence to format it as a LUKS partition would be along these
 lines:
 
 @example
-cryptsetup luksFormat --type luks1 /dev/sda2
+cryptsetup luksFormat /dev/sda2
 cryptsetup open /dev/sda2 my-partition
 mkfs.ext4 -L my-root /dev/mapper/my-partition
 @end example
@@ -8238,8 +8262,8 @@ retrieve.
 @item @code{url}
 The URL of the Mercurial repository to clone.
 
-@item @code{revision}
-This string denotes revision to fetch specified as a number.
+@item @code{changeset}
+This string denotes changeset to fetch.
 @end table
 @end deftp
 
@@ -8300,6 +8324,43 @@ The URL of the Bazaar repository to clone.
 @item @code{revision}
 This string denotes revision to fetch specified as a number.
 @end table
+@end deftp
+
+For CVS repositories, the module @code{(guix cvs-download)} defines the
+@code{cvs-fetch} origin method and @code{cvs-reference} data type for
+support of the Concurrent Versions System (CVS).
+
+@deffn {Procedure} cvs-fetch ref hash-algo hash [name]
+Return a fixed-output derivation that fetches @var{ref}, a
+@code{<cvs-reference>} object.  The output is expected to have recursive
+hash @var{hash} of type @var{hash-algo} (a symbol).  Use @var{name} as
+the file name, or a generic name if @code{#f}.
+@end deffn
+
+@deftp {Data Type} cvs-reference
+This data type represents a CVS reference for @code{cvs-fetch} to
+retrieve.
+
+@table @asis
+@item @code{root-directory}
+The CVS root directory.
+
+@item @code{module}
+Module to fetch.
+
+@item @code{revision}
+Revision to fetch.
+@end table
+
+The example below denotes a version of gnu-standards to fetch:
+
+@lisp
+(cvs-reference
+  (root-directory ":pserver:anonymous@@cvs.savannah.gnu.org:/sources/gnustandards")
+  (module "gnustandards")
+  (revision "2020-11-25"))
+@end lisp
+
 @end deftp
 
 @node Defining Package Variants
@@ -12166,6 +12227,18 @@ When @var{recursive?} is true, call @code{(@var{select?} @var{file}
 absolute file name and @var{stat} is the result of @code{lstat}; exclude
 entries for which @var{select?} does not return true.
 
+@var{file} can be wrapped in the @code{assume-valid-file-name} syntactic
+keyword. When this is done, there will not be a warning when
+@code{local-file} is used with a non-literal path.  The path is still
+looked up relative to the current working directory at run time.
+Wrapping is done like this:
+
+@lisp
+(define alice-key-file-path "alice.pub")
+;; ...
+(local-file (assume-valid-file-name alice-key-file-path))
+@end lisp
+
 This is the declarative counterpart of the @code{interned-file} monadic
 procedure (@pxref{The Store Monad, @code{interned-file}}).
 @end deffn
@@ -14396,6 +14469,39 @@ The Elm importer also allows you to specify a version string:
 @example
 guix import elm elm-explorations/webgl@@1.1.3
 @end example
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
+@item npm-binary
+@cindex npm
+@cindex Node.js
+Import metadata from the @uref{https://registry.npmjs.org, npm
+Registry}, as in this example:
+
+@example
+guix import npm-binary buffer-crc32
+@end example
+
+The npm-binary importer also allows you to specify a version string:
+
+@example
+guix import npm-binary buffer-crc32@@1.0.0
+@end example
+
+@quotation Note
+Generated package expressions skip the build step of the
+@code{node-build-system}. As such, generated package expressions often
+refer to transpiled or generated files, instead of being built from
+source.
+@end quotation
 
 Additional options include:
 
@@ -17187,10 +17293,10 @@ version:
                     %base-packages)))
 @end lisp
 
-@findex specification->package+output
+@findex specifications->packages
 When a package has more than one output it can be a challenge to refer to a
 specific output instead of just to the standard @code{out} output.  For these
-situations one can use the @code{specification->package+output} procedure from
+situations one can use the @code{specifications->packages} procedure from
 the @code{(gnu packages)} module.  For example:
 
 @lisp
@@ -17198,8 +17304,8 @@ the @code{(gnu packages)} module.  For example:
 
 (operating-system
   ;; ...
-  (packages (append (map specification->package+output
-                         '("git" "git:send-email"))
+  (packages (append (specifications->packages
+                      '("git" "git:send-email"))
                     %base-packages)))
 
 @end lisp
@@ -17791,6 +17897,20 @@ a dependency of @file{/sys/fs/cgroup/cpu} and
 
 Another example is a file system that depends on a mapped device, for
 example for an encrypted partition (@pxref{Mapped Devices}).
+
+@item @code{shepherd-requirements} (default: @code{'()})
+This is a list of symbols denoting Shepherd requirements that must be
+met before mounting the file system.
+
+As an example, an NFS file system would typically have a requirement for
+@code{networking}.
+
+Typically, file systems are mounted before most other Shepherd services
+are started.  However, file systems with a non-empty
+shepherd-requirements field are mounted after Shepherd services have
+begun.  Any Shepherd service that depends on a file system with a
+non-empty shepherd-requirements field must depend on it directly and not
+on the generic symbol @code{file-systems}.
 @end table
 @end deftp
 
@@ -18975,6 +19095,10 @@ symlink:
 (extra-special-file "/usr/bin/env"
                     (file-append coreutils "/bin/env"))
 @end lisp
+
+This procedure is meant for @code{/bin/sh}, @code{/usr/bin/env} and
+similar targets.  In particular, use for targets under @code{/etc} might
+not work as expected if the target is managed by Guix in other ways.
 @end deffn
 
 @defvar host-name-service-type
@@ -19387,9 +19511,11 @@ the nscd---e.g., @code{(list @var{nss-mdns})}.
 Package object denoting the GNU C Library providing the @command{nscd}
 command.
 
-@item @code{log-file} (default: @code{"/var/log/nscd.log"})
-Name of the nscd log file.  This is where debugging output goes when
-@code{debug-level} is strictly positive.
+@item @code{log-file} (default: @code{#f})
+Name of the nscd log file.  Debugging output goes to that file when
+@code{debug-level} is strictly positive, or to standard error if it is
+@code{#f}.  Regular messages are written to syslog when
+@code{debug-level} is zero, regardless of the value of @code{log-file}.
 
 @item @code{debug-level} (default: @code{0})
 Integer denoting the debugging levels.  Higher numbers mean that more
@@ -19578,7 +19704,7 @@ might want to turn it off for instance in a virtual machine that does
 not need it and where the extra boot time is a problem.
 
 @anchor{guix-configuration-channels}
-@item @code{channels} (default: @code{%default-channels})
+@item @code{channels} (default: @code{#f})
 List of channels to be specified in @file{/etc/guix/channels.scm}, which
 is what @command{guix pull} uses by default (@pxref{Invoking guix
 pull}).
@@ -20910,24 +21036,27 @@ the user mode network stack,,, qemu, QEMU Documentation}).
 
 @cindex DHCP, networking service
 @defvar dhcp-client-service-type
-This is the type of services that run @var{dhcp}, a Dynamic Host Configuration
-Protocol (DHCP) client.
+This is the type of services that run @var{dhclient}, the ISC Dynamic
+Host Configuration Protocol (DHCP) client.
 @end defvar
 
 @deftp {Data Type} dhcp-client-configuration
-Data type representing the configuration of the DHCP client service.
+Data type representing the configuration of the ISC DHCP client service.
 
 @table @asis
 @item @code{package} (default: @code{isc-dhcp})
-DHCP client package to use.
+The ISC DHCP client package to use.
 
 @item @code{interfaces} (default: @code{'all})
-Either @code{'all} or the list of interface names that the DHCP client
-should listen on---e.g., @code{'("eno1")}.
+Either @code{'all} or the list of interface names that the ISC DHCP
+client should listen on---e.g., @code{'("eno1")}.
 
-When set to @code{'all}, the DHCP client listens on all the available
-non-loopback interfaces that can be activated.  Otherwise the DHCP
-client listens only on the specified interfaces.
+When set to @code{'all}, the ISC DHCP client listens on all the
+available non-loopback interfaces that can be activated.  Otherwise the
+ISC DHCP client listens only on the specified interfaces.
+
+@item @code{config-file} (default: @code{#f})
+The configuration file for the ISC DHCP client.
 
 @item @code{shepherd-requirement} (default: @code{'()})
 @itemx @code{shepherd-provision} (default: @code{'(networking)})
@@ -20938,7 +21067,7 @@ networks.
 
 Likewise, @code{shepherd-provision} is a list of Shepherd service names
 (symbols) provided by this service.  You might want to change the
-default value if you intend to run several DHCP clients, only one of
+default value if you intend to run several ISC DHCP clients, only one of
 which provides the @code{networking} Shepherd service.
 @end table
 @end deftp
@@ -23199,6 +23328,11 @@ The available fields are:
 @item @code{sddm} (default: @code{sddm})
 The SDDM package to use.
 
+@quotation Note
+sddm has Qt6 enabled by default. If you want to still use a Qt5 theme,
+you need to set it to @code{sddm-qt5}.
+@end quotation
+
 @item @code{display-server} (default: "x11")
 Select display server to use for the greeter.  Valid values are
 @samp{"x11"} or @samp{"wayland"}.
@@ -23552,6 +23686,17 @@ in @var{config}, are available.  The result should be used in place of
 Usually the X server is started by a login manager.
 @end deffn
 
+@deffn {Procedure} xorg-start-command-xinit [config]
+Return a @code{startx} script in which the modules, fonts,
+etc. specified in @var{config} are available.  The result should be used
+in place of @code{startx} and should be invoked by the user from a tty
+after login.  Unlike @code{xorg-start-command}, this script calls xinit.
+Therefore it works well when executed from a tty.  This script can be
+set up as @code{startx} using @code{startx-command-service-type} or
+@code{home-startx-command-service-type}.  If you are using a desktop
+environment, you are unlikely to need this procedure.
+@end deffn
+
 
 @defvar screen-locker-service-type
 Type for a service that adds a package for a screen locker or screen
@@ -23610,6 +23755,14 @@ Whether to setup program as setuid binary.
 @end table
 
 @end deftp
+
+@defvar startx-command-service-type
+Add @command{startx} to the system profile putting it onto @env{PATH}.
+
+The value for this service is a @code{<xorg-configuration>} object which
+is passed to the @code{xorg-start-command-xinit} procedure producing the
+@command{startx} used.  Default value is @code{(xorg-configuration)}.
+@end defvar
 
 
 @node Printing Services
@@ -28123,23 +28276,195 @@ Mailutils Manual}, for details.
 @cindex CardDAV
 
 @defvar radicale-service-type
-This is the type of the @uref{https://radicale.org, Radicale} CalDAV/CardDAV
-server whose value should be a @code{radicale-configuration}.
+This is the type of the @uref{https://radicale.org, Radicale}
+CalDAV/CardDAV server whose value should be a
+@code{radicale-configuration}.  The default configuration matches the
+@uref{https://radicale.org/v3.html#configuration, upstream
+documentation}.
 @end defvar
 
 @deftp {Data Type} radicale-configuration
 Data type representing the configuration of @command{radicale}.
+Available @code{radicale-configuration} fields are:
 
 @table @asis
-@item @code{package} (default: @code{radicale})
-The package that provides @command{radicale}.
+@item @code{package} (default: @code{radicale}) (type: package)
+Package that provides @command{radicale}.
 
-@item @code{config-file} (default: @code{%default-radicale-config-file})
-File-like object of the configuration file to use, by default it will listen
-on TCP port 5232 of @code{localhost} and use the @code{htpasswd} file at
-@file{/var/lib/radicale/users} with no (@code{plain}) encryption.
+@item @code{auth} (default: @code{'()}) (type: radicale-auth-configuration)
+Configuration for auth-related variables.
+
+@deftp {Data Type} radicale-auth-configuration
+Data type representing the @code{auth} section of a @command{radicale}
+configuration file.  Available @code{radicale-auth-configuration} fields
+are:
+
+@table @asis
+@item @code{type} (default: @code{'none}) (type: symbol)
+The method to verify usernames and passwords.  Options are @code{none},
+@code{htpasswd}, @code{remote-user}, and @code{http-x-remote-user}.
+This value is tied to @code{htpasswd-filename} and
+@code{htpasswd-encryption}.
+
+@item @code{htpasswd-filename} (default: @code{"/etc/radicale/users"}) (type: file-name)
+Path to the htpasswd file.  Use htpasswd or similar to generate this
+file.
+
+@item @code{htpasswd-encryption} (default: @code{'md5}) (type: symbol)
+Encryption method used in the htpasswd file.  Options are @code{plain},
+@code{bcrypt}, and @code{md5}.
+
+@item @code{delay} (default: @code{1}) (type: non-negative-integer)
+Average delay after failed login attempts in seconds.
+
+@item @code{realm} (default: @code{"Radicale - Password Required"}) (type: string)
+Message displayed in the client when a password is needed.
 
 @end table
+
+@end deftp
+
+@item @code{encoding} (default: @code{'()}) (type: radicale-encoding-configuration)
+Configuration for encoding-related variables.
+
+@deftp {Data Type} radicale-encoding-configuration
+Data type representing the @code{encoding} section of a
+@command{radicale} configuration file.  Available
+@code{radicale-encoding-configuration} fields are:
+
+@table @asis
+@item @code{request} (default: @code{'utf-8}) (type: symbol)
+Encoding for responding requests.
+
+@item @code{stock} (default: @code{'utf-8}) (type: symbol)
+Encoding for storing local collections.
+
+@end table
+
+@end deftp
+
+@item @code{headers-file} (default: none) (type: file-like)
+Custom HTTP headers.
+
+@item @code{logging} (default: @code{'()}) (type: radicale-logging-configuration)
+Configuration for logging-related variables.
+
+@deftp {Data Type} radicale-logging-configuration
+Data type representing the @code{logging} section of a
+@command{radicale} configuration file.  Available
+@code{radicale-logging-configuration} fields are:
+
+@table @asis
+@item @code{level} (default: @code{'warning}) (type: symbol)
+Set the logging level.  One of @code{debug}, @code{info},
+@code{warning}, @code{error}, or @code{critical}.
+
+@item @code{mask-passwords?} (default: @code{#t}) (type: boolean)
+Whether to include passwords in logs.
+
+@end table
+
+@end deftp
+
+@item @code{rights} (default: @code{'()}) (type: radicale-rights-configuration)
+Configuration for rights-related variables.  This should be a
+@code{radicale-rights-configuration}.
+
+@deftp {Data Type} radicale-rights-configuration
+Data type representing the @code{rights} section of a @command{radicale}
+configuration file.  Available @code{radicale-rights-configuration}
+fields are:
+
+@table @asis
+@item @code{type} (default: @code{'owner-only}) (type: symbol)
+Backend used to check collection access rights.  The recommended backend
+is @code{owner-only}.  If access to calendars and address books outside
+the home directory of users is granted, clients won't detect these
+collections and will not show them to the user.  Choosing any other
+method is only useful if you access calendars and address books directly
+via URL.  Options are @code{authenticate}, @code{owner-only},
+@code{owner-write}, and @code{from-file}.
+
+@item @code{file} (default: @code{""}) (type: file-name)
+File for the rights backend @code{from-file}.
+
+@end table
+
+@end deftp
+
+@item @code{server} (default: @code{'()}) (type: radicale-server-configuration)
+Configuration for server-related variables.  Ignored if WSGI is used.
+
+@deftp {Data Type} radicale-server-configuration
+Data type representing the @code{server} section of a @command{radicale}
+configuration file.  Available @code{radicale-server-configuration}
+fields are:
+
+@table @asis
+@item @code{hosts} (default: @code{(list "localhost:5232")}) (type: list-of-ip-addresses)
+List of IP addresses that the server will bind to.
+
+@item @code{max-connections} (default: @code{8}) (type: non-negative-integer)
+Maximum number of parallel connections.  Set to 0 to disable the limit.
+
+@item @code{max-content-length} (default: @code{100000000}) (type: non-negative-integer)
+Maximum size of the request body in bytes.
+
+@item @code{timeout} (default: @code{30}) (type: non-negative-integer)
+Socket timeout in seconds.
+
+@item @code{ssl?} (default: @code{#f}) (type: boolean)
+Whether to enable transport layer encryption.
+
+@item @code{certificate} (default: @code{"/etc/ssl/radicale.cert.pem"}) (type: file-name)
+Path of the SSL certificate.
+
+@item @code{key} (default: @code{"/etc/ssl/radicale.key.pem"}) (type: file-name)
+Path to the private key for SSL.  Only effective if @code{ssl?} is
+@code{#t}.
+
+@item @code{certificate-authority} (default: @code{""}) (type: file-name)
+Path to CA certificate for validating client certificates.  This can be
+used to secure TCP traffic between Radicale and a reverse proxy.  If you
+want to authenticate users with client-side certificates, you also have
+to write an authentication plugin that extracts the username from the
+certificate.
+
+@end table
+
+@end deftp
+
+@item @code{storage} (default: @code{'()}) (type: radicale-storage-configuration)
+Configuration for storage-related variables.
+
+@deftp {Data Type} radicale-storage-configuration
+Data type representing the @code{storage} section of a
+@command{radicale} configuration file.  Available
+@code{radicale-storage-configuration} fields are:
+
+@table @asis
+@item @code{type} (default: @code{'multifilesystem}) (type: symbol)
+Backend used to store data.  Options are @code{multifilesystem} and
+@code{multifilesystem-nolock}.
+
+@item @code{filesystem-folder} (default: @code{"/var/lib/radicale/collections"}) (type: file-name)
+Folder for storing local collections.  Created if not present.
+
+@item @code{max-sync-token-age} (default: @code{2592000}) (type: non-negative-integer)
+Delete sync-tokens that are older than the specified time in seconds.
+
+@item @code{hook} (default: @code{""}) (type: string)
+Command run after changes to storage.
+
+@end table
+
+@end deftp
+
+@item @code{web-interface?} (default: @code{#t}) (type: boolean)
+Whether to use Radicale's built-in web interface.
+
+@end table
+
 @end deftp
 
 @subsubheading Rspamd Service
@@ -31782,8 +32107,17 @@ configuration.  Values may themselves be association lists.
 @end lisp
 
 @item @code{extra-content} (default: @code{""})
-Extra content for the @code{http} block.  Should be string or a string
-valued G-expression.
+Additional content to be appended to the @code{http} block.  Can either
+be a value that can be lowered into a string or a list of such values.
+In the former case, it is inserted directly.  In the latter, it is
+prefixed with indentation and suffixed with a newline.  Nested lists are
+flattened into one line.
+
+@lisp
+(extra-content "include /etc/nginx/custom-config.conf;")
+(extra-content `("include /etc/nginx/custom-config.conf;"
+                 ("include " ,%custom-config.conf ";")))
+@end lisp
 
 @end table
 @end deftp
@@ -31836,7 +32170,9 @@ you don't have a key or you don't want to use HTTPS.
 Whether the server should add its configuration to response.
 
 @item @code{raw-content} (default: @code{'()})
-A list of raw lines added to the server block.
+A list of strings or file-like objects to be appended to the server
+block.  Each item is prefixed with indentation and suffixed with a new
+line.  Nested lists are flattened.
 
 @end table
 @end deftp
@@ -31873,11 +32209,13 @@ URI which this location block matches.
 
 @anchor{nginx-location-configuration body}
 @item @code{body}
-Body of the location block, specified as a list of strings.  This can contain
-many
-configuration directives.  For example, to pass requests to a upstream
-server group defined using an @code{nginx-upstream-configuration} block,
-the following directive would be specified in the body @samp{(list "proxy_pass
+Body of the location block, specified as a list of strings or file-like
+objects.  Each item is prefixed with indentation and suffixed with a new
+line.  Nested lists are flattened.
+
+For example, to pass requests to a upstream server group defined using
+an @code{nginx-upstream-configuration} block, the following directive
+would be specified in the body @samp{(list "proxy_pass
 http://upstream-name;")}.
 
 @end table
@@ -33510,6 +33848,10 @@ separated by dashes, e.g.: @samp{01-02-03-04-aa-bb}.  Note that
 resolving MAC addresses is only possible if the client is in the local
 network or obtained a DHCP lease from dnsmasq.
 
+@item @code{extra-options} (default: @code{'()})
+This option provides an ``escape hatch'' for the user to provide arbitrary
+command-line arguments to @command{dnsmasq} as a list of strings.
+
 @end table
 @end deftp
 
@@ -34407,7 +34749,7 @@ the packages provided by the @code{my-channel} channel.
 @lisp
 (define %cuirass-specs
   #~(list (specification
-           (name "my-channel")
+           (name 'my-channel)
            (build '(channels my-channel))
            (channels
             (cons (channel
@@ -34426,7 +34768,7 @@ channel, one can use the following configuration.
 @lisp
 (define %cuirass-specs
   #~(list (specification
-           (name "my-linux")
+           (name 'my-linux)
            (build '(packages "linux-libre")))))
 
 (service cuirass-service-type
@@ -34685,6 +35027,45 @@ Base URL to use for links to laminar itself.
 
 @node Power Management Services
 @subsection Power Management Services
+
+@cindex power-profiles-daemon
+@subsubheading Power Profiles Daemon
+
+The @code{(gnu services pm)} module provides a Guix service definition for
+the Linux Power Profiles Daemon, which makes power profiles handling
+available over D-Bus.
+
+The available profiles consist of the default @samp{balanced} mode, a @samp{power-saver} mode
+and on supported systems a @samp{performance} mode.
+
+@quotation Important
+The @code{power-profiles-daemon} conflicts with other power management tools
+like @code{tlp}. Using both together is not recommended.
+@end quotation
+
+@defvar power-profiles-daemon-service-type
+This is the service type for the
+@uref{https://gitlab.freedesktop.org/upower/power-profiles-daemon/, Power Profiles Daemon}.
+The value for this service is a @code{power-profiles-daemon-configuration}.
+
+To enable the Power Profiles Daemon with default configuration
+add this line to your services:
+
+@lisp
+(service power-profiles-daemon-service-type)
+@end lisp
+@end defvar
+
+@deftp {Data Type} power-profiles-daemon-configuration
+Data type representing the configuration of @code{power-profiles-daemon-service-type}.
+
+@table @asis
+@item @code{power-profiles-daemon} (default: @code{power-profiles-daemon}) (type: file-like)
+Package object of power-profiles-daemon.
+
+@end table
+@end deftp
+
 
 @cindex tlp
 @cindex power management with TLP
@@ -38810,7 +39191,7 @@ footers.
            (index-title "My git repositories")
            (intro '((p "This is all my public work!")))
            (footer '((p "This is the end")))
-           (nginx-server-block
+           (nginx
              (nginx-server-configuration
                (ssl-certificate
                  "/etc/certs/myweb.site/fullchain.pem")
@@ -38905,7 +39286,7 @@ of repositories, on the index page.
 The footer content, as a list of sxml expressions.  This is shown on every
 page served by Gitile.
 
-@item @code{nginx-server-block}
+@item @code{nginx}
 An nginx server block that will be extended and used as a reverse proxy by
 Gitile to serve its pages, and as a normal web server to serve its assets.
 
@@ -39486,7 +39867,7 @@ This service can be extended by other services to add additional home
 environments, as in this example:
 
 @lisp
-(simple-service 'my-extra-home home-service-type
+(simple-service 'my-extra-home guix-home-service-type
                 `(("bob" ,my-extra-home))))
 @end lisp
 @end defvar
@@ -40437,21 +40818,30 @@ processes as Shepherd Services.
 (service oci-container-service-type
          (list
           (oci-container-configuration
-           (image "prom/prometheus")
            (network "host")
+           (image
+            (oci-image
+             (repository "guile")
+             (tag "3")
+             (value (specifications->manifest '("guile")))
+             (pack-options '(#:symlinks (("/bin/guile" -> "bin/guile"))
+                             #:max-layers 2))))
+           (entrypoint "/bin/guile")
+           (command
+            '("-c" "(display \"hello!\n\")")))
+          (oci-container-configuration
+           (image "prom/prometheus")
            (ports
              '(("9000" . "9000")
                ("9090" . "9090"))))
           (oci-container-configuration
            (image "grafana/grafana:10.0.1")
            (network "host")
-           (ports
-             '(("3000" . "3000")))
            (volumes
              '("/var/lib/grafana:/var/lib/grafana")))))
 @end lisp
 
-In this example two different Shepherd services are going be added to the
+In this example three different Shepherd services are going be added to the
 system.  Each @code{oci-container-configuration} record translates to a
 @code{docker run} invocation and its fields directly map to options.  You can
 refer to the
@@ -40459,8 +40849,8 @@ refer to the
 documentation for the semantics of each value.  If the images are not found they
 will be
 @url{https://docs.docker.com/engine/reference/commandline/pull/,pulled}.  The
-spawned services are going to be attached to the host network and are supposed
-to behave like other processes.
+services with @code{(network "host")} are going to be attached to the host network
+and are supposed to behave like native processes with regard to networking.
 
 @end defvar
 
@@ -40476,13 +40866,30 @@ The user under whose authority docker commands will be run.
 @item @code{group} (default: @code{"docker"}) (type: string)
 The group under whose authority docker commands will be run.
 
-@item @code{command} (default: @code{()}) (type: list-of-strings)
+@item @code{command} (default: @code{'()}) (type: list-of-strings)
 Overwrite the default command (@code{CMD}) of the image.
 
 @item @code{entrypoint} (default: @code{""}) (type: string)
 Overwrite the default entrypoint (@code{ENTRYPOINT}) of the image.
 
-@item @code{environment} (default: @code{()}) (type: list)
+@item @code{host-environment} (default: @code{'()}) (type: list)
+Set environment variables in the host environment where @command{docker
+run} is invoked.  This is especially useful to pass secrets from the
+host to the container without having them on the @command{docker run}'s
+command line: by setting the @code{MYSQL_PASSWORD} on the host and by passing
+@code{--env MYSQL_PASSWORD} through the @code{extra-arguments} field, it is
+possible to securely set values in the container environment.  This field's
+value can be a list of pairs or strings, even mixed:
+
+@lisp
+(list '("LANGUAGE\" . "eo:ca:eu")
+      "JAVA_HOME=/opt/java")
+@end lisp
+
+Pair members can be strings, gexps or file-like objects. Strings are passed
+directly to @code{make-forkexec-constructor}.
+
+@item @code{environment} (default: @code{'()}) (type: list)
 Set environment variables. This can be a list of pairs or strings, even mixed:
 
 @lisp
@@ -40490,22 +40897,45 @@ Set environment variables. This can be a list of pairs or strings, even mixed:
       "JAVA_HOME=/opt/java")
 @end lisp
 
-String are passed directly to the Docker CLI. You can refer to the
+Pair members can be strings, gexps or file-like objects.
+Strings are passed directly to the Docker CLI.  You can refer to the
 @uref{https://docs.docker.com/engine/reference/commandline/run/#env,upstream}
 documentation for semantics.
 
-@item @code{image} (type: string)
-The image used to build the container.  Images are resolved by the
-Docker Engine, and follow the usual format
+@item @code{image} (type: string-or-oci-image)
+The image used to build the container.  It can be a string or an
+@code{oci-image} record.  Strings are resolved by the Docker Engine, and
+follow the usual format
 @code{myregistry.local:5000/testing/test-image:tag}.
 
 @item @code{provision} (default: @code{""}) (type: string)
 Set the name of the provisioned Shepherd service.
 
+@item @code{requirement} (default: @code{'()}) (type: list-of-symbols)
+Set additional Shepherd services dependencies to the provisioned
+Shepherd service.
+
+@item @code{log-file} (type: maybe-string)
+When @code{log-file} is set, it names the file to which the service's
+standard output and standard error are redirected.  @code{log-file} is created
+if it does not exist, otherwise it is appended to.
+
+@item @code{auto-start?} (default: @code{#t}) (type: boolean)
+Whether this service should be started automatically by the Shepherd.  If it
+is @code{#f} the service has to be started manually with @command{herd start}.
+
+@item @code{respawn?} (default: @code{#f}) (type: boolean)
+Whether to have Shepherd restart the service when it stops, for instance when
+the underlying process dies.
+
+@item @code{shepherd-actions} (default: @code{'()}) (type: list-of-symbols)
+This is a list of @code{shepherd-action} records defining actions supported
+by the service.
+
 @item @code{network} (default: @code{""}) (type: string)
 Set a Docker network for the spawned container.
 
-@item @code{ports} (default: @code{()}) (type: list)
+@item @code{ports} (default: @code{'()}) (type: list)
 Set the port or port ranges to expose from the spawned container.  This can be a
 list of pairs or strings, even mixed:
 
@@ -40514,11 +40944,12 @@ list of pairs or strings, even mixed:
       "10443:443")
 @end lisp
 
-String are passed directly to the Docker CLI.  You can refer to the
+Pair members can be strings, gexps or file-like objects.
+Strings are passed directly to the Docker CLI.  You can refer to the
 @uref{https://docs.docker.com/engine/reference/commandline/run/#publish,upstream}
 documentation for semantics.
 
-@item @code{volumes} (default: @code{()}) (type: list)
+@item @code{volumes} (default: @code{'()}) (type: list)
 Set volume mappings for the spawned container.  This can be a
 list of pairs or strings, even mixed:
 
@@ -40527,7 +40958,8 @@ list of pairs or strings, even mixed:
       "/gnu/store:/gnu/store")
 @end lisp
 
-String are passed directly to the Docker CLI.  You can refer to the
+Pair members can be strings, gexps or file-like objects.
+Strings are passed directly to the Docker CLI.  You can refer to the
 @uref{https://docs.docker.com/engine/reference/commandline/run/#volume,upstream}
 documentation for semantics.
 
@@ -40541,6 +40973,62 @@ Set the current working for the spawned Shepherd service.
 You can refer to the
 @url{https://docs.docker.com/engine/reference/run/#workdir,upstream}
 documentation for semantics.
+
+@item @code{extra-arguments} (default: @code{'()}) (type: list)
+A list of strings, gexps or file-like objects that will be directly
+passed to the @command{docker run} invokation.
+
+@end table
+
+@end deftp
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@deftp {Data Type} oci-image
+Available @code{oci-image} fields are:
+
+@table @asis
+@item @code{repository} (type: string)
+A string like @code{myregistry.local:5000/testing/test-image} that names
+the OCI image.
+
+@item @code{tag} (default: @code{"latest"}) (type: string)
+A string representing the OCI image tag.  Defaults to @code{latest}.
+
+@item @code{value} (type: oci-lowerable-image)
+A @code{manifest} or @code{operating-system} record that will be lowered
+into an OCI compatible tarball.  Otherwise this field's value can be a
+gexp or a file-like object that evaluates to an OCI compatible tarball.
+
+@item @code{pack-options} (default: @code{'()}) (type: list)
+An optional set of keyword arguments that will be passed to the
+@code{docker-image} procedure from @code{guix scripts pack}.  They can
+be used to replicate @command{guix pack} behavior:
+
+@lisp
+(oci-image
+  (repository "guile")
+  (tag "3")
+  (value
+    (specifications->manifest '("guile")))
+  (pack-options '(#:symlinks (("/bin/guile" -> "bin/guile"))
+                  #:max-layers 2)))
+@end lisp
+
+If the @code{value} field is an @code{operating-system} record, this field's
+value will be ignored.
+
+@item @code{system} (default: @code{""}) (type: string)
+Attempt to build for a given system, e.g. "i686-linux"
+
+@item @code{target} (default: @code{""}) (type: string)
+Attempt to cross-build for a given triple, e.g. "aarch64-linux-gnu"
+
+@item @code{grafts?} (default: @code{#f}) (type: boolean)
+Whether to allow grafting or not in the pack build.
 
 @end table
 
@@ -40681,7 +41169,7 @@ After @command{guix system reconfigure} configure Nix for your user:
 
 @itemize
 @item Add a Nix channel and update it.  See
-@url{https://nixos.wiki/wiki/Nix_channels, Nix channels} for more
+@url{https://wiki.nixos.org/wiki/Nix_channels, Nix channels} for more
 information about the available channels.  If you would like to use the
 unstable Nix channel you can do this by running:
 
@@ -40991,6 +41479,122 @@ Mode for filter.
 @end deftp
 
 @c End of auto-generated fail2ban documentation.
+
+@cindex Backup
+@subsubheading Backup Services
+
+The @code{(gnu services backup)} module offers services for backing up
+file system trees.  For now, it provides the @code{restic-backup-service-type}.
+
+With @code{restic-backup-service-type}, you can periodically back up
+directories and files with @uref{https://restic.net/, Restic}, which
+supports end-to-end encryption and deduplication.  Consider the
+following configuration:
+
+@lisp
+(use-service-modules backup @dots{}) ;for 'restic-backup-service-type'
+(use-package-modules sync @dots{})   ;for 'rclone'
+
+(operating-system
+  ;; @dots{}
+  (packages (append (list rclone)    ;for use by restic
+                    %base-packages))
+  (services
+    (list
+      (service restic-backup-service-type
+               (restic-backup-configuration
+                 (jobs
+                   (list (restic-backup-job
+                           (name "remote-ftp")
+                           (repository "rclone:remote-ftp:backup/restic")
+                           (password-file "/root/.restic")
+                           ;; Every day at 23.
+                           (schedule "0 23 * * *")
+                           (files '("/root/.restic"
+                                    "/root/.config/rclone"
+                                    "/etc/ssh/ssh_host_rsa_key"
+                                    "/etc/ssh/ssh_host_rsa_key.pub"
+                                    "/etc/guix/signing-key.pub"
+                                    "/etc/guix/signing-key.sec"))))))))))
+@end lisp
+
+Each @code{restic-backup-job} translates to an mcron job which sets the
+@env{RESTIC_PASSWORD} environment variable by reading the first line of
+@code{password-file} and runs @command{restic backup}, creating backups
+using rclone of all the files listed in the @code{files} field.
+
+The @code{restic-backup-service-type} installs as well @code{restic-guix}
+to the system profile, a @code{restic} utility wrapper that allows for easier
+interaction with the Guix configured backup jobs.  For example the following
+could be used to instantaneusly trigger a backup for the above shown
+configuration, without waiting for the scheduled job:
+
+@example
+restic-guix backup remote-ftp
+@end example
+
+@c %start of fragment
+
+@deftp {Data Type} restic-backup-configuration
+Available @code{restic-backup-configuration} fields are:
+
+@table @asis
+@item @code{jobs} (default: @code{'()}) (type: list-of-restic-backup-jobs)
+The list of backup jobs for the current system.
+
+@end table
+
+@end deftp
+
+
+@c %end of fragment
+
+@c %start of fragment
+
+@deftp {Data Type} restic-backup-job
+Available @code{restic-backup-job} fields are:
+
+@table @asis
+@item @code{restic} (default: @code{restic}) (type: package)
+The restic package to be used for the current job.
+
+@item @code{user} (default: @code{"root"}) (type: string)
+The user used for running the current job.
+
+@item @code{repository} (type: string)
+The restic repository target of this job.
+
+@item @code{name} (type: string)
+A string denoting a name for this job.
+
+@item @code{password-file} (type: string)
+Name of the password file, readable by the configured @code{user},
+that will be used to set the @env{RESTIC_PASSWORD} environment variable
+for the current job.
+
+@item @code{schedule} (type: gexp-or-string)
+A string or a gexp that will be passed as time specification in the
+mcron job specification (@pxref{Syntax, mcron job specifications,,
+mcron,GNU@tie{}mcron}).
+
+@item @code{files} (default: @code{'()}) (type: list-of-lowerables)
+The list of files or directories to be backed up.  It must be a list of
+values that can be lowered to strings.
+
+@item @code{verbose?} (default: @code{#f}) (type: boolean)
+Whether to enable verbose output for the current backup job.
+
+@item @code{extra-flags} (default: @code{'()}) (type: list-of-lowerables)
+A list of values that are lowered to strings.  These will be passed as
+command-line arguments to the current job @command{restic backup}
+invokation.
+
+@end table
+
+@end deftp
+
+
+@c %end of fragment
 
 @node Setuid Programs
 @section Setuid Programs
@@ -42262,7 +42866,7 @@ image=$(guix system image --image-type=qcow2 \
 cp $image /tmp/my-image.qcow2
 chmod +w /tmp/my-image.qcow2
 qemu-system-x86_64 -enable-kvm -hda /tmp/my-image.qcow2 -m 1000 \
-                   -bios $(guix build ovmf)/share/firmware/ovmf_x64.bin
+                   -bios $(guix build ovmf-x86-64)/share/firmware/ovmf_x64.bin
 @end example
 
 When using the @code{mbr-hybrid-raw} image type, a raw disk image is
@@ -43533,7 +44137,7 @@ Services,,, shepherd, The GNU Shepherd Manual}, for details.
 When true, this is the delay in seconds before restarting a failed
 service.
 
-@item @code{start}
+@item @code{start} (default: @code{#~(const #t)})
 @itemx @code{stop} (default: @code{#~(const #f)})
 The @code{start} and @code{stop} fields refer to the Shepherd's
 facilities to start and stop processes (@pxref{Service De- and
@@ -43551,6 +44155,30 @@ This is a list of @code{shepherd-action} objects (see below) defining
 @example
 herd @var{action} @var{service} [@var{arguments}@dots{}]
 @end example
+
+@item @code{free-form} (default: @code{#f})
+When set, this field replaces the @code{start}, @code{stop}, and
+@code{actions} fields.  It is meant to be used when the service
+definition comes from some other source, typically the service
+collection provided by the Shepherd proper (@pxref{Service Collection,,,
+shepherd, The GNU Shepherd Manual}).
+
+@cindex REPL service, for shepherd
+For example, the snippet below defines a service for the Shepherd's
+built-in @acronym{REPL, read-eval-print loop} service (@pxref{REPL
+Service,,, shepherd, The GNU Shepherd Manual}):
+
+@lisp
+(shepherd-service
+  (provision '(repl))
+  (modules '((shepherd service repl)))
+  (free-form #~(repl-service)))
+@end lisp
+
+In this case, the service object is returned by the @code{repl-service}
+procedure of the Shepherd, so all the @code{free-form} G-expression does
+is call that procedure.  Note that the @code{provision} field must be
+consistent with the actual service provision.
 
 @item @code{auto-start?} (default: @code{#t})
 Whether this service should be started automatically by the Shepherd.  If it
@@ -45926,6 +46554,15 @@ The list of expressions to be read by @code{xmodmap} on service startup.
 
 @end table
 @end deftp
+
+@defvar home-startx-command-service-type
+Add @command{startx} to the home profile putting it onto @env{PATH}.
+
+The value for this service is a @code{<xorg-configuration>} object which
+is passed to the @code{xorg-start-command-xinit} procedure producing the
+@command{startx} used.  Default value is @code{(xorg-configuration)}.
+@end defvar
+
 
 @node Guix Home Services
 @subsection Guix Home Services

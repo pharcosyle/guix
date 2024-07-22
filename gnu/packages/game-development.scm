@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2018, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2016-2021, 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016-2021, 2023, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019, 2024 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
@@ -22,13 +22,14 @@
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021 Alexandru-Sergiu Marton <brown121407@posteo.ro>
 ;;; Copyright © 2021 Dmitry Polyakov <polyakov@liltechdude.xyz>
-;;; Copyright © 2020-2022 James Smith <jsubuntuxp@disroot.org>
+;;; Copyright © 2020-2022, 2024 James Smith <jsubuntuxp@disroot.org>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2021 Andy Tai <atai@atai.org>
 ;;; Copyright © 2022 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2022 Jai Vetrivelan <jaivetrivelan@gmail.com>
 ;;; Copyright © 2022 dan <i@dan.games>
 ;;; Copyright © 2023 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -580,19 +581,21 @@ support.")
 (define-public slade
   (package
     (name "slade")
-    (version "3.2.1")
+    (version "3.2.5a")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sirjuddington/SLADE")
              (commit version)))
-       (sha256 (base32 "11ab38nv190lpvkdba5r2gckdrk4h15pri0zzslz7zy8qzg5fm18"))
+       (sha256
+        (base32 "1pdrw5ysyh9s907gj6bwf16sf9nm89dlnwlpn0y8x49662kx41v3"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags
            #~(list "-DWX_GTK3=ON" "-DNO_WEBVIEW=ON"
+                   "-DBUILD_PK3=ON"
                    (string-append "-DWITH_WXPATH="
                                   #$(this-package-input "wxwidgets") "/bin")
                    (string-append "-DwxWidgets_LIBRARIES="
@@ -919,7 +922,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public surgescript
   (package
     (name "surgescript")
-    (version "0.5.6.1")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -928,7 +931,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1p1pxb4iixzq7z14bpy32dx3dhfaaf6mcz4y3g3g09bkdmm1ys6j"))))
+        (base32 "17k14108hvz329cqnr3g799ksmiv8d710slnghi2wmwswir8s0jd"))))
      (build-system cmake-build-system)
      (arguments
       (list #:tests? #f)) ; there are no tests
@@ -1380,7 +1383,7 @@ and multimedia programs in the Python language.")
 
 (define-public python-pygame-sdl2
   (let ((real-version "2.1.0")
-        (renpy-version "8.2.0"))
+        (renpy-version "8.3.0"))
     (package
       (inherit python-pygame)
       (name "python-pygame-sdl2")
@@ -1390,7 +1393,7 @@ and multimedia programs in the Python language.")
          (method url-fetch)
          (uri (string-append "https://www.renpy.org/dl/" renpy-version
                              "/pygame_sdl2-" version ".tar.gz"))
-         (sha256 (base32 "17mc39c7ha83kzv2wmq61a15mn6p8wh2y33ixhf5sb4bvyr48mhy"))
+         (sha256 (base32 "1p8a4v3r5vjxhiwxdmqqhkl38zav6c4a6w6v2nixzdhzyfkgk16n"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1431,7 +1434,7 @@ developed mainly for Ren'py.")
 (define-public python-renpy
   (package
     (name "python-renpy")
-    (version "8.2.0")
+    (version "8.3.0")
     (source
      (origin
        (method url-fetch)
@@ -1439,7 +1442,7 @@ developed mainly for Ren'py.")
                            "/renpy-" version "-source.tar.bz2"))
        (sha256
         (base32
-         "02v54qqjjigfqhdr50kzhkdvplk56bvprq65jl57kcs1qhvlf5s9"))
+         "1xb9ixb73nm271frkchrqpf64bcrdvrk3n4281dxzm4k4wj60rwb"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -1925,7 +1928,7 @@ games.")
 (define-public godot-lts
   (package
     (name "godot")
-    (version "3.4.2")
+    (version "3.5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1934,7 +1937,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bm9yl995chvx6jwkdia12yjrgwcpzb1r9bmj606q8z264aw2ma5"))
+                "0zibc6am9axbbm8l57jf2d324a2m44pf6ncp2i4h1b219jjq89l6"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -1946,7 +1949,6 @@ games.")
                   (with-directory-excursion "thirdparty"
                     (let* ((preserved-files
                             '("README.md"
-                              "assimp"
                               "certs"
                               "cvtt"
                               "embree"
@@ -1964,105 +1966,109 @@ games.")
                               "oidn"
                               "pvrtccompressor"
                               "recastnavigation"
+                              "rvo2"
                               "squish"
                               "stb_rect_pack"
                               "tinyexr"
                               "vhacd"
                               "xatlas")))
                       (for-each delete-file-recursively
-                                (lset-difference string=?
-                                                 (scandir ".")
-                                                 (cons* "." ".." preserved-files)))))))))
+                                (lset-difference
+                                 string=?
+                                 (scandir ".")
+                                 (cons* "." ".." preserved-files)))))))))
     (build-system scons-build-system)
     (arguments
-     `(#:scons ,scons-python2
-       #:scons-flags (list "platform=x11" "target=release_debug"
-                           ;; Avoid using many of the bundled libs.
-                           ;; Note: These options can be found in the SConstruct file.
-                           "builtin_bullet=no"
-                           "builtin_freetype=no"
-                           "builtin_glew=no"
-                           "builtin_libmpdec=no"
-                           "builtin_libogg=no"
-                           "builtin_libpng=no"
-                           "builtin_libtheora=no"
-                           "builtin_libvorbis=no"
-                           "builtin_libvpx=no"
-                           "builtin_libwebp=no"
-                           "builtin_mbedtls=no"
-                           "builtin_opus=no"
-                           "builtin_pcre2=no"
-                           "builtin_wslay=no"
-                           "builtin_zlib=no"
-                           "builtin_zstd=no")
-       #:tests? #f                      ; There are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'scons-use-env
-           (lambda _
-             ;; Scons does not use the environment variables by default,
-             ;; but this substitution makes it do so.
-             (substitute* "SConstruct"
-               (("env_base = Environment\\(tools=custom_tools\\)")
-                (string-append
-                 "env_base = Environment(tools=custom_tools)\n"
-                 "env_base = Environment(ENV=os.environ)")))))
-         ;; Build headless tools, used for packaging games without depending on X.
-         (add-after 'build 'build-headless
-           (lambda* (#:key scons-flags #:allow-other-keys)
-             (apply invoke "scons"
-                    `(,(string-append "-j" (number->string (parallel-job-count)))
-                      "platform=server" ,@(delete "platform=x11" scons-flags)))))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (headless (assoc-ref outputs "headless"))
-                    (zenity (assoc-ref inputs "zenity")))
-               ;; Strip build info from filenames.
-               (with-directory-excursion "bin"
-                 (for-each
-                  (lambda (file)
-                    (let ((dest (car (string-split (basename file) #\.))))
-                      (rename-file file dest)))
-                  (find-files "." "godot.*\\.x11\\.opt\\.tools.*"))
-                 (install-file "godot" (string-append out "/bin"))
-                 (install-file "godot_server" (string-append headless "/bin")))
-               ;; Tell the editor where to find zenity for OS.alert().
-               (wrap-program (string-append out "/bin/godot")
-                 `("PATH" ":" prefix (,(string-append zenity "/bin")))))))
-         (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; FIXME: Mesa tries to dlopen libudev.so.0 and fails.  Pending a
-             ;; fix of the mesa package we wrap the pcb executable such that
-             ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
-             ;; also append ld path for pulseaudio and alsa-lib
-             (let* ((out (assoc-ref outputs "out"))
-                    (udev_path (string-append (assoc-ref inputs "eudev") "/lib"))
-                    (pulseaudio_path (string-append (assoc-ref inputs "pulseaudio") "/lib"))
-                    (alas_lib_path (string-append (assoc-ref inputs "alsa-lib") "/lib")))
-               (wrap-program (string-append out "/bin/godot")
-                 `("LD_LIBRARY_PATH" ":" prefix (,udev_path ,pulseaudio_path ,alas_lib_path))))))
-         (add-after 'install 'install-godot-desktop
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (applications (string-append out "/share/applications"))
-                    (icons (string-append out "/share/icons/hicolor")))
-               (mkdir-p applications)
-               (copy-file "misc/dist/linux/org.godotengine.Godot.desktop"
-                          (string-append applications "/godot.desktop"))
-               (for-each (lambda (icon dest)
-                           (mkdir-p (dirname dest))
-                           (copy-file icon dest))
-                         '("icon.png" "icon.svg")
-                         `(,(string-append icons "/256x256/apps/godot.png")
-                           ,(string-append icons "/scalable/apps/godot.svg")))))))))
+     (list
+      ;; Avoid using many of the bundled libs.
+      ;; Note: These options can be found in the SConstruct file.
+      #:scons-flags #~(list "platform=x11" "target=release_debug"
+                            "builtin_bullet=no"
+                            "builtin_freetype=no"
+                            "builtin_glew=no"
+                            "builtin_libmpdec=no"
+                            "builtin_libogg=no"
+                            "builtin_libpng=no"
+                            "builtin_libtheora=no"
+                            "builtin_libvorbis=no"
+                            "builtin_libvpx=no"
+                            "builtin_libwebp=no"
+                            "builtin_mbedtls=no"
+                            "builtin_opus=no"
+                            "builtin_pcre2=no"
+                            "builtin_wslay=no"
+                            "builtin_zlib=no"
+                            "builtin_zstd=no")
+      #:tests? #f                      ; There are no tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'scons-use-env
+            (lambda _
+              ;; Scons does not use the environment variables by default,
+              ;; but this substitution makes it do so.
+              (substitute* "SConstruct"
+                (("env_base = Environment\\(tools=custom_tools\\)")
+                 (string-append
+                  "env_base = Environment(tools=custom_tools)\n"
+                  "env_base = Environment(ENV=os.environ)")))))
+          ;; Build headless tools, to package games without depending on X.
+          (add-after 'build 'build-headless
+            (lambda* (#:key scons-flags #:allow-other-keys)
+              (apply invoke "scons"
+                     `(,(string-append
+                         "-j" (number->string (parallel-job-count)))
+                       "platform=server"
+                       ,@(delete "platform=x11" scons-flags)))))
+          (replace 'install
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (headless (assoc-ref outputs "headless"))
+                     (zenity (assoc-ref inputs "zenity")))
+                ;; Strip build info from filenames.
+                (with-directory-excursion "bin"
+                  (for-each
+                   (lambda (file)
+                     (let ((dest (car (string-split (basename file) #\.))))
+                       (rename-file file dest)))
+                   (find-files "." "godot.*\\.x11\\.opt\\.tools.*"))
+                  (install-file "godot" (string-append out "/bin"))
+                  (install-file "godot_server"
+                                (string-append headless "/bin")))
+                ;; Tell the editor where to find zenity for OS.alert().
+                (wrap-program (string-append out "/bin/godot")
+                  `("PATH" ":" prefix (,(string-append zenity "/bin")))))))
+          (add-after 'install 'wrap-ld-path
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (pulseaudio_path (string-append
+                                       (assoc-ref inputs "pulseaudio") "/lib"))
+                     (alas_lib_path (string-append
+                                     (assoc-ref inputs "alsa-lib") "/lib")))
+                (wrap-program (string-append out "/bin/godot")
+                  `("LD_LIBRARY_PATH" ":" prefix
+                    (,pulseaudio_path ,alas_lib_path))))))
+          (add-after 'install 'install-godot-desktop
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (applications (string-append out "/share/applications"))
+                     (icons (string-append out "/share/icons/hicolor")))
+                (mkdir-p applications)
+                (copy-file "misc/dist/linux/org.godotengine.Godot.desktop"
+                           (string-append applications "/godot.desktop"))
+                (for-each (lambda (icon dest)
+                            (mkdir-p (dirname dest))
+                            (copy-file icon dest))
+                          '("icon.png" "icon.svg")
+                          `(,(string-append icons "/256x256/apps/godot.png")
+                            ,(string-append icons
+                                            "/scalable/apps/godot.svg")))))))))
     (outputs '("out" "headless"))
     (native-inputs
      (list pkg-config))
     (inputs
      (list alsa-lib
            bullet
-           freetype
+           freetype-with-brotli
            glew
            glu
            libtheora
@@ -2079,7 +2085,7 @@ games.")
            opusfile
            pcre2
            pulseaudio
-           eudev                        ; FIXME: required by mesa
+           eudev
            wslay
            zenity
            `(,zstd "lib")))
@@ -2095,7 +2101,7 @@ scripted in a Python-like language.")
 (define-public godot
   (package
     (name "godot")
-    (version "4.2.1")
+    (version "4.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2104,7 +2110,7 @@ scripted in a Python-like language.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d5y678986lx4a4xjkxs5glh2dckp8wwl3r3mw72inq7gvaa18s3"))
+                "0wm0pla6f6gvk21gbm5kiihinn05dvvprk0242m6s8c78wy60wka"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -2762,33 +2768,19 @@ specific knowledge of the hardware they are targeting.")
 (define-public flatzebra
   (package
     (name "flatzebra")
-    (version "0.1.7")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://perso.b2b2c.ca/~sarrazip/dev/"
                            "flatzebra-" version ".tar.gz"))
        (sha256
-        (base32 "1x2dy41c8vrq62bn03b82fpmk7x4rzd7qqiwvq0mgcl5rmasc2c8"))))
+        (base32 "1p1igi757m9a46v29mm7r40x61kdj7j66b9dbn53l5yfhnwa4w93"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sdl-config
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; XXX: sdl-config in sdl-union is a link to sdl-config from
-             ;; plain sdl package.  As a consequence, the prefix is wrong.
-             ;; Force correct one with "--prefix" argument.
-             (let ((sdl-union (assoc-ref inputs "sdl")))
-               (setenv "SDL_CONFIG"
-                       (string-append sdl-union
-                                      "/bin/sdl-config --prefix="
-                                      sdl-union)))
-             #t)))))
     (native-inputs
      (list pkg-config))
     (inputs
-     `(("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
+     (list sdl2 sdl2-gfx sdl2-image sdl2-mixer sdl2-ttf))
     (home-page "http://perso.b2b2c.ca/~sarrazip/dev/burgerspace.html")
     (synopsis "Generic game engine for 2D double-buffering animation")
     (description
@@ -3097,23 +3089,23 @@ game engine.  id Tech 2 is the engine originally behind Quake 2.")
 (define-public dhewm3
   (package
     (name "dhewm3")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/dhewm/dhewm3/releases/download/"
-                    version "/dhewm3-" version "-src.tar.xz"))
+              (method git-fetch)
+              (uri (git-reference (url "https://github.com/dhewm/dhewm3")
+                                  (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "10p0w1x5wx9b7d8mzvb6yqjia9prhkjwz04vbvphy8p383r33am6"))))
+                "1zbwhrngmgb0969izmxididyx892qk7591aa9mbigakw6dvmlm84"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ; No tests.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'change-to-build-dir
-           (lambda _
-             (chdir "neo"))))))
+     (list #:tests? #f                  ; No tests.
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'change-to-build-dir
+                 (lambda _
+                   (chdir "neo"))))))
     (inputs
      (list curl
            libx11

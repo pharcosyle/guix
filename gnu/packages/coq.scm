@@ -9,6 +9,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2021 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2022 Garek Dyszel <garekdyszel@disroot.org>
+;;; Copyright © 2024 Foundation Devices, Inc. <hello@foundation.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,14 +129,14 @@ It is developed using Objective Caml and Camlp5.")
      (list lablgtk3 ocaml-lablgtk3-sourceview3))))
 
 (define-public proof-general
-  ;; The latest release is from 2016 and there has been more than 450 commits
+  ;; The latest release is from 2022 and there has been more than 100 commits
   ;; since then.
-  ;; Commit from 2021-11-25.
-  (let ((commit "1b1083e86e0cddc20ff2f1a6b25c7a7eee2edf02")
+  ;; Commit from 2024-04-29.
+  (let ((commit "cb23709ad0c9a9ca0ee48b3ee73c29caea243b98")
         (revision "1"))
     (package
       (name "proof-general")
-      (version (git-version "4.4" revision commit))
+      (version (git-version "4.5" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -144,7 +145,7 @@ It is developed using Objective Caml and Camlp5.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1pnysczhscapgwmvf6ix7f31lf3hnh8h977bfll1m7jlxl9b9c0j"))))
+                  "1spd8rz95s1x91i4lbbb6zabb8014fihx6ai6pgad1nwyr0y9bir"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("emacs" ,emacs-minimal)
@@ -169,6 +170,12 @@ It is developed using Objective Caml and Camlp5.")
                  (substitute* "Makefile"
                    (("\\(setq byte-compile-error-on-warn t\\)")
                     "(setq byte-compile-error-on-warn nil)"))))
+             (add-after 'unpack 'modify-readme-name
+               ;; The README file is called "README.md", but the Make variable
+               ;; "DOC_FILES" still refers to "README".
+               (lambda _
+                 (substitute* "Makefile"
+                   (("README") "README.md"))))
              (add-after 'unpack 'patch-hardcoded-paths
                (lambda _
                  (substitute* "Makefile"
@@ -217,7 +224,7 @@ provers.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "4.1.1")
+    (version "4.1.4")
     (source
      (origin
        (method git-fetch)
@@ -227,7 +234,7 @@ provers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "01x38w58j95ba9679vpb5wv4bvfnrapd5dzjqlyz8k7i8a9sfqn0"))))
+         "08vrh0h909vmam1b4gfrvcmamnhmr5g0x79zx98hn7cx0vdwysh7"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake ocaml which coq))
@@ -290,7 +297,7 @@ inside Coq.")
 (define-public coq-gappa
   (package
     (name "coq-gappa")
-    (version "1.5.3")
+    (version "1.5.5")
     (source
      (origin
        (method git-fetch)
@@ -300,7 +307,7 @@ inside Coq.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dzkb2sfglhik2ymw8p65khl163xxjsaqji9agnnkvlk5r6589v6"))))
+         "0w780wk10khzfx6d633dyzx9q0hvqgimqbzc3irjzvsbpvb0zm5c"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf
@@ -350,7 +357,7 @@ assistant.")
 (define-public coq-mathcomp
   (package
     (name "coq-mathcomp")
-    (version "1.17.0")
+    (version "1.19.0")
     (source
      (origin
        (method git-fetch)
@@ -359,7 +366,7 @@ assistant.")
              (commit (string-append "mathcomp-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06i6kw5p2024n6h9mf8bvwn54il1a4z2h4qrgc8y0iq8hkvx4fnd"))))
+        (base32 "0dij9zl2ag083dzgrv2j16ks2kkn2xxwnk1wr5956zw1y7ynrzb3"))))
     (build-system gnu-build-system)
     (native-inputs
      (list ocaml which coq))
@@ -387,7 +394,7 @@ part of the distribution.")
 (define-public coq-coquelicot
   (package
     (name "coq-coquelicot")
-    (version "3.4.0")
+    (version "3.4.1")
     (source
      (origin
        (method git-fetch)
@@ -397,7 +404,7 @@ part of the distribution.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1f6zim6hnm6zrij964vas6rfbxh5p147qsxxmmbxm7gyb85hhy45"))))
+         "1y22dqdklh3c8rbhar0d7mzaj84q6zyfik7namx5q4ma76s2rx73"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake ocaml which coq))
@@ -470,7 +477,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 (define-public coq-interval
   (package
     (name "coq-interval")
-    (version "4.8.0")
+    (version "4.10.0")
     (source
      (origin
        (method git-fetch)
@@ -480,7 +487,7 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0m3icx77p99ld9qfl3xjq62q572pyi4m77i1kc3whvipvg7834rh"))))
+         "039c29hc8mzp2is6zh9fps36k03hlvx6zz08h03vj6dhjgr7njz8"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake ocaml which coq))
@@ -527,7 +534,9 @@ Coq proof assistant.")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0qk72r6cqxwhqqkl2kmryhw365w3l2016qii1q1sk3md7zq46jcz"))))
+               (base32 "0qk72r6cqxwhqqkl2kmryhw365w3l2016qii1q1sk3md7zq46jcz"))
+              (patches
+               (search-patches "coq-autosubst-1.8-remove-deprecated-files.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -644,7 +653,7 @@ also provided in Coq, without associated proofs.")
 (define-public coq-stdpp
   (package
     (name "coq-stdpp")
-    (version "1.8.0")
+    (version "1.10.0")
     (synopsis "Alternative Coq standard library std++")
     (source (origin
               (method git-fetch)
@@ -654,7 +663,7 @@ also provided in Coq, without associated proofs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xawh3xkh76yhs689zw52k55cbzga2gyzl4g1a3pgg6yy420chjn"))))
+                "0lnvdfn4qq2lyabiq4ikb5ya46f4jp59dynyprnhki0ay9xagz3d"))))
     (build-system gnu-build-system)
     (inputs
      (list coq))

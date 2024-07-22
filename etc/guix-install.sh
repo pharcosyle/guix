@@ -15,6 +15,7 @@
 # Copyright © 2020 David A. Redick <david.a.redick@gmail.com>
 # Copyright © 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2024 Tomas Volf <~@wolfsden.cz>
+# Copyright © 2024 Richard Sent <richard@freakingpenguin.com>
 #
 # This file is part of GNU Guix.
 #
@@ -79,6 +80,12 @@ REQUIRE=(
     "tail"
     "tr"
     "xz"
+)
+
+# Add variables using form FOO_INIT_REQUIRE when init system FOO dependencies
+# should be checked.
+SYSV_INIT_REQUIRE=(
+    "daemonize"
 )
 
 PAS=$'[ \033[32;1mPASS\033[0m ] '
@@ -146,6 +153,18 @@ chk_require()
     [ "${#warn}" -ne 0 ] && die "Missing commands: ${warn[*]}."
 
     _msg "${PAS}verification of required commands completed"
+}
+
+add_init_sys_require()
+{ # Add the elements of FOO_INIT_SYS to REQUIRE
+    local init_require="${INIT_SYS}_REQUIRE[@]"
+    if [[ ! -z "$init_require" ]]; then
+        # Have to add piecemeal because ${!foo[@]} performs direct array key
+        # expansion, not indirect plain array expansion.
+        for r in "${!init_require}"; do
+            REQUIRE+=("$r")
+        done
+    fi
 }
 
 chk_gpg_keyring()
@@ -217,7 +236,7 @@ chk_init_sys()
         _msg "${INF}init system is: sysv-init"
         INIT_SYS="sysv-init"
         return 0
-    elif [[ $(openrc --version 2>/dev/null) =~ \(OpenRC\) ]]; then
+    elif [[ $(openrc --version 2>/dev/null) =~ \(OpenRC ]]; then
         _msg "${INF}init system is: OpenRC"
         INIT_SYS="openrc"
         return 0
@@ -626,17 +645,18 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 # _GUIX_PROFILE: `guix pull` profile
 _GUIX_PROFILE="$HOME/.config/guix/current"
 export PATH="$_GUIX_PROFILE/bin${PATH:+:}$PATH"
-# Export INFOPATH so that the updated info pages can be found
-# and read by both /usr/bin/info and/or $GUIX_PROFILE/bin/info
-# When INFOPATH is unset, add a trailing colon so that Emacs
-# searches 'Info-default-directory-list'.
-export INFOPATH="$_GUIX_PROFILE/share/info:$INFOPATH"
 
 # GUIX_PROFILE: User's default profile and home profile
 GUIX_PROFILE="$HOME/.guix-profile"
 [ -f "$GUIX_PROFILE/etc/profile" ] && . "$GUIX_PROFILE/etc/profile"
 [ -L "$GUIX_PROFILE" ] && \
 GUIX_LOCPATH="$GUIX_PROFILE/lib/locale${GUIX_LOCPATH:+:}$GUIX_LOCPATH"
+
+# Export INFOPATH so that the updated info pages can be found
+# and read by both /usr/bin/info and/or $GUIX_PROFILE/bin/info
+# When INFOPATH is unset, add a trailing colon so that Emacs
+# searches 'Info-default-directory-list'.
+export INFOPATH="$_GUIX_PROFILE/share/info:$GUIX_PROFILE/share/info:$INFOPATH"
 
 GUIX_PROFILE="$HOME/.guix-home/profile"
 [ -f "$GUIX_PROFILE/etc/profile" ] && . "$GUIX_PROFILE/etc/profile"
@@ -793,9 +813,10 @@ main_install()
     _msg "Starting installation ($(date))"
 
     chk_term
+    chk_init_sys
+    add_init_sys_require
     chk_require "${REQUIRE[@]}"
     chk_gpg_keyring
-    chk_init_sys
     chk_sys_arch
     chk_sys_nscd
 

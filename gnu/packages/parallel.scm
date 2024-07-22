@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015-2018, 2020-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015-2018, 2020-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2020, 2021, 2022, 2023 Ricardo Wurmus <rekado@elephly.net>
@@ -9,10 +9,11 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018–2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2019-2023 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019-2024 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2024 David Elsing <david.elsing@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system pyproject)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module ((guix utils) #:select (target-64bit?))
   #:use-module (guix packages)
@@ -55,6 +57,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -65,14 +68,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20240422")
+    (version "20240622")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0rr4i1a5gcxz60cb3p4ga3s8k79sr84yicqysg794ayy7qh8hf3q"))
+       (base32 "1m9qpx6c7b62s1kjp6aj0qfnj3fw2pl72q32bdykqi5x0z4i1qip"))
       (snippet
        '(begin
           (use-modules (guix build utils))
@@ -195,6 +198,8 @@ when jobs finish.")
               (sha256
                (base32
                 "08rz3r1rlnb3pmfdnbh542gm44ja0fdy8rkj4vm4lclc48cvqp2a"))
+              (patches
+               (search-patches "slurm-23-salloc-fallback-shell.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -292,6 +297,7 @@ by managing a queue of pending work.")
               (uri (string-append
                     "https://download.schedmd.com/slurm/slurm-"
                     version ".tar.bz2"))
+              (patches '())                       ;drop 'salloc' patch
               (sha256
                (base32
                 "0f3hhlki8g7slllsnyj1qikbsvr62i0hig85lcdcfnmsagzlhbyi"))))))
@@ -306,6 +312,7 @@ by managing a queue of pending work.")
               (uri (string-append
                     "https://download.schedmd.com/slurm/slurm-"
                     version ".tar.bz2"))
+              (patches '())                       ;drop 'salloc' patch
               (sha256
                (base32
                 "1sjln54idc9rhg8f2nvm38sgs6fncncyzslas8ixy65pqz2hphbf"))))))
@@ -320,6 +327,7 @@ by managing a queue of pending work.")
               (uri (string-append
                     "https://download.schedmd.com/slurm/slurm-"
                     version ".tar.bz2"))
+              (patches '())                       ;drop 'salloc' patch
               (sha256
                (base32
                 "0xq2d6dm285y541dyg1h66z7svsisrq8c81ag0f601xz1cn3mq9m"))))))
@@ -334,6 +342,7 @@ by managing a queue of pending work.")
               (uri (string-append
                     "https://download.schedmd.com/slurm/slurm-"
                     version ".tar.bz2"))
+              (patches '())                       ;drop 'salloc' patch
               (sha256
                (base32
                 "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))))
@@ -353,6 +362,7 @@ by managing a queue of pending work.")
               (uri (string-append
                     "https://download.schedmd.com/slurm/slurm-"
                     version ".tar.bz2"))
+              (patches '())                       ;drop 'salloc' patch
               (sha256
                (base32
                 "10c9j4a9a6d4ibpf75006mn03p8xgpaprc247x2idakysjf2fw43"))))))
@@ -368,6 +378,7 @@ by managing a queue of pending work.")
         (uri (string-append
                "https://download.schedmd.com/slurm/slurm-"
                version ".tar.bz2"))
+        (patches '())                             ;drop 'salloc' patch
         (sha256
          (base32
           "1bgrpz75m7l4xhirsd0fvnkzlkrl8v2qpmjcz60barc5qm2kn457"))))))
@@ -400,6 +411,33 @@ to SLURM.  Using DRMAA, grid applications builders, portal developers and ISVs
 can use the same high-level API to link their software with different
 cluster/resource management systems.")
     (license license:gpl3+)))
+
+(define-public python-schwimmbad
+  (package
+    (name "python-schwimmbad")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "schwimmbad" version))
+       (sha256
+        (base32 "1aac1rswb0r0vzbxvjj2jyx5j0vqyjj7mygc71n9zbkpmr8m1rpg"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs
+     (list python-dill
+           python-joblib
+           python-mpi4py
+           python-multiprocess))
+    (native-inputs
+     (list python-hatch-vcs python-hatchling python-pytest))
+    (home-page "https://github.com/adrn/schwimmbad")
+    (synopsis "Common interface for parallel processing pools")
+    (description
+     "@code{schwimmbad} provides a uniform interface to parallel processing
+pools and enables switching easily between local development (e.g., serial
+processing or with @code{multiprocessing}) and deployment on a cluster or
+supercomputer (via, e.g., MPI or JobLib).")
+    (license license:expat)))
 
 (define-public python-slurm-magic
   (let ((commit "73dd1a2b85799f7dae4b3f1cd9027536eff0c4d7")
@@ -450,9 +488,9 @@ command---e.g., @code{%salloc}, @code{%sbatch}, etc.")
 (define-public pthreadpool
   ;; This repository has only one tag, 0.1, which is older than what users
   ;; such as XNNPACK expect.
-  (let ((commit "1787867f6183f056420e532eec640cba25efafea")
+  (let ((commit "178e3e0646cc671708bf78e77c273940130ac637")
         (version "0.1")
-        (revision "1"))
+        (revision "2"))
     (package
       (name "pthreadpool")
       (version (git-version version revision commit))
@@ -463,7 +501,7 @@ command---e.g., @code{%salloc}, @code{%sbatch}, etc.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "02hdvxfn5krw8zivkgjx3b4rk9p02yr4mpdjlp75lsv6z1xf5yrx"))
+                  "1s86lnq9bahacf5wxn7y14w70jh3g9lq1l7y16ijwhifd01nc2km"))
                 (patches (search-patches "pthreadpool-system-libraries.patch"))))
       (build-system cmake-build-system)
       (arguments '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
@@ -480,8 +518,8 @@ features.")
 (define-public cpuinfo
   ;; There's currently no tag on this repo.
   (let ((version "0.0")
-        (revision "2")
-        (commit "53298db833c5c5a1598639e9b47cc1a602bbac26"))
+        (revision "3")
+        (commit "aa4b2163b99ac9534194520f70b93eeefb0b3b4e"))
     (package
       (name "cpuinfo")
       (version (git-version version revision commit))
@@ -492,12 +530,13 @@ features.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "01kfgxya2w32dz9bd3qm3i2d6nffw0qfyql11rxl7d3g830brj5k"))
-                (patches (search-patches "cpuinfo-system-libraries.patch"))))
+                  "12x4krkyzxngf1l2ck33lnsp8pyzf6gyjj9mp9cnka9mw3h6617m"))))
       (build-system cmake-build-system)
       (arguments
        (list
-        #:configure-flags '(list "-DBUILD_SHARED_LIBS=ON")
+        #:configure-flags
+        '(list "-DBUILD_SHARED_LIBS=ON"
+               "-DUSE_SYSTEM_LIBS=ON")
         #:phases
         '(modify-phases %standard-phases
            (add-after 'unpack 'skip-bad-test
@@ -513,6 +552,9 @@ GTEST_SKIP() << \"See https://github.com/pytorch/cpuinfo/issues/132\";"))))))))
        "The cpuinfo library provides a C/C++ and a command-line interface to
 obtain information about the CPU being used: supported instruction set,
 processor name, cache information, and topology information.")
+      ;; On aarch64-linux, there is a bug reported upstream:
+      ;; https://github.com/pytorch/cpuinfo/issues/14
+      (supported-systems '("armhf-linux" "i686-linux" "x86_64-linux"))
       (license license:bsd-2))))
 
 (define-public clog
@@ -523,11 +565,14 @@ processor name, cache information, and topology information.")
               (inherit (package-source cpuinfo))
               (patches (search-patches "clog-fix-shared-build.patch"))))
     (arguments
-     (list #:configure-flags #~(list "-DBUILD_SHARED_LIBS=ON")
-           #:phases #~(modify-phases %standard-phases
-                        (add-after 'unpack 'chdir
-                          (lambda _
-                            (chdir "deps/clog"))))))
+     (list
+      #:configure-flags
+      ''("-DBUILD_SHARED_LIBS=ON"
+         "-DUSE_SYSTEM_LIBS=ON")
+      #:phases #~(modify-phases %standard-phases
+                   (add-after 'unpack 'chdir
+                     (lambda _
+                       (chdir "deps/clog"))))))
     (native-inputs (list googletest))
     (inputs '())
     (synopsis "C-style logging library based on printf")

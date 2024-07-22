@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018-2022 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019-2023 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019-2024 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
@@ -147,7 +147,7 @@
   ;; <https://bitcoincore.org/en/lifecycle/#schedule>.
   (package
     (name "bitcoin-core")
-    (version "27.0")
+    (version "27.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -155,7 +155,7 @@
                               version "/bitcoin-" version ".tar.gz"))
               (sha256
                (base32
-                "0sqldg540q5d4lvr8fs9sbycxgzkij5y52rqqg6blmxisd8yc7lw"))))
+                "1npk30c4s2xihm2vxmswl2x4baw5n23gsbaw5y8sx3qvjbym240c"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf
@@ -296,14 +296,14 @@ Accounting.")
 (define-public homebank
   (package
     (name "homebank")
-    (version "5.7.4")
+    (version "5.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.gethomebank.org/public/sources"
                                   "/homebank-" version ".tar.gz"))
               (sha256
                (base32
-                "1r2lpf2qjvyc9l4llgy6453dn527pylvd49kr6ihrskmr1373kj2"))))
+                "00fwadn6q2hryx7q1xf5fhb5q3ywfnlb1r4xxn7yq6ilzvm5zhv0"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      (list pkg-config intltool))
@@ -611,7 +611,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.4.0")
+    (version "4.4.1")
     (source
      (origin
        (method git-fetch)
@@ -620,7 +620,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hfkp24m1yipadanjf5wm6clmyllkcbh7fbw8whnrvxa2v7sa4l8"))))
+        (base32 "11xhlssr7bvdv3p256k87y35vjzyfd93p72w8f2xy7j5jh6abhp1"))))
     (build-system python-build-system)
     (arguments
      (list
@@ -1690,9 +1690,8 @@ trezord as a regular user instead of needing to it run as root.")
        (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/trezor/trezord-go"
-       ;; Requires go 1.18 or later: https://github.com/trezor/trezord-go/commit/f559ee5079679aeb5f897c65318d3310f78223ca
-       #:go ,go-1.20))
+     `(#:go ,go-1.18
+       #:import-path "github.com/trezor/trezord-go"))
     (native-inputs
      (list go-github-com-gorilla-csrf
            go-github-com-gorilla-handlers
@@ -1753,7 +1752,7 @@ following three utilities are included with the library:
 (define-public bitcoin-unlimited
   (package
     (name "bitcoin-unlimited")
-    (version "2.0.0.1")
+    (version "2.1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -1762,7 +1761,7 @@ following three utilities are included with the library:
              (commit (string-append "BCHunlimited" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kkmg0gp86qz3ya8y5a00yic1mals138b9fv2cjlm7683sfjjljx"))))
+        (base32 "0cny12s03wsgx8iijg5cbr7r6wif9ck7dn98hsv9sz8xq1i5vjk4"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf
@@ -2175,15 +2174,15 @@ editing on the Web.")
 (define-public quantlib
   (package
     (name "quantlib")
-    (version "1.26")
+    (version "1.34")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/lballabio/QuantLib/releases/download/QuantLib-v"
+             "https://github.com/lballabio/QuantLib/releases/download/v"
              version "/QuantLib-" version ".tar.gz"))
        (sha256
-        (base32 "1sbk6rg51x5xpa93xmqmrj32a1l9vba51xck0017cxzblg0nrzh4"))))
+        (base32 "0l7yn9bal0csyix0ydzcfj003kma4sx7w5hyfxhh6mbnxn6am1zb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2228,13 +2227,13 @@ interactive controls.  This package provides a GTK+ graphical user interface
 (define-public python-ta-lib
   (package
     (name "python-ta-lib")
-    (version "0.4.21")
+    (version "0.4.32")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "TA-Lib" version))
        (sha256
-        (base32 "17sf222mq2vx924f15qlz5czkkq5vsnsjy9ibwkrk8lalr6g5lkl"))))
+        (base32 "186sgkpggy50gs2pa2p22zppl57xgfhpmja5l13xiskv44iw6x7v"))))
     (build-system python-build-system)
     (inputs
      (list ta-lib))
@@ -2379,7 +2378,7 @@ mining.")
 (define-public p2pool
   (package
     (name "p2pool")
-    (version "3.10")
+    (version "4.0")
     (source
      (origin
        (method git-fetch)
@@ -2388,7 +2387,7 @@ mining.")
              (commit (string-append "v" version))
              (recursive? #t)))
        (file-name (git-file-name name version))
-       (sha256 (base32 "0lp9slfwaq3wp4x6xpsiazam5lv6dz57m20adzlzzk0anb1ascr0"))
+       (sha256 (base32 "0x6s7fm5gn0q2274b2nja8hj84cvmxp4rr9x4xw050sxj74880jh"))
        (modules '((guix build utils)))
        (snippet
         #~(for-each delete-file-recursively
@@ -2397,10 +2396,11 @@ mining.")
                       "external/src/curl"
                       "external/src/libuv"
                       "external/src/libzmq"
-                      "external/src/rapidjson")))))
+                      "external/src/rapidjson"
+                      "external/src/robin-hood-hashing")))))
     (build-system cmake-build-system)
     (inputs
-     (list cppzmq curl gss libuv rapidjson zeromq))
+     (list cppzmq curl gss libuv rapidjson robin-hood-hashing zeromq))
     (arguments
      (list ; FIXME: Linking fails when LTO is activated.
            #:configure-flags #~(list "-DWITH_LTO=OFF")
@@ -2411,7 +2411,7 @@ mining.")
                    (when tests?
                      (mkdir-p "tests")
                      (chdir "tests")
-                     (invoke "cmake" "../../source/tests")
+                     (invoke "cmake" "-DWITH_LTO=OFF" "../../source/tests")
                      (invoke "make" "-j" (number->string (parallel-job-count)))
                      (invoke "gzip" "-d" "sidechain_dump.dat.gz")
                      (invoke "gzip" "-d" "sidechain_dump_mini.dat.gz")

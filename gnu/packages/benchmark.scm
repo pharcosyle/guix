@@ -79,14 +79,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.36")
+    (version "3.37")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ppg2rn57diz2mvbbps4cjxd903zn380hdkdsrbzal4l513w32h0"))))
+                "09w35mpkrlxjy506bhifq7akc7mid9q92jkqgqwgf1ya95jzvw48"))))
     (build-system gnu-build-system)
     (arguments
      (list #:modules
@@ -137,7 +137,7 @@ is to write a job file matching the I/O load one wants to simulate.")
 (define-public intel-mpi-benchmarks/openmpi
   (package
     (name "intel-mpi-benchmarks")
-    (version "2021.3")
+    (version "2021.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -146,7 +146,7 @@ is to write a job file matching the I/O load one wants to simulate.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04kczch2hlfzbgk929vcxx480kc6raba8rbz246j7d26k1z1zh8h"))
+                "184r4h35mzxjzzjnl4nhr1vh00iiz8kf9vf4d8lrqbr62rqrwl7w"))
               (modules '((guix build utils)))
               (snippet
                '(begin

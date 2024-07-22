@@ -82,6 +82,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -1259,14 +1260,14 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.12.4")
+    (version "1.12.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/djcb/mu/releases/download/v"
                            version "/mu-" version ".tar.xz"))
        (sha256
-        (base32 "1ja4b9r9712zjvz8223r5vh2kmmyhkrmb7cbhxdn9hbpa5n16hdx"))))
+        (base32 "1jwalqmvk5s4mf7bnz7gnzh6rii7n348bsflgdvyinia0zir42vp"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config
@@ -1279,8 +1280,11 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
      (list
       #:modules '((guix build meson-build-system)
                   (guix build emacs-utils)
+                  ((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
                   (guix build utils))
       #:imported-modules `(,@%meson-build-system-modules
+                           (guix build guile-build-system)
                            (guix build emacs-utils))
       #:configure-flags
       #~(list (format #f "-Dguile-extension-dir=~a/lib" #$output))
@@ -1302,11 +1306,18 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                 (("\"libguile-mu\"")
                  (format #f "\"~a/lib/libguile-mu\"" #$output)))))
           (add-after 'install 'install-emacs-autoloads
-            (lambda* (#:key outputs #:allow-other-keys)
+            (lambda _
               (emacs-generate-autoloads
                "mu4e"
-               (string-append (assoc-ref outputs "out")
-                              "/share/emacs/site-lisp/mu4e")))))))
+               (string-append #$output
+                              "/share/emacs/site-lisp/mu4e"))))
+          (add-after 'install 'wrap-executable
+            (lambda _
+              (let* ((bin (string-append #$output "/bin"))
+                     (version (target-guile-effective-version))
+                     (scm (string-append #$output "/share/guile/site/" version)))
+                (wrap-program (string-append bin "/mu")
+                  `("GUILE_LOAD_PATH" ":" prefix (,scm)))))))))
     (home-page "https://www.djcbsoftware.nl/code/mu/")
     (synopsis "Quickly find emails")
     (description
@@ -1466,11 +1477,12 @@ invoking @command{notifymuch} from the post-new hook.")
            emacs-no-x           ; -minimal lacks libxml, needed for some tests
            which
            dtach
+           git-minimal/pinned
            gnupg
            man-db
            perl))
     (inputs
-     (list glib gmime talloc xapian zlib))
+     (list glib gmime sfsexp talloc xapian zlib))
     (home-page "https://notmuchmail.org/")
     (synopsis "Thread-based email index, search, and tagging")
     (description
@@ -1500,7 +1512,23 @@ ing, and tagging large collections of email messages.")
               (let ((notmuch (search-input-file inputs "/bin/notmuch")))
                 (substitute* "notmuch-lib.el"
                   (("\"notmuch\"")
-                   (string-append "\"" notmuch "\"")))))))))
+                   (string-append "\"" notmuch "\""))))))
+          ;; Install desktop files so that mailto URIs can be opened using
+          ;; emacs-notmuch.
+          (add-after 'install 'install-desktop-files
+            (lambda* (#:key inputs #:allow-other-keys)
+              (install-file "notmuch-emacs-mua"
+                            (string-append #$output "/bin"))
+              (let ((applications (string-append #$output "/share/applications")))
+                (install-file "notmuch-emacs-mua.desktop"
+                              applications)
+                (copy-file "notmuch-emacs-mua.desktop"
+                           (string-append applications
+                                          "/notmuch-emacsclient-mua.desktop"))
+                (substitute* (string-append applications
+                                            "/notmuch-emacsclient-mua.desktop")
+                  (("Exec=notmuch-emacs-mua" all)
+                   (string-append all " --client")))))))))
     (synopsis "Run Notmuch within Emacs")
     (description
      "This package provides an Emacs-based interface to the Notmuch mail
@@ -1795,7 +1823,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "4.1.1")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
@@ -1803,7 +1831,7 @@ compresses it.")
         (string-append "https://www.claws-mail.org/releases/claws-mail-"
                        version ".tar.xz"))
        (sha256
-        (base32 "0i037bskrnmsmylhmqayjg0pmsr0m2zx8xhbxc6mwvw9q40fg2di"))))
+        (base32 "1q8wb2fh5fmbbyrvzdwkhxkzdbsvyk5w783z8qlg05mris41vp4m"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
@@ -1896,14 +1924,14 @@ addons which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.25")
+    (version "1.8.26")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "0f6pa8kdlfingw6yf61dshnxgygx5v6ykcmnn3h6zllpnfxivzid"))))
+        (base32 "1n363w94s2jjkijnqg5mb4m7wk0dy20s9bk0gqk8kwff8j1liz3c"))))
     (build-system gnu-build-system)
     (inputs
      (list libsecret gnutls zlib gsasl))
@@ -1947,7 +1975,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.96.1")
+    (version "4.98")
     (source
      (origin
        (method url-fetch)
@@ -1961,7 +1989,7 @@ delivery.")
                     (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
                                    file-name))))
        (sha256
-        (base32 "0g83cxkq3znh5b3r2a3990qxysw7d2l71jwcxaxzvq8pqdahgb4k"))))
+        (base32 "1xsjb2hqasxsqsmrcv98c2dvfgcsiy0j0g229fx974lzfy511g0f"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
@@ -2014,6 +2042,12 @@ delivery.")
                    (substitute* "scripts/Configure-config.h"
                      (("\\| /bin/sh") "| sh"))
                    (patch-shebang "scripts/Configure-eximon")))
+               (add-before 'build 'fix-perl-file-names
+                 (lambda _
+                  (substitute* (list  "Local/Makefile"
+                                      "OS/Makefile-Default")
+                    (("PERL_COMMAND=/usr/bin/perl")
+                     (string-append "PERL_COMMAND=" #$perl "/bin/perl")))))
                (add-before 'build 'build-reproducibly
                  (lambda _
                    ;; The ‘compilation number’ increments on every build in the
@@ -2038,6 +2072,7 @@ delivery.")
            libxaw
            libxt
            perl
+           perl-file-fcntllock
            xz))
     (home-page "https://www.exim.org/")
     (synopsis
@@ -3019,14 +3054,14 @@ easily (one at a time).")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.18")
+    (version "1.4.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1dw5kwflga26kfjl999lilq14vvk6fcapryihakr9l7phh0rb6b0"))))
+        (base32 "12jwalxf14z0rwkhdfw1whizc9dzcba9yv63wanwmszzqq9ixi13"))))
     (build-system gnu-build-system)
     (inputs
      (list gnutls))
@@ -3281,6 +3316,10 @@ from the Cyrus IMAP project.")
          ;; Fix some incorrectly hard-coded external tool file names.
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _
+             ;; avoids warning smtpd: couldn't enqueue offline message
+             ;; smtpctl exited abnormally
+             (substitute* "usr.sbin/smtpd/smtpd.h"
+               (("/usr/bin/smtpctl") "/run/setuid-programs/smtpctl"))
              (substitute* "usr.sbin/smtpd/smtpctl.c"
                ;; ‘gzcat’ is auto-detected at compile time, but ‘cat’ isn't.
                (("/bin/cat") (which "cat")))
@@ -4157,7 +4196,7 @@ It is a replacement for the @command{urlview} program.")
 (define-public mumi
   (package
     (name "mumi")
-    (version "0.0.10")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4166,7 +4205,7 @@ It is a replacement for the @command{urlview} program.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rfhbi25kh84whi88423736v2vxgsc6fdps3kqrc1gs6dni9li17"))))
+                "0b93hd6jjay70rj3520cmwzji00prn2fyjbxgys6ihw962nj3hpg"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -4211,7 +4250,8 @@ It is a replacement for the @command{urlview} program.")
            guile-webutils
            guile-xapian
            guile-3.0
-           mailutils))
+           mailutils
+           xdg-utils))
     (native-inputs
      (list autoconf automake pkg-config sassc
            (origin
@@ -5061,7 +5101,7 @@ remote SMTP server.")
              go-github-com-creack-pty
              go-github-com-arran4-golang-ical
              go-github-com-protonmail-go-crypto
-             go-github-com-syndtr-goleveldb-leveldb
+             go-github-com-syndtr-goleveldb
              go-git-sr-ht-sircmpwn-getopt
              go-git-sr-ht-rockorager-tcell-term
              python

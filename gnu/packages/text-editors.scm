@@ -216,7 +216,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2023.08.05")
+    (version "2024.05.18")
     (source
      (origin
        (method url-fetch)
@@ -224,7 +224,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32 "0p6skjrfygg7hakl8v95pd17q9pjmid9p8nnw86m1lyx18g1ai9y"))))
+        (base32 "1ymr1jpdnd5wj6npzi8bgfd30d0j885sfnhl236rn7fjc4pars6s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -575,7 +575,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 (define-public mg
   (package
     (name "mg")
-    (version "20221112")
+    (version "20230501")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -584,7 +584,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wsib91f277xsx3qi8zmjcd9r9cm078rcf8hii0rwipyn04vxy83"))
+                "15wynij770xv0582vhh9sabypl61hcqcb9i4y2vwn0k4r8dx6j0g"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "GNUmakefile"
@@ -626,13 +626,13 @@ OpenBSD team.")
 (define-public nano
   (package
     (name "nano")
-    (version "7.2")
+    (version "8.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/nano/nano-" version ".tar.xz"))
       (sha256
-       (base32 "09j5gb44yiv18fvn0iy17jnl9d5lh3gkry4kqv776a5xd0kl9ww6"))))
+       (base32 "1jz8rgqd0r1gn9vk1fim51h2kb0f72mvg76gkkz8kqss2ply7cwk"))))
     (build-system gnu-build-system)
     (inputs
      (list gettext-minimal ncurses))

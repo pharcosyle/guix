@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020, 2023 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2020, 2023, 2024 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014-2022 Eric Bavier <bavier@posteo.net>
@@ -63,6 +63,9 @@
 ;;; Copyright © 2023 Jake Leporte <jakeleporte@outlook.com>
 ;;; Copyright © 2023 Camilo Q.S. (Distopico) <distopico@riseup.net>
 ;;; Copyright © 2023 David Elsing <david.elsing@posteo.net>
+;;; Copyright © 2024 Herman Rimm <herman@rimm.ee>
+;;; Copyright © 2024 Foundation Devices, Inc. <hello@foundation.xyz>
+;;; Copyright © 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -221,14 +224,14 @@ beginners.")
 (define-public bitwise
   (package
     (name "bitwise")
-    (version "0.43")
+    (version "0.50")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mellowcandle/bitwise"
                                   "/releases/download/v" version
                                   "/bitwise-v" version ".tar.gz"))
               (sha256
-               (base32 "1yrgrbfgp6cavc6gyfp9b0zgjf9p1g7xhwzn9pydw44a32agf97m"))))
+               (base32 "0zp9rb0qv1m9hk593sc08jajkxd80h075s0m0dhf07gkbgx72ql0"))))
     (build-system gnu-build-system)
     (inputs
      (list ncurses readline))
@@ -304,6 +307,40 @@ a mathematical research tool, and it comes with built in mathematical and
 programmatic functions.")
     (home-page "http://www.isthe.com/chongo/tech/comp/calc/")
     (license license:lgpl2.1)))
+
+(define-public chuffed
+  (package
+    (name "chuffed")
+    (version "0.13.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chuffed/chuffed")
+             (commit version)))
+       (sha256
+         (base32
+           "164brmwn71p9gb2441kh7b1gzmy2sg7bjv5z00wjs9nw41qc908g"))))
+    (build-system cmake-build-system)
+    (arguments
+      (list #:tests? #f ;no 'test' target
+            #:phases
+            #~(modify-phases %standard-phases
+                (add-before 'build 'patch-msc
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (substitute* "chuffed.msc"
+                        (("\\.\\./../..") out)
+                        (("\\.\\.")
+                         (string-append out "/share/minizinc")))))))))
+    (synopsis "Lazy clause generation solver")
+    (description
+     "Chuffed is a state of the art lazy clause solver designed from the
+ground up with lazy clause generation in mind.  Lazy clause generation
+is a hybrid approach to constraint solving that combines features of
+finite domain propagation and Boolean satisfiability.")
+    (home-page "https://github.com/chuffed/chuffed")
+    (license license:expat)))
 
 (define-public coda
   (package
@@ -839,6 +876,58 @@ LP/MIP solver is included in the package.")
        (base32
         "040sfaa9jclg2nqdh83w71sv9rc1sznpnfiripjdyr48cady50a2"))))))
 
+(define-public python-libensemble
+  (package
+    (name "python-libensemble")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "libensemble" version))
+       (sha256
+        (base32 "0ckmr04z7ai9mar58si0wzyyy8dnq6g89pg57mzmfz5mkbg4fbsa"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list ncurses
+                         python-mock
+                         python-mpi4py
+                         python-pytest
+                         python-pytest-cov
+                         python-pytest-timeout))
+    (propagated-inputs (list python-numpy
+                             python-psutil
+                             python-pydantic-2
+                             python-pyyaml
+                             python-tomli))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'relax-psutil
+            (lambda _
+              (substitute* "setup.py"
+                (("psutil>=5.9.4") "psutil>=5.9.2"))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;; These files require MPI and call subprocesses.
+                (delete-file
+                 "libensemble/tests/unit_tests/test_executor.py")
+                (delete-file
+                 "libensemble/tests/unit_tests/test_executor_gpus.py")
+                (setenv "TERM" "xterm")
+                ;; A very bad way to skip another MPI test.
+                (substitute* "libensemble/tests/run-tests.sh"
+                  (("export UNIT_TEST_MPI_SUBDIR=.*")
+                   "export UNIT_TEST_MPI_SUBDIR=''"))
+                ;; Run only unit tests, regression tests require MPI.
+                (invoke "bash" "libensemble/tests/run-tests.sh" "-u")))))))
+    (home-page "https://github.com/Libensemble/libensemble")
+    (synopsis "Toolkit for dynamic ensembles of calculations")
+    (description "@code{libensemble} is a complete toolkit for dynamic
+ensembles of calculations.  It connects @code{deciders} to experiments or
+simulations.")
+    (license license:bsd-3)))
+
 (define-public linasm
   (package
     (name "linasm")
@@ -1311,19 +1400,19 @@ in the terminal or with an external viewer.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.4.9")
+    (version "6.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
                                   version "/gnuplot-"
                                   version ".tar.gz"))
        (sha256
-        (base32 "15vabi30s4ln4vi82csx4nvfms3ik8704rk0prcm9h1xylhs0a53"))))
+        (base32 "16ipf7m2c2v1cldp3kwxbjj6db6bzy0rkrpp4kzhh61a3866cnp8"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config (texlive-updmap.cfg)))
     (inputs
-     (list cairo gd lua pango readline))
+     (list cairo gd libcerf lua pango readline))
     (arguments
      (list #:configure-flags
            #~(list "--with-qt=no"
@@ -1370,7 +1459,7 @@ C++ with a C API.  It contains a LU and LLt solver, and a few other things.")
 (define-public primesieve
   (package
     (name "primesieve")
-    (version "11.1")
+    (version "12.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1379,7 +1468,7 @@ C++ with a C API.  It contains a LU and LLt solver, and a few other things.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ja3kxvpya7bwrib40hnyahsiiiavf65ppk7i7afvc093b7gg9bg"))))
+                "1lxvs1jgch0zgpa5axx6zlvgab4rmm3lqpbah75072xpj8ndhhld"))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags #~(list "-DBUILD_STATIC_LIBS=off"
@@ -1397,7 +1486,7 @@ C++ with a C API.  It contains a LU and LLt solver, and a few other things.")
 (define-public cminpack
   (package
     (name "cminpack")
-    (version "1.3.8")
+    (version "1.3.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1406,7 +1495,7 @@ C++ with a C API.  It contains a LU and LLt solver, and a few other things.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bg0954mwry22izsvikpai16pkfp8srz4z34n267bhkmrvvb0zgy"))))
+                "05cjb54in7kks70rrnmvczwkg4nsxhwyf23abxqdj143zwbz4yyr"))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags #~(list "-DBUILD_SHARED_LIBS=ON")))
@@ -2614,73 +2703,79 @@ and quadratic objectives using the Simplex algorithm.")
     (license license:epl1.0)))
 
 (define-public gecode
-  (package
-    (name "gecode")
-    (version "6.2.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Gecode/gecode")
-                    (commit (string-append "release-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0b1cq0c810j1xr2x9y9996p894571sdxng5h74py17c6nr8c6dmk"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; delete generated sources
-                  (for-each delete-file
-                            '("gecode/kernel/var-imp.hpp"
-                              "gecode/kernel/var-type.hpp"))))))
-    (outputs '("out" "examples"))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "GLDFLAGS=-Wl,-rpath="
-                            (assoc-ref %outputs "out")
-                            "/lib")
-             "--enable-examples=no")
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 rdelim)
-                  (ice-9 popen))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'build 'build-examples
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "compileexamples")))
-         ;; The Makefile disrespects GLDFLAGS for some reason, so we have to
-         ;; patch it ourselves... *sigh*
-         (add-after 'install 'fix-rpath
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((libdir (string-append (assoc-ref outputs "out") "/lib")))
-               (for-each
-                (lambda (file)
-                  (let* ((pipe (open-pipe* OPEN_READ "patchelf"
-                                          "--print-rpath" file))
-                         (line (read-line pipe)))
-                    (and (zero? (close-pipe pipe))
-                         (invoke "patchelf" "--set-rpath"
-                                 (string-append libdir ":" line)
-                                 file))))
-                (find-files libdir ".*\\.so$")))))
-         (add-after 'install 'install-examples
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "make" "installexamples"
-                     (string-append "bindir=" (assoc-ref outputs "examples")
-                                    "/bin"))))
-         ;; Tests depend on installed libraries.
-         (delete 'check)
-         (add-after 'fix-rpath 'check
-           (assoc-ref %standard-phases 'check)))))
-    (native-inputs
-     (list patchelf perl sed))
-    (home-page "https://www.gecode.org")
-    (synopsis "Toolkit for developing constraint-based systems")
-    (description "Gecode is a C++ toolkit for developing constraint-based
-systems and applications.  It provides a modular and extensible solver.")
-    (license license:expat)))
+  (let* ((commit "f7f0d7c273d6844698f01cec8229ebe0b66a016a")
+         (version (git-version "6.2.0" "1" commit)))
+    (package
+      (name "gecode")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/Gecode/gecode")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+            "16gzwa64w90vifaflmii515rsrqclf2y7nziq621m4ad9cjgcixj"))
+         (modules '((guix build utils)))
+         ;; delete generated sources
+         (snippet '(for-each delete-file
+                             '("gecode/kernel/var-imp.hpp"
+                               "gecode/kernel/var-type.hpp")))))
+      (outputs '("out" "examples"))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:configure-flags #~(list (string-append "GLDFLAGS=-Wl,-rpath="
+                                                 #$output "/lib")
+                                  "--enable-examples=no")
+        #:modules '((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 rdelim)
+                    (ice-9 popen))
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-before 'configure 'patch-msc-and-version
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let ((out (assoc-ref outputs "out")))
+                  (substitute* "tools/flatzinc/gecode.msc.in"
+                    (("\\.\\./../..") out)
+                    (("\\.\\.")
+                     (string-append out "/share/minizinc")))
+                  (substitute* "configure"
+                    (("(PACKAGE_[^0-9]*)[0-9\\.]+" all match)
+                     (string-append match #$version))))))
+            (add-after 'build 'build-examples
+              (lambda _
+                (invoke "make" "compileexamples")))
+            ;; The Makefile disrespects GLDFLAGS for some reason,
+            ;; so we have to patch it ourselves.
+            (add-after 'install 'fix-rpath
+              (lambda _
+                (let ((libdir (string-append #$output "/lib")))
+                  (for-each
+                    (lambda (file)
+                      (let* ((pipe (open-pipe* OPEN_READ "patchelf"
+                                               "--print-rpath" file))
+                             (line (read-line pipe)))
+                        (and (zero? (close-pipe pipe))
+                             (invoke "patchelf" "--set-rpath"
+                                     (string-append libdir ":" line)
+                                     file))))
+                    (find-files libdir ".*\\.so$")))))
+            (add-after 'install 'install-examples
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((examples (assoc-ref outputs "examples"))
+                       (bindir (format #f "bindir=~a/bin" examples)))
+                  (invoke "make" "installexamples" bindir)))))))
+      (native-inputs (list patchelf perl sed))
+      (home-page "https://www.gecode.org")
+      (synopsis "Toolkit for developing constraint-based systems")
+      (description
+        "Gecode is a C++ toolkit for developing constraint-based systems
+and applications.  It provides a modular and extensible solver.")
+      (license license:expat))))
 
 (define-public libfixmath
   (let ((commit "1416c9979635c69f344d3c1de84b3246001a6540")
@@ -2926,7 +3021,7 @@ can solve two kinds of problems:
 (define-public octave-cli
   (package
     (name "octave-cli")
-    (version "9.1.0")
+    (version "9.2.0")
     (source
      (origin
        (method url-fetch)
@@ -2934,7 +3029,7 @@ can solve two kinds of problems:
                            version ".tar.xz"))
        (sha256
         (base32
-         "0jqk3amfkqzn1c5rzb9gm3v7r2y5xcgx6cgi4r5w8mpa9814nrgd"))))
+         "01sqfqrglzkjp20sg45fjd43hbjj069a1gn0r8sv01ciazxplh91"))))
     (build-system gnu-build-system)
     (inputs
      (list alsa-lib
@@ -3434,7 +3529,8 @@ September 2004}")
               "--with-openblas=1"
               (string-append "--with-openblas-dir="
                              #$(this-package-input "openblas"))
-              "--with-superlu=1")
+              "--with-superlu=1"
+              "--with-debugging=0")
       #:make-flags
       ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
       ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
@@ -3998,7 +4094,7 @@ book.")
 (define-public minizinc
   (package
     (name "minizinc")
-    (version "2.5.5")
+    (version "2.8.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4007,7 +4103,7 @@ book.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10b2hsl1fx9psh0iagmp8ki3f60f3qg5hmvra5aczjlfmbl88ggp"))
+                "03iliizyadd0wvx6a63rg22lb6p4m6krhlpfm2hfzwj66y3a76j6"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -4029,9 +4125,9 @@ book.")
                                (lambda (file)
                                  (member file (cons* "." ".." targets)))
                                (scandir ".")))
-                    (substitute* "libmzn.cmake"
-                      (("include\\(cmake/targets/(.*)\\)" all target)
-                       (if (member target targets) all "")))))
+                     (substitute* "libmzn.cmake"
+                       (("include\\(cmake/targets/(.*)\\)" all target)
+                        (if (member target targets) all "")))))
                   (with-directory-excursion "include/minizinc/solvers/MIP"
                     (for-each delete-file
                               (remove
@@ -4062,17 +4158,19 @@ book.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no ‘check’ target
-       #:modules ((guix build cmake-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
+     (list
+       #:tests? #f ; no ‘check’ target
+       #:modules '((guix build cmake-build-system)
+                   (guix build utils)
+                   (srfi srfi-1))
        #:phases
-       (modify-phases %standard-phases
+       #~(modify-phases %standard-phases
          (add-after 'install 'install-solver-configs
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((gecode (assoc-ref inputs "gecode"))
-                   (pkgdatadir (string-append (assoc-ref outputs "out")
-                                                  "/share/minizinc")))
+           (lambda _
+             (let ((chuffed #$(this-package-input "chuffed"))
+                   (gecode #$(this-package-input "gecode"))
+                   (pkgdatadir (string-append #$output
+                                              "/share/minizinc")))
                (call-with-output-file (string-append pkgdatadir
                                                      "/Preferences.json")
                  (lambda (port)
@@ -4086,35 +4184,16 @@ book.")
 }"
                             port)
                    (newline port)))
-
-               (mkdir-p (string-append pkgdatadir "/solvers"))
-               (call-with-output-file (string-append pkgdatadir
-                                                     "/solvers/gecode.msc")
-                 (lambda (port)
-                   (format port
-                    "\
-{
-  \"id\": \"org.gecode.gecode\",
-  \"name\": \"Gecode\",
-  \"description\": \"Gecode FlatZinc executable\",
-  \"version\": ~s,
-  \"mznlib\": ~s,
-  \"executable\": ~s,
-  \"supportsMzn\": false,
-  \"supportsFzn\": true,
-  \"needsSolns2Out\": true,
-  \"needsMznExecutable\": false,
-  \"needsStdlibDir\": false,
-  \"isGUIApplication\": false
-}"
-                    (last (string-split gecode #\-))
-                    (string-append gecode "/share/gecode/mznlib")
-                    (string-append gecode "/bin/fzn-gecode"))
-                   (newline port)))))))))
+               (for-each
+                 (lambda (solver)
+                   (copy-recursively
+                     (string-append solver "/share/minizinc/solvers")
+                     (string-append pkgdatadir "/solvers")))
+                 (list gecode chuffed))))))))
     (native-inputs
      (list bison flex))
     (inputs
-     (list cbc gecode zlib))
+     (list cbc chuffed gecode zlib))
     (home-page "https://www.minizinc.org")
     (synopsis "High-level constraint modeling language")
     (description "MiniZinc is a high-level modeling language for constraint
@@ -4916,7 +4995,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "23.11.0")
+    (version "24.02.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4925,7 +5004,7 @@ point numbers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xj91wfkm19avwmpcfwgzdkcqjwfpkl3glhkpn4advsqc6sx3ra0"))))
+                "1k2fbhyg7xrbk6ivfns6sq68rrbcl5dn84s64viv6iavk3ws033v"))))
     (build-system cmake-build-system)
     (native-inputs (list gettext-minimal))
     (inputs (list bash-minimal
@@ -5127,8 +5206,7 @@ parts of it.")
 (define-public openblas-ilp64
   (package/inherit openblas
     (name "openblas-ilp64")
-    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"
-                         "powerpc64le-linux"))
+    (supported-systems %64bit-supported-systems)
     (arguments
      (substitute-keyword-arguments (package-arguments openblas)
        ((#:make-flags flags #~'())
@@ -6991,7 +7069,7 @@ evaluates expressions using the standard order of operations.")
 (define-public xaos
   (package
     (name "xaos")
-    (version "4.2.1")
+    (version "4.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7000,53 +7078,53 @@ evaluates expressions using the standard order of operations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0maw5am6rrkyjrprfg113zjq37mqj0iaznkg4h2927ff7wrprc94"))))
+                "0a5n3g1xcsd8k65q5skm4xsdllr3mmkahh4vi59db1l0jv81v06q"))))
     (build-system gnu-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
-                     ("qtbase" ,qtbase-5)
-                     ("qttools-5" ,qttools-5)))
+                     ("qtbase" ,qtbase)
+                     ("qttools" ,qttools)))
     (inputs (list libx11 zlib libpng gsl))
     ;; The upstream project file ("XaoS.pro") and the Makefile it generates are
     ;; not enough for this package to install properly.  These phases fix that.
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'make-qt-deterministic
-           (lambda _
-             ;; Make Qt deterministic.
-             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
-             #t))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "XaoS.pro"
-                 ;; The DESTDIR is originally set to install the xaos binary to
-                 ;; the "bin" folder inside the build directory.  Setting make
-                 ;; flags doesn't seem to change this.
-                 (("DESTDIR.*$")
-                  (string-append "DESTDIR=" out "/bin"))
-                 ;; Set the correct path to the lrelease binary.
-                 (("lrelease-qt5") "lrelease"))
-               (substitute* "src/include/config.h"
-                 (("/usr/share/XaoS")
-                  (string-append out "/share/XaoS")))
-               (invoke "qmake"))))
-         (add-after 'install 'install-data
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share")))
-               (mkdir-p share)
-               (for-each
-                (lambda (folder)
-                  (copy-recursively folder
-                                    (string-append share "/XaoS/" folder)))
-                '("catalogs" "examples" "tutorial"))
-               (install-file "xdg/xaos.png"
-                             (string-append share "/pixmaps"))
-               (install-file "xdg/xaos.desktop"
-                             (string-append share "/applications")))
-             #t)))))
+     (list #:tests? #f ;no "check" target
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'configure 'make-qt-deterministic
+                 (lambda _
+                   ;; Make Qt deterministic.
+                   (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")))
+               (replace 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* "XaoS.pro"
+                       ;; The DESTDIR is originally set to install the xaos binary to
+                       ;; the "bin" folder inside the build directory.  Setting make
+                       ;; flags doesn't seem to change this.
+                       (("DESTDIR.*$")
+                        (string-append "DESTDIR=" out "/bin"))
+                       (("/usr/local")
+                        out)
+                       ;; Set the correct path to the lrelease binary.
+                       (("lrelease-qt6") "lrelease"))
+                     (substitute* "src/include/config.h"
+                       (("/usr/share/XaoS")
+                        (string-append out "/share/XaoS")))
+                     (invoke "qmake"))))
+               (add-after 'install 'install-data
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (share (string-append out "/share")))
+                     (mkdir-p share)
+                     (for-each
+                      (lambda (folder)
+                        (copy-recursively folder
+                                          (string-append share "/XaoS/" folder)))
+                      '("catalogs" "examples" "tutorial"))
+                     (install-file "xdg/xaos.png"
+                                   (string-append share "/pixmaps"))
+                     (install-file "xdg/io.github.xaos_project.XaoS.desktop"
+                                   (string-append share "/applications"))))))))
     (synopsis "Real-time fractal zoomer")
     (description "GNU XaoS is a graphical program that generates fractal
 patterns and allows you to zoom in and out of them infinitely in a fluid,
@@ -9390,7 +9468,7 @@ numeric differences and differences in numeric formats.")
 (define-public why3
   (package
     (name "why3")
-    (version "1.6.0")
+    (version "1.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -9399,38 +9477,49 @@ numeric differences and differences in numeric formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0k3y98xzhrl44vwzq2m6k4nrllrwp3ll69lc2gfl8d77w0wg7gkp"))))
+                "0fq8wg8ji2v2ssz1d681glmk8glps1irnmdlhqfklaggx01hlf4p"))))
     (build-system ocaml-build-system)
-    (native-inputs
-     (list autoconf automake coq ocaml which))
-    (propagated-inputs
-     (list camlzip ocaml-graph ocaml-menhir ocaml-num ocaml-zarith))
-    (inputs
-     (list coq-flocq emacs-minimal zlib))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (invoke "./autogen.sh")
-             (setenv "CONFIG_SHELL" (which "sh"))
-             (substitute* "configure"
-               (("#! /bin/sh") (string-append "#!" (which "sh")))
-               ;; find ocaml-num in the correct directory
-               (("\\$DIR/nums.cma") "$DIR/num.cma")
-               (("\\$DIR/num.cmi") "$DIR/core/num.cmi"))
-             #t))
-         (add-after 'configure 'fix-makefile
-           (lambda _
-             (substitute* "Makefile"
-               ;; find ocaml-num in the correct directory
-               (("site-lib/num") "site-lib"))
-             #t))
-        (add-after 'install 'install-lib
-          (lambda _
-            (invoke "make" "byte")
-            (invoke "make" "install-lib")
-            #t)))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'configure 'bootstrap
+                 (lambda _
+                   (invoke "./autogen.sh")
+                   (setenv "CONFIG_SHELL" (which "sh"))
+                   (substitute* "configure"
+                     (("#! /bin/sh") (string-append "#!" (which "sh")))
+                     ;; find ocaml-num in the correct directory
+                     (("\\$DIR/nums.cma") "$DIR/num.cma")
+                     (("\\$DIR/num.cmi") "$DIR/core/num.cmi"))))
+               (add-after 'configure 'fix-makefile
+                 (lambda _
+                   (substitute* "Makefile"
+                     ;; find ocaml-num in the correct directory
+                     (("site-lib/num") "site-lib"))))
+            (add-after 'install 'install-lib
+              (lambda _
+                (invoke "make" "byte")
+                (invoke "make" "install-lib"))))))
+    (native-inputs (list autoconf
+                         automake
+                         coq
+                         ocaml
+                         ocaml-findlib
+                         which))
+    (propagated-inputs (list camlzip
+                             lablgtk3
+                             ocaml-graph
+                             ocaml-lablgtk3-sourceview3
+                             ocaml-menhir
+                             ocaml-ppx-deriving
+                             ocaml-ppx-sexp-conv
+                             ocaml-num
+                             ocaml-re
+                             ocaml-sexplib
+                             ocaml-zarith))
+    (inputs (list coq-flocq
+                  emacs-minimal
+                  zlib))
     (home-page "https://why3.lri.fr")
     (synopsis "Deductive program verification")
     (description "Why3 provides a language for specification and programming,
@@ -9447,23 +9536,34 @@ of C, Java, or Ada programs.")
 (define-public frama-c
   (package
     (name "frama-c")
-    (version "27.1")
+    (version "29.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://frama-c.com/download/frama-c-"
-                                  version "-Cobalt.tar.gz"))
+              (uri (string-append "https://frama-c.com/download/frama-c-"
+                                  version "-Copper.tar.gz"))
               (sha256
                (base32
-                "1lirkvhf5m53d33l0aw5jzc1fyzkwx5fkgh9g71732d52r55f4sv"))))
+                "14vlvynp3yfmnkixm676c1ip0jlkiqjzmrp9f9c990zzs2wb7yyj"))))
     (build-system dune-build-system)
     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (add-before 'build 'set-env
-            (lambda _
-              (setenv "CC" "gcc"))))))
+     (list #:phases
+           #~(modify-phases %standard-phases
+             (add-before 'build 'set-env
+               (lambda _
+                 (setenv "CC" "gcc")))
+             (add-after 'install 'wrap-programs
+               (lambda _
+                 (let ((ocamlpath
+                         `(,(string-append #$output "/lib/ocaml/site-lib")
+                           ,@(search-path-as-string->list
+                               (getenv "OCAMLPATH")))))
+                   (for-each
+                     (lambda (program)
+                       (wrap-program (string-append #$output "/bin/" program)
+                         `("OCAMLPATH" ":" prefix ,ocamlpath)))
+                     '("frama-c" "frama-c-gui"))))))))
     (inputs
-     (list gmp zlib))
+     (list bash-minimal gmp zlib))
     (propagated-inputs (list
                          graphviz
                          lablgtk3
@@ -9477,6 +9577,7 @@ of C, Java, or Ada programs.")
                          ocaml-ppx-deriving-yojson
                          ocaml-ppx-deriving-yaml
                          ocaml-ppx-import
+                         ocaml-unionfind
                          why3))
     (native-inputs (list dune-site time ocaml-menhir ocaml-graph))
     (native-search-paths

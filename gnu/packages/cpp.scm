@@ -158,8 +158,8 @@ easy to use API.")
       (license license:expat))))
 
 (define-public asmjit
-  (let ((commit "4ec760a3d1f69e32ba460ecd2513f29b8428700b")
-        (revision "0"))
+  (let ((commit "3ca5c186bf8922e5fe3018432e93651fd2fa4053")
+        (revision "1"))
     (package
       (name "asmjit")
       (version (git-version "0.0.0" revision commit))
@@ -172,7 +172,7 @@ easy to use API.")
            (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0skgccbpamcbg1byawfq5n6jzxgj64hnc7jznvk35nkskaaz1nlb"))))
+          (base32 "10k1zc0w8m0vnh52id9qlm1sb99qmpvr6k0ha8ag2h223n0d591g"))))
       (build-system cmake-build-system)
       (arguments
        (list #:configure-flags #~(list "-DASMJIT_TEST=TRUE")))
@@ -314,23 +314,21 @@ use by the C++ Core Guidelines maintained by the Standard C++ Foundation.")
     (name "c2ffi")
     ;; As per the c2ffi README: the first three elements are encoding the
     ;; required Clang/LLVM version, and the last one is the c2ffi revision.
-    (version "16.0.0.0")
+    (version "18.1.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/rpav/c2ffi")
-             ;; Upstream is not tagging releases consistently.
-             ;; (commit (string-append "v" version))
-             (commit "097cbe61ca02dc79ea60859aa056975131a9d985")))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mqhw4838chl495gaj9z0731ahkmqb4f3wlc1qalk82fdsaniyd5"))
+        (base32 "03hw650wjrc4jb4ra8bwc4rnprr0fpnf3wlxzacfjysvl25jb0j6"))
        (modules '((guix build utils)))
        (snippet
         '(substitute* "CMakeLists.txt"
            ;; Guix seems to be packaging LLVM libs separately thus -lLLVM
-           ;; won't work, every used library must be specified explicitly.
+           ;; won't work.  Instead every library used must be listed.
            (("c2ffi PUBLIC clang-cpp LLVM")
             "c2ffi PUBLIC clang-cpp LLVMCore LLVMSupport LLVMMCParser \
 LLVMOption LLVMBitReader LLVMProfileData")))))
@@ -346,9 +344,9 @@ LLVMOption LLVMBitReader LLVMProfileData")))))
              (when tests?
                (invoke "./bin/c2ffi" "--help")))))))
     (native-inputs
-     (list clang-16)) ; CMakeLists.txt invokes `clang -print-resource-dir`
+     (list clang-18)) ; CMakeLists.txt invokes `clang -print-resource-dir`
     (inputs
-     (list clang-16)) ; Compiled with gcc, but links against libclang-cpp.so
+     (list clang-18)) ; Compiled with gcc, but links against libclang-cpp.so
     (home-page "https://github.com/rpav/c2ffi")
     (synopsis "Clang-based FFI wrapper generator")
     (description
@@ -1285,7 +1283,7 @@ programs.")
 (define-public kokkos
   (package
     (name "kokkos")
-    (version "4.2.01")
+    (version "4.3.01")
     (source
      (origin
        (method git-fetch)
@@ -1294,7 +1292,7 @@ programs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bvxcy11as38ng9vdp93mrdvm7sgwqjrm67p53wr1aj7x3pq3hbp"))
+        (base32 "069j9wijw8vwp2844sdrp0wpq59wihykbhbacwadac01l467m3y7"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled googletest.
@@ -1379,7 +1377,9 @@ point and then, after each tween step, plugging back the result.")
                (base32
                 "1p4djhm1f011ficbjjxx3n8428p8481p20j4glpaawnpsi362hkl"))
               (patches
-               (search-patches "abseil-cpp-fix-strerror_test.patch"))))
+               (search-patches "abseil-cpp-fix-strerror_test.patch"
+                               "abseil-cpp-20200923.3-adjust-sysinfo.patch"
+                               "abseil-cpp-20200923.3-duration-test.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
@@ -1454,7 +1454,9 @@ Google's C++ code base.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0vxh2a74g4s45yr8kdjqnzl64k10qdlc0hbnn987a4cnwdj4bp9r"))))
+                  "0vxh2a74g4s45yr8kdjqnzl64k10qdlc0hbnn987a4cnwdj4bp9r"))
+                (patches
+                 (search-patches "abseil-cpp-20220623.1-no-kepsilon-i686.patch"))))
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:configure-flags flags)
@@ -1475,9 +1477,16 @@ Google's C++ code base.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ydkkbanrpkp5i814arzsk973kyzhhjhagnp392rq6rrv16apldq"))))
+                  "1ydkkbanrpkp5i814arzsk973kyzhhjhagnp392rq6rrv16apldq"))
+                (patches
+                 (search-patches "abseil-cpp-20220623.1-no-kepsilon-i686.patch"))))
       (arguments
        (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags flags #~'())
+          (if (target-riscv64?)
+              #~(cons* "-DCMAKE_SHARED_LINKER_FLAGS=-latomic"
+                       #$flags)
+              flags))
          ((#:phases phases)
           #~(modify-phases #$phases
               (add-before 'check 'set-env-vars
@@ -1572,6 +1581,8 @@ parsers according to a Parsing Expression Grammar (PEG).")
 external-memory suffix array construction algorithm called pSAscan.  The
 algorithm is based on the sequential external-memory suffix array construction
 algorithm called SAscan.")
+    ;; Code exhibits integer size mismatches when compiled on 32-bit systems.
+    (supported-systems %64bit-supported-systems)
     (license license:expat)))
 
 (define-public cxxopts

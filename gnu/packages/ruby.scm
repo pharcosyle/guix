@@ -292,6 +292,20 @@ a focus on simplicity and productivity.")
      (modify-inputs (package-inputs ruby-3.1)
        (prepend libyaml)))))
 
+(define-public ruby-3.3
+  (package
+    (inherit ruby-3.2)
+    (version "3.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "07pwf3zkf7idl95agfjbv2lvamcp0spp0znqp9arb71ri19rkh43"))))))
+
 (define-public ruby ruby-3.1)
 
 (define-public mruby
@@ -7817,7 +7831,7 @@ documentation for Ruby code.")
           (lambda _
             (invoke "gem" "build" "gem_hadar.gemspec"))))))
     (propagated-inputs
-     (list git ruby-tins ruby-yard))
+     (list git-minimal/pinned ruby-tins ruby-yard))
     (synopsis "Library for the development of Ruby gems")
     (description
      "This library contains some useful functionality to support the
@@ -10114,7 +10128,7 @@ Profiling multiple threads simultaneously is supported.
                 (("%x\\(git ls-files -z)")
                  "`git ls-files -z`")))))))
     (native-inputs (list ruby-rake-compiler ruby-rspec))
-    (inputs (list valgrind/interactive))
+    (inputs (list valgrind))
     (propagated-inputs (list ruby-nokogiri))
     (synopsis "Valgrind memcheck tool for Ruby")
     (description "The @code{ruby_memcheck} gem provides a sane way to use

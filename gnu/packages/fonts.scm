@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
-;;; Copyright © 2016-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017–2022 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -88,6 +88,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages)
   #:use-module (gnu packages c)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -194,6 +195,26 @@ glyphset has also been extended, supporting now a wider number of languages.")
 Sans, Serif, Mono and Sans Condensed, all with roman and true italics.  The
 fonts have been designed to work well in user interface (UI) environments as
 well as other mediums.")
+    (license license:silofl1.1)))
+
+(define-public font-lilex
+  (package
+    (name "font-lilex")
+    (version "2.510")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mishamyrt/Lilex/releases/download/"
+                    version
+                    "/Lilex.zip"))
+              (sha256
+               (base32
+                "0dq54qk4q1ymdqnp0skxdxzhx475g2gihzs8ijx0nffa29fwzn9g"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/mishamyrt/Lilex")
+    (synopsis "IBM Plex typeface with extended character sets and ligatures")
+    (description "Lilex is a modern programming font containing a set of
+ligatures for common programming multi-character combinations.")
     (license license:silofl1.1)))
 
 (define-public font-inconsolata
@@ -436,8 +457,6 @@ font is provided in the OpenType font (OTF) format.")
 (define-public font-gnu-freefont
   (package
     (name "font-gnu-freefont")
-    ;; Note: Remove the special FontForge input and package once the 2020
-    ;; release is out.
     (version "20120503")
     (source (origin
              (method url-fetch)
@@ -445,7 +464,10 @@ font is provided in the OpenType font (OTF) format.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0yk58blhcd4hm7nyincmqq4jrzjjk82wif2zmk1l3y2m4vif4qhd"))))
+               "0yk58blhcd4hm7nyincmqq4jrzjjk82wif2zmk1l3y2m4vif4qhd"))
+             (patches (search-patches "font-gnu-freefont-python3-compat.patch"))
+             (snippet
+              '(begin (delete-file "tools/generate/buildutils.pyc")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -491,8 +513,7 @@ font is provided in the OpenType font (OTF) format.")
                                    (lambda (file) (string-suffix? "woff" file))
                                    (find-files "." "")))))))
        #:test-target "tests"))
-    ;; FreeFont anno 2012 requires a FontForge built with Python 2.
-    (native-inputs (list fontforge-20190801))
+    (native-inputs (list fontforge))
     (home-page "https://www.gnu.org/software/freefont/")
     (synopsis "Unicode-encoded outline fonts")
     (description
@@ -2497,6 +2518,34 @@ formatting.")
     (home-page "https://madmalik.github.io/mononoki/")
     (license license:silofl1.1)))
 
+(define-public font-paytone-one
+  (let ((version "0")
+        (commit "b1438bc11966d48a1e9e8943b7b8a32dcb0c533c")
+        (revision "0"))
+    (package
+      (name "font-paytone-one")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/googlefonts/paytoneFont")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1gbmrjx8yj8xjh6fs0pzh8j0kxvwvhhjlp16gmv5c7i6b8s7r4r2"))))
+      (build-system font-build-system)
+      (home-page "https://github.com/googlefonts/paytoneFont")
+      (synopsis "Sans serif typeface")
+      (description "Paytone One is a sans serif typeface developed for
+use as a display and headlining webfont.
+
+The face has a slight casual appearance with ample round bowls.  The
+slanted stroke terminals add some visual play to the overall appearance
+of the font.")
+      (license license:silofl1.1))))
+
 (define-public font-plemoljp
   (package
     (name "font-plemoljp")
@@ -3839,4 +3888,41 @@ The characters of Oswald have been re-drawn and reformed to better fit
 the pixel grid of standard digital screens.  Oswald is designed to be
 used freely across the internet by web browsers on desktop computers,
 laptops and mobile devices.")
+      (license license:silofl1.1))))
+
+(define-public font-teko
+  (let ((version "0")
+        (commit "2bf909d46b0061a5e3e16e8acc4fef670e36a8f2")
+        (revision "0"))
+    (package
+      (name "font-teko")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/googlefonts/teko")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "18gwb3k4a3a2406pxpxh9zcziggajl8wwki4730xsh1m066f6gk9"))))
+      (build-system font-build-system)
+      (home-page "https://github.com/googlefonts/teko")
+      (synopsis "Devanagari and Latin scripts typeface")
+      (description "Teko is a typeface that currently supports the
+Devanagari and Latin scripts.  This font family has been created for
+use in headlines and other display-sized text on screen.  Five font
+styles make up the initial release.
+
+The Teko typeface features letterforms with low stroke contrast,
+square proportions and a structure that appears visually simple.
+
+The Regular, Medium and Semibold fonts are recommended for use in long
+headlines, while Bold is intended primarily for setting just one or
+two words.  The Light is a variant that may be put to good use in
+large headlines on websites.  At display sizes, Teko works equally
+well on screen or in print.  Each font contains 1090 glyphs, offering
+full support for the conjuncts and ligatures required by languages
+written with the Devanagari script.")
       (license license:silofl1.1))))

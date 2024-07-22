@@ -65,6 +65,7 @@
   #:use-module (gnu system images novena)
   #:use-module (gnu system images pine64)
   #:use-module (gnu system images pinebook-pro)
+  #:use-module (gnu system images visionfive2)
   #:use-module (gnu tests)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -176,6 +177,13 @@ SYSTEM."
     "or1k-elf"
     "xtensa-ath9k-elf"))
 
+(define %unsupported-platform-triplets
+  ;; These systems are kept around for nostalgia or for tinkering, but regular
+  ;; CI is disabled for them to reduce the load on CI infrastructure.
+  '("mips64el-linux-gnu"
+    "powerpc-linux-gnu"
+    "powerpc64-linux-gnu"))
+
 (define (cross-jobs store system)
   "Return a list of cross-compilation jobs for SYSTEM."
   (define (from-32-to-64? target)
@@ -191,13 +199,15 @@ SYSTEM."
     ;; Return true if SYSTEM and TARGET are the same thing.  This is so we
     ;; don't try to cross-compile to 'mips64el-linux-gnu' from
     ;; 'mips64el-linux'.
-    (or (string-contains target system)
+    (or (and (string-contains target system)
+             (not (string=? "x86_64-linux-gnux32" target)))
         (and (string-prefix? "armhf" system)    ;armhf-linux
              (string-prefix? "arm" target))))   ;arm-linux-gnueabihf
 
   (define (pointless? target)
     ;; Return #t if it makes no sense to cross-build to TARGET from SYSTEM.
     (or (member target %bare-platform-triplets)
+        (member target %unsupported-platform-triplets)
         (match system
           ((or "x86_64-linux" "i686-linux")
            (if (string-contains target "mingw")
@@ -246,7 +256,8 @@ SYSTEM."
   (list hurd-barebones-qcow2-image
         pine64-barebones-raw-image
         pinebook-pro-barebones-raw-image
-        novena-barebones-raw-image))
+        novena-barebones-raw-image
+        visionfive2-barebones-raw-image))
 
 (define (hours hours)
   (* 3600 hours))

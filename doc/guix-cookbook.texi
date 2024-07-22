@@ -23,7 +23,8 @@ Copyright @copyright{} 2020 Christine Lemmer-Webber@*
 Copyright @copyright{} 2021 Joshua Branson@*
 Copyright @copyright{} 2022, 2023 Maxim Cournoyer@*
 Copyright @copyright{} 2023-2024 Ludovic Courtès@*
-Copyright @copyright{} 2023 Thomas Ieong
+Copyright @copyright{} 2023 Thomas Ieong@*
+Copyright @copyright{} 2024 Florian Pelz@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -67,8 +68,9 @@ This manual is also available in French (@pxref{Top,,, guix-cookbook.fr,
 Livre de recettes de GNU Guix}), German (@pxref{Top,,, guix-cookbook.de,
 GNU-Guix-Kochbuch}), Korean (@pxref{Top,,, guix-cookbook.ko, GNU Guix 쿡북}),
 Brazilian Portuguese (@pxref{Top,,, guix-cookbook.pt_BR,
-Livro de Receitas do GNU Guix}) and Slovak (@pxref{Top,,, guix-cookbook.sk,
-Receptár GNU Guix}).  If you would like to translate
+Livro de Receitas do GNU Guix}), Slovak (@pxref{Top,,, guix-cookbook.sk,
+Receptár GNU Guix}), and Swedish (@pxref{Top,,, guix-cookbook.sv,
+Kokbok för GNU Guix}).  If you would like to translate
 this document in your native language, consider joining
 @uref{https://translate.fedoraproject.org/projects/guix/documentation-cookbook,
 Weblate} (@pxref{Translating Guix,,, guix, GNU Guix reference
@@ -1681,7 +1683,7 @@ creates a package.
                             ;; See kernel-config for an example.
                             (configuration-file #f)
                             (defconfig "defconfig")
-                            (extra-options %default-extra-linux-options))
+                            (extra-options (default-extra-linux-options version)))
   ...)
 @end lisp
 
@@ -1693,7 +1695,8 @@ declared like this:
   (make-linux-libre* linux-libre-5.15-version
                      linux-libre-5.15-gnu-revision
                      linux-libre-5.15-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "riscv64-linux")
+                     '("x86_64-linux" "i686-linux" "armhf-linux"
+                       "aarch64-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 @end lisp
 
@@ -1748,7 +1751,7 @@ The second way to create a custom kernel is to pass a new value to the
 it:
 
 @lisp
-(define %default-extra-linux-options
+(define (default-extra-linux-options version)
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #true)
    ;; Modules required for initrd:
@@ -1798,7 +1801,7 @@ custom kernel:
           %file-systems
           %efi-support
           %emulation
-          (@@@@ (gnu packages linux) %default-extra-linux-options)))
+          ((@@@@ (gnu packages linux) default-extra-linux-options) version)))
 
 (define-public linux-libre-macbook41
   ;; XXX: Access the internal 'make-linux-libre*' procedure, which is
@@ -1812,11 +1815,12 @@ custom kernel:
    #:extra-options %macbook41-config-options))
 @end lisp
 
-In the above example @code{%file-systems} is a collection of flags enabling
-different file system support, @code{%efi-support} enables EFI support and
-@code{%emulation} enables a x86_64-linux machine to act in 32-bit mode also.
-@code{%default-extra-linux-options} are the ones quoted above, which had to be
-added in since they were replaced in the @code{extra-options} keyword.
+In the above example @code{%file-systems} is a collection of flags
+enabling different file system support, @code{%efi-support} enables EFI
+support and @code{%emulation} enables a x86_64-linux machine to act in
+32-bit mode also.  The @code{default-extra-linux-options} procedure is
+the one defined above, which had to be used to avoid loosing the default
+configuration options of the @code{extra-options} keyword.
 
 This all sounds like it should be doable, but how does one even know which
 modules are required for a particular system?  Two places that can be helpful
@@ -2405,9 +2409,11 @@ Then you need to add the following code to a StumpWM configuration file
 @lisp
 (require :ttf-fonts)
 (setf xft:*font-dirs* '("/run/current-system/profile/share/fonts/"))
-(setf clx-truetype:+font-cache-filename+ (concat (getenv "HOME") "/.fonts/font-cache.sexp"))
+(setf clx-truetype:+font-cache-filename+ (concat (getenv "HOME")
+                                                 "/.fonts/font-cache.sexp"))
 (xft:cache-fonts)
-(set-font (make-instance 'xft:font :family "DejaVu Sans Mono" :subfamily "Book" :size 11))
+(set-font (make-instance 'xft:font :family "DejaVu Sans Mono"
+                                   :subfamily "Book" :size 11))
 @end lisp
 
 @node Session lock
@@ -2963,13 +2969,14 @@ should be defined, so that the bind mount can depend on it.
    (file-system
     (device (uuid "UUID goes here"))
     (mount-point "/path-to-spinning-disk-goes-here")
-    (type "ext4"))) ;; Make sure to set this to the appropriate type for your drive.
+    (type "ext4"))) ;Make sure to set this to the appropriate type for your drive.
 @end lisp
 
 The source folder must also be defined, so that guix will know it's not
 a regular block device, but a folder.
 @lisp
-(define (%source-directory) "/path-to-spinning-disk-goes-here/tmp") ;; "source-directory" can be named any valid variable name.
+;; "source-directory" can be named any valid variable name.
+(define (%source-directory) "/path-to-spinning-disk-goes-here/tmp")
 @end lisp
 
 Finally, inside the @code{file-systems} definition, we must add the
@@ -2980,14 +2987,18 @@ mount itself.
 
                 ...<other drives omitted for clarity>...
 
-                source-drive ;; Must match the name you gave the source drive in the earlier definition.
+                ;; Must match the name you gave the source drive in the earlier definition.
+                source-drive
 
                 (file-system
-                 (device (%source-directory)) ;; Make sure "source-directory" matches your earlier definition.
+                 ;; Make sure "source-directory" matches your earlier definition.
+                 (device (%source-directory))
                  (mount-point "/tmp")
-                 (type "none") ;; We are mounting a folder, not a partition, so this type needs to be "none"
+                 ;; We are mounting a folder, not a partition, so this type needs to be "none"
+                 (type "none")
                  (flags '(bind-mount))
-                 (dependencies (list source-drive)) ;; Ensure "source-drive" matches what you've named the variable for the drive.
+                 ;; Ensure "source-drive" matches what you've named the variable for the drive.
+                 (dependencies (list source-drive))
                  )
 
                  ...<other drives omitted for clarity>...
@@ -3036,8 +3047,8 @@ follow:
           config => (guix-configuration
                       (inherit config)
                       ;; ci.guix.gnu.org's Onion service
-                      (substitute-urls
-                       "@value{SUBSTITUTE-TOR-URL}")
+                      (substitute-urls "\
+@value{SUBSTITUTE-TOR-URL}")
                       (http-proxy "http://localhost:9250")))))))
 @end lisp
 
@@ -3279,12 +3290,14 @@ that should accomplish the above-mentioned tasks:
               #~(string-append "\
 # Declare Bluetooth audio device type \"bluealsa\" from bluealsa module
 pcm_type.bluealsa @{
-    lib \"" #$(file-append bluez-alsa "/lib/alsa-lib/libasound_module_pcm_bluealsa.so") "\"
+    lib \""
+#$(file-append bluez-alsa "/lib/alsa-lib/libasound_module_pcm_bluealsa.so") "\"
 @}
 
 # Declare control device type \"bluealsa\" from the same module
 ctl_type.bluealsa @{
-    lib \"" #$(file-append bluez-alsa "/lib/alsa-lib/libasound_module_ctl_bluealsa.so") "\"
+    lib \""
+#$(file-append bluez-alsa "/lib/alsa-lib/libasound_module_ctl_bluealsa.so") "\"
 @}
 
 # Define the actual Bluetooth audio device.
@@ -4076,7 +4089,8 @@ We can create a manifest specification per profile and install them this way:
 @example
 GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
 mkdir -p "$GUIX_EXTRA_PROFILES"/my-project # if it does not exist yet
-guix package --manifest=/path/to/guix-my-project-manifest.scm --profile="$GUIX_EXTRA_PROFILES"/my-project/my-project
+guix package --manifest=/path/to/guix-my-project-manifest.scm \
+ --profile="$GUIX_EXTRA_PROFILES"/my-project/my-project
 @end example
 
 Here we set an arbitrary variable @samp{GUIX_EXTRA_PROFILES} to point to the directory
@@ -4149,7 +4163,8 @@ for the command line options.
 To upgrade a profile, simply install the manifest again:
 
 @example
-guix package -m /path/to/guix-my-project-manifest.scm -p "$GUIX_EXTRA_PROFILES"/my-project/my-project
+guix package -m /path/to/guix-my-project-manifest.scm \
+ -p "$GUIX_EXTRA_PROFILES"/my-project/my-project
 @end example
 
 To upgrade all profiles, it's easy enough to loop over them.  For instance,
@@ -4159,7 +4174,8 @@ of the profile (e.g.@: "project1"), you could do the following in Bourne shell:
 
 @example
 for profile in "$GUIX_EXTRA_PROFILES"/*; do
-  guix package --profile="$profile" --manifest="$HOME/.guix-manifests/guix-$profile-manifest.scm"
+  guix package --profile="$profile" \
+   --manifest="$HOME/.guix-manifests/guix-$profile-manifest.scm"
 done
 @end example
 
@@ -4337,7 +4353,9 @@ mkdir -p "$GUIX_EXTRA"/my-project
 guix pull --channels=channel-specs.scm --profile="$GUIX_EXTRA/my-project/guix"
 
 mkdir -p "$GUIX_EXTRA_PROFILES/my-project"
-"$GUIX_EXTRA"/my-project/guix/bin/guix package --manifest=/path/to/guix-my-project-manifest.scm --profile="$GUIX_EXTRA_PROFILES"/my-project/my-project
+"$GUIX_EXTRA"/my-project/guix/bin/guix package \
+ --manifest=/path/to/guix-my-project-manifest.scm \
+ --profile="$GUIX_EXTRA_PROFILES"/my-project/my-project
 @end example
 
 It's safe to delete the Guix channel profile you've just installed with the
@@ -5071,12 +5089,13 @@ use_guix()
     PACKAGES=(help2man guile-sqlite3 guile-gcrypt)
 
     # Thanks <https://lists.gnu.org/archive/html/guix-devel/2016-09/msg00859.html>
-    eval "$(guix environment --search-paths --root="$gcroot" --pure guix --ad-hoc $@{PACKAGES[@@]@} $@{PACKAGES_MAINTENANCE[@@]@} "$@@")"
+    eval "$(guix shell --search-paths --root="$gcroot" --pure \
+     --development guix $@{PACKAGES[@@]@} $@{PACKAGES_MAINTENANCE[@@]@} "$@@")"
 
     # Predefine configure flags.
     configure()
     @{
-        ./configure --localstatedir=/var --prefix=
+        ./configure
     @}
     export_function configure
 
@@ -5178,9 +5197,21 @@ startup file for @command{guix-daemon},
 @code{--listen} argument to the @code{ExecStart} line so that it looks
 something like this:
 
+@c Since Debian Buster, \ is documented to split lines.
+@c https://manpages.debian.org/buster/systemd/systemd.exec.5.en.html
+@c Use it in PDF and Info versions to avoid cut-off at the page border.
+@ifnothtml
+@example
+ExecStart=/var/guix/profiles/per-user/root/current-guix/bin/guix-daemon \
+    --build-users-group=guixbuild \
+    --listen=/var/guix/daemon-socket/socket --listen=0.0.0.0
+@end example
+@end ifnothtml
+@ifhtml
 @example
 ExecStart=/var/guix/profiles/per-user/root/current-guix/bin/guix-daemon --build-users-group=guixbuild --listen=/var/guix/daemon-socket/socket --listen=0.0.0.0
 @end example
+@end ifhtml
 
 For these changes to take effect, the service needs to be restarted:
 

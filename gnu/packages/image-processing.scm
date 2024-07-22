@@ -167,7 +167,7 @@ Magnetic Resonance Imaging.")
 (define-public dcmtk
   (package
     (name "dcmtk")
-    (version "3.6.7")
+    (version "3.6.8")
     (source
      (origin
        (method url-fetch)
@@ -176,7 +176,7 @@ Magnetic Resonance Imaging.")
                        "dcmtk" (string-join (string-split version #\.) "")
                        "/dcmtk-" version ".tar.gz"))
        (sha256
-        (base32 "02kix73qhndgb56cmi5327666i6imp7hi17wwqp26q4d7s72jn3w"))))
+        (base32 "03vjv2lq5kr79ghf8v0q9wskkrcr2ygi097nybmqs4q3amjpc813"))))
     (build-system cmake-build-system)
     (arguments
      ;; By default, only static archives are built.
@@ -309,7 +309,7 @@ many popular formats.")
 (define-public vtk
   (package
     (name "vtk")
-    (version "9.2.2")
+    (version "9.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://vtk.org/files/release/"
@@ -317,7 +317,7 @@ many popular formats.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "0x8h2bwxq2870067j7wqd0qym87pa3inkbri93zrdb0zwwmhlnqw"))
+                "1s8vd34nhrgnw1bf9zhfn062d53fwq3csjfwvm7lxcr5a8lvkizx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -388,6 +388,7 @@ many popular formats.")
 
                    ;; Do not retain a reference to GCC.
                    (substitute* (choose
+                                 "Common/Core/vtkBuild.h.in" ;dummy >=v9.3
                                  "Common/Core/vtkConfigureDeprecated.h.in" ;v9.x
                                  "Common/Core/vtkConfigure.h.in") ;v7.x
                      (("@CMAKE_CXX_COMPILER@") "c++")))))
@@ -812,14 +813,14 @@ due to its architecture which automatically parallelises the image workflows.")
 (define-public gmic
   (package
     (name "gmic")
-    (version "3.3.5")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gmic.eu/files/source/gmic_"
                            version ".tar.gz"))
        (sha256
-        (base32 "06vcwn8c8zhr1j0jy79an1f6vvjh47ipm19a20g3qsnxv7h5c905"))))
+        (base32 "0akrrpkwkc8d7f2r3nqr36cjd926zk221yppi1bmv4yvydx0hvyz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;there are no tests

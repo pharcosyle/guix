@@ -73,9 +73,11 @@ AC_ARG_ENABLE([daemon],
   [guix_build_daemon="$enableval"],
   [guix_build_daemon="yes"])
 
-# Prepare a version of $localstatedir & co. that does not contain references
-# to shell variables.
-guix_prefix="`eval echo $prefix | sed -e"s|NONE|/usr/local|g"`"
+dnl Prepare a version of $localstatedir & co. that does not contain references
+dnl to shell variables.  Also set some sane default directory variables for
+dnl use with the Guix.  This also causes localstatedir to be /var and
+dnl sysconfdir to be /etc.
+test "$prefix" = NONE && prefix=
 guix_localstatedir="`eval echo $localstatedir | sed -e "s|NONE|$guix_prefix|g"`"
 guix_sysconfdir="`eval echo $sysconfdir | sed -e "s|NONE|$guix_prefix|g"`"
 guix_sbindir="`eval echo $sbindir | sed -e "s|NONE|$guix_prefix|g"`"
@@ -262,8 +264,7 @@ dnl Manual pages.
 AM_MISSING_PROG([HELP2MAN], [help2man])
 
 dnl Documentation translation.
-AM_MISSING_PROG([PO4A_TRANSLATE], [po4a-translate])
-AM_MISSING_PROG([PO4A_UPDATEPO], [po4a-updatepo])
+AM_MISSING_PROG([PO4A], [po4a])
 
 AC_MSG_CHECKING([if building from git])
 if test -e .git; then

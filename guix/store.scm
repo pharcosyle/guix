@@ -106,6 +106,7 @@
             port->connection
             close-connection
             with-store
+            with-store/non-blocking
             set-build-options
             set-build-options*
             valid-path?
@@ -462,12 +463,17 @@
                            (file file)
                            (errno errno))))))))
 
-(define (open-unix-domain-socket file)
+(define* (open-unix-domain-socket file #:key non-blocking?)
   "Connect to the Unix-domain socket at FILE and return it.  Raise a
-'&store-connection-error' upon error."
+'&store-connection-error' upon error.  If NON-BLOCKING?, make the socket
+non-blocking."
   (let ((s (with-fluids ((%default-port-encoding #f))
              ;; This trick allows use of the `scm_c_read' optimization.
-             (socket PF_UNIX (logior SOCK_STREAM SOCK_CLOEXEC) 0)))
+             (socket PF_UNIX
+                     (if non-blocking?
+                         (logior SOCK_STREAM SOCK_CLOEXEC SOCK_NONBLOCK)
+                         (logior SOCK_STREAM SOCK_CLOEXEC))
+                     0)))
         (a (make-socket-address PF_UNIX file)))
 
     (system-error-to-connection-error file
@@ -478,9 +484,10 @@
   ;; Default port when connecting to a daemon over TCP/IP.
   44146)
 
-(define (open-inet-socket host port)
+(define* (open-inet-socket host port #:key non-blocking?)
   "Connect to the Unix-domain socket at HOST:PORT and return it.  Raise a
-'&store-connection-error' upon error."
+'&store-connection-error' upon error.  If NON-BLOCKING?, make the socket
+non-blocking."
   (define addresses
     (getaddrinfo host
                  (if (number? port) (number->string port) port)
@@ -495,7 +502,10 @@
       ((ai rest ...)
        (let ((s (socket (addrinfo:fam ai)
                         ;; TCP/IP only
-                        (logior SOCK_STREAM SOCK_CLOEXEC) IPPROTO_IP)))
+                        (if non-blocking?
+                            (logior SOCK_STREAM SOCK_CLOEXEC SOCK_NONBLOCK)
+                            (logior SOCK_STREAM SOCK_CLOEXEC))
+                        IPPROTO_IP)))
 
          (catch 'system-error
            (lambda ()
@@ -514,50 +524,49 @@
                                     (errno (system-error-errno args)))))
                  (loop rest)))))))))
 
-(define (connect-to-daemon uri)
-  "Connect to the daemon at URI, a string that may be an actual URI or a file
-name, and return an input/output port.
+(define* (connect-to-daemon uri-or-filename #:key non-blocking?)
+  "Connect to the daemon at URI-OR-FILENAME and return an input/output port.
+If NON-BLOCKING?, use a non-blocking socket when using the file, unix or guix
+URI schemes.
 
 This is a low-level procedure that does not perform the initial handshake with
 the daemon.  Use 'open-connection' for that."
   (define (not-supported)
     (raise (condition (&store-connection-error
-                       (file uri)
+                       (file uri-or-filename)
                        (errno ENOTSUP)))))
 
-  (define connect
-    (match (string->uri uri)
-      (#f                                         ;URI is a file name
-       open-unix-domain-socket)
-      ((? uri? uri)
-       (match (uri-scheme uri)
-         ((or #f 'file 'unix)
-          (lambda (_)
-            (open-unix-domain-socket (uri-path uri))))
-         ('guix
-          (lambda (_)
-            (open-inet-socket (uri-host uri)
-                              (or (uri-port uri) %default-guix-port))))
-         ((? symbol? scheme)
-          ;; Try to dynamically load a module for SCHEME.
-          ;; XXX: Errors are swallowed.
-          (match (false-if-exception
-                  (resolve-interface `(guix store ,scheme)))
-            ((? module? module)
-             (match (false-if-exception
-                     (module-ref module 'connect-to-daemon))
-               ((? procedure? connect)
-                (lambda (_)
-                  (connect uri)))
-               (x (not-supported))))
-            (#f (not-supported))))
-         (x
-          (not-supported))))))
-
-  (connect uri))
+  (match (string->uri uri-or-filename)
+    (#f                                 ;URI is a file name
+     (open-unix-domain-socket uri-or-filename
+                              #:non-blocking? non-blocking?))
+    ((? uri? uri)
+     (match (uri-scheme uri)
+       ((or #f 'file 'unix)
+        (open-unix-domain-socket (uri-path uri)
+                                 #:non-blocking? non-blocking?))
+       ('guix
+        (open-inet-socket (uri-host uri)
+                          (or (uri-port uri) %default-guix-port)
+                          #:non-blocking? non-blocking?))
+       ((? symbol? scheme)
+        ;; Try to dynamically load a module for SCHEME.
+        ;; XXX: Errors are swallowed.
+        (match (false-if-exception
+                (resolve-interface `(guix store ,scheme)))
+          ((? module? module)
+           (match (false-if-exception
+                   (module-ref module 'connect-to-daemon))
+             ((? procedure? connect)
+              (connect uri))
+             (x (not-supported))))
+          (#f (not-supported))))
+       (x
+        (not-supported))))))
 
 (define* (open-connection #:optional (uri (%daemon-socket-uri))
-                          #:key port (reserve-space? #t) cpu-affinity)
+                          #:key port (reserve-space? #t) cpu-affinity
+                          non-blocking? built-in-builders)
   "Connect to the daemon at URI (a string), or, if PORT is not #f, use it as
 the I/O port over which to communicate to a build daemon.
 
@@ -565,7 +574,11 @@ When RESERVE-SPACE? is true, instruct it to reserve a little bit of extra
 space on the file system so that the garbage collector can still operate,
 should the disk become full.  When CPU-AFFINITY is true, it must be an integer
 corresponding to an OS-level CPU number to which the daemon's worker process
-for this connection will be pinned.  Return a server object."
+for this connection will be pinned.  If NON-BLOCKING?, use a non-blocking
+socket when using the file, unix or guix URI schemes.  If
+BUILT-IN-BUILDERS is provided, it should be a list of strings
+and this will be used instead of the builtin builders provided by the build
+daemon.  Return a server object."
   (define (handshake-error)
     (raise (condition
             (&store-connection-error (file (or port uri))
@@ -577,7 +590,8 @@ for this connection will be pinned.  Return a server object."
              ;; really a connection error.
              (handshake-error)))
     (let*-values (((port)
-                   (or port (connect-to-daemon uri)))
+                   (or port (connect-to-daemon
+                             uri #:non-blocking? non-blocking?)))
                   ((output flush)
                    (buffering-output-port port
                                           (make-bytevector 8192))))
@@ -598,8 +612,10 @@ for this connection will be pinned.  Return a server object."
               (write-int cpu-affinity port)))
           (when (>= (protocol-minor v) 11)
             (write-int (if reserve-space? 1 0) port))
-          (letrec* ((built-in-builders
-                     (delay (%built-in-builders conn)))
+          (letrec* ((actual-built-in-builders
+                     (if built-in-builders
+                         (delay built-in-builders)
+                         (delay (%built-in-builders conn))))
                     (caches
                      (make-vector
                       (atomic-box-ref %store-connection-caches)
@@ -612,15 +628,19 @@ for this connection will be pinned.  Return a server object."
                                              (make-hash-table 100)
                                              (make-hash-table 100)
                                              caches
-                                             built-in-builders)))
+                                             actual-built-in-builders)))
             (let loop ((done? (process-stderr conn)))
               (or done? (process-stderr conn)))
             conn))))))
 
 (define* (port->connection port
-                           #:key (version %protocol-version))
+                           #:key (version %protocol-version)
+                           built-in-builders)
   "Assimilate PORT, an input/output port, and return a connection to the
-daemon, assuming the given protocol VERSION.
+daemon, assuming the given protocol VERSION.  If
+BUILT-IN-BUILDERS is provided, it should be a list of strings
+and this will be used instead of the builtin builders provided by the build
+daemon.
 
 Warning: this procedure assumes that the initial handshake with the daemon has
 already taken place on PORT and that we're just continuing on this established
@@ -637,7 +657,9 @@ connection.  Use with care."
                               (make-vector
                                (atomic-box-ref %store-connection-caches)
                                vlist-null)
-                              (delay (%built-in-builders connection))))
+                              (if built-in-builders
+                                  (delay built-in-builders)
+                                  (delay (%built-in-builders connection)))))
 
     connection))
 
@@ -657,9 +679,10 @@ connection.  Use with care."
   "Close the connection to SERVER."
   (close (store-connection-socket server)))
 
-(define (call-with-store proc)
-  "Call PROC with an open store connection."
-  (let ((store (open-connection)))
+(define* (call-with-store proc #:key non-blocking?)
+  "Call PROC with an open store connection.  Pass NON-BLOCKING? to
+open-connection."
+  (let ((store (open-connection #:non-blocking? non-blocking?)))
     (define (thunk)
       (parameterize ((current-store-protocol-version
                       (store-connection-version store)))
@@ -677,6 +700,11 @@ connection.  Use with care."
   "Bind STORE to an open connection to the store and evaluate EXPs;
 automatically close the store when the dynamic extent of EXP is left."
   (call-with-store (lambda (store) exp ...)))
+
+(define-syntax-rule (with-store/non-blocking store exp ...)
+  "Bind STORE to an non-blocking open connection to the store and evaluate
+EXPs; automatically close the store when the dynamic extent of EXP is left."
+  (call-with-store (lambda (store) exp ...) #:non-blocking? #t))
 
 (define current-store-protocol-version
   ;; Protocol version of the store currently used.  XXX: This is a hack to

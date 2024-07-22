@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016-2021, 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016-2021, 2023, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
@@ -82,6 +82,7 @@
 ;;; Copyright © 2023 Wilko Meyer <w@wmeyer.eu>
 ;;; Copyright © 2024 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2024 Sébastien Lerique <sl@eauchat.org>
+;;; Copyright © 2024 James Smith <jsubuntuxp@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1850,7 +1851,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
 (define-public opensurge
   (package
     (name "opensurge")
-    (version "0.6.0.3")
+    (version "0.6.1.1")
     (source
      (origin
        (method git-fetch)
@@ -1859,7 +1860,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yia2qcva741a64qpls8a59lvnx5vynqkk2i3arkflw6f1m1vb55"))))
+        (base32 "1hwnjgkbywspmsmpmmnndqil86qqyd21y2q5krs8znwi35ychd3q"))))
     (build-system cmake-build-system)
     (arguments
      (list #:tests? #f ; there are no tests
@@ -1891,7 +1892,7 @@ shadow mimic them to reach blocks you couldn't reach alone.")
                                  "Roboto-Bold.ttf"
                                  "Roboto-Medium.ttf"))))))))
     (inputs
-     (list allegro font-google-roboto surgescript xdg-utils))
+     (list allegro font-google-roboto mesa physfs surgescript xdg-utils))
     (home-page "https://opensurge2d.org")
     (synopsis "2D retro side-scrolling game")
     (description "@code{Open Surge} is a 2D retro side-scrolling platformer
@@ -6732,8 +6733,8 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
     (license license:gpl2+)))
 
 (define-public freegish
-  (let ((commit "21977ee5fc2008231b35160df00efe954c508b16")
-        (revision "2"))
+  (let ((commit "caf58a2f990a939230bab82226e29cd79732f366")
+        (revision "3"))
     (package
       (name "freegish")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -6745,7 +6746,7 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1qh0gcnbyxyzmb13jifwba4xrzj94m4w9whdvl0gnds6ricmwply"))
+                  "0980ad8xg0bzm6507bq9sbgw03i7jj33g0f955g0q8jvpb22r65v"))
                 (modules '((guix build utils)))
                 ;; The audio files in the "music" directory are licensed under
                 ;; CC-BY-NC, so we delete them.
@@ -6757,25 +6758,14 @@ Magic, Egypt, Indians, Norsemen, Persian or Romans.")
       (arguments
        `(#:tests? #f ; no tests included
          #:configure-flags
-         (list "-DCMAKE_INSTALL_FHS=ON")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'set-DATAPATH
-             (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* "CMakeLists.txt"
-                 (("^option\\(INSTALL_FHS" line)
-                  (string-append "add_definitions(-DDATAPATH=\""
-                                 (assoc-ref outputs "out") "/share/freegish\")\n"
-                                 line)))
-               #t)))))
+         (list "-DINSTALL_FHS=ON")))
       (inputs
-       (list (sdl-union (list sdl sdl-mixer))
+       (list sdl2
              openal
              libvorbis
              libogg
              mesa
-             libpng
-             zlib))
+             libpng))
       (home-page "https://github.com/freegish/freegish")
       (synopsis "Side-scrolling physics platformer with a ball of tar")
       (description "In FreeGish you control Gish, a ball of tar who lives
@@ -7381,7 +7371,7 @@ fight against their plot and save his fellow rabbits from slavery.")
            fmt
            freetype
            gloox
-           icu4c-68
+           icu4c
            libidn
            libpng
            libsodium
@@ -7504,7 +7494,7 @@ at their peak of economic growth and military prowess.
 (define-public open-adventure
   (package
     (name "open-adventure")
-    (version "1.18")
+    (version "1.19")
     (source
      (origin
        (method git-fetch)
@@ -7513,7 +7503,7 @@ at their peak of economic growth and military prowess.
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zl72lsp443aryzmwzh5w4j439jgf5njvh9xig6vjvmzhfcjkk9q"))))
+        (base32 "19nspsvkzh3xw70mwlvralfr2ia7a8knd9s7x7abmjvk8p5rx468"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -7679,32 +7669,30 @@ abilities and powers.")
 (define-public quakespasm
   (package
     (name "quakespasm")
-    (version "0.93.2")
+    (version "0.96.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/quakespasm/Source/quakespasm-"
-                           version ".tgz"))
+                           version ".tar.gz"))
        (sha256
-        (base32 "0qm0j5drybvvq8xadfyppkpk3rxqsxbywzm6iwsjwdf0iia3gss5"))))
+        (base32 "0hr58w1d2yw82vm9lkln05z6d4sjlcr6grxhf6sqdqwyfy9nv1mw"))))
     (arguments
-     `(#:tests? #f
-       #:make-flags '("CC=gcc"
-                      "MP3LIB=mpg123"
-                      "USE_CODEC_FLAC=1"
-                      "USE_CODEC_MIKMOD=1"
-                      "USE_SDL2=1"
-                      "-CQuake")
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'unpack 'fix-makefile-paths
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (mkdir-p (string-append out "/bin"))
-                        (substitute* "Quake/Makefile"
-                          (("/usr/local/games")
-                           (string-append out "/bin")))
-                        #t))))))
+     (list #:tests? #f
+           #:make-flags #~(list (string-append "CC=" #$(cc-for-target))
+                                "MP3LIB=mpg123"
+                                "USE_CODEC_FLAC=1"
+                                "USE_CODEC_MIKMOD=1"
+                                "USE_SDL2=1"
+                                "-CQuake")
+           #:phases #~(modify-phases %standard-phases
+                        (delete 'configure)
+                        (add-after 'unpack 'fix-makefile-paths
+                          (lambda _
+                            (mkdir-p (string-append #$output "/bin"))
+                            (substitute* "Quake/Makefile"
+                              (("/usr/local/games")
+                               (string-append #$output "/bin"))))))))
     (build-system gnu-build-system)
     (inputs (list libmikmod
                   libvorbis
@@ -7778,14 +7766,14 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
 (define-public yamagi-quake2
   (package
     (name "yamagi-quake2")
-    (version "7.45")
+    (version "8.30")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://deponie.yamagi.org/quake2/quake2-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0rgz8x7lzd0zb0xqd0gvnf2641nr9xpfm6v14mgh99hspxklaln7"))))
+        (base32 "11lv22y5ccd80iyhk6zj94wligcbx6x5vwbqh3jkgz96v0x5dng2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -7885,22 +7873,20 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
        (sha256
         (base32
          "1ag2cp346f9bz9qy6za6q54id44d2ypvkyhvnjha14qzzapwaysj"))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         ;; There is no "install" phase.  By default, tbe is installed
-         ;; in the build directory.  Provide our own installation.
-         (replace 'install
+         (add-after 'unpack 'set-cmake-install-prefix
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (share (string-append out "/share")))
-               (install-file "usr/games/tbe" bin)
-               (mkdir-p share)
-               (copy-recursively "usr/share" share)
-               #t))))
+             (substitute* "CMakeLists.txt"
+               (("/usr") (assoc-ref outputs "out"))
+               (("TBE_BIN_DIR     games") "TBE_BIN_DIR     bin"))))
+         (add-after 'unpack 'disable-translations
+           ;; TODO: Re-enable translations when they no longer fail to build.
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               ((".*i18n.*") "")))))
        ;; Test suite requires a running Xorg server. Even when
        ;; provided, it fails with "D-Bus library appears to be
        ;; incorrectly set up; failed to read machine uuid: Failed to
@@ -7910,8 +7896,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
     (inputs
      (list qtbase-5 qtsvg-5))
     (native-inputs
-     `(("cmake" ,cmake-minimal)
-       ("gettext-minimal" ,gettext-minimal)
+     `(("gettext-minimal" ,gettext-minimal)
        ("qttools-5" ,qttools-5)))
     (synopsis "Realistic physics puzzle game")
     (description "The Butterfly Effect (tbe) is a game that uses
@@ -8179,7 +8164,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public odamex
   (package
     (name "odamex")
-    (version "10.4.0")
+    (version "10.5.0")
     (source
      (origin
        (method url-fetch)
@@ -8187,7 +8172,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
              "mirror://sourceforge/odamex/Odamex/" version "/"
              "odamex-src-" version ".tar.xz"))
        (sha256
-        (base32 "1isrmki18471yry48mmm7lxzp1kiqma9cc7fx38cvpm2mpgfyvzk"))
+        (base32 "151dr6gygznqmp2m9wzilbrmr71lka6pwaz53lb835ry8wq3y210"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -10781,14 +10766,14 @@ get high scores.")
 (define-public burgerspace
   (package
     (name "burgerspace")
-    (version "1.9.5")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://perso.b2b2c.ca/~sarrazip/dev/"
                            "burgerspace-" version ".tar.gz"))
        (sha256
-        (base32 "1r2albqv2ygs58rwcldsx1mp2vy96j7k4yw5jjmvwgnxjmddq7wr"))))
+        (base32 "18ydm3014y9vhma0ml7z66xa7ihiz3xr8izicfdd3xl9f4535f6c"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
@@ -11471,7 +11456,7 @@ play; it will look for them at @file{~/.local/share/fheroes2} folder.")
 (define-public vcmi
   (package
     (name "vcmi")
-    (version "1.4.5")
+    (version "1.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11480,11 +11465,11 @@ play; it will look for them at @file{~/.local/share/fheroes2} folder.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1z4vy3drj6dra8rb243pyryr61jnlw3l7yxsxwl9rddv8cdk69lz"))
+                "1s3a23p9k081ccbkhvifx2rhg6rv82fkrsbjh6allmmsa1lhq6fd"))
               (patches (search-patches "vcmi-disable-privacy-breach.patch"))))
     (build-system cmake-build-system)
     (arguments
-     (list #:configure-flags #~(list "-DFORCE_BUNDLED_FL=OFF")
+     (list #:configure-flags #~(list "-DFORCE_BUNDLED_FL=OFF" "-DENABLE_INNOEXTRACT=OFF")
            ;; Test suites do not seem well supported upstream and are disabled by default.
            ;; Pass -DENABLE_TEST to configure to enable.
            #:tests? #f))

@@ -71,6 +71,9 @@
 ;;; Copyright © 2024 chris <chris@bumblehead.com>
 ;;; Copyright © 2024 Erik Eduardo Alonso Hernández <erik@erikeduardo.xyz>
 ;;; Copyright © 2024 James Smith <jsubuntuxp@disroot.org>
+;;; Copyright © 2024 bigbug <bigbookofbug@proton.me>
+;;; Copyright © 2024 dan <i@dan.games>
+;;; Copyright © 2024 Wamm K. D. <jaft.r@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,6 +147,7 @@
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mpd)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages music)
@@ -814,7 +818,7 @@ desktop environment.")
 (define-public icewm
   (package
     (name "icewm")
-    (version "3.4.7")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -822,7 +826,7 @@ desktop environment.")
                     version "/icewm-" version ".tar.lz"))
               (sha256
                (base32
-                "0c1c9qwaq9kdlma5kfqzjzzm6wk3bww6b7mw4b3j76fn7ms4982s"))))
+                "0fjxpc46nlv91ijbxkyk33rlwbg2gd9xkr2mikimrba07zahfns5"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (inputs (list fontconfig
@@ -873,37 +877,17 @@ manager and a system tray.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.17.1")
-    (source (origin
-              (method url-fetch)
-              (uri (hackage-uri "xmonad" version))
-              (sha256
-               (base32
-                "1apqwyqmc51gamfgsvlanzqqig9qvjss89ibcamhnha1gs1k4jl8"))
-              (patches (search-patches "xmonad-dynamic-linking.patch"))))
+    (version "0.17.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (hackage-uri "xmonad" version))
+       (sha256
+        (base32 "19qz9a23377nzc0qq8nca45s745mfncd4i2vwba14gi7ipipfcil"))))
     (build-system haskell-build-system)
     (properties '((upstream-name . "xmonad")))
     (inputs (list ghc-x11 ghc-data-default-class ghc-setlocale))
     (native-inputs (list ghc-quickcheck ghc-quickcheck-classes))
-    (arguments
-      (list
-       #:phases
-       #~(modify-phases %standard-phases
-           (add-after 'install 'install-xsession
-             (lambda _
-               (let ((xsessions (string-append #$output "/share/xsessions")))
-                 (mkdir-p xsessions)
-                 (call-with-output-file (string-append xsessions
-                                                       "/xmonad.desktop")
-                  (lambda (port)
-                    (format port "~
-                     [Desktop Entry]~@
-                     Name=~a~@
-                     Comment=xmonad window manager~@
-                     Exec=~a/bin/xmonad~@
-                     Type=Application~%" #$name #$output)))))))
-       #:cabal-revision '("2"
-                          "1rgwrnyb7kijzl2mqm8ks2nydh37q5vkbg4400rg9n6x13w2r9b3")))
     (home-page "http://xmonad.org")
     (synopsis "Tiling window manager")
     (description
@@ -963,7 +947,11 @@ tiled on several screens.")
          (add-before 'build 'patch-test-shebang
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "test/Xmobar/Plugins/Monitors/AlsaSpec.hs"
-               (("/bin/bash") (which "bash"))))))))
+               (("/bin/bash") (which "bash")))))
+         (add-before 'build 'patch-cairo-path
+           (lambda _
+             (substitute* "src/Xmobar/X11/CairoSurface.hsc"
+               (("cairo/cairo-xlib.h") "cairo-xlib.h")))))))
     (home-page "https://xmobar.org")
     (synopsis "Haskell library for minimalistic text based status bars")
     (description
@@ -1168,7 +1156,7 @@ the XDG Autostart specification.")
 (define-public fnott
   (package
     (name "fnott")
-    (version "1.4.1")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1177,9 +1165,15 @@ the XDG Autostart specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fmjvmsm2ikcmdzrf6xwyq6vxb9p1dd3bhvz3bvi7q7rb2g8h8pi"))))
+                "04g1d0app9lpvzq3gxs7qjkd9zgbrmlvfy2n3h464r46j0wpgsx2"))))
     (build-system meson-build-system)
-    (arguments `(#:build-type "release"))
+    (arguments `(#:build-type "release"
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'patch-dbus-install-dir
+                     (lambda _
+                       (substitute* "dbus/meson.build"
+                         (("^.*pkgconfig.*$") "")))))))
     (native-inputs
      (list pkg-config
            wayland-protocols
@@ -2227,7 +2221,7 @@ compository, supporting the following featuers:
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.10.0")
+    (version "0.10.3")
     (source
      (origin
        (method git-fetch)
@@ -2236,7 +2230,7 @@ compository, supporting the following featuers:
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00a8npilvcvicn9mff00i5rdzdll0zrmq0y8wgr314gnljn52md7"))))
+        (base32 "04xd61ycn1nisq1s5ch14zkbsjcfcy6n29nkjn68s2ribmws0iid"))))
     (build-system meson-build-system)
     (arguments
      (list #:configure-flags #~(list "--wrap-mode=nodownload")))
@@ -2365,7 +2359,7 @@ compositors that support the layer-shell protocol.")
 (define-public kanshi
   (package
     (name "kanshi")
-    (version "1.5.1")
+    (version "1.6.0")
     (source
      (origin
        (method git-fetch)
@@ -2374,10 +2368,10 @@ compositors that support the layer-shell protocol.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mc2zcqsv79y7682nwi1gn8p751zwflm9zirl98v2q2kvx334k8a"))))
+        (base32 "10ym28xkxbs6nkjk3clb680815606c42vagbshd9qs9cvc8zncra"))))
     (build-system meson-build-system)
     (inputs (list wayland))
-    (native-inputs (list pkg-config scdoc))
+    (native-inputs (list pkg-config scdoc libscfg))
     (home-page "https://wayland.emersion.fr/kanshi")
     (synopsis "Hotswappable output profiles for Wayland")
     (description "Kanshi allows you to define output profiles that are
@@ -2433,7 +2427,6 @@ wlr-output-management-unstable-v1 protocol.")
      (list sbcl-alexandria
            sbcl-cl-ppcre
            sbcl-clx))
-    (outputs '("out" "lib"))
     (arguments
      (list
       #:phases
@@ -2446,12 +2439,12 @@ wlr-output-management-unstable-v1 protocol.")
           (add-after 'create-asdf-configuration 'build-program
             (lambda* (#:key outputs #:allow-other-keys)
               (build-program
-               (string-append (assoc-ref outputs "out") "/bin/stumpwm")
+               (string-append #$output "/bin/stumpwm")
                outputs
                #:entry-program '((stumpwm:stumpwm) 0))))
           (add-after 'build-program 'create-desktop-file
             (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
+              (let* ((out #$output)
                      (xsessions (string-append out "/share/xsessions")))
                 (mkdir-p xsessions)
                 (call-with-output-file
@@ -2468,7 +2461,7 @@ wlr-output-management-unstable-v1 protocol.")
                        out))))))
           (add-after 'install 'install-manual
             (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
-              (let* ((out  (assoc-ref outputs "out"))
+              (let* ((out  #$output)
                      (info (string-append out "/share/info")))
                 (invoke "./autogen.sh")
                 (invoke "sh" "./configure" "SHELL=sh")
@@ -2476,8 +2469,7 @@ wlr-output-management-unstable-v1 protocol.")
                 (install-file "stumpwm.info" info))))
           (add-after 'install-manual 'remove-temporary-cache
             (lambda* (#:key outputs #:allow-other-keys)
-              (delete-file-recursively (string-append (assoc-ref outputs "lib")
-                                                      "/.cache")))))))
+              (delete-file-recursively (string-append #$output "/.cache")))))))
     (synopsis "Window manager written in Common Lisp")
     (description
      "Stumpwm is a window manager written entirely in Common Lisp.
@@ -2497,10 +2489,8 @@ productive, customizable lisp based systems.")
   (package
     (inherit stumpwm)
     (name "stumpwm-with-slynk")
-    (outputs '("out"))
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("slynk" ,sbcl-slynk)))
+     (list sbcl-slynk stumpwm))
     (arguments
      (substitute-keyword-arguments (package-arguments stumpwm)
        ((#:phases phases)
@@ -2515,8 +2505,7 @@ productive, customizable lisp based systems.")
                                 #:dependencies '("stumpwm" "slynk")
                                 #:dependency-prefixes
                                 (map (lambda (input) (assoc-ref inputs input))
-                                     '("stumpwm" "slynk")))
-                 #t)))
+                                     '("stumpwm" "sbcl-slynk"))))))
            (delete 'copy-source)
            (delete 'build)
            (delete 'check)
@@ -2540,7 +2529,7 @@ productive, customizable lisp based systems.")
           (base32 "1g8h2vd5qsmaiz6ixlx9ykrv6a08izmkf0js18fvljvznpyhsznz"))))
       (build-system asdf-build-system/sbcl)
       (inputs
-       `(("stumpwm" ,stumpwm "lib")))
+       (list stumpwm))
       (home-page "https://github.com/stumpwm/stumpwm-contrib")
       (synopsis "StumpWM extra modules")
       (description "This package provides extra modules for StumpWM.")
@@ -2585,7 +2574,7 @@ productive, customizable lisp based systems.")
                 (sha256
                  (base32
                   "0djcrr16bx40l7b60d4j507vk5l42fdgmjpgrnk86z1ba8wlqim8"))))
-      (inputs (list pamixer `(,stumpwm "lib")))
+      (inputs (list pamixer stumpwm))
       (build-system asdf-build-system/sbcl)
       (arguments
        (list #:asd-systems ''("pamixer")
@@ -2605,13 +2594,29 @@ productive, customizable lisp based systems.")
 control module for StumpWM.")
       (license license:gpl3))))
 
+(define-public sbcl-stumpwm-binwarp
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-binwarp")
+    (arguments
+     '(#:asd-systems '("binwarp")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "util/binwarp"))))))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "Keyboard-driven divide-and-conquer mouse control mode")
+    (description "This package provides a keyboard-driven divide-and-conquer
+mouse control mode for StumpWM.")
+    (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
+
 (define-public sbcl-stumpwm-ttf-fonts
   (package
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-ttf-fonts")
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("clx-truetype" ,sbcl-clx-truetype)))
+     (list sbcl-clx-truetype stumpwm))
     (arguments
      '(#:asd-systems '("ttf-fonts")
        #:tests? #f
@@ -2723,9 +2728,7 @@ between windows.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir (lambda _ (chdir "modeline/stumptray") #t)))))
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("xembed" ,sbcl-clx-xembed)
-       ("alexandria" ,sbcl-alexandria)))
+     (list sbcl-alexandria sbcl-clx-xembed stumpwm))
     (home-page
      "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/stumptray")
     (synopsis "Modeline support for stumptray connectivity")
@@ -2800,9 +2803,7 @@ layouts in StumpWM.")
          (add-after 'unpack 'chdir
            (lambda _ (chdir "modeline/disk") #t)))))
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("cl-diskspace" ,sbcl-cl-diskspace)
-       ("cl-mount-info" ,sbcl-cl-mount-info)))
+     (list sbcl-cl-diskspace sbcl-cl-mount-info stumpwm))
     (home-page "https://github.com/stumpwm/stumpwm-contrib")
     (synopsis "StumpWM modeline support to show disk usage")
     (description "StumpWM modeline support to show disk usage")
@@ -2850,8 +2851,7 @@ one in Emacs.")
     (inherit stumpwm-contrib)
     (name "sbcl-stumpwm-screenshot")
     (inputs
-     `(("stumpwm" ,stumpwm "lib")
-       ("zpng" ,sbcl-zpng)))
+     (list sbcl-zpng stumpwm))
     (arguments
      '(#:asd-systems '("screenshot")
        #:tests? #f
@@ -2900,7 +2900,7 @@ modeline.")
      (list sbcl-bordeaux-threads
            sbcl-dbus
            sbcl-xml-emitter
-           (list stumpwm "lib")))
+           stumpwm))
     (arguments
      '(#:asd-systems '("notify")
        #:phases
@@ -2920,8 +2920,7 @@ by default.")
     (name "sbcl-stumpwm-battery-portable")
     (build-system asdf-build-system/sbcl)
     (inputs
-     (list sbcl-cl-ppcre
-           (list stumpwm "lib")))
+     (list sbcl-cl-ppcre stumpwm))
     (arguments
      '(#:asd-systems '("battery-portable")
        #:phases
@@ -3305,7 +3304,7 @@ read and write, and compatible with JSON.")
 (define-public labwc
   (package
     (name "labwc")
-    (version "0.7.1")
+    (version "0.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3314,14 +3313,14 @@ read and write, and compatible with JSON.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09j6p4p2c00rpcr65r6igj0llfablg5j2d1ys87kyh858dhajpza"))))
+                "1vlignyv9bczkc8xcmzaj4x88v072qhc79j2pjwnxy9xv0282d7i"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config gettext-minimal scdoc))
     (inputs
      (list cairo
            glib
-           librsvg
+           (librsvg-for-system)
            libxcb
            libxml2
            pango
@@ -3829,6 +3828,38 @@ notable features include:
 It is inspired by dwm and xmonad.")
       (license license:expat))))
 
+(define-public wbg
+  ;; This commit fixes a build error: https://codeberg.org/dnkl/wbg/issues/11
+  (let ((commit "dd36cce8c47bb0e17a789cf2bd95a51e29b59e78")
+        (revision "0"))
+    (package
+      (name "wbg")
+      (version (git-version "1.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://codeberg.org/dnkl/wbg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nsb8w3myprhnwr59i6g4nwkc8fx67d40l70svjmwfmhpqy6zc18"))))
+      (build-system meson-build-system)
+      (arguments
+       (list
+        #:build-type "release"
+        #:configure-flags #~(list "-Dpng=enabled"
+                                  "-Djpeg=enabled"
+                                  "-Dwebp=enabled")))
+      (native-inputs (list pkg-config tllist wayland-protocols))
+      (inputs (list libjpeg-turbo libpng libwebp pixman wayland))
+      (home-page "https://codeberg.org/dnkl/wbg")
+      (synopsis "Wallpaper application for Wayland compositors")
+      (description
+       "wbg is a super simple wallpaper application for Wayland compositors
+implementing the layer-shell protocol.")
+      (license license:expat))))
+
 (define-public wsbg
   (let ((commit "15b0d0f6910ea97b9bcc471695fac07270955dd2")
         (revision "0")
@@ -3856,7 +3887,7 @@ configuration."))))
 (define-public yambar-wayland
   (package
     (name "yambar-wayland")
-    (version "1.10.0")
+    (version "1.11.0")
     (home-page "https://codeberg.org/dnkl/yambar")
     (source
      (origin
@@ -3867,7 +3898,7 @@ configuration."))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14lxhgyyia7sxyqjwa9skps0j9qlpqi8y7hvbsaidrwmy4857czr"))))
+         "0c3sk2i14fcb0l95pvfnj2sx0vx4ql1vldhimfccbf2qj0r30b20"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -3895,4 +3926,26 @@ configuration."))))
      "@command{yambar} is a lightweight and configurable status panel (bar,
 for short) for X11 and Wayland, that goes to great lengths to be both CPU and
 battery efficient---polling is only done when absolutely necessary.")
+    (license license:expat)))
+
+(define-public wf-config
+  (package
+    (name "wf-config")
+    (version "0.8.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/WayfireWM/" name "/"))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256 (base32
+                       "07x6dapv2xyg0cn44dd2faw5gpk7mwfpbkpld9kyiaa9d44362z1"))))
+    (build-system meson-build-system)
+    (native-inputs (list pkg-config))
+    (inputs (list glm libxml2 wlroots libevdev))
+    (home-page "https://github.com/WayfireWM/wf-config")
+    (synopsis "Library for managing configuration files for Wayfire")
+    (description "The package provides a library for managing the
+configuration files of Wayifre.  It can set key and mouse bindings,
+configure input, and customize Wayfire plugins.")
     (license license:expat)))

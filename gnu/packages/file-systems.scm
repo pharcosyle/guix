@@ -13,6 +13,7 @@
 ;;; Copyright © 2022 Brian Cully <bjc@spork.org>
 ;;; Copyright © 2023 Aaron Covrig <aaron.covrig.us@ieee.org>
 ;;; Copyright © 2024 Ahmad Draidi <a.r.draidi@redscript.org>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1442,7 +1443,7 @@ with the included @command{xfstests-check} helper.")
 (define-public zfs
   (package
     (name "zfs")
-    (version "2.1.14")
+    (version "2.2.4")
     (outputs '("out" "module" "src"))
     (source
       (origin
@@ -1451,7 +1452,7 @@ with the included @command{xfstests-check} helper.")
                               "/download/zfs-" version
                               "/zfs-" version ".tar.gz"))
           (sha256
-           (base32 "0gzansmin40llxxh2zkgpdyp41ikd8s5hv5mpwhpcivk1q8fv7sh"))))
+           (base32 "1h0yqchirzsn2gll1w2gclb13hr8511z67lf85cigm43frgr144p"))))
     (build-system linux-module-build-system)
     (arguments
      (list
@@ -1500,12 +1501,6 @@ with the included @command{xfstests-check} helper.")
                              "man/man7/zpool-features.7")
                 (("/usr/share/zfs/compatibility.d")
                  (string-append #$output "/share/zfs/compatibility.d")))
-              (substitute* "etc/Makefile.in"
-                ;; This just contains an example configuration file for
-                ;; configuring ZFS on traditional init systems, skip it
-                ;; since we cannot use it anyway; the install target becomes
-                ;; misdirected.
-                (("= default ") "= "))
               (substitute* "lib/libzfs/os/linux/libzfs_util_os.c"
                 ;; Use path to /gnu/store/*-kmod in actual path that is
                 ;; exec'ed.
@@ -1516,9 +1511,17 @@ with the included @command{xfstests-check} helper.")
                 ;; Just use 'modprobe' in message to user, since Guix
                 ;; does not have a traditional /sbin/
                 (("'/sbin/modprobe ") "'modprobe "))
-              (substitute* "contrib/Makefile.in"
-                ;; This is not configurable nor is its hard-coded /usr prefix.
-                ((" initramfs") ""))
+              (substitute* "configure"
+                (("/etc/default")
+                 (string-append #$output "/etc/default"))
+                (("/etc/bash_completion.d")
+                 (string-append #$output "/etc/bash_completion.d")))
+              (substitute* "Makefile.in"
+                (("/usr/share/initramfs-tools")
+                 (string-append #$output "/usr/share/initramfs-tools")))
+              (substitute* "contrib/initramfs/Makefile.am"
+                (("/usr/share/initramfs-tools")
+                 (string-append #$output "/usr/share/initramfs-tools")))
               (substitute* "module/os/linux/zfs/zfs_ctldir.c"
                 (("/usr/bin/env\", \"umount")
                  (string-append (search-input-file inputs "/bin/umount")
@@ -1535,18 +1538,15 @@ with the included @command{xfstests-check} helper.")
               (substitute* "config/zfs-build.m4"
                 (("\\$sysconfdir/init.d")
                  (string-append #$output "/etc/init.d")))
-              (substitute* '("etc/zfs/Makefile.am"
-                             "cmd/zed/Makefile.am")
+              (substitute* '("cmd/zed/Makefile.am")
                 (("\\$\\(sysconfdir)") (string-append #$output "/etc")))
-              (substitute* "cmd/vdev_id/vdev_id"
+              (substitute* "udev/vdev_id"
                 (("PATH=/bin:/sbin:/usr/bin:/usr/sbin")
                  (string-append "PATH="
                                 (dirname (which "chmod")) ":"
                                 (dirname (which "grep")) ":"
                                 (dirname (which "sed")) ":"
                                 (dirname (which "gawk")))))
-              (substitute* "contrib/pyzfs/Makefile.in"
-                ((".*install-lib.*") ""))
               (substitute* '("Makefile.am" "Makefile.in")
                 (("\\$\\(prefix)/src") (string-append #$output:src "/src")))
               (substitute* (find-files "udev/rules.d/" ".rules.in$")
@@ -1955,17 +1955,43 @@ memory-efficient.")
          "0834hah7p6ad81w60ifnxyh9zn09ddfgrll04kwjxwp7ypbv38wq"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/oniony/TMSU"
-       #:unpack-path ".."
-       #:install-source? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; The go build system produces /bin/TMSU -> install as /bin/tmsu
-               (rename-file (string-append out "/bin/TMSU")
-                            (string-append out "/bin/tmsu"))))))))
+     (list
+      #:import-path "github.com/oniony/TMSU"
+      #:unpack-path "github.com/oniony/TMSU"
+      #:install-source? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'adjust-makefile
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (substitute* "Makefile"
+                  (("SHELL=.*") (string-append "SHELL=" (which "sh") "\n"))
+                  ;; Make sure we do not compile 2 more times during the check
+                  ;; phase.
+                  (("unit-test: compile") "unit-test:")
+                  (("integration-test: compile") "integration-test:")
+                  ;; Simplify install path.
+                  (("usr/") "")))))
+          (replace 'build
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (invoke "make" "compile"))))
+          (replace 'check
+            (lambda* (#:key import-path tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  ;; Remove shaky test file, see
+                  ;; <https://github.com/oniony/TMSU/issues/281>.
+                  (for-each
+                   (lambda (test-file)
+                     (delete-file test-file))
+                   (find-files "." "^fingerprinter_test.go$"))
+                  (invoke "make" "test")))))
+          (replace 'install
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (setenv "DESTDIR" #$output)
+                (invoke "make" "install")))))))
     (inputs
      (list go-github-com-mattn-go-sqlite3 go-github-com-hanwen-fuse))
     (home-page "https://github.com/oniony/TMSU")

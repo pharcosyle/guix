@@ -23,7 +23,7 @@
 ;;; Copyright © 2021 Hong Li <hli@mdc-berlin.de>
 ;;; Copyright © 2021, 2022, 2023 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
-;;; Copyright © 2022, 2023 Navid Afkhami <navid.afkhami@mdc-berlin.de>
+;;; Copyright © 2022, 2023, 2024 Navid Afkhami <navid.afkhami@mdc-berlin.de>
 ;;; Copyright © 2022 Antero Mejr <antero@mailbox.org>
 ;;; Copyright © 2024 Alexis Simon <alexis.simon@runbox.com>
 ;;;
@@ -577,6 +577,7 @@ BED, GFF/GTF, VCF.")
     (description
      "BitMapperBS is memory-efficient aligner that is designed for
 whole-genome bisulfite sequencing (WGBS) reads from directional protocol.")
+    (supported-systems '("x86_64-linux"))
     (license license:asl2.0)))
 
 (define-public bustools
@@ -722,6 +723,83 @@ alignment-free, it runs much faster and also easier to use.")
      "The pbcopper library provides a suite of data structures, algorithms,
 and utilities for PacBio C++ applications.")
     (license license:bsd-3)))
+
+(define-public r-anndatar
+  (let ((commit "5c3eb7e498d0d9bf1c522ad66f4eb8ad277238b6")
+        (revision "1"))
+    (package
+      (name "r-anndatar")
+      (version (git-version "0.99.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/scverse/anndataR")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0sx87i8cb4p08ihgpgflxs0fhkr1kw6lxvky4w766rq7wqy41cgk"))))
+      (properties `((upstream-name . "anndataR")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-matrix r-r6))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/scverse/anndataR")
+      (synopsis "AnnData interoperability in R")
+      (description
+       "This package aims to bring the power and flexibility of @code{AnnData}
+to the R ecosystem, allowing you to effortlessly manipulate and analyze your
+single-cell data.  This package lets you work with backed h5ad and zarr files,
+directly access various slots (e.g. X, obs, var), or convert the data into
+@code{SingleCellExperiment} and Seurat objects.")
+      (license license:expat))))
+
+(define-public r-anpan
+  (let ((commit "286b88dcf5e9e963a595482139aade154ee1dc86")
+        (revision "1"))
+    (package
+      (name "r-anpan")
+      (version (git-version "0.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/biobakery/anpan")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10nw5v69gn4pxb4g5gd8nh9r1ywd6yczapl3dpdfms0434wcmkxm"))))
+      (properties `((upstream-name . "anpan")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-ape
+                               r-cmdstanr
+                               r-data-table
+                               r-dplyr
+                               r-fastglm
+                               r-furrr
+                               r-future
+                               r-ggdendro
+                               r-ggnewscale
+                               r-ggplot2
+                               r-loo
+                               r-mass
+                               r-patchwork
+                               r-phylogram
+                               r-posterior
+                               r-progressr
+                               r-purrr
+                               r-r-utils
+                               r-stringr
+                               r-tibble
+                               r-tidyselect))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/biobakery/anpan")
+      (synopsis "Quantifying microbial strain-host associations")
+      (description
+       "The goal of anpan is to consolidate statistical methods for strain
+analysis.  This includes automated filtering of metagenomic functional
+profiles, testing genetic elements for association with outcomes, phylogenetic
+association testing, and pathway-level random effects models.")
+      (license license:expat))))
 
 (define-public r-bedtorch
   (let ((commit "f5ff4f83b94f59eac660333c64e4b2f296b35cea")
@@ -1141,6 +1219,43 @@ from single-cell RNA-seq data.")
       ;; As of commit cedf8490a634da550cea2c831544e5f7f14467d2 the license is
       ;; GPLv3.
       (license license:gpl3))))
+
+(define-public r-scent
+  (let ((commit "f01f18ac30f8a9bcf85b738c6c7815017e2c8ee5")
+        (revision "1"))
+    (package
+      (name "r-scent")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/immunogenomics/SCENT")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "18krksy8ac7yy8hghzaxscj91c61j195yg7j60zswdq97islvfzi"))))
+      (properties `((upstream-name . "SCENT")))
+      (build-system r-build-system)
+      (inputs (list bedtools))
+      (propagated-inputs (list r-boot
+                               r-data-table
+                               r-hmisc
+                               r-lme4
+                               r-mass
+                               r-matrix
+                               r-r-utils
+                               r-stringr))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/immunogenomics/SCENT")
+      (synopsis
+       "Single-Cell enhancer target gene mapping for multimodal single-cell data")
+      (description
+       "This package contains functions for the SCENT algorithm.
+SCENT uses single-cell multimodal data and links ATAC-seq peaks
+to their target genes by modeling association between chromatin
+accessibility and gene expression across individual single cells.")
+      (license license:expat))))
 
 (define-public r-saige
   (let ((commit "c6717ba9c5a967bcf612e97566d845397b1b7167")
@@ -1938,6 +2053,53 @@ cell types.  Cell2cell is suitable for single-cell RNA sequencing
      "CellBender is a software package for eliminating technical artifacts
 from high-throughput single-cell RNA sequencing (scRNA-seq) data.")
     (license license:bsd-3)))
+
+(define-public python-celltypist
+  (package
+    (name "python-celltypist")
+    (version "1.6.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Teichlab/celltypist")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c42cx01zkxr0dk5f1d7q71qdi18v2smlc3wpvwyjlzplya7k2iy"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:tests? #false ;there are none
+      #:phases
+      '(modify-phases %standard-phases
+         (add-before 'check 'set-home
+           ;; The sanity check requires a HOME directory, because celltypist
+           ;; wants to write settings.
+           (lambda _ (setenv "HOME" "/tmp")))
+         ;; Numba needs a writable dir to cache functions.
+         (add-before 'build 'set-numba-cache-dir
+           (lambda _ (setenv "NUMBA_CACHE_DIR" "/tmp"))))))
+    (propagated-inputs
+     (list python-click
+           python-leidenalg
+           python-numpy
+           python-openpyxl
+           python-pandas
+           python-scanpy
+           python-scikit-learn
+           python-requests))
+    (home-page "https://github.com/Teichlab/celltypist")
+    (synopsis "Tool for semi-automatic cell type classification")
+    (description
+     "CellTypist is an automated cell type annotation tool for scRNA-seq
+datasets on the basis of logistic regression classifiers optimised by the
+stochastic gradient descent algorithm.  CellTypist allows for cell prediction
+using either built-in (with a current focus on immune sub-populations) or
+custom models, in order to assist in the accurate classification of different
+cell types and subtypes.")
+    (license license:expat)))
 
 (define-public python-cmseq
   (package
@@ -4352,6 +4514,102 @@ It is designed to provide functionality to load, process, and store multimodal
 omics data.")
     (license license:bsd-3)))
 
+(define-public python-mofapy2
+  (package
+    (name "python-mofapy2")
+    (version "0.7.1")
+    (source
+     (origin
+       ;; The tarball from PyPi doesn't include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bioFAM/mofapy2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ahhnqk6gjrhyq286mrd5n7mxcv8l6040ffsawbjx9maqx8wbam0"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      ;; cupy is an optional dependency, which
+      ;; itself has nonfree dependencies (CUDA)
+      '(list "--ignore=mofapy2/notebooks/test_cupy.py")))
+    (propagated-inputs (list python-anndata
+                             python-h5py
+                             python-numpy
+                             python-pandas
+                             python-scikit-learn
+                             python-scipy))
+    (native-inputs (list python-poetry-core
+                         python-pytest))
+    (home-page "https://biofam.github.io/MOFA2/")
+    (synopsis "Multi-omics factor analysis")
+    (description "MOFA is a factor analysis model that provides a general
+framework for the integration of multi-omic data sets in an unsupervised
+fashion.  Intuitively, MOFA can be viewed as a versatile and statistically
+rigorous generalization of principal component analysis to multi-omics data.
+Given several data matrices with measurements of multiple -omics data types on
+the same or on overlapping sets of samples, MOFA infers an interpretable
+low-dimensional representation in terms of a few latent factors.  These learnt
+factors represent the driving sources of variation across data modalities,
+thus facilitating the identification of cellular states or disease
+subgroups.")
+    (license license:lgpl3)))
+
+(define-public python-muon
+  (package
+    (name "python-muon")
+    (version "0.1.6")
+    (source
+     (origin
+       ;; The tarball from PyPi doesn't include tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/scverse/muon")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1kd3flgy41dc0sc71wfnirh8vk1psxgyjxkbx1zx9yskkh6anbgw"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      ;; Even providing a random seed, scipy.sparse.rand produces inconsistent
+      ;; results across scipy versions.
+      '(list "-k" "not test_tfidf")
+      #:phases
+      '(modify-phases %standard-phases
+         ;; Numba needs a writable dir to cache functions.
+         (add-before 'build 'set-numba-cache-dir
+           (lambda _
+             (setenv "NUMBA_CACHE_DIR" "/tmp"))))))
+    (propagated-inputs (list python-anndata
+                             python-h5py
+                             python-matplotlib
+                             python-mofapy2
+                             python-mudata
+                             python-numba
+                             python-numpy
+                             python-pandas
+                             python-protobuf
+                             python-pybedtools
+                             python-pysam
+                             python-scanpy
+                             python-scikit-learn
+                             python-seaborn
+                             python-tqdm
+                             python-umap-learn))
+    (native-inputs (list python-flit-core
+                         python-pytest
+                         python-pytest-flake8))
+    (home-page "https://github.com/scverse/muon")
+    (synopsis "Multimodal omics analysis framework")
+    (description "muon is a multimodal omics Python framework.")
+    (license license:bsd-3)))
+
 (define-public python-pyega3
   (deprecated-package "python-pyega3" python-ega-download-client))
 
@@ -5966,6 +6224,82 @@ two files: a repeat table file and an alignment file.  Submitted sequences may
 be of arbitrary length. Repeats with pattern size in the range from 1 to 2000
 bases are detected.")
     (license license:osl2.1)))
+
+(define-public trust4
+  (package
+    (name "trust4")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/liulab-dfci/TRUST4")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "170k4rrchg7f2jyn3v4y4fxxq1d49n1vnvhx5xcnnr6jql8q3h08"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Remove bundled samtools
+                   (delete-file-recursively "samtools-0.1.19")))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #f ;there are no tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'use-samtools-headers
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "Makefile"
+                (("LINKPATH= -I./samtools-0.1.19 -L./samtools-0.1.19")
+                 (string-append "LINKPATH= -I."
+                                #$(this-package-native-input "samtools")
+                                "/include/samtools"
+                                " -L."
+                                #$(this-package-native-input "samtools")
+                                "/lib"))
+                (("./samtools-0.1.19/")
+                 (string-append #$(this-package-native-input
+                                   "samtools") "/lib/")))
+              (substitute* "alignments.hpp"
+                (("samtools-0.1.19")
+                 (string-append #$(this-package-native-input
+                                   "samtools") "/include/samtools")))))
+          (delete 'configure) ; No configure.
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (scripts (string-append #$output
+                                            "/share/trust4/scripts")))
+                (install-file "annotator" bin)
+                (install-file "bam-extractor" bin)
+                (install-file "fastq-extractor" bin)
+                (install-file "run-trust4" bin)
+                (install-file "trust4" bin)
+                ;; install scripts stored in the scrips dir
+                (for-each (lambda (file)
+                            (chmod file #o555))
+                          (find-files "scripts" "\\.p(y|l)"))
+                (copy-recursively "scripts" scripts)
+                (delete-file-recursively "scripts")
+                ;; install the rest of the scripts that are in the main dir
+                (for-each (lambda (file)
+                            (chmod file #o555)
+                            (install-file file bin))
+                          (find-files "." "\\.(pl|py|sh)"))))))))
+    (native-inputs (list automake samtools-0.1))
+    (inputs (list perl python-wrapper zlib))
+    (home-page "https://github.com/liulab-dfci/TRUST4")
+    (synopsis "TCR and BCR assembly from RNA-seq data")
+    (description "This package is analyzing @acronym{TCR, T cell receptor} and
+@acronym{BCR, B cell receptor} sequences using unselected RNA sequencing data,
+profiled from fluid and solid tissues, including tumors.  TRUST4 performs de
+novo assembly on V, J, C genes including the hypervariable @acronym{CDR3,
+complementarity-determining region 3} and reports consensus contigs of BCR/TCR
+sequences.  TRUST4 then realigns the contigs to IMGT reference gene sequences to
+identify the corresponding gene and CDR3 details.  TRUST4 supports both single-end
+and paired-end bulk or single-cell sequencing data with any read length.")
+    (license license:gpl3)))
 
 (define-public diamond
   (package
@@ -8241,7 +8575,7 @@ translated into a human-readable text format using the @code{jellyfish dump}
 command, or queried for specific k-mers with @code{jellyfish query}.")
     (home-page "http://www.genome.umd.edu/jellyfish.html")
     ;; JELLYFISH seems to be 64-bit only.
-    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
+    (supported-systems %64bit-supported-systems)
     ;; One of these licenses may be picked
     (license (list license:gpl3+ license:bsd-3))))
 
@@ -8948,7 +9282,7 @@ predicts the locations of structural units in the sequences.")
 (define-public proteinortho
   (package
     (name "proteinortho")
-    (version "6.0.14")
+    (version "6.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8957,45 +9291,40 @@ predicts the locations of structural units in the sequences.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pmy617zy2z2w6hjqxjhf3rzikf5n3mpia80ysq8233vfr7wrzff"))
+                "0p8iaxq193fh67hw3cydvdah1vz1c3f18227gj1mhkww0ms7g6xa"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; remove pre-built scripts
+                  ;; Remove pre-built scripts and source tarballs.
                   (delete-file-recursively "src/BUILD/")
-                  #t))))
+                  (delete-file "src/lapack-3.8.0.tar.gz")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:test-target "test"
-       #:make-flags '("CC=gcc")
+     (list
+       #:test-target "test"
+       #:parallel-tests? #f
+       #:make-flags
+       #~(list (string-append "CC=" #$(cc-for-target))
+               (string-append "CXX=" #$(cxx-for-target))
+               (string-append "PREFIX=" #$output)
+               (string-append "INSTALLDIR=" #$output "/bin"))
        #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           ;; There is no configure script, so we modify the Makefile directly.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("INSTALLDIR=.*")
-                (string-append
-                 "INSTALLDIR=" (assoc-ref outputs "out") "/bin\n"))
-               (("-llapack -lblas")
-                "-lopenblas"))
-             #t))
-         (add-before 'install 'make-install-directory
-           ;; The install directory is not created during 'make install'.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
-             #t))
-         (add-after 'install 'wrap-programs
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((path (getenv "PATH"))
-                   (out (assoc-ref outputs "out"))
-                   (guile (search-input-file inputs "bin/guile")))
-               (for-each (lambda (script)
-                           (wrap-script script #:guile guile
-                                        `("PATH" ":" prefix (,path))))
-                         (cons (string-append out "/bin/proteinortho")
-                               (find-files out "\\.(pl|py)$"))))
-             #t)))))
+       #~(modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'install 'make-install-directory
+             ;; The install directory is not created during 'make install'.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))))
+           (add-after 'install 'wrap-programs
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((path (getenv "PATH"))
+                     (out (assoc-ref outputs "out"))
+                     (guile (search-input-file inputs "bin/guile")))
+                 (for-each (lambda (script)
+                             (wrap-script script #:guile guile
+                                          `("PATH" ":" prefix (,path))))
+                           (cons (string-append out "/bin/proteinortho")
+                                 (find-files out "\\.(pl|py)$")))))))))
     (inputs
      `(("guile" ,guile-3.0) ; for wrap-script
        ("diamond" ,diamond)
@@ -9012,6 +9341,7 @@ predicts the locations of structural units in the sequences.")
 species.  For doing so, it compares similarities of given gene sequences and
 clusters them to find significant groups.  The algorithm was designed to handle
 large-scale data and can be applied to hundreds of species at once.")
+    (properties `((tunable? . #t)))
     (license license:gpl3+)))
 
 (define-public prodigal
@@ -9406,6 +9736,11 @@ to the user's query of interest.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--with-ncurses")
+       ;; The samtools test suite (and software) expects SSE-based math, even on
+       ;; i686-linux, and not 387-based math.  Adjust the CPPFLAGS accordingly.
+       ,@(if (target-x86-32?)
+             `(#:make-flags (list "CPPFLAGS = -msse -mfpmath=sse"))
+             '())
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
@@ -11385,6 +11720,41 @@ tasks.")
 Pore-C concatemers.")
       (license license:gpl3))))
 
+(define-public r-cmdstanr
+  (let ((commit "a45d4f7d686aa6b57ce25f342a71eea79507f01c")
+        (revision "1"))
+    (package
+      (name "r-cmdstanr")
+      (version (git-version "0.8.1.9000" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stan-dev/cmdstanr")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "01vyh3sy704rs7yvaka2hp6vld0mdl7hbrs20dpbwidgm4ksrvsi"))))
+      (properties `((upstream-name . "cmdstanr")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-checkmate
+                               r-data-table
+                               r-jsonlite
+                               r-posterior
+                               r-processx
+                               r-r6
+                               r-rlang
+                               r-withr))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/stan-dev/cmdstanr")
+      (synopsis "R interface to 'CmdStan'")
+      (description
+       "This package provides a lightweight interface to Stan
+<https://mc-stan.org>.  The @code{CmdStanR} interface is an alternative
+to RStan that calls the command line interface for compilation and
+running algorithms instead of interfacing with C++ via Rcpp'.")
+      (license license:bsd-3))))
+
 (define-public r-dnamcrosshyb
   ;; There aren't any releases.
   (let ((commit "fe8acb33667e81f00dcb84e0fa75c87ab2db5d8f")
@@ -11932,6 +12302,47 @@ analysis of cell types, subtypes, transcriptional gradients,cell-cycle
 variation, gene modules and their regulatory models and more.")
       (license license:expat))))
 
+(define-public r-metadeconfoundr
+  ;; There are some relevant updates after the release of version 0.3.0.
+  (let ((commit "90aec0226c5128bfcbbc08903452eff460d21424")
+        (revision "1"))
+    (package
+      (name "r-metadeconfoundr")
+      (version (git-version "0.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TillBirkner/metadeconfoundR")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zkqar27p5qwq46xbxsw5x1pl50xbkgqiizw5bydlyhwb0ga2f3h"))))
+      (properties `((upstream-name . "metadeconfoundR")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-bigmemory
+                               r-detectseparation
+                               r-doparallel
+                               r-dosnow
+                               r-foreach
+                               r-futile-logger
+                               r-ggplot2
+                               r-lme4
+                               r-lmtest
+                               r-reshape2
+                               r-snow))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/TillBirkner/metadeconfoundR")
+      (synopsis "Check multiple covariates for potenial confounding effects")
+      (description
+       "This package detects naive associations between omics features and
+metadata in cross-sectional data-sets using non-parametric tests.  In a second
+step, confounding effects between metadata associated to the same omics
+feature are detected and labeled using nested post-hoc model comparison tests.
+The generated output can be graphically summarized using the built-in plotting
+function.")
+      (license license:gpl2))))
+
 (define-public r-sleuth
   (package
     (name "r-sleuth")
@@ -12235,13 +12646,12 @@ expression.")
       (license license:gpl3))))
 
 (define-public r-icellnet
-  ;; v1.0 tagged in 2020, last commit contains many fixes.
-  ;; DESCRIPTION says Version: 0.0.0.9000.
-  (let ((commit "b9c05488fb8b5ea69bd560018966eaf4e25f82a")
-        (revision "0"))
+  ;; This is an arbitrary commit because there is no tag for 2.2.1.
+  (let ((commit "e10ee4ae5feaf8130764dcb0736957d2a90b828c")
+        (revision "1"))
     (package
       (name "r-icellnet")
-      (version (git-version "1.0" revision commit))
+      (version (git-version "2.2.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -12250,15 +12660,18 @@ expression.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0cld7d6xqnvd0zpcpg3sx73an6vdc9divzywgnn6zxnqcd987cnw"))))
+                  "0bszxw9zcsd1gxhg9q89jfzi95266wfjn74hp7z8yb99cr3j53k4"))))
       (build-system r-build-system)
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
+       (list
+        #:phases
+        '(modify-phases %standard-phases
            (add-after 'unpack 'enter-dir
              (lambda _ (chdir "icellnet"))))))
       (propagated-inputs
        (list r-annotationdbi
+             r-complexheatmap
+             r-circlize
              r-data-table
              r-dplyr
              r-ggplot2
@@ -13214,55 +13627,52 @@ secondary structure and comparative analysis in R.")
     (license license:gpl3+)))
 
 (define-public rcas-web
-  (package
-    (name "rcas-web")
-    (version "0.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/BIMSBbioinfo/rcas-web/"
-                           "releases/download/v" version
-                           "/rcas-web-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0wq951aj45gqki1bickg876i993lmawkp8x24agg264br5x716db"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'find-RCAS
-           ;; The configure script can't find non-1.3.x versions of RCAS because
-           ;; its R expression ‘1.10.1 >= 1.3.4’ evaluates to false.
-           (lambda _
-             (substitute* "configure"
-               (("1\\.3\\.4") "0.0.0"))
-             #t))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (json   (assoc-ref inputs "guile-json"))
-                    (redis  (assoc-ref inputs "guile-redis"))
-                    (path   (string-append
-                             json  "/share/guile/site/2.2:"
-                             redis "/share/guile/site/2.2")))
-               (wrap-program (string-append out "/bin/rcas-web")
-                 `("GUILE_LOAD_PATH" ":" = (,path))
-                 `("GUILE_LOAD_COMPILED_PATH" ":" = (,path))
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))))
-             #t)))))
-    (inputs
-     `(("r-minimal" ,r-minimal)
-       ("r-rcas" ,r-rcas)
-       ("guile" ,guile-2.2)
-       ("guile-json" ,guile-json-1)
-       ("guile-redis" ,guile2.2-redis)))
-    (native-inputs
-     (list pkg-config))
-    (home-page "https://github.com/BIMSBbioinfo/rcas-web")
-    (synopsis "Web interface for RNA-centric annotation system (RCAS)")
-    (description "This package provides a simple web interface for the
+  (let ((commit "71c93e3835653beb4eaa6e89b860bee3779729b8")
+        (revision "2"))
+    (package
+      (name "rcas-web")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BIMSBbioinfo/rcas-web")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0232g0f7g0w5cgaib462zbfssvfq8i0iqv5b5wfmbrbn0sw99l9a"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'install 'wrap-executable
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let* ((json   #$(this-package-input "guile-json"))
+                       (redis  #$(this-package-input "guile-redis"))
+                       (path   (string-append
+                                json  "/share/guile/site/3.0:"
+                                redis "/share/guile/site/3.0")))
+                  (wrap-program (string-append #$output "/bin/rcas-web")
+                    `("GUILE_LOAD_PATH" ":" = (,path))
+                    `("GUILE_LOAD_COMPILED_PATH" ":" = (,path))
+                    `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE"))))))))))
+      (inputs
+       (list r-minimal
+             r-rcas
+             guile-3.0
+             guile-json-4
+             guile-redis))
+      (native-inputs
+       (list autoconf
+             automake
+             pkg-config))
+      (home-page "https://github.com/BIMSBbioinfo/rcas-web")
+      (synopsis "Web interface for RNA-centric annotation system (RCAS)")
+      (description "This package provides a simple web interface for the
 @dfn{RNA-centric annotation system} (RCAS).")
-    (license license:agpl3+)))
+      (license license:agpl3+))))
 
 (define-public r-chipkernels
   (let ((commit "c9cfcacb626b1221094fb3490ea7bac0fd625372")
@@ -13330,6 +13740,45 @@ This package presents a method which uses group lasso to discriminate between
 bound and non bound genomic regions to accurately identify transcription
 factors bound at the specific regions.")
     (license license:gpl2+)))
+
+(define-public r-seraster
+  ;; There are no tags or releases.
+  (let ((commit "4fdc1ffe5d3feb65de9880329d221cf276b393a1")
+        (revision "1"))
+    (package
+      (name "r-seraster")
+      (version (git-version "0.99.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/JEFworks-Lab/SEraster")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0y33lk8q0h9nfzmf7slxxvw3l0djassp4l63nsjpm3p6z4pah5s4"))))
+      (properties `((upstream-name . "SEraster")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-biocparallel
+                               r-ggplot2
+                               r-matrix
+                               r-rearrr
+                               r-sf
+                               r-spatialexperiment
+                               r-summarizedexperiment))
+      (home-page "https://github.com/JEFworks-Lab/SEraster")
+      (synopsis
+       "Rasterization framework for scalable spatial omics data analysis")
+      (description
+       "This package is a rasterization preprocessing framework that aggregates
+cellular information into spatial pixels to reduce resource requirements for
+spatial omics data analysis.  SEraster reduces the number of points in spatial
+omics datasets for downstream analysis through a process of rasterization where
+single cells gene expression or cell-type labels are aggregated into equally
+sized pixels based on a user-defined resolution.  SEraster can be incorporated
+with other packages to conduct downstream analyses for spatial omics datasets,
+such as detecting spatially variable genes.")
+      (license license:gpl3))))
 
 (define-public emboss
   (package
@@ -13689,6 +14138,50 @@ for analyzing gene-level association tests in meta-analyses for binary
 trait.")
     (license license:gpl3)))
 
+(define-public r-rnacrosslinkoo
+  (let ((commit "a317e0fa6ddf34c309529d57390769e2b2b5bfb7")
+        (revision "1"))
+    (package
+      (name "r-rnacrosslinkoo")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cran/rnaCrosslinkOO")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0csv9924z0ish960k034qzv3gxh1yabnxni8hsrn5j6xl1r3cdpl"))))
+      (properties `((upstream-name . "rnaCrosslinkOO")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-classdiscovery
+                               r-doparallel
+                               r-foreach
+                               r-genomicranges
+                               r-ggplot2
+                               r-ggrepel
+                               r-heatmap3
+                               r-igraph
+                               r-iranges
+                               r-mass
+                               r-mixtools
+                               r-patchwork
+                               r-r4rna
+                               r-rcolorbrewer
+                               r-reshape2
+                               r-rrna
+                               r-s4vectors
+                               r-seqinr
+                               r-tidyverse
+                               r-topdom))
+      (native-inputs (list r-knitr))
+      (home-page "https://github.com/cran/rnaCrosslinkOO")
+      (synopsis "Analysis of RNA crosslinking data")
+      (description
+       "The package is ideal for analyzing RNA structure and chemical probing data.")
+      (license license:gpl3))))
+
 (define-public r-rnaseqdtu
   (let ((commit "5bee1e769d2e1dc6a3f1cecb78078050eeb5b9ac")
         (revision "1"))
@@ -13906,6 +14399,58 @@ working with SAM and BAM files.  Current parallelised functionality is
 an important subset of samtools functionality, including view, index,
 sort, markdup, and depth.")
     (license license:gpl2+)))
+
+(define-public r-rphyloxml
+  (let ((commit "a30e39249239b2de01d6964ae2a2205a6c48b475")
+        (revision "1"))
+    (package
+      (name "r-rphyloxml")
+      (version (git-version "0.0-9000" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/USCbiostats/rphyloxml")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15ijzqvjxx6vqyqlg5asdbqlhw1g0ix6palf1rism3si0qapddgw"))
+         (snippet
+          '(delete-file "docs/jquery.sticky-kit.min.js"))))
+      (properties `((upstream-name . "rphyloxml")))
+      (build-system r-build-system)
+      (arguments
+       (list
+        #:modules
+        '((guix build r-build-system)
+          (guix build minify-build-system)
+          (guix build utils))
+        #:imported-modules
+        `(,@%r-build-system-modules (guix build minify-build-system))
+        #:phases
+        '(modify-phases %standard-phases
+           (add-after 'unpack 'process-javascript
+             (lambda* (#:key inputs #:allow-other-keys)
+               (with-directory-excursion "inst/"
+                 (minify (assoc-ref inputs "js-jquery-sticky-kit")
+                         #:target "docs/jquery.sticky-kit.min.js")))))))
+      (propagated-inputs (list r-ape r-xml2))
+      (native-inputs
+       `(("esbuild" ,esbuild)
+         ("js-jquery-sticky-kit"
+          ,(origin
+             (method url-fetch)
+             (uri "https://raw.githubusercontent.com/leafo/sticky-kit/\
+v1.1.2/jquery.sticky-kit.js")
+             (sha256
+              (base32
+               "17c3a1hqc3ybwj7hpw8prazajp2x98aq7nyfn71h6lzjvblq297g"))))))
+      (home-page "https://github.com/USCbiostats/rphyloxml")
+      (synopsis "Read and write phyloXML files in R")
+      (description
+       "The package reads phylogenetic data in the @code{phyloXML} format.
+It also includes functions for writing data in this format.")
+      (license license:expat))))
 
 (define-public ritornello
   (package
@@ -15948,7 +16493,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.1.0")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
@@ -15956,7 +16501,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0acdjimfb9ywba8zsv7lavv436pmcmp8ra683h11wr4s3681pqk8"))))
+                "0mlas0srl04mvgsyydm67gg5syijf1k2f6dy7bdqqxc70fywfd08"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -16517,7 +17062,7 @@ version does count multisplits.")
 (define-public minimap2
   (package
     (name "minimap2")
-    (version "2.24")
+    (version "2.28")
     (source
      (origin
        (method url-fetch)
@@ -16526,7 +17071,7 @@ version does count multisplits.")
                            "minimap2-" version ".tar.bz2"))
        (sha256
         (base32
-         "05d6h2c1h95s5vblf1fijn9g0r4g69nsvkabji42j642y0gw7m4x"))))
+         "1d50j9fdmmaj7sdf4f49xddc235f7032lwh5ijgi2afj6lkp39gz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
@@ -16538,8 +17083,6 @@ version does count multisplits.")
              (let ((system ,(or (%current-target-system)
                                 (%current-system))))
                (cond
-                 ((string-prefix? "x86_64" system)
-                  "all")
                  ((or (string-prefix? "i586" system)
                       (string-prefix? "i686" system))
                   "sse2only=1")
@@ -16547,7 +17090,7 @@ version does count multisplits.")
                   "arm_neon=1")
                  ((string-prefix? "aarch64" system)
                   "aarch64=1")
-                 (else ""))))
+                 (else "all"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -16578,8 +17121,7 @@ version does count multisplits.")
                           Description: A versatile pairwise aligner for genomic and spliced nucleotide sequence~@
                           Libs: -L${libdir} -lminimap2~@
                           Cflags: -I${includedir}~%"
-                          out ,version))))
-             #t)))))
+                          out ,version)))))))))
     (inputs
      (list zlib))
     (home-page "https://lh3.github.io/minimap2/")
@@ -17899,6 +18441,47 @@ bound.")
      "Pypairix is a Python module for fast querying on a pairix-indexed
 bgzipped text file that contains a pair of genomic coordinates per line.")
     (license license:expat)))
+
+(define-public python-pyrodigal
+  (package
+    (name "python-pyrodigal")
+    (version "3.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/althonos/pyrodigal")
+             (commit (string-append "v" version))
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10vxbm9i33wari0ifsr78xnfn7d0yqwzqpc5pchirjflf1mmnr6w"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:modules '((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build pyproject-build-system))
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (let ((cwd (getcwd))
+                      (libdir (find (cut string-prefix? "lib." <>)
+                                    (scandir "build"))))
+                  (with-directory-excursion (string-append cwd "/build/" libdir)
+                    (invoke "python3" "-m" "unittest" "pyrodigal.tests" "-vv")))))))))
+    (propagated-inputs (list python-archspec python-importlib-resources))
+    (native-inputs (list python-cython-3 python-mock python-unittest2))
+    (home-page "https://github.com/althonos/pyrodigal")
+    (synopsis "Cython bindings and Python interface for Prodigal")
+    (description
+     "This package offers Cython bindings and a Python interface for Prodigal.
+ Prodigal is an ORF finder designed for both genomes and metagenomes.")
+    (license license:gpl3)))
 
 (define-public python-pyfaidx
   (package
@@ -21256,7 +21839,7 @@ scripts for manipulating 3C/4C/5C/Hi-C data.")
     (license license:asl2.0)))
 
 (define-public ensembl-vep
-  (let* ((api-version "103")
+  (let* ((api-version "112")
          (api-module
           (lambda (name hash)
             (origin (method git-fetch)
@@ -21268,7 +21851,7 @@ scripts for manipulating 3C/4C/5C/Hi-C data.")
                     (sha256 (base32 hash))))))
     (package
       (name "ensembl-vep")
-      (version (string-append api-version ".1"))
+      (version api-version)
       (source
        (origin
          (method git-fetch)
@@ -21278,7 +21861,7 @@ scripts for manipulating 3C/4C/5C/Hi-C data.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1iq7p72cv9b38jz2v8a4slzy2n8y0md487943180ym9xc8qvw09c"))))
+           "0nznmiln2q6bzd3xp8d5cw56higa5w3g9rmg66956bkfky53chvw"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -21369,6 +21952,7 @@ runtests(@test_files);
              perl-dbi
              perl-dbd-mysql
              perl-libwww
+             perl-list-moreutils
              perl-http-tiny
              perl-json
              which))
@@ -21379,18 +21963,20 @@ runtests(@test_files);
          ("perl" ,perl)
          ("api-module-ensembl"
           ,(api-module "ensembl"
-                       "0s59rj905g72hljzfpvnx5nxwz925b917y4jp912i23f5gwxh14v"))
+                       "10r576iqrz1p61mqbbfs87w4w3nldi45p51z52mq76f3n00l010h"))
          ("api-module-ensembl-variation"
           ,(api-module "ensembl-variation"
-                       "1dvwdzzfjhzymq02b6n4p6j3a9q4jgq0g89hs7hj1apd7zhirgkq"))
+                       "0ad03xnyyqpya1bkg6igq9abqxdmi58j89wn2kb3m4bvy1zs03mf"))
          ("api-module-ensembl-funcgen"
           ,(api-module "ensembl-funcgen"
-                       "1x23pv38dmv0w0gby6rv3wds50qghb4v3v1mf43vk55msfxzry8n"))
+                       "1m3dxnr6k9x5hmcsxckpxlqx7vbc82lk74r84vcjijgxjkfa5rpp"))
          ("api-module-ensembl-io"
           ,(api-module "ensembl-io"
-                       "14adb2x934lzsq20035mazdkhrkcw0qzb0xhz6zps9vk4wixwaix"))
+                       "1xr6kdqqzmbi3m4bls589d1dfjvbs13dxlbf1y172xjyipvmag43"))
+         ("perl-test-deep" ,perl-test-deep)
+         ("perl-test-exception" ,perl-test-exception)
          ("perl-test-harness" ,perl-test-harness)
-         ("perl-test-exception" ,perl-test-exception)))
+         ("perl-test-warnings" ,perl-test-warnings)))
       (home-page "http://www.ensembl.org/vep")
       (synopsis "Predict functional effects of genomic variants")
       (description

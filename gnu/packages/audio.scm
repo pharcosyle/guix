@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019, 2020, 2021, 2022 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016-2022, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -46,6 +46,7 @@
 ;;; Copyright © 2023 Gabriel Wicki <gabriel@erlikon.ch>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2023 Parnikkapore <poomklao@yahoo.com>
+;;; Copyright © 2024 hapster <o.rojon@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -924,7 +925,7 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "3.3.3")            ;for ffmpeg 6 support
+    (version "3.5.1")            ;for ffmpeg 6 support
     (source
      (origin
        (method git-fetch)
@@ -933,7 +934,7 @@ engineers, musicians, soundtrack editors and composers.")
              (commit (string-append "Audacity-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07jbql4jl2198z0rsa1nsf4p045iv4gz6ym75a60yyznvg0h0zwv"))
+        (base32 "11sjyz6hxsr5dnndkkkiq7arjxvjl1sycl151xq3a3ggakgql3y1"))
        (patches (search-patches "audacity-ffmpeg-fallback.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -969,6 +970,8 @@ engineers, musicians, soundtrack editors and composers.")
            ;;("libsbsms" ,libsbsms)         ;bundled version is modified
            libsndfile
            mpg123
+           opusfile
+           rapidjson
            soundtouch
            soxr                         ;replaces libsamplerate
            sqlite
@@ -1048,16 +1051,18 @@ tools.")
 (define-public tenacity
   (package
     (name "tenacity")
-    (version "1.3-beta2")
+    (version "1.3.3")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://codeberg.org/tenacityteam/tenacity")
-             (commit (string-append "v" version))))
+             (commit (string-append "v" version))
+             ;; TODO Unbundle vcpkg when packaged in Guix.
+             (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pd2vxzqzq7ikz7l2a1h9qwq08276xicvphrpn47gvmwaslah1gn"))))
+        (base32 "0jqdza1alk524fkrssgkr7gabs44sk9a99914gwfkscvyqly4kai"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -1077,7 +1082,11 @@ tools.")
               'i-spy-with-my-little-eye-something-in-the-wrong-folder
             (lambda _
               (symlink (string-append (getcwd) "/images")
-                       "src/images")))
+                       "src/images")
+
+              (symlink (string-append (getcwd) "/images")
+                       "src/tracks/images"))
+          )
           (add-after 'unpack 'fix-cmake-rpath
             (lambda* (#:key outputs #:allow-other-keys)
               (substitute* "CMakeLists.txt"
@@ -1128,6 +1137,8 @@ tools.")
            sqlite
            twolame
            vamp
+           libebml
+           libmatroska
            libvorbis
            lv2
            lilv ;for lv2
@@ -2954,13 +2965,13 @@ cross-platform audio input/output stream library.")
 (define-public python-pulsectl
   (package
     (name "python-pulsectl")
-    (version "22.3.2")
+    (version "24.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pulsectl" version))
               (sha256
                (base32
-                "115ha1cwpd2r84ssnxdbr59hgs0jbx0lz3xpqli64kmxxqf4w5yc"))))
+                "0r9igs365cqgrn1m55a8qjz0hc446nwjm3p3i9kphbj5gl7dazk9"))))
     (build-system python-build-system)
     (inputs (list pulseaudio))
     (arguments
@@ -4002,6 +4013,44 @@ stretching and pitch scaling of audio.  This package contains the library.")
     ;; containing gpl2.
     (license license:gpl2)))
 
+(define-public stargate-sbsms
+  ;; Stargate's fork of sbsms.
+  (let ((commit "90fab3440063dc9b6c1c2a8f74c2d92bd0e423f9")
+        (revision "0"))
+    (package/inherit libsbsms
+      (name "stargate-sbsms")
+      (version (git-version "0" revision commit))
+      (home-page "https://github.com/stargatedaw/stargate-sbsms")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference (url home-page) (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11srnzgpavcj6n70zjdm7488jzrprk71mg9dgr1sa6vwp575hf2m"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments libsbsms)
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              (delete 'fix-ar-lib-path)
+              (add-before 'build 'change-directory
+                (lambda _
+                  (chdir "cli")))
+              (replace 'configure
+                (lambda _
+                  (setenv "DESTDIR" #$output)
+                  (setenv "PREFIX" "/")))
+              (add-after 'install 'rename-sbsms
+                (lambda _
+                  (with-directory-excursion (string-append #$output
+                                                           "/bin")
+                    (rename-file "sbsms" "stargate-sbsms"))))
+              (delete 'check)))))
+      (native-inputs
+       (list libsndfile))
+      (properties '((hidden? . #t))))))
+
 (define-public libkeyfinder
   (package
     (name "libkeyfinder")
@@ -4172,7 +4221,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "2.2")
+    (version "2.3.1")
     (source
      (origin
        (method git-fetch)
@@ -4181,7 +4230,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12i6yg8vvqwyk412lxl2krbfby6hnxld8qxy0k4m5xp4g94jiq4p"))))
+        (base32 "10znckb8mrnmvwj7vq12732al873qhqw27fpb5f8r0bkjdpcj3vr"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake libtool file))
@@ -4194,6 +4243,33 @@ and playback rates of audio streams or audio files.  It is intended for
 application developers writing sound processing tools that require tempo/pitch
 control functionality, or just for playing around with the sound effects.")
     (license license:lgpl2.1+)))
+
+(define-public stargate-soundtouch
+  ;; Stargate's fork of soundtouch.
+  (let ((commit "464f474c0be5d7e0970909dd30593012e4621468")
+        (revision "0"))
+    (package/inherit soundtouch
+      (name "stargate-soundtouch")
+      (version (git-version "0" revision commit))
+      (home-page "https://github.com/stargatedaw/stargate-soundtouch")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference (url home-page) (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1aw2j1f10p8n4s197b1nd3g1rjvwbrrszc9gwsbwk01c6nb3nr9v"))))
+      (arguments
+       (list #:phases
+             #~(modify-phases %standard-phases
+                 (add-after 'install 'rename-soundstretch
+                   (lambda _
+                     (with-directory-excursion (string-append #$output
+                                                              "/bin")
+                       (rename-file "soundstretch"
+                                    "stargate-soundstretch")))))))
+      (properties '((hidden? . #t))))))
 
 (define-public sox
   (package
@@ -5443,7 +5519,9 @@ other Gnaural instances, allowing synchronous sessions between many users.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-lame-prefix="
-                            (assoc-ref %build-inputs "lame")))))
+                            (assoc-ref %build-inputs "lame")))
+       #:make-flags
+       (list "CXXFLAGS += -std=gnu++14")))
     (home-page "http://www.darkice.org/")
     (synopsis "Live audio streamer")
     (description "DarkIce is a live audio streamer.  It takes audio input from

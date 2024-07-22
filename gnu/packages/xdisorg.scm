@@ -61,6 +61,8 @@
 ;;; Copyright © 2023 Jake Leporte <jakeleporte@outlook.com>
 ;;; Copyright © 2023 Hilton Chain <hako@ultrarare.space>
 ;;; Copyright © 2022 Mehmet Tekman <mtekman89@gmail.com>
+;;; Copyright © 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2024 Igor Goryachev <igor@goryachev.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -394,7 +396,7 @@ with X11 or Wayland, or in a text terminal with ncurses.")
            qtdeclarative-5
            qtwayland-5
            wayland
-           knotifications))
+           knotifications-5))
     (native-inputs
      (list extra-cmake-modules qttools-5))
     (synopsis "Clipboard manager with advanced features")
@@ -896,7 +898,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "1.9")
+    (version "1.11")
     (source
      (origin
        (method git-fetch)
@@ -906,7 +908,7 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "140wczmmxjp5fkrp6qg5rbq4hdwfslxb23jdk91ls8fjxdp9hafz"))))
+        (base32 "1syip5ai4kn62qbhpf710wj60z7jzpkqhkchlbxhs322wmhhidkp"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf autoconf-archive automake pkg-config))
@@ -965,7 +967,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.6.3")
+    (version "5.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -974,7 +976,7 @@ selection's dimensions to stdout.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "181mjjrjb9fs1ficcv9miqbk94v95j1yli7fjp2dj514g7nj9l3x"))))
+                "0n5fa0vf33wmw50fhxv5sj94rv1a0m9gbczlgnic2yyak546mmpy"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -985,6 +987,7 @@ selection's dimensions to stdout.")
            libxcomposite
            libxfixes
            libxrandr
+           libwebp
            mesa
            slop
            zlib))
@@ -1449,7 +1452,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "2.6.0")
+    (version "2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1457,7 +1460,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.xz"))
               (sha256
                (base32
-                "13x978gzyw28cqd985m5smiqgza0xp3znb1s0msmn8vmjjlwqxi3"))))
+                "0wjmv0rnxbd143cb5a73drflpdaxpb0mck0r9rsds08bs8l7l12v"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1466,15 +1469,19 @@ Escape key when Left Control is pressed and released on its own.")
      (list pkg-config
            ;; For tests.
            python
-           python-evdev
            python-libevdev
            python-pytest
            python-pyudev))
     (inputs
-     (list gtk+ eudev libxml2))
+     (list gtk+
+           eudev
+           libxml2
+           python
+           python-libevdev
+           python-pyudev))
     (propagated-inputs
      ;; libwacom.pc 'Requires' these:
-     (list glib libgudev))
+     (list glib libevdev libgudev))
     (home-page "https://linuxwacom.github.io/")
     (synopsis "Helper library for graphics tablet settings")
     (description
@@ -1482,7 +1489,7 @@ Escape key when Left Control is pressed and released on its own.")
 intended to be used by client-programs that need model identification.  It is
 already being used by the gnome-settings-daemon and the GNOME Control Center
 Wacom tablet applet.")
-    (license license:x11)))
+    (license license:hpnd)))
 
 (define-public xf86-input-wacom
   (package
@@ -3617,7 +3624,7 @@ MouseKeys-acceleration management.")
 (define-public wlsunset
   (package
     (name "wlsunset")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -3627,12 +3634,12 @@ MouseKeys-acceleration management.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wbz6m7p0czhyv7axg2gn0ffh1q1887khh6phvw35a2llichyrlc"))))
+         "1n60b2qq4ihw0g2dwisrvsvbhpml4mlv42425j0r7xhlm4w93z2k"))))
     (build-system meson-build-system)
     (inputs
      (list wayland wayland-protocols))
     (native-inputs
-     (list pkg-config))
+     (list pkg-config scdoc))
     (synopsis "Day/night gamma adjustments for Wayland compositors")
     (home-page "https://sr.ht/~kennylevinsen/wlsunset/")
     (description
@@ -3798,3 +3805,50 @@ on the screen and which then writes out the necessary C code for it.")
 and works under both Xorg and Wayland (via @code{libinput}), inspired by
 @code{python-screenkey}.")
     (license license:asl2.0)))
+
+(define-public xxkb
+  (package
+    (name "xxkb")
+    (version "1.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/xxkb/"
+                           name "-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0hl1i38z9xnbgfjkaz04vv1n8xbgfg88g5z8fyzyb2hxv2z37anf"))))
+    (build-system gnu-build-system)
+    (inputs (list libx11
+                  libxext
+                  libxt
+                  libxpm))
+    (native-inputs
+     (list imake))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((imake (assoc-ref inputs "imake"))
+                   (out   (assoc-ref outputs "out")))
+               (invoke "xmkmf")
+               (substitute* "Makefile"
+                 ((imake) out)
+                 (("(MANPATH = )[[:graph:]]*" _ front)
+                  (string-append front out "/share/man"))
+                 (("XAPPLOADDIR = /etc/X11/app-defaults")
+                  (string-append "XAPPLOADDIR = " out "/lib/X11/app-defaults"))
+                 (("ETCX11DIR = /etc/X11")
+                  (string-append "ETCX11DIR = " out "/etc/X11")))
+               #t))))))
+    (home-page "https://xxkb.sourceforge.net/")
+    (synopsis "Keyboard layout indicator and switcher")
+    (description
+     "The xxkb program is a keyboard layout switcher and indicator.  Unlike
+the programs that reload keyboard maps and use their own hot-keys, xxkb is
+a simple GUI for XKB (X KeyBoard extension) and just sends commands to and
+accepts events from XKB.  That means that it will work with the existing
+setup of your X Server without any modifications.")
+    (license license:artistic2.0)))

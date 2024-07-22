@@ -43,7 +43,7 @@
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Raghav Gururajan <raghavgururajan@disroot.org>
-;;; Copyright © 2019, 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2019, 2020, 2024 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019-2022 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -78,6 +78,7 @@
 ;;; Copyright © 2023 Dominik Delgado Steuter <d@delgado.nrw>
 ;;; Copyright © 2023 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2024 Dariqq <dariqq@posteo.net>
+;;; Copyright © 2024 James Smith <jsubuntuxp@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -178,7 +179,6 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
-  #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages openldap)
@@ -459,10 +459,28 @@ and other formats.")
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
-       (list
-        "--disable-static")))
+       (list "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         ,@(if (or (target-riscv64?)
+                   (target-ppc64le?)
+                   (target-aarch64?))
+               `((add-after 'unpack 'update-config-scripts
+                   (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                     (for-each (lambda (file)
+                                 (install-file
+                                   (search-input-file
+                                     (or native-inputs inputs)
+                                     (string-append "/bin/" file)) "."))
+                               '("config.guess" "config.sub")))))
+               '()))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
+     `(,@(if (or (target-riscv64?)
+                 (target-ppc64le?)
+                 (target-aarch64?))
+             `(("config" ,config))
+             `())
+       ("gettext" ,gettext-minimal)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (synopsis "Common JS Modules")
@@ -1344,15 +1362,23 @@ It has miners for Facebook, Flickr, Google, ownCloud and SkyDrive.")
                 "0iil7wgix0nzhf3i2w6g1wjqly49r9rsffca97ai9kr2vfpvbv9g"))))
     (build-system meson-build-system)
     (arguments
-     (list #:configure-flags #~'("-Dgtk_doc=true")))
+     (list #:configure-flags
+           #~(list "-Dgtk_doc=true"
+                   ;; Manpages are built using pandoc.
+                   #$@(if (this-package-native-input "pandoc")
+                          #~("-Dmanpages=true")
+                          #~("-Dmanpages=false")))))
     (native-inputs
-     (list gettext-minimal
-           `(,glib "bin")
-           gi-docgen
-           gobject-introspection
-           pandoc
-           pkg-config
-           vala))
+     (append
+       (if (supported-package? pandoc)
+           (list pandoc)
+           '())
+       (list gettext-minimal
+             `(,glib "bin")
+             gi-docgen
+             gobject-introspection
+             pkg-config
+             vala)))
     (inputs
      (list gtk))
     (propagated-inputs
@@ -1379,6 +1405,9 @@ a debugging tool, @command{gssdp-device-sniffer}.")
               (sha256
                (base32
                 "10hm8cgh2p8441xc83kswjgghrrqpzgblvc5523jp0pvayfq8xl6"))))
+    (arguments
+     (list #:configure-flags
+           #~(list "-Dgtk_doc=true")))
     (propagated-inputs (modify-inputs (package-propagated-inputs gssdp)
               (replace "libsoup" libsoup-minimal-2)))))
 
@@ -2610,6 +2639,7 @@ GNOME Desktop.")
                         #$output "/share/p11-kit/modules/")
          (string-append "--with-pkcs11-modules="
                         #$output "/share/p11-kit/modules/"))
+      #:parallel-tests? (not (target-riscv64?))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'fix-/bin/sh-reference
@@ -2990,6 +3020,16 @@ guidelines.")
               (substitute* "Makefile.am"
                 (("/bin/bash") (which "bash")))
               (delete-file "configure")))
+          #$@(if (this-package-native-input "config")
+                 #~((add-after 'unpack 'update-config-scripts
+                      (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                        (for-each (lambda (file)
+                                    (install-file
+                                      (search-input-file
+                                        (or native-inputs inputs)
+                                        (string-append "/bin/" file)) "."))
+                                  '("config.guess" "config.sub")))))
+                 #~())
           (add-after 'install 'add-install-to-pythonpath
             (@@ (guix build python-build-system) add-install-to-pythonpath))
           (add-after 'add-install-to-pythonpath 'wrap-for-python
@@ -3022,16 +3062,20 @@ guidelines.")
            libnotify
            packagekit))
     (native-inputs
-     (list pkg-config
-           desktop-file-utils
-           glib
-           autoconf
-           automake
-           gettext-minimal
-           xmlto
-           docbook-xml-4.1.2
-           docbook-xsl
-           libxml2))
+     (append
+       (if (target-riscv64?)
+           (list config)
+           '())
+       (list pkg-config
+             desktop-file-utils
+             glib
+             autoconf
+             automake
+             gettext-minimal
+             xmlto
+             docbook-xml-4.1.2
+             docbook-xsl
+             libxml2)))
     (home-page "https://github.com/zdohnal/system-config-printer")
     (synopsis "CUPS administration tool")
     (description
@@ -3241,9 +3285,8 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
               (setenv "DISPLAY" ":1"))))))
     (inputs
      (append
-      ;; GJS depends on Rust, which is x86_64-only so far, so remove the GJS
-      ;; dependency on other platforms (FIXME).
-      (if (target-x86-64?)
+      ;; GJS depends on Rust so remove the GJS dependency on other platforms.
+      (if (supported-package? gjs)
           (list gjs)
           '())
       (list gtk+ libxml2)))
@@ -4511,7 +4554,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.56.14")
+    (version "0.56.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vala/"
@@ -4519,7 +4562,7 @@ passwords in the GNOME keyring.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "0mzmldhf6474dp2jkxj160kkafdz32c2l5f8xnm05p4vr9lc50lk"))))
+                "16yaiff5nl2dfyvs3bj8y7wvzh9riz6wqlx7csgg1lpm01b7nj05"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      (list
@@ -5030,7 +5073,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libshumate
   (package
     (name "libshumate")
-    (version "1.0.5")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5038,11 +5081,10 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0v4m07vxm3m4a2vqkp2wfsc3zsf92fpigc1k8yq49vkpj7gxikx8"))))
+                "04cwakbdr68nw4kh956xhf447fawz8badpyd76hg4ir1gq3yw18i"))))
     (build-system meson-build-system)
     (arguments
-     (list #:configure-flags #~(list "-Dlibsoup3=true")
-           #:phases
+     (list #:phases
            #~(modify-phases %standard-phases
                (replace 'check
                  (lambda* (#:key tests? test-options #:allow-other-keys)
@@ -5062,6 +5104,7 @@ libxml to ease remote use of the RESTful API.")
      (list gi-docgen
            `(,glib "bin")
            gobject-introspection
+           gperf
            pkg-config
            ;; For tests:
            xorg-server-for-tests
@@ -5072,7 +5115,9 @@ libxml to ease remote use of the RESTful API.")
      (list cairo
            glib
            gtk
+           json-glib
            libsoup
+           protobuf-c
            sqlite))
     (home-page "https://wiki.gnome.org/Projects/libshumate")
     (synopsis "GtkWidget C library for displaying maps")
@@ -5576,7 +5621,7 @@ keyboard shortcuts.")
     (arguments
      (list #:glib-or-gtk? #t))
     (native-inputs (list pkg-config
-                         cmake
+                         cmake-minimal
                          gettext-minimal
                          desktop-file-utils
                          appstream-glib
@@ -8782,7 +8827,7 @@ to virtual private networks (VPNs) via Fortinet SSLVPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.34.0")
+    (version "1.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/network-manager-applet/"
@@ -8790,7 +8835,7 @@ to virtual private networks (VPNs) via Fortinet SSLVPN.")
                                   "network-manager-applet-" version ".tar.xz"))
               (sha256
                (base32
-                "1a55mf4ww06lqacs6zndp29ayyby5f8rgg1lp341y5kb1x3qwdmb"))))
+                "0lz2lxj5xy65l7qcn3df83spkxxqk2sjmys7bi4f3bx3gr408ix8"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -9392,6 +9437,7 @@ properties, screen resolution, and other GNOME parameters.")
             (add-after 'install 'wrap-programs
               (lambda* (#:key inputs #:allow-other-keys)
                 (let ((gi-typelib-path  (getenv "GI_TYPELIB_PATH"))
+                      (gst-plugin-path  (getenv "GST_PLUGIN_SYSTEM_PATH"))
                       (python-path
                        (string-join
                         (filter (lambda (item)
@@ -9410,6 +9456,19 @@ properties, screen resolution, and other GNOME parameters.")
                      (string-append "'" gi-typelib-path "'.split(':').forEach("
                                     "path => imports.gi.GIRepository.Repository."
                                     "prepend_search_path(path));\n"
+                                    all)))
+                  ;; Screencast requires a pipewire service running
+                  ;; (i.e. as provided by home-pipewire-service-type)
+                  (substitute* (string-append #$output "/share/gnome-shell/"
+                                              "org.gnome.Shell.Screencast")
+                    (("imports\\.package\\.start" all)
+                     (string-append "'" gi-typelib-path "'.split(':').forEach("
+                                    "path => imports.gi.GIRepository.Repository."
+                                    "prepend_search_path(path));\n"
+                                    "imports.gi.GLib.setenv('GST_PLUGIN_SYSTEM_PATH',"
+                                    "[imports.gi.GLib.getenv('GST_PLUGIN_SYSTEM_PATH'),"
+                                    "'" gst-plugin-path "'].filter(v => v).join(':'),"
+                                    "true);\n"
                                     all)))
                   (for-each
                    (lambda (prog)
@@ -9476,6 +9535,7 @@ printf '~a is deprecated.  Use the \"gnome-extensions\" CLI or \
            gnome-settings-daemon
            graphene
            gst-plugins-base
+           gst-plugins-good
            ibus
            libcanberra
            libcroco
@@ -9486,6 +9546,7 @@ printf '~a is deprecated.  Use the \"gnome-extensions\" CLI or \
            mesa-headers
            mutter
            network-manager-applet
+           pipewire
            polkit
            pulseaudio
            python-pygobject
@@ -9521,15 +9582,13 @@ like switching to windows and launching applications.")
      `(#:glib-or-gtk? #t))   ; To wrap binaries and/or compile schemas
     (native-inputs
      (append
-      ;; GJS depends on Rust, which is x86_64-only so far, so remove the GJS
-      ;; dependency on other platforms (FIXME).
-       (if (target-x86-64?)
-           (list gjs)
-           '())
+      ;; GJS depends on Rust so remove the GJS dependency on other platforms.
+      (if (supported-package? gjs)
+          (list gjs)
+          '())
        (list gettext-minimal
              `(,glib "bin")
              gobject-introspection
-             node
              perl
              pkg-config
              python-wrapper
@@ -10282,14 +10341,9 @@ playing media, scanning, and much more.")
   (gnome-meta-package
    (name "gnome-meta-core-utilities")
    (propagated-inputs
-    (append
-     ;; XXX: EoG requires librsvg-next, which depends on Rust, which currently
-     ;; only works on x86_64, so exclude it on other architectures.
-     (if (string-prefix? "x86_64" (%current-system))
-         (list eog)
-         '())
      (list baobab
            cheese
+           eog
            epiphany
            evince
            file-roller
@@ -10314,7 +10368,7 @@ playing media, scanning, and much more.")
            totem
            tracker-miners
            xdg-desktop-portal-gnome
-           yelp)))))
+           yelp))))
 
 (define-public gnome-essential-extras
   (gnome-meta-package
@@ -11502,34 +11556,34 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.4.35")
+    (version "1.4.40")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://adishatz.org/lollypop/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "0rvwj18x1gs7fgvniijzvlmgmzcgr7il22zclzsn5nkl8xbwgzk0"))))
+        (base32 "1laj5xwfz2bz29scga2ahhnhlgll4a0n21wwy8mlr4jsl81g0jsa"))))
     (build-system meson-build-system)
     (arguments
-     `(#:imported-modules (,@%meson-build-system-modules
-                           (guix build python-build-system))
-       #:modules ((guix build meson-build-system)
-                  ((guix build python-build-system) #:prefix python:)
-                  (guix build utils))
-       #:glib-or-gtk? #t
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-gtk-update-icon-cache
-           (lambda _
-             (setenv "DESTDIR" "/")))
-         (add-after 'install 'wrap-program
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-program (search-input-file outputs "bin/lollypop")
-               `("GI_TYPELIB_PATH" ":" prefix
-                 (,(getenv "GI_TYPELIB_PATH"))))))
-         (add-after 'install 'wrap-python
-           (assoc-ref python:%standard-phases 'wrap)))))
+     (list #:imported-modules `(,@%meson-build-system-modules
+                                (guix build python-build-system))
+           #:modules '((guix build meson-build-system)
+                       ((guix build python-build-system) #:prefix python:)
+                       (guix build utils))
+           #:glib-or-gtk? #t
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'disable-gtk-update-icon-cache
+                 (lambda _
+                   (setenv "DESTDIR" "/")))
+               (add-after 'install 'wrap-program
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (wrap-program (search-input-file outputs "bin/lollypop")
+                     (list "GI_TYPELIB_PATH" ":" 'prefix
+                           (list (getenv "GI_TYPELIB_PATH"))))))
+               (add-after 'install 'wrap-python
+                 (assoc-ref python:%standard-phases 'wrap)))))
     (native-inputs
      (list gettext-minimal
            `(,glib "bin")               ; For glib-compile-resources
@@ -12088,7 +12142,7 @@ advanced image management tool")
 (define-public terminator
   (package
     (name "terminator")
-    (version "2.1.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
@@ -12096,7 +12150,7 @@ advanced image management tool")
                            "releases/download/v" version "/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "1rbarn9pq3g8k13clxiy0d62g0fxhkg5bcxw2h626wkb7lzr9s8a"))))
+        (base32 "1s65y2yjrigbvqzgxvwr8pj199199bx7m0nhf7g1vrk2x3nb09xg"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -13367,6 +13421,14 @@ libraries.  Applications do not need to be recompiled--or even restarted.")
       #:configure-flags #~(list "-Dnetwork_tests=false" "-Ddocs=true")
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-source
+            (lambda _
+              ;; With Gnome 4.14, GtkStackPage has an autoptr already, so it'd
+              ;; get redefined.  Drop this phase when updating gnome-builder to
+              ;; 46.0 or newer.  See also
+              ;; <https://gitlab.gnome.org/GNOME/gnome-builder/-/commit/7aaaecefc2ea8a37eaeae8b4d726d119d4eb8fa3>
+              (substitute* "src/libide/tweaks/ide-tweaks-window.c"
+                (("G_DEFINE_AUTOPTR_CLEANUP_FUNC \\(GtkStackPage, .*\\)") ""))))
           (add-after 'unpack 'patch-meson
             (lambda* (#:key inputs #:allow-other-keys)
               (substitute* "meson.build"
@@ -13449,17 +13511,17 @@ profiler via Sysprof, debugging support, and more.")
 (define-public komikku
   (package
     (name "komikku")
-    (version "1.34.2")
+    (version "1.46.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/valos/Komikku/")
+             (url "https://codeberg.org/valos/Komikku/")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "044m3z7h1hi2avx4z6qgjzhgn1fkf1iclxhr4j7pb6flbqvwnxhs"))))
+         "1ggg4hgd1kyc69b06kcgvvjwmz72xgjakva19gs3nrszr4cinank"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -13485,7 +13547,9 @@ profiler via Sysprof, debugging support, and more.")
             (lambda* (#:key outputs #:allow-other-keys)
               (wrap-program (search-input-file outputs "bin/komikku")
                 `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH")))
-                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))))))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
+                `("GDK_PIXBUF_MODULE_FILE" =
+                  (,(getenv "GDK_PIXBUF_MODULE_FILE")))))))))
     (inputs
      (list bash-minimal
            gtk
@@ -13511,7 +13575,8 @@ profiler via Sysprof, debugging support, and more.")
            python-rarfile
            python-requests
            python-unidecode
-           webkitgtk))
+           webkitgtk
+           webp-pixbuf-loader))
     (native-inputs
      (list blueprint-compiler
            desktop-file-utils
@@ -13519,7 +13584,7 @@ profiler via Sysprof, debugging support, and more.")
            `(,glib "bin")
            gobject-introspection
            pkg-config))
-    (home-page "https://gitlab.com/valos/Komikku")
+    (home-page "https://apps.gnome.org/Komikku")
     (synopsis "Manga reader for GNOME")
     (description "Komikku is an online/offline manga reader for GNOME,
 developed with the aim of being used with the Librem 5 phone.")
@@ -13691,7 +13756,7 @@ Document Analysis and Recognition program.")
 (define-public libadwaita
   (package
     (name "libadwaita")
-    (version "1.4.0")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libadwaita/"
@@ -13699,7 +13764,7 @@ Document Analysis and Recognition program.")
                                   "libadwaita-" version ".tar.xz"))
               (sha256
                (base32
-                "1hj7kxza6263x662v4ffndlz8dhfx19cz3y4iwhnhdflaj50j6p5"))))
+                "05icswk84kf4pbcybv8j9r9n98q1dgr1m7zn6k72p4dlbh0fxyn9"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases

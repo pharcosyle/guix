@@ -79,6 +79,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages digest)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
@@ -6262,16 +6263,18 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "5.0.8")
+    (version "6.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://www.xpra.org/src/xpra-"
-                           version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+           (url "https://github.com/Xpra-org/xpra.git")
+           (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0ml9nv6gwrqgyrn3hp5kkxsbdl5fpz5w8vjsvn0qfdsgbvq617wy"))
-       (patches (search-patches "xpra-5.0-systemd-run.patch"
-                                "xpra-5.0-install_libs.patch"))))
+        (base32 "176qxrksgr07jhrlny3zxybnvf091kxkfmfnv9ci3h2k1nbwqh2x"))
+       (patches (search-patches "xpra-6.0-systemd-run.patch"
+                                "xpra-6.0-install_libs.patch"))))
     (build-system python-build-system)
     (inputs
      (list bash-minimal                 ; for wrap-program
@@ -6297,6 +6300,7 @@ basic eye-candy effects.")
            xf86-video-dummy
            xf86-input-mouse
            xf86-input-keyboard
+           xxhash
            python-pillow
            ;; Optional dependencies.
            libx264
@@ -6312,7 +6316,7 @@ basic eye-candy effects.")
            python-lz4                   ; Faster compression than zlib.
            python-netifaces
            python-pycups))
-    (native-inputs (list pkg-config pandoc python-cython))
+    (native-inputs (list pkg-config pandoc python-cython-3))
     (arguments
      (list
       #:configure-flags #~(list "--without-Xdummy"

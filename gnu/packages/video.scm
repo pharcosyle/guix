@@ -100,6 +100,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
@@ -147,6 +148,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-xyz)
@@ -2050,6 +2052,11 @@ audio/video codec library.")
                 "--disable-programs"
                 "--disable-postproc"
 
+                "--enable-libpipewire"
+                "--enable-filter=pipewiregrab"
+                "--enable-indev=lavfi"
+                "--enable-decoder=wrapped_avframe"
+
                 "--disable-protocols"
                 "--enable-protocol=crypto"
                 "--enable-protocol=file"
@@ -2257,7 +2264,9 @@ audio/video codec library.")
                          "--enable-encoder=vp8_vaapi"
                          "--enable-encoder=mjpeg_vaapi"
                          "--enable-encoder=hevc_vaapi")
-                       '())))))))
+                       '())))))
+    (inputs (modify-inputs (package-inputs ffmpeg)
+              (append pipewire)))))
 
 (define-public ffmpegthumbnailer
   (package
@@ -2324,13 +2333,13 @@ It is usually a complement to @code{ffmpeg-normalize}.")
 (define-public ffmpeg-normalize
   (package
     (name "ffmpeg-normalize")
-    (version "1.27.7")
+    (version "1.28.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ffmpeg-normalize" version))
               (sha256
                (base32
-                "0idqqgsr3p840vx2x3idn851qwghjdbm6v4yrq2kprppyfvglni7"))))
+                "129jicvifh5bpxrn62mpfanv5z2266bryxd6cd5xhhi4vfwcinx5"))))
     (build-system pyproject-build-system)
     (arguments
      (list #:phases
@@ -2366,7 +2375,7 @@ input files is possible, including video files.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.20")
+    (version "3.0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2375,7 +2384,7 @@ input files is possible, including video files.")
                     "/vlc-" version ".tar.xz"))
               (sha256
                (base32
-                "1d99p93k8d86bbanym6b6jii1aiavb570lpb83gws8979mdjiixd"))))
+                "1c7vbbicx95nymrybgvd2d3p65q0wayhpvsx9ncs1vpsglfvxnr4"))))
     (build-system gnu-build-system)
     (native-inputs
      (list flex bison gettext-minimal pkg-config))
@@ -2703,40 +2712,31 @@ projects while introducing many more.")
 (define-public smplayer
   (package
     (name "smplayer")
-    (version "21.10.0")
+    (version "23.12.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/smplayer/SMPlayer/" version
-                    "/smplayer-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/smplayer-dev/smplayer")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32
-                "12nvcl0cfix1xay9hfi7856vg4lpv8y5b0a22212bsjbvl5g22rc"))))
+               (base32 "0yrm57rib910h9m4avhg6mkmkzy9xjb3f185c5zr6jls100az8h1"))))
     (build-system qt-build-system)
     (native-inputs
      (list qttools-5))
     (inputs
-     (list bash-minimal qtbase-5 zlib mpv))
+     (list bash-minimal
+           qtbase-5
+           qtdeclarative-5
+           zlib
+           mpv))
     (arguments
      (list #:tests? #false              ; no tests
            #:make-flags #~(list (string-append "PREFIX=" #$output)
-                                (string-append "CC=" #+(cc-for-target))
-                                ;; A KLUDGE to turn off invoking lrelease on the
-                                ;; project for now, because it fails consistently
-                                ;; with "WARNING: Could not find qmake spec
-                                ;; 'default'". See below.
-                                "LRELEASE=true")
+                                (string-append "CC=" #+(cc-for-target)))
            #:phases
            #~(modify-phases %standard-phases
                (delete 'configure)
-               ;; Due to the above, we must run lrelease separately on each .ts file
-               ;; (as opposed to running `lrelease-pro smplayer.pro` for the entire
-               ;; project, as the Makefile does normally without the above kludge).
-               (add-after 'build 'compile-ts-files
-                 (lambda _
-                   (for-each (lambda (file)
-                               (invoke "lrelease" file))
-                             (find-files "./" "\\.ts$"))))
                (add-after 'install 'wrap-executable
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    (let* ((out (assoc-ref outputs "out"))
@@ -2757,13 +2757,13 @@ the last played position, etc.")
 (define-public jellyfin-mpv-shim
   (package
     (name "jellyfin-mpv-shim")
-    (version "2.6.0")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jellyfin-mpv-shim" version))
        (sha256
-        (base32 "1cy2sfv84k5nw8bqy4aa7v0hdawp7gk5s7wq850xizqk0sz7cipp"))))
+        (base32 "0lgs3d6qxxf338mg4mmm4jrkvw1alrks16hx30figwn3dcv5l0qh"))))
     (build-system python-build-system)
     (arguments
      (list
@@ -2829,7 +2829,7 @@ Jellyfin.  It has support for various media files without transcoding.")
 (define-public gallery-dl
   (package
     (name "gallery-dl")
-    (version "1.25.8")
+    (version "1.27.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mikf/gallery-dl"
@@ -2837,7 +2837,7 @@ Jellyfin.  It has support for various media files without transcoding.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dshv4j2gmvd2grwcvp1vsrqsji05r13jvw0cqi9srl66kvqbbga"))))
+                "17gkrz5cw2lfi12x3snzsmxvfk5373klkny1ny9070wp6qgadj6c"))))
     (build-system python-build-system)
     (inputs (list python-requests ffmpeg))
     (home-page "https://github.com/mikf/gallery-dl")
@@ -2954,39 +2954,48 @@ To load this plugin, specify the following option when starting mpv:
      (origin
        (inherit (package-source libvpx))
        (patches (search-patches "libvpx-CVE-2016-2818.patch"
-                                "libvpx-CVE-2023-5217.patch"))))))
+                                "libvpx-CVE-2023-5217.patch"
+                                "libvpx-CVE-2023-44488.patch"))))))
+
+(define-public orfondl
+  (package
+    (name "orfondl")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/badlogic/orfondl")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h1zcxxhvshbc3gkmr33npki6sdjh79haack1cci9k40a0gk144v"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          ;; Delete prebuilt binary file.
+                          (delete-file "orfondl")))))
+    (build-system go-build-system)
+    (arguments
+     (list #:install-source? #f
+           #:import-path "github.com/badlogic/orfondl"
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-source
+                 (lambda* (#:key inputs import-path #:allow-other-keys)
+                   (substitute* (string-append "src/" import-path "/main.go")
+                     (("\"ffmpeg\"")
+                      (string-append "\""
+                                     (search-input-file inputs "bin/ffmpeg")
+                                     "\""))))))))
+    (inputs (list ffmpeg))
+    (home-page "https://github.com/tpoechtrager/orf_dl")
+    (synopsis "Download videos from ORF ON")
+    (description "This package provides a Go-based command line application
+to download videos from Austria's national television broadcaster.")
+    (license license:bsd-3)))
 
 (define-public orf-dl
-  (let ((commit "2dbbe7ef4e0efe0f3c1d59c503108e22d9065999")
-        (revision "1"))
-    (package
-      (name "orf-dl")
-      (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/tpoechtrager/orf_dl")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1w413miy01cm7rzb5c6wwfdnc2sqv87cvxwikafgrkswpimvdjsk"))))
-      (build-system copy-build-system)
-      (arguments
-       (list #:install-plan #~`(("orf_dl.php" "bin/orf-dl"))
-             #:phases
-             #~(modify-phases %standard-phases
-                 (add-after 'unpack 'patch-source
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (substitute* "orf_dl.php"
-                       (("ffmpeg")
-                        (search-input-file inputs "bin/ffmpeg"))))))))
-      (inputs (list php ffmpeg))
-      (home-page "https://github.com/tpoechtrager/orf_dl")
-      (synopsis "Download videos from tvthek.orf.at")
-      (description "This package provides a PHP-based command line application
-to download videos from Austria's national television broadcaster.")
-      (license license:gpl2+))))
+  (deprecated-package "orf-dl" orfondl))
 
 (define-public yle-dl
   (package
@@ -3118,9 +3127,9 @@ YouTube.com and many more sites.")
     (license license:public-domain)))
 
 (define-public yt-dlp
-  (package/inherit youtube-dl
+  (package
     (name "yt-dlp")
-    (version "2023.10.13")
+    (version "2024.07.09")
     (source
      (origin
        (method git-fetch)
@@ -3129,66 +3138,63 @@ YouTube.com and many more sites.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1cy8cpqwq6yfsbrnln3qqp9lsjckn20m6w7b890ha7jahyir5m1n"))))
+        (base32 "1zw8zaihfx6fg1l9ynwm0d4zy6k30jwi7qbq9ylsl93yg1a73js9"))))
+    (build-system pyproject-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments youtube-dl)
-       ((#:tests? _) (not (%current-target-system)))
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            ;; See the comment for the corresponding phase in youtube-dl.
-            (replace 'default-to-the-ffmpeg-input
-              (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "yt_dlp/postprocessor/ffmpeg.py"
-                  (("location = self.get_param(.*)$")
-                   (string-append
-                     "location = '"
-                     (dirname (search-input-file inputs "bin/ffmpeg"))
-                     "'\n")))))
-            (replace 'build-generated-files
-              (lambda* (#:key inputs #:allow-other-keys)
-                (if (assoc-ref inputs "pandoc")
-                  (invoke "make"
-                          "PYTHON=python"
-                          "yt-dlp"
-                          "yt-dlp.1"
-                          "completions")
-                  (invoke "make"
-                          "PYTHON=python"
-                          "yt-dlp"
-                          "completions"))))
-            (replace 'fix-the-data-directories
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let ((prefix (assoc-ref outputs "out")))
-                  (substitute* "setup.py"
-                    (("'etc/")
-                     (string-append "'" prefix "/etc/"))
-                    (("'share/")
-                     (string-append "'" prefix "/share/"))))))
-            (delete 'install-completion)
-            (replace 'check
-              (lambda* (#:key tests? #:allow-other-keys)
-                (when tests?
-                  (invoke "pytest" "-k" "not download"))))))))
-    (inputs (modify-inputs (package-inputs youtube-dl)
-              (append python-brotli
-                      python-certifi
-                      python-mutagen
-                      python-pycryptodomex
-                      python-websockets)))
+     `(#:tests? ,(not (%current-target-system))
+       #:phases
+       (modify-phases %standard-phases
+         ;; See <https://issues.guix.gnu.org/43418#5>.
+         ;; ffmpeg is big but required to request free formats from, e.g.,
+         ;; YouTube so pull it in unconditionally.  Continue respecting the
+         ;; --ffmpeg-location argument.
+         (add-after 'unpack 'default-to-the-ffmpeg-input
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "yt_dlp/postprocessor/ffmpeg.py"
+               (("location = self.get_param(.*)$")
+                (string-append
+                  "location = '"
+                  (dirname (search-input-file inputs "bin/ffmpeg"))
+                  "'\n")))))
+         (add-before 'build 'build-generated-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (if (assoc-ref inputs "pandoc")
+               (invoke "make"
+                       "PYTHON=python"
+                       "yt-dlp"
+                       "yt-dlp.1"
+                       "completions")
+               (invoke "make"
+                       "PYTHON=python"
+                       "yt-dlp"
+                       "completions"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "pytest" "-k" "not download")))))))
+    (inputs (list ffmpeg python-brotli
+                  python-certifi
+                  python-mutagen
+                  python-pycryptodomex
+                  python-requests-next ; TODO Remove this special package
+                  python-urllib3-next  ; TODO Remove this one too
+                  python-websockets))
     (native-inputs
      (append
        ;; To generate the manpage.
        (if (supported-package? pandoc)
          (list pandoc)
          '())
-       (list python-pytest zip)))
+       (list python-hatchling python-pytest zip)))
+    (synopsis "Download videos from YouTube.com and other sites")
     (description
      "yt-dlp is a small command-line program to download videos from
 YouTube.com and many more sites.  It is a fork of youtube-dl with a
 focus on adding new features while keeping up-to-date with the
 original project.")
     (properties '((release-monitoring-url . "https://pypi.org/project/yt-dlp/")))
-    (home-page "https://github.com/yt-dlp/yt-dlp")))
+    (home-page "https://github.com/yt-dlp/yt-dlp")
+    (license license:public-domain)))
 
 (define-public you-get
   (package
@@ -3800,7 +3806,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "7.22.0")
+    (version "7.24.0")
     (source
      (origin
        (method git-fetch)
@@ -3809,7 +3815,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1aa23kni64751x0kd54lr87ns9kdc8pblhqp8m8608ah8xwak4mw"))))
+        (base32 "08fgcf20v4q52lfdwzvscbbppa6m582f551q6fzxz2vs5936w3wx"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -3966,7 +3972,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "29.0.2")
+    (version "29.1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3976,7 +3982,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ijn19wy52fa7ahr29v1rzvh6j0qr7i5xl129m6s9c644f7i51ac"))
+                "192p7m3g8ynbkq3s894w6a0w6gix3k237q5jwqrrr8idwfwwyh0g"))
               (patches
                (search-patches "obs-modules-location.patch"))))
     (build-system cmake-build-system)
@@ -4014,6 +4020,7 @@ be used for realtime video capture via Linux-specific APIs.")
     (inputs
      (list
       alsa-lib
+      asio
       bash-minimal
       curl
       eudev
@@ -4031,6 +4038,7 @@ be used for realtime video capture via Linux-specific APIs.")
       luajit
       mbedtls-lts
       mesa
+      nlohmann-json
       pciutils
       pipewire
       pulseaudio
@@ -4044,6 +4052,7 @@ be used for realtime video capture via Linux-specific APIs.")
       vlc
       wayland
       wayland-protocols
+      websocketpp
       zlib))
     (synopsis "Live streaming software")
     (description "Open Broadcaster Software provides a graphical interface for
@@ -4153,6 +4162,35 @@ your host privately.")
     (description "This plugin adds 3 sources for capturing audio outputs,
 inputs and applications using PipeWire.")
     (license license:gpl2+)))
+
+(define-public obs-source-record
+  (package
+    (name "obs-source-record")
+    (version "0.3.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/exeldro/obs-source-record")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07yglklrjn3nkyw8755nwchcfgvyw7d0n4qynvja8s7rgqbbs0an"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f ;no tests
+      #:configure-flags
+      #~(list (string-append "-DLIBOBS_INCLUDE_DIR="
+                             #$(this-package-input "obs") "/lib")
+              "-DBUILD_OUT_OF_TREE=On"
+              "-Wno-dev")))
+    (inputs (list obs))
+    (home-page "https://github.com/exeldro/obs-source-record")
+    (synopsis "OBS plugin for recording sources via a filter")
+    (description "This package provides an OBS plugin for recording sources
+via a filter.")
+    (license license:gpl2)))
 
 (define-public obs-websocket
   ;; Functionality was merged into OBS.
@@ -5765,10 +5803,10 @@ to convenience of translating and batch processing of multiple documents.")
     (license license:gpl3+)))
 
 (define-public theorafile
-  (let ((commit "404b14d7602b5918d117eaa64e8aa6601ede8593"))
+  (let ((commit "ea5fd6d34053ff72b0abe83fa4f2cd0771d92663"))
     (package
       (name "theorafile")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.0" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -5777,23 +5815,19 @@ to convenience of translating and batch processing of multiple documents.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "128c3pjzqbgrj020glm5jd6ss18vl19471lj615w2brjwb7c1f0z"))))
+          (base32 "0affdbs7vhi7apj5sc5mg815vqy1913zgymx3m1rsz8fhrcg3bvn"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:make-flags '("CC=gcc")
+       `(#:make-flags '(,(string-append "CC=" (cc-for-target)))
+         #:test-target "test"
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
-           (replace 'check
-             (lambda _
-               (setenv "CC" "gcc")
-               (invoke "make" "test")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  (install-file "libtheorafile.so" (string-append out "/lib"))
-                 (install-file "theorafile.h" (string-append out "/include")))
-               #t)))))
+                 (install-file "theorafile.h" (string-append out "/include"))))))))
       (native-inputs
        ;; For tests.
        (list sdl2))

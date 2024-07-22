@@ -13,6 +13,7 @@
 ;;; Copyright © 2022 Peter Polidoro <peter@polidoro.io>
 ;;; Copyright © 2023 B. Wilson <x@wilsonb.com>
 ;;; Copyright © 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,7 +113,7 @@ programmer devices.")
 (define-public 0xffff
   (package
     (name "0xffff")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method git-fetch)
@@ -121,22 +122,21 @@ programmer devices.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rl1xzbxl991pm2is98zbryac1lgjrc3zphmbd8agv07av0r6r6n"))))
+        (base32 "1nqbrr64kjr0h3h6gzhrj1vd106nni4y9mhjdr8mh2x9lcgn4fj5"))))
     (build-system gnu-build-system)
     (inputs
      ;; Building with libusb-compat will succeed but the result will be broken.
      ;; See <https://github.com/pali/0xFFFF/issues/3>.
      (list libusb-0.1))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure))           ; no configure
-       #:make-flags
-       (list (string-append "CC=" ,(cc-for-target))
-             "HOST_CC=gcc"
-             "BUILD_DATE=GNU Guix"
-             (string-append "PREFIX=" %output))
-       #:tests? #f))                    ; no 'check' target
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (delete 'configure)) ;no configure
+      #:make-flags #~(list (string-append "CC="
+                                          #$(cc-for-target)) "HOST_CC=gcc"
+                           "BUILD_DATE=GNU Guix"
+                           (string-append "PREFIX=" %output))
+      #:tests? #f)) ;no 'check' target
     (home-page "https://github.com/pali/0xFFFF")
     (synopsis "Flash FIASCO images on Maemo devices")
     (description
@@ -149,15 +149,19 @@ brick your device.")
 (define-public avrdude
   (package
     (name "avrdude")
-    (version "6.3")
+    (version "7.3")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://savannah/avrdude/avrdude-"
-                          version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/avrdudes/avrdude/")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "15m1w1qad3dj7r8n5ng1qqcaiyx1gyd6hnc3p2apgjllccdp77qg"))))
-    (build-system gnu-build-system)
+       (base32 "0g7c30baaxav43rlfj0cdbl40p2swamp44glz0rgf096wc0bg996"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f))                      ; no tests
     (inputs
      (list libelf libusb-compat libftdi))
     (native-inputs
@@ -165,9 +169,9 @@ brick your device.")
     (home-page "https://www.nongnu.org/avrdude/")
     (synopsis "AVR downloader and uploader")
     (description
-     "AVRDUDE is a utility to download/upload/manipulate the ROM and
-EEPROM contents of AVR microcontrollers using the @acronym{ISP, in-system
-programming} technique.")
+     "@code{AVRDUDE} is a utility to download/upload/manipulate the ROM and EEPROM
+contents of AVR microcontrollers using the @acronym{ISP, in-system programming}
+technique.")
     (license license:gpl2+)))
 
 (define-public dfu-programmer
@@ -650,13 +654,24 @@ It can be used to upload images to I.MX SoC's using at least their boot ROM.")
       (arguments
        (list
         #:install-source? #f
-        #:import-path "github.com/zsa/wally-cli"))
+        #:import-path "github.com/zsa/wally-cli"
+        #:phases
+        #~(modify-phases %standard-phases
+            ;; XXX: Upstream Golang module name was changed from
+            ;; <gopkg.in/cheggaaa/pb.v1> to <github.com/cheggaaa/pb>, adjust
+            ;; references to it accordingly. Remove it in the new release of
+            ;; the package.
+            (add-after 'unpack 'fix-module-name
+              (lambda* (#:key import-path #:allow-other-keys)
+                (with-directory-excursion (string-append "src/" import-path)
+                  (substitute* "main.go"
+                    (("gopkg.in/cheggaaa/pb.v1") "github.com/cheggaaa/pb"))))))))
       (native-inputs
        (list go-github-com-briandowns-spinner
              go-github-com-google-gousb
              go-github-com-logrusorgru-aurora
              go-github-com-marcinbor85-gohex
-             go-gopkg-in-cheggaaa-pb-v1
+             go-github-com-cheggaaa-pb
              pkg-config))
       (home-page "https://ergodox-ez.com/pages/wally")
       (synopsis "Flashing tool for ZSA keyboards")

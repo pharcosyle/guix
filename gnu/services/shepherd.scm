@@ -60,6 +60,7 @@
             shepherd-service-respawn?
             shepherd-service-start
             shepherd-service-stop
+            shepherd-service-free-form
             shepherd-service-auto-start?
             shepherd-service-modules
 
@@ -217,7 +218,10 @@ DEFAULT is given, use it as the service's default value."
                  (default #f))
   (respawn-delay shepherd-service-respawn-delay
                  (default #f))
-  (start         shepherd-service-start)               ;g-expression (procedure)
+  (free-form     shepherd-service-free-form            ;#f | g-expression (service)
+                 (default #f))
+  (start         shepherd-service-start                ;g-expression (procedure)
+                 (default #~(const #t)))
   (stop          shepherd-service-stop                 ;g-expression (procedure)
                  (default #~(const #f)))
   (actions       shepherd-service-actions              ;list of <shepherd-action>
@@ -298,8 +302,8 @@ stored."
                                provisions)
                    ".scm")))
 
-(define (shepherd-service-file service)
-  "Return a file defining SERVICE."
+(define (shepherd-service-file/regular service)
+  "Return a file defining SERVICE, a service whose 'free-form' field is #f."
   (scheme-file (shepherd-service-file-name service)
                (with-imported-modules %default-imported-modules
                  #~(begin
@@ -331,6 +335,21 @@ stored."
                                   (($ <shepherd-action> name proc doc)
                                    #~(#$name #$doc #$proc)))
                                 (shepherd-service-actions service))))))))
+
+(define (shepherd-service-file/free-form service)
+  "Return a file defining SERVICE, a service whose 'free-form' field is set."
+  (scheme-file (shepherd-service-file-name service)
+               (with-imported-modules %default-imported-modules
+                 #~(begin
+                     (use-modules #$@(shepherd-service-modules service))
+
+                     #$(shepherd-service-free-form service)))))
+
+(define (shepherd-service-file service)
+  "Return a file defining SERVICE."
+  (if (shepherd-service-free-form service)
+      (shepherd-service-file/free-form service)
+      (shepherd-service-file/regular service)))
 
 (define (scm->go file shepherd)
   "Compile FILE, which contains code to be loaded by shepherd's config file,
@@ -380,8 +399,7 @@ as shepherd package."
         (scm->go (cute scm->go <> shepherd)))
     (define config
       #~(begin
-          (use-modules (srfi srfi-34)
-                       (system repl error-handling))
+          (use-modules (srfi srfi-1))
 
           (define (make-user-module)
             ;; Copied from (shepherd support), where it's private.
@@ -415,19 +433,25 @@ as shepherd package."
           ;; <https://bugs.gnu.org/40572>.
           (default-pid-file-timeout 30)
 
-          ;; Arrange to spawn a REPL if something goes wrong.  This is better
-          ;; than a kernel panic.
-          (call-with-error-handling
-            (lambda ()
-              (register-services
-               (parameterize ((current-warning-port
-                               (%make-void-port "w")))
-                 (map (lambda (file)
-                        (save-module-excursion
-                         (lambda ()
-                           (set-current-module (make-user-module))
-                           (load-compiled file))))
-                      '#$(map scm->go files))))))
+          ;; Load service files one by one; filter out those that could not be
+          ;; loaded--e.g., due to an unbound variable--such that an error in
+          ;; one service definition does not prevent the system from booting.
+          (register-services
+           (parameterize ((current-warning-port (%make-void-port "w")))
+             (filter-map (lambda (file)
+                           (with-exception-handler
+                               (lambda (exception)
+                                 (format #t "Exception caught \
+while loading '~a': ~s~%"
+                                         file exception)
+                                 #f)
+                             (lambda ()
+                               (save-module-excursion
+                                (lambda ()
+                                  (set-current-module (make-user-module))
+                                  (load-compiled file))))
+                             #:unwind? #t))
+                         '#$(map scm->go files))))
 
           (format #t "starting services...~%")
           (let ((services-to-start

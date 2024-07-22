@@ -61,11 +61,13 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages containers)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages digest)
+  #:use-module (gnu packages engineering)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
@@ -113,6 +115,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system pyproject)
   #:use-module (guix build-system qt))
 
 (define-public vice
@@ -792,7 +795,7 @@ and Game Boy Color games.")
 (define-public sameboy
   (package
     (name "sameboy")
-    (version "0.16.2")
+    (version "0.16.3")
     (source
      (origin
        (method git-fetch)
@@ -801,7 +804,7 @@ and Game Boy Color games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ckx5dm57h7ncvfqqqb2mdl5dcmhkardcn78zv965h6w1yxg0ii8"))))
+        (base32 "1jdjg59vzzkbi3c3qaxpsxqx955sb86cd3kcypb0nhjxbnwac1di"))))
     (build-system gnu-build-system)
     (native-inputs
      (list rgbds pkg-config))
@@ -920,7 +923,7 @@ core library.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus SDL input plugin")
+    (synopsis "Mupen64Plus SDL audio plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1006,7 +1009,7 @@ SDL input plugin.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus SDL input plugin")
+    (synopsis "Mupen64Plus RSP high-level emulation (HLE) plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1048,7 +1051,7 @@ high-level emulation (HLE) RSP processor plugin.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus SDL input plugin")
+    (synopsis "Mupen64Plus RSP Z64 plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1092,7 +1095,7 @@ Z64 RSP processor plugin.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus Rice Video plugin")
+    (synopsis "Mupen64Plus Arachnoid video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1135,7 +1138,7 @@ Arachnoid video plugin.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus Rice Video plugin")
+    (synopsis "Mupen64Plus Glide64 video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1184,7 +1187,7 @@ Glide64 video plugin.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus Rice Video plugin")
+    (synopsis "Mupen64Plus Glide64MK2 video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1228,7 +1231,7 @@ Glide64MK2 video plugin.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus Rice Video plugin")
+    (synopsis "Mupen64Plus Rice video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1318,29 +1321,27 @@ Z64 video plugin.")
            mupen64plus-audio-sdl
            mupen64plus-input-sdl
            mupen64plus-rsp-hle
-           mupen64plus-video-glide64
            mupen64plus-video-glide64mk2
            mupen64plus-video-rice))
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         ;; The mupen64plus build system has no configure phase.
-         (delete 'configure)
-         ;; Makefile is in a subdirectory.
-         (add-before
-          'build 'cd-to-project-dir
-          (lambda _
-            (chdir "projects/unix"))))
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out"))
-             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
-         (list "all"
-               (string-append "PREFIX=" out)
-               (string-append "APIDIR=" m64p "/include/mupen64plus")
-               ;; Trailing slash matters here.
-               (string-append "COREDIR=" m64p "/lib/")))
-       ;; There are no tests.
-       #:tests? #f))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; The mupen64plus build system has no configure phase.
+          (delete 'configure)
+          ;; Makefile is in a subdirectory.
+          (add-before 'build 'cd-to-project-dir
+            (lambda _
+              (chdir "projects/unix"))))
+      #:make-flags
+      #~(let ((m64p #$(this-package-input "mupen64plus-core")))
+          (list "all"
+                (string-append "PREFIX=" #$output)
+                (string-append "APIDIR=" m64p "/include/mupen64plus")
+                ;; Trailing slash matters here.
+                (string-append "COREDIR=" m64p "/lib/")))
+      ;; There are no tests.
+      #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus command line user interface")
     (description
@@ -1349,6 +1350,75 @@ which is capable of accurately playing many games.  This package contains the
 command line user interface.  Installing this package is the easiest way
 towards a working Mupen64Plus for casual users.")
     (license license:gpl2+)))
+
+(define-public mupen64plus-video-gliden64
+  ;; The latest release is 5 years old, doesn't build with GCC 11.
+  (let ((commit "b021d8ee437266cfdd7251daf8c23203578b02b6")
+        (revision "0"))
+    (package
+      (name "mupen64plus-video-gliden64")
+      (version (git-version "4.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gonetz/GLideN64")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0kcx5m8fjgrdi2dby8qbmkl78picip3jx7hg0ah1cazk192v2x98"))
+         (modules '((guix build utils)))
+         (snippet '(begin
+                     ;; Delete 20 MiB of Windows-related files.
+                     (delete-file-recursively "projects/msvc")
+                     ;; Delete bundled library headers.
+                     (delete-file-recursively "src/GLideNHQ/inc") ;zlib, libpng
+                     (delete-file-recursively "src/inc/freetype")
+                     ;; Unbundle xxhash.
+                     (delete-file-recursively "src/xxHash")
+                     (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                       (substitute* (find-files "." "\\.cpp$")
+                         (("#include \"xxHash/xxhash.h\"")
+                          "#include <xxhash.h>")))))))
+      (build-system cmake-build-system)
+      (arguments
+       (list
+        #:tests? #f                     ;no test suite
+        #:configure-flags
+        #~(list "-DMUPENPLUSAPI=ON"
+                "-DUSE_SYSTEM_LIBS=ON"
+                ;; Enable some optimizations.
+                "-DVEC4_OPT=ON"
+                #$(if (target-x86?)
+                      ;; FIXME: Disabled for now as it causes a segmentation
+                      ;; fault (see:
+                      ;; https://github.com/gonetz/GLideN64/issues/2836).
+                      "-DX86_OPT=OFF"    ;extra X86 ASM optimizations
+                      "-DX86_OPT=OFF")
+                #$(if (target-arm?)
+                      "-DNEON_OPT=ON"
+                      "-DNEON_OPT=OFF")
+                #$(if (target-aarch64?)
+                      "-DCRC_ARMV8=ON"  ;use ARMv8 hardware to compute CRCs
+                      "-DCRC_OPT=ON"))  ;use xxHash to compute CRCs)
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'chdir
+              ;; The src/ subdirectory contains the root CMakeLists.txt file.
+              (lambda _
+                (chdir "src")))
+            (add-after 'chdir 'generate-Revision.h
+              (lambda _
+                (invoke "sh" "getRevision.sh" "--nogit"))))))
+      (inputs (list freetype libpng mesa xxhash zlib))
+      (home-page "https://github.com/gonetz/GLideN64")
+      (synopsis "Mupen64Plus GlideN64 video plugin")
+      (description "GLideN64 is a new generation graphics plugin for Nintendo
+64 emulators, which offers better performance and compatibility compared to
+the original Glide64 plugin.  This version is built for use with the
+Mupen64Plus emulator.")
+      (license license:gpl2+))))
 
 (define-public nestopia-ue
   (package
@@ -1452,6 +1522,10 @@ as RetroArch.")
                (substitute* "gfx/common/wayland/generate_wayland_protos.sh"
                  (("/usr/local/share/wayland-protocols")
                  (string-append wayland-protocols "/share/wayland-protocols")))
+
+               ;; Without HLSL, we can still enable GLSLANG and Vulkan support.
+               (substitute* "qb/config.libs.sh"
+                 (("[$]HAVE_GLSLANG_HLSL") "notcare"))
 
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
@@ -2225,106 +2299,24 @@ graphic filters.  Some of its features include:
     (license license:gpl2+)
     (supported-systems (list "x86_64-linux"))))
 
-;; python-pwntools requires a -rc release of unicorn
 (define-public unicorn
-  (let ((unless-x86
-          (lambda (code)
-            (if (member (%current-system) '("x86_64-linux" "i686-linux"))
-              '()
-              code))))
-    (package
-      (name "unicorn")
-      (version "1.0.2-rc4")
-      ;; NOTE: unicorn ships a bundled QEMU, but with a lot of custom modifications.
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/unicorn-engine/unicorn")
-               (commit version)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "17nyccgk7hpc4hab24yn57f1xnmr7kq4px98zbp2bkwcrxny8gwy"))))
-      (outputs '("out" "python"))
-      ;; The main library is not written in Python, but the build process has
-      ;; little in common with any defined build system, so we might as well
-      ;; build on top of python-build-system and make use of all
-      ;; the Python-specific phases that can be reused.
-      (build-system python-build-system)
-      (arguments
-       `(#:modules ((srfi srfi-26)
-                    (guix build python-build-system)
-                    (guix build utils))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'build 'build-library
-             (lambda* (#:key inputs #:allow-other-keys)
-               (invoke "make"
-                       "-j" (number->string (parallel-job-count))
-                       "UNICORN_STATIC=no"
-                       "CC=gcc")))
-           (add-after 'build-library 'install-library
-             (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "make" "install"
-                       "UNICORN_STATIC=no"
-                       (string-append
-                        "PREFIX="
-                        (assoc-ref outputs "out")))))
-           (add-before 'build 'prepare-bindings
-             (lambda* (#:key outputs #:allow-other-keys)
-               (chdir "bindings/python")
-               ;; Set this environment variable so that the Python bindings
-               ;; don't build their own copy of the shared object, but use
-               ;; a dummy value such that the bindings test suite uses the
-               ;; same mechanism for loading the library as any other user.
-               (setenv "LIBUNICORN_PATH" "1")
-               (substitute* "unicorn/unicorn.py"
-                 (("_path_list = \\[.*")
-                  (string-append
-                   "_path_list = [\""
-                   (assoc-ref outputs "out")
-                   ;; eat the rest of the list
-                   "/lib\"] + 0*[")))
-               #t))
-           (add-before 'check 'check-library
-             (lambda* (#:key outputs #:allow-other-keys)
-               (for-each
-                 (lambda (suite)
-                   (with-directory-excursion
-                     (string-append "../../tests/" suite)
-                     (invoke "make" "test" "CC=gcc"
-                             ,@(unless-x86
-                                '("AS=i686-unknown-linux-gnu-as"
-                                  "OBJCOPY=i686-unknown-linux-gnu-objcopy")))))
-                 '("unit" "regress"))
-               #t))
-           (add-after 'install 'install-samples
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((python-samples (find-files "." "sample_.*"))
-                      (c-samples (find-files "../../samples" ".*\\.c"))
-                      (python-docdir
-                        (string-append (assoc-ref outputs "python")
-                                       "/share/doc/unicorn/samples"))
-                      (c-docdir
-                        (string-append (assoc-ref outputs "out")
-                                       "/share/doc/unicorn/samples")))
-                 (for-each (cut install-file <> c-docdir) c-samples)
-                 (for-each (cut install-file <> python-docdir) python-samples)
-                 #t))))))
-      (native-inputs
-       ;; NOTE: cross-binutils needs to be wrapped with unless-x86, as otherwise
-       ;; the linker provided by the package will be used, circumventing the ld-wrapper.
-       `(,@(unless-x86
-            `(("assembler-for-tests" ,(cross-binutils "i686-unknown-linux-gnu"))))
-         ("cmocka" ,cmocka)
-         ("hexdump-for-tests" ,util-linux)))
-      (home-page "https://www.unicorn-engine.org")
-      (synopsis "Unicorn CPU emulator framework")
-      (description
-       "Unicorn is a lightweight, multi-platform, multi-architecture CPU emulator
-framework based on QEMU.")
-      (license license:gpl2+))))
+  (package
+    (name "unicorn")
+    (version "2.0.1.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32 "0mlfs8qfi0clyncfkbxp6in0cpl747510i6bqymwid43xcirbikz"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list cmake pkg-config))
+    (home-page "https://www.unicorn-engine.org")
+    (synopsis "Generic CPU emulator framework")
+    (description
+     "Uniforn is a lightweight, multi-platform, multi-architecture CPU
+emulator framework based on QEMU.")
+    (license license:gpl2+)))
 
 (define-public ppsspp
   (package
@@ -2630,6 +2622,55 @@ cache visualization.  Developed at FEE CTU for computer architecture classes.")
        "This package provides an assembler and emulator for the Uxn
 stack-machine, written in ANSI C.  Graphical output is implemented using SDL2.")
       (license license:expat))))
+
+(define-public python-keystone-engine
+  (package
+    (name "python-keystone-engine")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "keystone-engine" version))
+       (sha256
+        (base32 "1xahdr6bh3dw5swrc2r8kqa8ljhqlb7k2kxv5mrw5rhcmcnzcyig"))))
+    (native-inputs (list cmake))
+    (build-system pyproject-build-system)
+    (home-page "https://www.keystone-engine.org")
+    (synopsis
+     "Lightweight multi-platform, multi-architecture assembler framework")
+    (description
+     "Keystone is a lightweight multi-platform, multi-architecture
+assembler framework.  It supports a wide-range of different architectures
+and offers an intuitive architecture-neutral API for interacting with
+assembly for these architectures.")
+    (license license:gpl2)))
+
+(define-public python-archinfo
+  (package
+    (name "python-archinfo")
+    ;; Must be the same version as python-angr.
+    (version "9.2.46")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "archinfo" version))
+       (sha256
+        (base32 "037xfq3wcf8ngayxz9623l4646m780v2102mfbygpzbkkjha1966"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list python-capstone python-keystone-engine))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (with-directory-excursion "tests"
+                          (invoke "python" "-m" "unittest"))))))))
+    (home-page "https://github.com/angr/archinfo")
+    (synopsis "Extract architecture-specific information from binaries")
+    (description
+     "Collection of classes that contain architecture-specific information
+information.  Useful for cross-architecture tools (such as @code{python-pyvex}).")
+    (license license:bsd-2)))
 
 (define-public emu8051
   (let ((commit "5dc681275151c4a5d7b85ec9ff4ceb1b25abd5a8")

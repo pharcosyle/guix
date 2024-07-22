@@ -23,6 +23,8 @@
 ;; Copyright © 2024 Hilton Chain <hako@ultrarare.space>
 ;; Copyright © 2024 Liliana Marie Prikler <liliana.prikler@gmail.com>
 ;; Copyright © 2024 Vivien Kraus <vivien@planete-kraus.eu>
+;; Copyright © 2024 Guillaume Le Vaillant <glv@posteo.net>
+;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -30,6 +32,67 @@
 
 (channel-news
  (version 0)
+ (entry (commit "ee7e5e00bf2b9257e67d785b37efddb008c5da37")
+        (title
+         (en "Plasma updated to version 6.1.2")
+         (de "Plasma auf Version 6.1.2 aktualisiert")
+         (fr "Plasma passe à la version 6.1.2")
+         (zh "Plasma 更新到 6.1.2 版本"))
+        (body
+         (en "Plasma updated to 6.1.2, KDE Frameworks updated to 6.3.0, and
+other KDE package updates.
+
+With Plasma updates, SDDM has QT6 enabled by default. If you want to still use a
+Qt5 theme, you need to set the field @code{sddm} in @code{sddm-configuration} to
+@code{sddm-qt5}.")
+         (de "Plasma wurde auf 6.1.2 aktualisiert, KDE Frameworks wurde
+auf 6.3.0 aktualisiert und andere KDE-Pakete wurden aktualisiert.
+
+Mit der Aktualisierung von Plasma ist in SDDM die Version qt6
+vorgegeben.  Wenn Sie ein Qt5-Thema benutzen möchten, müssen Sie
+in der @code{sddm-configuration} das Feld @code{sddm} auf
+@code{sddm-qt5} setzen.")
+         (fr "Plasma passe à la version 6.1.2, KDE Frameworks à la 6.3.0, et
+  d’autres logiciels KDE sont mis à jour.
+
+  Avec ces mises à jour de Plasma, sddm utilise Qt 6 par défaut.  Pour
+  utiliser un thème Qt 5, il faut mettre le champ @code{sddm} de
+  @code{sddm-configuration} à @code{sddm-qt5}.")
+         (zh "Plasma 更新到 6.1.2, KDE Frameworks 更新到 6.3.0, 及其他 KDE 软件包更新。
+
+随着 Plasma 更新, SDDM 默认启用 Qt6, 如果您还想使用 Qt5 主题, 需要将 @code{sddm-configuration} 中的
+@code{sddm} 字段设置为 @code{sddm-qt5}.")))
+
+ (entry (commit "a46908620fac09bd8ccd0f587a27e86035d3b1d7")
+        (title
+         (en "@code{stumpwm:lib} removed")
+         (de "@code{stumpwm:lib} wurde entfernt")
+         (fr "@code{stumpwm:lib} supprimé"))
+        (body
+         (en "The @code{lib} output of the @code{stumpwm} package has been
+removed.  If you have some personal package definitions depending on
+@code{stumpwm:lib}, they should be updated to depend on @code{stumpwm}
+instead.")
+         (de "Die Ausgabe @code{lib} des Pakets @code{stumpwm} gibt es nicht
+mehr.  Wenn Sie eigene Paketdefinitionen haben, die von @code{stumpwm:lib}
+abhängen, müssen sie angepasst werden, um stattdessen von @code{stumpwm}
+abzuhängen.")
+         (fr "La sortie @code{lib} du paquet @code{stumpwm} a été supprimée.
+Si vous avez des définitions de paquets personnels dépendantes de
+@code{stumpwm:lib}, elle doivent être modifiées pour dépendre de
+@code{stumpwm} à la place.")))
+
+ (entry (commit "6fad0fd1c32db2cb25447b694f08d5c7836536ad")
+        (title
+          (en "Linux-libre 6.8 removed due to end of upstream support")
+          (de "Linux-libre 6.8 wurde entfernt"))
+        (body
+          (en "The linux-libre 6.8 kernel series has reached the end of
+             its life, and is no longer supported upstream.  For this
+             reason, it has been removed from GNU Guix.")
+          (de "Die @code{linux-libre} 6.8-Versionsreihe hat ihr
+Supportende erreicht und wird nicht mehr unterstützt („end of life“). Daher ist die
+Versionsreihe aus GNU Guix entfernt worden.")))
 
  (entry (commit "8d1d98a3aa3448b9d983e4bd64243a938b96e8ab")
         (title

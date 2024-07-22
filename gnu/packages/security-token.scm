@@ -355,7 +355,7 @@ website for more information about Yubico and the YubiKey.")
 (define-public opensc
   (package
     (name "opensc")
-    (version "0.25.0")
+    (version "0.25.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -363,23 +363,22 @@ website for more information about Yubico and the YubiKey.")
                     version "/opensc-" version ".tar.gz"))
               (sha256
                (base32
-                "0bv2sq3k8bl712yi1gi7f8km8g2x09is8ynnr5x3g2jh59pbdmz6"))))
+                "0yxk97aj29pybvya6r9ix9xh00hdzcfrc2lcns4vb3kwpplamjr3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; By setting an absolute path here, we arrange for OpenSC to
-         ;; successfully dlopen libpcsclite.so.1 by default.  The user can
-         ;; still override this if they want to, by specifying a custom OpenSC
-         ;; configuration file at runtime.
-         (add-after 'unpack 'set-default-libpcsclite.so.1-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libpcsclite (search-input-file inputs
-                                                   "/lib/libpcsclite.so.1")))
-               (substitute* "configure"
-                 (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
-                  (string-append
-                   "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; By setting an absolute path here, we arrange for OpenSC to
+          ;; successfully dlopen libpcsclite.so.1 by default.  The user can
+          ;; still override this if they want to, by specifying a custom OpenSC
+          ;; configuration file at runtime.
+          (add-after 'unpack 'set-default-libpcsclite.so.1-path
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((libpcsclite (search-input-file inputs "/lib/libpcsclite.so.1")))
+                (substitute* "configure"
+                  (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
+                   (string-append "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))))))))
     (inputs
      (list readline openssl-1.1 pcsc-lite ccid))
     (native-inputs
@@ -393,6 +392,31 @@ facilitate the use of smart cards in security applications such as
 authentication, encryption and digital signatures.  OpenSC implements the PKCS
 #15 standard and the PKCS #11 API.")
     (license license:lgpl2.1+)))
+
+
+(define-public pkcs11-helper
+  (package
+    (name "pkcs11-helper")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-"
+             version "/pkcs11-helper-" version ".tar.bz2"))
+       (sha256
+        (base32 "1ac86jfj4qfwzbvsg6l9r4w4bbwxj2i9qi4dy1nz5aqcj6x1an2c"))))
+    (build-system gnu-build-system)
+    (inputs (list openssl pcsc-lite))
+    (native-inputs (list pkg-config))
+    (home-page "https://github.com/OpenSC/pkcs11-helper")
+    (synopsis "Library that simplifies the interaction with PKCS#11 providers")
+    (description
+     "Pkcs11-helper is a library that simplifies the interaction with
+PKCS#11 providers for end-user applications. PKCS#11 is published standard.
+PKCS#11 is the de-facto standard to access cryptographic devices")
+    (license (list license:gpl2 license:bsd-3))))
+
 
 (define-public yubico-piv-tool
   (package

@@ -42,7 +42,7 @@ Trust me Mr. Hendrix, M. Night Shyamalan et al. \
 Differences are hard to spot, e.g. in CLOS vs. GOOPS."))
 
 (test-equal "beautify-description: transform fragment into sentence"
-  "This package provides a function to establish world peace"
+  "This package provides a function to establish world peace."
   (beautify-description "A function to establish world peace"))
 
 (test-equal "beautify-description: remove single quotes"

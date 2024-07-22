@@ -19,6 +19,7 @@
 ;;; Copyright © 2021 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2021 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2021, 2023, 2024 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2022 (unmatched-parenthesis <paren@disroot.org>
 ;;; Copyright © 2022 Dhruvin Gandhi <contact@dhruvin.dev>
 ;;; Copyright © 2022 Dominic Martinez <dom@dominicm.dev>
 ;;; Copyright © 2023 Benjamin <benjamin@uvy.fr>
@@ -32,8 +33,10 @@
 ;;; Copyright © 2023 Timo Wilken <guix@twilken.net>
 ;;; Copyright © 2023 Wilko Meyer <w@wmeyer.eu>
 ;;; Copyright © 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
-;;; Copyright © 2024 Troy Figiel <troy@troyfigiel.com>
 ;;; Copyright © 2024 Herman Rimm <herman@rimm.ee>
+;;; Copyright © 2024 Jesse Eisses <jesse@eisses.email>
+;;; Copyright © 2024 Troy Figiel <troy@troyfigiel.com>
+;;; Copyright © 2024 Luis Higino <luishenriquegh2701@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,11 +63,14 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
   #:use-module (gnu packages golang-check)
   #:use-module (gnu packages golang-compression)
   #:use-module (gnu packages golang-crypto)
+  #:use-module (gnu packages golang-maths)
+  #:use-module (gnu packages golang-web)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages specifications))
 
@@ -79,6 +85,116 @@
 ;;;
 ;;; Libraries:
 ;;;
+
+(define-public go-atomicgo-dev-cursor
+  (package
+    (name "go-atomicgo-dev-cursor")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atomicgo/cursor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ds85nyd3dnjr961x9g5kflx1qdb92vn7n6wc4jbk0fjjzbrnh5s"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "atomicgo.dev/cursor"))
+    (home-page "https://atomicgo.dev/cursor")
+    (synopsis "Moving terminal cursor in Golang")
+    (description
+     "Package cursor contains cross-platform methods to move the terminal cursor in
+different directions.  This package can be used to create interactive CLI tools
+and games, live charts, algorithm visualizations and other updatable output of
+any kind.")
+    (license license:expat)))
+
+(define-public go-atomicgo-dev-keyboard
+  (package
+    (name "go-atomicgo-dev-keyboard")
+    (version "0.2.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atomicgo/keyboard")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0axhs1ji87szirv91vvwy0l0h5f468pllp8zap2dpcy05krmi9jf"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; Cycle: go-github-com-pterm-pterm -> go-github-com-marvinjwendt-testza
+      ;; -> go-atomicgo-dev-keyboard -> go-github-com-pterm-pterm
+      #:tests? #f
+      #:import-path "atomicgo.dev/keyboard"))
+    (propagated-inputs
+     (list go-github-com-containerd-console))
+    (home-page "https://atomicgo.dev/keyboard")
+    (synopsis "Read keyboard events in CLI applications")
+    (description
+     "This package provides a functionality to read key presses from the keyboard,
+while in a terminal application, which may be combined to check for ctrl+c,
+alt+4, ctrl-shift, alt+ctrl+right, etc.  It can also be used to
+simulate (mock) keypresses for CI testing.")
+    (license license:expat)))
+
+(define-public go-atomicgo-dev-schedule
+  (package
+    (name "go-atomicgo-dev-schedule")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atomicgo/schedule")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13zrmf9jagqjvjjckyqlvr889y2gxf22iz42l6j2zmgy9klbn6vl"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "atomicgo.dev/schedule"))
+    (home-page "https://atomicgo.dev/schedule")
+    (synopsis "Easily schedule non-blocking tasks in Golang")
+    (description
+     "This package provides a simple scheduler which, can run a function at a
+given time, in a given duration, or repeatedly at a given interval.")
+    (license license:expat)))
+
+(define-public go-bazil-org-fuse
+  (package
+    (name "go-bazil-org-fuse")
+    (version "0.0.0-20200117225306-7b5117fecadc")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bazil/fuse")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bw2lp1nijpqp729k808xkhwmb8nn7igsv51hvv9jw74q805qg2f"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; Tests require root access to mount file system.
+      #:tests? #f
+      #:import-path "bazil.org/fuse"))
+    (propagated-inputs
+     (list go-github-com-tv42-httpunix go-golang-org-x-sys))
+    (home-page "https://bazil.org/fuse")
+    (synopsis "FUSE filesystems in Golang")
+    (description
+     "Package fuse enables writing FUSE file systems.  It is a from-scratch
+implementation of the kernel-userspace communication protocol, and does not
+use the C library from the project called FUSE.")
+    (license (list license:bsd-2 license:bsd-3 license:hpnd))))
 
 (define-public go-code-cloudfoundry-org-bytefmt
   (package
@@ -99,7 +215,6 @@
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.20
       #:import-path "code.cloudfoundry.org/bytefmt"))
     (native-inputs
      (list go-github-com-onsi-gomega
@@ -109,6 +224,126 @@
     (description
      "Package bytefmt contains helper methods and constants for converting to and from
 a human-readable byte format.")
+    (license license:asl2.0)))
+
+(define-public go-git-sr-ht-emersion-go-scfg
+  (package
+    (name "go-git-sr-ht-emersion-go-scfg")
+    (version "0.0.0-20211215104734-c2c7a15d6c99")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~emersion/go-scfg")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02gn8hz8zfv8y0krysx2wv951gw8hmhdfqf1ysidwm7i293365w4"))))
+    (build-system go-build-system)
+    (arguments
+     (list #:import-path "git.sr.ht/~emersion/go-scfg"))
+    (propagated-inputs
+     (list go-github-com-google-shlex
+           go-github-com-davecgh-go-spew))
+    (home-page "https://git.sr.ht/~emersion/go-scfg")
+    (synopsis "Go library for simple configuration file format")
+    (description
+     "Package go-scfg parses scfg files.")
+    (license license:expat)))
+
+(define-public go-git-sr-ht-emersion-go-sqlite3-fts5
+  (package
+    (name "go-git-sr-ht-emersion-go-sqlite3-fts5")
+    (version "0.0.0-20240124102820-f3a72e8b79b1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~emersion/go-sqlite3-fts5")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1plbfb1z0y3gprddwvp4n61r0cacpp7cjn3abq00xhac5vdvig0v"))))
+    (build-system go-build-system)
+    ;; XXX: fts5.c, fts5.h, generate.sh, sqlite3.h and sqlite3ext.h are
+    ;; obtained from
+    ;; <https://www.sqlite.org/2023/sqlite-preprocessed-3440000.zip>, check if
+    ;; they may be sourced from sqlite package.
+    (arguments
+     (list
+      #:import-path "git.sr.ht/~emersion/go-sqlite3-fts5"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'set-flags
+            (lambda _
+              ;; FIXME: Find out why it's failing without these flags:
+              ;; src/git.sr.ht/~emersion/go-sqlite3-fts5/internal/internal.go:13:
+              ;; undefined reference to `sqlite3_auto_extension'collect2:
+              ;; error: ld returned 1 exit status
+              (setenv "CGO_LDFLAGS"
+                      "-Wl,--unresolved-symbols=ignore-in-object-files"))))))
+    (propagated-inputs
+     (list go-github-com-mattn-go-sqlite3))
+    (home-page "https://git.sr.ht/~emersion/go-sqlite3-fts5")
+    (synopsis "FTS5 extension for go-sqlite3")
+    (description
+     "Standalone FTS5 extension for
+@@url{https://github.com/mattn/go-sqlite3,go-sqlite3}, that provides full-text
+search functionality to database applications.")
+    (license license:expat)))
+
+(define-public go-git-sr-ht-sircmpwn-getopt
+  (package
+    (name "go-git-sr-ht-sircmpwn-getopt")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~sircmpwn/getopt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0f9rammnmhaz21qkmz7qf76r8jlzi323g05ps3j7gwrxlw7442a6"))))
+    (build-system go-build-system)
+    (arguments
+     (list #:import-path "git.sr.ht/~sircmpwn/getopt"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (home-page "https://git.sr.ht/~sircmpwn/getopt")
+    (synopsis "POSIX getopt for Go")
+    (description
+     "This package provides a POSIX-compatible implementation of
+@code{getopt} for Go.")
+    (license license:bsd-3)))
+
+(define-public go-git-sr-ht-sircmpwn-go-bare
+  (package
+    (name "go-git-sr-ht-sircmpwn-go-bare")
+    (version "0.0.0-20210406120253-ab86bc2846d9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~sircmpwn/go-bare")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0zh36qppk8lscd8mysy0anm2vw5c74c10f4qvhd541wxm06di928"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "git.sr.ht/~sircmpwn/go-bare"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (propagated-inputs
+     (list go-git-sr-ht-sircmpwn-getopt))
+    (home-page "https://git.sr.ht/~sircmpwn/go-bare")
+    (synopsis "Implementation of the BARE message format")
+    (description
+     "This package provides an implementation of the @acronym{BARE, Binary
+Application Record Encoding} https://baremessages.org/ message format for
+Golang.")
     (license license:asl2.0)))
 
 (define-public go-github-com-a8m-envsubst
@@ -132,6 +367,97 @@ a human-readable byte format.")
     (description
      "This package provides a library for environment variables
 substitution.")
+    (license license:expat)))
+
+(define-public go-github-com-abadojack-whatlanggo
+  (package
+    (name "go-github-com-abadojack-whatlanggo")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abadojack/whatlanggo")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pidd5dqvcnqjjka12h0clj3mmq0j3bpanf9153schsx85xz7mzx"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/abadojack/whatlanggo"))
+    (home-page "https://github.com/abadojack/whatlanggo")
+    (synopsis "Natural language detection library for Golang")
+    (description
+     "This package provides functionality for detecting natural languages and
+scripts (writing systems).  Languages are represented by a defined list of
+constants, while scripts are represented by RangeTable.")
+    (license license:expat)))
+
+(define-public go-github-com-adrg-strutil
+  (package
+    (name "go-github-com-adrg-strutil")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adrg/strutil")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xkjzjllv8b2m3lgn66cb09b0f5xqy2bk8ny3lkn4z0ywlchawj9"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/adrg/strutil"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (home-page "https://github.com/adrg/strutil")
+    (synopsis "Golang string utility functions")
+    (description
+     "Package strutil provides string metrics for calculating string
+similarity as well as other string utility functions.")
+    (license license:expat)))
+
+(define-public go-github-com-adrg-xdg
+  (package
+    (name "go-github-com-adrg-xdg")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adrg/xdg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xbkb8wmr6phj2ppr75akc58jdzrv20gc3mkxa1mmb968isy8s6c"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/adrg/xdg"
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Tests need HOME to be set: could not create any of the following
+          ;; paths: /homeless-shelter/.local/data,
+          ;; /homeless-shelter/.local/data, /usr/share
+          (add-before 'check 'set-home
+            (lambda _
+              (setenv "HOME" "/tmp"))))))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (propagated-inputs
+     (list go-golang-org-x-sys))
+    (home-page "https://github.com/adrg/xdg")
+    (synopsis "XDG specification implementation for Golang")
+    (description
+     "Package xdg provides an implementation of the @acronym{XDG, X Desktop
+Group} Base Directory Specification.  The specification defines a set of
+standard paths for storing application files including data and configuration
+files.  For portability and flexibility reasons, applications should use the
+XDG defined locations instead of hardcoding paths.  The package also includes
+the locations of well known user directories.")
     (license license:expat)))
 
 (define-public go-github-com-alecthomas-chroma
@@ -168,7 +494,7 @@ syntax highlighted HTML, ANSI-coloured text, etc.")
   (package
     (inherit go-github-com-alecthomas-chroma)
     (name "go-github-com-alecthomas-chroma-v2")
-    (version "2.12.0")
+    (version "2.14.0")
     (source
      (origin
        (method git-fetch)
@@ -177,15 +503,58 @@ syntax highlighted HTML, ANSI-coloured text, etc.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1j9zz77ppi4r4ncnanzj84h7bsg0qdqrhgd5kkjiv09afm31jx83"))))
+        (base32 "1qgr4gywjks869sc85wb8nby612b8wvsa1dwpsbanjsljq7wq7mp"))))
     (arguments
-     (list #:go go-1.19
-           #:import-path "github.com/alecthomas/chroma/v2"))
+     (list
+      #:import-path "github.com/alecthomas/chroma/v2"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'remove-failing-testdata-and-cmd-files
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (for-each delete-file-recursively
+                          (list "lexers/testdata/python2/test_complex_file1.actual"
+                                ;; Executible is packed as separate package.
+                                "cmd")))))
+          ;; XXX: Replace when go-build-system supports nested path.
+          (replace 'check
+            (lambda* (#:key import-path tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  (invoke "go" "test" "-v" "./..."))))))))
     (propagated-inputs
      (list go-github-com-dlclark-regexp2))
     (native-inputs
      (list go-github-com-alecthomas-assert-v2
            go-github-com-alecthomas-repr))))
+
+(define-public go-github-com-alecthomas-colour
+  (package
+    (name "go-github-com-alecthomas-colour")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alecthomas/colour")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10zbm12j40ppia4b5ql2blmsps5jhh5d7ffphxx843qk7wlbqnjb"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/alecthomas/colour"))
+    (native-inputs
+     (list go-github-com-mattn-go-isatty))
+    (home-page "https://github.com/alecthomas/colour/")
+    (synopsis "Colour terminal text for Go")
+    (description
+     "Package colour provides Quake-style colour formatting for Unix
+terminals.  The package level functions can be used to write to stdout (or
+strings or other files).  If stdout is not a terminal, colour formatting will
+be stripped.")
+    (license license:expat)))
 
 (define-public go-github-com-alecthomas-kingpin
   (package
@@ -238,6 +607,36 @@ syntax highlighted HTML, ANSI-coloured text, etc.")
     (native-inputs
      (list go-github-com-stretchr-testify))))
 
+(define-public go-github-com-alecthomas-kong
+  (package
+    (name "go-github-com-alecthomas-kong")
+    (version "0.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alecthomas/kong")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a9arf30h84ll8k612jh50c3vjmvdfj6i7dbvfnw3dalm6dn2aan"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; One test failed when set to go-1.18 o lower, see
+      ;; <https://github.com/alecthomas/kong/issues/437>
+      #:import-path "github.com/alecthomas/kong"))
+    (native-inputs
+     (list go-github-com-alecthomas-assert-v2))
+    (propagated-inputs
+     (list go-github-com-alecthomas-repr))
+    (home-page "https://github.com/alecthomas/kong")
+    (synopsis "Command-line parser for Golang")
+    (description
+     "Package kong aims to support arbitrarily complex command-line structures
+with as little developer effort as possible.")
+    (license license:expat)))
+
 (define-public go-github-com-alecthomas-participle-v2
   (package
     (name "go-github-com-alecthomas-participle-v2")
@@ -253,8 +652,8 @@ syntax highlighted HTML, ANSI-coloured text, etc.")
         (base32 "0k2vsd58rgwyylyn5zja6z6k1sg4m39g2fhd88lvja60ca51bh98"))))
     (build-system go-build-system)
     (arguments
-     (list #:go go-1.18
-           #:import-path "github.com/alecthomas/participle/v2"))
+     (list
+      #:import-path "github.com/alecthomas/participle/v2"))
     (native-inputs
      (list go-github-com-alecthomas-assert-v2))
     (home-page "https://github.com/alecthomas/participle")
@@ -264,6 +663,32 @@ syntax highlighted HTML, ANSI-coloured text, etc.")
 parsers from definitions in struct tags and parses directly into those
 structs.  The approach is similar to how other marshallers work in Golang,
 \"unmarshalling\" an instance of a grammar into a struct.")
+    (license license:expat)))
+
+(define-public go-github-com-alecthomas-repr
+  (package
+    (name "go-github-com-alecthomas-repr")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alecthomas/repr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ikvl78dighkn87bxk6gki4wcz9f138n7kbqkagj5vbdb690yjkl"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/alecthomas/repr"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (home-page "https://github.com/alecthomas/repr/")
+    (synopsis "Represent Go values in an almost direct form")
+    (description
+     "This package attempts to represent Go values in a form that can be used
+almost directly in Go source code.")
     (license license:expat)))
 
 (define-public go-github-com-alecthomas-template
@@ -285,6 +710,10 @@ structs.  The approach is similar to how other marshallers work in Golang,
       (build-system go-build-system)
       (arguments
        (list
+        ;; XXX: Failing on a newer Golang version: FAIL: TestJSEscaping
+        ;; (0.00s) exec_test.go:757: JS escaping [unprintable ﷿] got
+        ;; [unprintable ﷿] want [unprintable \uFDFF]
+        #:go go-1.17
         #:import-path "github.com/alecthomas/template"))
       (home-page "https://github.com/alecthomas/template")
       (synopsis "Fork of Go's text/template adding newline elision")
@@ -366,6 +795,59 @@ optimized for sparse nodes of
 @url{http://en.wikipedia.org/wiki/Radix_tree,radix tree}.")
     (license license:expat)))
 
+(define-public go-github-com-audriusbutkevicius-recli
+  (package
+    (name "go-github-com-audriusbutkevicius-recli")
+    (version "0.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AudriusButkevicius/recli")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mxrpn8p6ylf5qjzsqrk96nky5vgagjkkpd5jwpm6sa977qb0v3i"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/AudriusButkevicius/recli"))
+    (native-inputs
+     (list go-github-com-pkg-errors
+           go-github-com-urfave-cli))
+    (home-page "https://github.com/AudriusButkevicius/recli")
+    (synopsis "Reflection-based CLI generator")
+    (description
+     "For a given struct, @code{recli} builds a set of @code{urfave/cli}
+commands which allows you to modify it from the command line.  It is useful
+for generating command line clients for your application configuration that is
+stored in a Go struct.")
+    (license license:mpl2.0)))
+
+(define-public go-github-com-aymanbagabas-go-osc52-v2
+  (package
+    (name "go-github-com-aymanbagabas-go-osc52-v2")
+    (version "2.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aymanbagabas/go-osc52")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y4y49zys7fi5wpicpdmjqnk0mb6569zg546km02yck2349jl538"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/aymanbagabas/go-osc52/v2"))
+    (home-page "https://github.com/aymanbagabas/go-osc52")
+    (synopsis "Terminal ANSI OSC52 wrapper")
+    (description
+     "OSC52 is a terminal escape sequence that allows copying text to the
+clipboard.")
+    (license license:expat)))
+
 (define-public go-github-com-benbjohnson-clock
   (package
     (name "go-github-com-benbjohnson-clock")
@@ -381,8 +863,7 @@ optimized for sparse nodes of
         (base32 "1p7n09pywqra21l981fbkma9vzsyf31pbvw6xg5r4hp8h8scf955"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/benbjohnson/clock"
-       #:go ,go-1.21))
+     `(#:import-path "github.com/benbjohnson/clock"))
     (home-page "https://github.com/benbjohnson/clock")
     (synopsis "Small library for mocking time in Go")
     (description
@@ -589,10 +1070,37 @@ indicator to any terminal application.")
 similar to Go's standard library @code{json} and @code{xml} package.")
     (license license:expat)))
 
-(define-public go-github-com-cheggaaa-pb-v3
+;; XXX: This repository has been archived by the owner on Feb 21, 2018. It is
+;; now read-only.
+(define-public go-github-com-calmh-xdr
   (package
-    (name "go-github-com-cheggaaa-pb-v3")
-    (version "3.0.8")
+    (name "go-github-com-calmh-xdr")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/calmh/xdr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "072wqdncz3nd4a3zkhvzzx1y3in1lm29wfvl0d8wrnqs5pyqh0mh"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/calmh/xdr"))
+    (home-page "https://github.com/calmh/xdr")
+    (synopsis "XDR marshalling and unmarshalling")
+    (description
+     "XDR is an External Data Representation (XDR)
+marshalling and unmarshalling library in Go.  It uses code generation and not
+reflection.")
+    (license license:expat)))
+
+(define-public go-github-com-cheggaaa-pb
+  (package
+    (name "go-github-com-cheggaaa-pb")
+    (version "1.0.29")
     (source
      (origin
        (method git-fetch)
@@ -601,22 +1109,43 @@ similar to Go's standard library @code{json} and @code{xml} package.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d701s2niy39r650d1phjw19h4l27b1yfc2ih6s31f56b3zzqspx"))))
+        (base32 "0n8y589gf9aw53j72y4z8mzkgahbf6k8h19n2j0mllw5xpvpgijy"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/cheggaaa/pb/v3"
-       #:unpack-path "github.com/cheggaaa/pb"))
+     (list
+      #:import-path "github.com/cheggaaa/pb"))
     (propagated-inputs
      (list go-github-com-fatih-color
            go-github-com-mattn-go-colorable
            go-github-com-mattn-go-isatty
-           go-github-com-mattn-go-runewidth
-           go-github-com-vividcortex-ewma))
+           go-github-com-mattn-go-runewidth))
     (home-page "https://github.com/cheggaaa/pb/")
     (synopsis "Console progress bar for Go")
     (description
      "This package is a Go library that draws progress bars on the terminal.")
     (license license:bsd-3)))
+
+(define-public go-github-com-cheggaaa-pb-v3
+  (package
+    (inherit go-github-com-cheggaaa-pb)
+    (name "go-github-com-cheggaaa-pb-v3")
+    (version "3.0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cheggaaa/pb")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0d701s2niy39r650d1phjw19h4l27b1yfc2ih6s31f56b3zzqspx"))))
+    (arguments
+     (list
+      #:import-path "github.com/cheggaaa/pb/v3"
+      #:unpack-path "github.com/cheggaaa/pb"))
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs go-github-com-cheggaaa-pb)
+       (append go-github-com-vividcortex-ewma)))))
 
 (define-public go-github-com-chzyer-logex
   (package
@@ -700,138 +1229,90 @@ objects can be cached in memory without increased latency or degraded
 throughput.")
     (license license:expat)))
 
-(define-public go-github-com-coreos-go-systemd-activation
+(define-public go-github-com-coreos-go-systemd-v22
   (package
-    (name "go-github-com-coreos-go-systemd-activation")
-    (version "0.0.0-20191104093116-d3cd4ed1dbcf")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/coreos/go-systemd")
-                    (commit (go-version->git-ref version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "193mgqn7n4gbb8jb5kyn6ml4lbvh4xs55qpjnisaz7j945ik3kd8"))))
+    (name "go-github-com-coreos-go-systemd-v22")
+    (version "22.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/coreos/go-systemd")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vhb4cw8nw9nx8mprx829xv8w4jnwhc2lcyjljzlfafsn8nx5nyf"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/coreos/go-systemd/activation"
-       #:unpack-path "github.com/coreos/go-systemd"))
+     (list
+      #:import-path "github.com/coreos/go-systemd/v22"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-sdjournal-header
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (substitute* "sdjournal/journal.go"
+                  (("systemd/sd-journal.h") "elogind/sd-journal.h")
+                  (("systemd/sd-id128.h") "elogind/sd-id128.h")))))
+          ;; XXX: Activate when go-build-system supports submodules.
+          (delete 'build)
+          (add-before 'check 'remove-failing-test-files
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (for-each delete-file
+                          (list
+                           ;; dial unix /var/run/dbus/system_bus_socket: connect: no such
+                           ;; file or directory
+                           "dbus/dbus_test.go"
+                           "dbus/methods_test.go"
+                           "dbus/subscription_set_test.go"
+                           "dbus/subscription_test.go"
+                           "import1/dbus_test.go"
+                           "login1/dbus_test.go"
+                           "machine1/dbus_test.go"
+                           ;; journal_test.go:30: journald socket not detected
+                           "journal/journal_test.go"
+                           ;; exec: "systemd-run": executable file not found
+                           ;; in $PATH
+                           "journal/journal_unix_test.go"
+                           ;; Error opening journal: unable to open a handle
+                           ;; to the library
+                           "sdjournal/journal_test.go"
+                           ;; Error getting an existing function: unable to
+                           ;; open a handle to the library
+                           "sdjournal/functions_test.go")))))
+          ;; XXX: Replace when go-build-system supports nested path.
+          (replace 'check
+            (lambda* (#:key import-path tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  (invoke "go" "test" "-v" "./..."))))))))
+    (inputs
+     (list elogind))
+    (propagated-inputs
+     (list go-github-com-godbus-dbus))
     (home-page "https://github.com/coreos/go-systemd")
-    (synopsis "Go bindings to systemd socket activation")
-    (description "Go bindings to systemd socket activation; for writing and
-using socket activation from Go.")
+    (synopsis "Go bindings to systemd")
+    (description
+     "This package implements a various systemd bindings and provides Golang
+submodules:
+
+@itemize
+@item @code{activation} - for writing and using socket activation from Go
+@item @code{daemon} - for notifying systemd of service status changes
+@item @code{dbus} - for starting/stopping/inspecting running services and units
+@item @code{journal} - for writing to systemd's logging service, journald
+@item @code{sdjournal} - for reading from journald by wrapping its C API
+@item @code{login1} - for integration with the systemd logind API
+@item @code{machine1} - for registering machines/containers with systemd
+@item @code{unit} - for (de)serialization and comparison of unit files
+@end itemize")
     (license license:asl2.0)))
-
-(define-public go-github-com-coreos-go-systemd-daemon
-  (package
-    (inherit go-github-com-coreos-go-systemd-activation)
-    (name "go-github-com-coreos-go-systemd-daemon")
-    (arguments
-     '(#:import-path "github.com/coreos/go-systemd/daemon"
-       #:unpack-path "github.com/coreos/go-systemd"))
-    (home-page "https://github.com/coreos/go-systemd")
-    (synopsis "Go bindings to systemd for notifications")
-    (description "Go bindings to systemd for notifying the daemon of service
-status changes")))
-
-(define-public go-github-com-coreos-go-systemd-dbus
-  (package
-    (inherit go-github-com-coreos-go-systemd-activation)
-    (name "go-github-com-coreos-go-systemd-dbus")
-    (arguments
-     '(#:tests? #f ;Tests require D-Bus daemon running.
-       #:import-path "github.com/coreos/go-systemd/dbus"
-       #:unpack-path "github.com/coreos/go-systemd"))
-    (native-inputs (list go-github-com-godbus-dbus))
-    (home-page "https://github.com/coreos/go-systemd")
-    (synopsis "Go bindings to systemd for managing services")
-    (description "Go bindings to systemd for starting/stopping/inspecting
-running services and units.")))
-
-(define-public go-github-com-coreos-go-systemd-journal
-  (package
-    (inherit go-github-com-coreos-go-systemd-activation)
-    (name "go-github-com-coreos-go-systemd-journal")
-    (arguments
-     '(#:tests? #f ;Tests require access to journald socket.
-       #:import-path "github.com/coreos/go-systemd/journal"
-       #:unpack-path "github.com/coreos/go-systemd"))
-    (home-page "https://github.com/coreos/go-systemd")
-    (synopsis "Go bindings to systemd for writing journald")
-    (description "Go bindings to systemd for writing to systemd's logging
-service, journald.")))
-
-(define-public go-github-com-coreos-go-systemd-login1
-  (package
-    (inherit go-github-com-coreos-go-systemd-activation)
-    (name "go-github-com-coreos-go-systemd-login1")
-    (arguments
-     '(#:tests? #f ;Tests require D-Bus daemon running.
-       #:import-path "github.com/coreos/go-systemd/login1"
-       #:unpack-path "github.com/coreos/go-systemd"))
-    (native-inputs (list go-github-com-godbus-dbus))
-    (home-page "https://github.com/coreos/go-systemd")
-    (synopsis "Go bindings to systemd for integration with logind API")
-    (description "Go bindings to systemd for integration with the systemd
-logind API.")))
-
-(define-public go-github-com-coreos-go-systemd-machine1
-  (package
-    (inherit go-github-com-coreos-go-systemd-activation)
-    (name "go-github-com-coreos-go-systemd-machine1")
-    (arguments
-     '(#:tests? #f ;Tests require D-Bus daemon running.
-       #:import-path "github.com/coreos/go-systemd/machine1"
-       #:unpack-path "github.com/coreos/go-systemd"))
-    (native-inputs (list go-github-com-godbus-dbus))
-    (home-page "https://github.com/coreos/go-systemd")
-    (synopsis "Go bindings to systemd for registering machines/containers")
-    (description "Go bindings to systemd for registering
-machines/containers.")))
-
-(define-public go-github-com-coreos-go-systemd-sdjournal
-  (package
-    (inherit go-github-com-coreos-go-systemd-activation)
-    (name "go-github-com-coreos-go-systemd-sdjournal")
-    (arguments
-     '(#:tests? #f ;Tests require D-Bus daemon running.
-       #:import-path "github.com/coreos/go-systemd/sdjournal"
-       #:unpack-path "github.com/coreos/go-systemd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-sdjournal-header
-           (lambda* (#:key import-path #:allow-other-keys)
-             (substitute* (format #f
-                                  "src/~a/journal.go"
-                                  import-path)
-               (("systemd/sd-journal.h")
-                "elogind/sd-journal.h")
-               (("systemd/sd-id128.h")
-                "elogind/sd-id128.h")))))))
-    (inputs (list elogind))
-    (synopsis "Go bindings to systemd for journald")
-    (description "Go bindings to systemd for reading from journald by wrapping
-its C API.")))
-
-(define-public go-github-com-coreos-go-systemd-unit
-  (package
-    (inherit go-github-com-coreos-go-systemd-activation)
-    (name "go-github-com-coreos-go-systemd-unit")
-    (arguments
-     '(#:tests? #f ;Tests require D-Bus daemon running.
-       #:import-path "github.com/coreos/go-systemd/unit"
-       #:unpack-path "github.com/coreos/go-systemd"))
-    (native-inputs (list go-github-com-godbus-dbus))
-    (home-page "https://github.com/coreos/go-systemd")
-    (synopsis "Go bindings to systemd for working with unit files")
-    (description "Go bindings to systemd for (de)serialization and comparison
-of unit files.")))
 
 (define-public go-github-com-cskr-pubsub
   (package
     (name "go-github-com-cskr-pubsub")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
      (origin
        (method git-fetch)
@@ -840,12 +1321,11 @@ of unit files.")))
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18kqfdzkfs7z8266a5q5wldwkcvnhc7yw09b9vr8r0s7svy8d5s6"))))
+        (base32 "0iy85nxrfv6hp4i4mnqayjfx4hci7qyycqbaz4fx8wbd15n9ll66"))))
     (build-system go-build-system)
     (arguments
      (list
       #:tests? #t ; Tests require network interface access
-      #:go go-1.18
       #:import-path "github.com/cskr/pubsub"))
     (home-page "https://github.com/cskr/pubsub")
     (synopsis "Simple pubsub package for go")
@@ -881,6 +1361,73 @@ of unit files.")))
 @url{https://github.com/rcrowley/go-metrics,go-metrics} library which posts
 metrics to Graphite.")
     (license license:bsd-2)))
+
+(define-public go-github-com-d4l3k-messagediff
+  (package
+    (name "go-github-com-d4l3k-messagediff")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/d4l3k/messagediff")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "104hl8x57ciaz7mzafg1vp9qggxcyfm8hsv9bmlihbz9ml3nyr8v"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/d4l3k/messagediff"))
+    (home-page "https://github.com/d4l3k/messagediff")
+    (synopsis "Diff arbitrary Go structs")
+    (description
+     "Messagediff is a library for calculating diffs of arbitrary
+structs in the Go programming language.")
+    (license license:expat)))
+
+(define-public go-github-com-d5-tengo-v2
+  (package
+    (name "go-github-com-d5-tengo-v2")
+    (version "2.17.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/d5/tengo")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12h7fg2hj9s64hzsv5mz0pl9q1hf1lw3b5k9fr40nfqlq1bw84da"))))
+    (build-system go-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     (list
+      #:import-path "github.com/d5/tengo/v2"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-doc
+            (lambda* (#:key import-path outputs #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (let* ((data (string-append #$output:doc "/share"))
+                       (doc (string-append data "/doc/" #$name "-" #$version)))
+                  (copy-recursively "docs/" doc))))))))
+    (home-page "https://github.com/d5/tengo")
+    (synopsis "Script language for Go")
+    (description
+     "Tengo is a small, dynamic, fast, secure script language for Go.
+Features:
+@itemize
+@item simple and highly readable syntax
+@item dynamic typing with type coercion
+@item higher-order functions and closures
+@item immutable values
+@item securely embeddable and extensible
+@item compiler/runtime written in native Go (no external deps or cgo)
+@item executable as a standalone language/REPL
+@item use cases: rules engine, state machine, data pipeline, transpiler
+@end itemize")
+    (license license:expat)))
 
 (define-public go-github-com-danwakefield-fnmatch
   (let ((commit "cbb64ac3d964b81592e64f957ad53df015803288")
@@ -925,7 +1472,6 @@ gist (https://gist.github.com/kballard/272720).")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.20
       #:import-path "github.com/dave/jennifer"))
     (home-page "https://github.com/dave/jennifer")
     (synopsis "Code generator for Go")
@@ -1031,6 +1577,96 @@ atimes for files.")
 mtime,ctime and btime for files.")
     (license license:expat)))
 
+(define-public go-github-com-dlclark-regexp2
+  (package
+    (name "go-github-com-dlclark-regexp2")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dlclark/regexp2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1irfv89b7lfkn7k3zgx610ssil6k61qs1wjj31kvqpxb3pdx4kry"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/dlclark/regexp2"))
+    (home-page "https://github.com/dlclark/regexp2/")
+    (synopsis "Full featured regular expressions for Go")
+    (description
+     "Regexp2 is a feature-rich RegExp engine for Go.")
+    (license license:expat)))
+
+(define-public go-github-com-docopt-docopt-go
+  (let ((commit "ee0de3bc6815ee19d4a46c7eb90f829db0e014b1")
+        (revision "0"))
+    (package
+      (name "go-github-com-docopt-docopt-go")
+      (version (git-version "0.6.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/docopt/docopt.go")
+               (commit version)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hlra7rmi5pmd7d93rv56ahiy4qkgmq8a6mz0jpadvbi5qh8lq6j"))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:import-path "github.com/docopt/docopt-go"))
+      (home-page "https://github.com/docopt/docopt.go")
+      (synopsis "Implementation of docopt in Golang")
+      (description
+       "This package provides command-line arguments parser based on written
+help message which may simplify crating CLI applications, it's Golang
+implementation of http://docopt.org/.")
+      (license license:expat))))
+
+(define-public go-github-com-dsnet-golib
+  (package
+    (name "go-github-com-dsnet-golib")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dsnet/golib")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f314wzr16w6ix3bs7ginjkizgyl3b1r3j2gvvqzr8dv53r4s5cq"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/dsnet/golib"))
+    (home-page "https://github.com/dsnet/golib")
+    (synopsis "Collection of helper libraries for Golang")
+    (description
+     "@code{golib} is a collection of unrelated libraries.
+This package provides a following list of Golang models:
+@table @code
+@item bufpipe
+Implements a buffered pipe.
+@item cron
+Parses and runs cron schedules.
+@item hashmerge
+Merges hash checksums.
+@item jsoncs
+Implements JSON Canonicalization Scheme (JCS) as specified in RFC 8785.
+@item jsonfmt
+Implements a JSON formatter.
+@item memfile
+Implements an in-memory emulation of @code{os.File}.
+@item unitconv
+Implements string conversion functionality for unit prefixes.
+@end table")
+    (license license:bsd-3)))
+
 (define-public go-github-com-dustin-gojson
   (package
     (name "go-github-com-dustin-gojson")
@@ -1058,8 +1694,7 @@ mtime,ctime and btime for files.")
                       "s := strconv.QuoteRune(rune(c))"))))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/dustin/gojson"
-       #:go ,go-1.21))
+     `(#:import-path "github.com/dustin/gojson"))
     (home-page "https://github.com/dustin/gojson")
     (synopsis "Extended Golang's @code{encoding/json} module with the public scanner API")
     (description
@@ -1091,6 +1726,127 @@ scanner API made public.")
      "This package provides a ordered map library that maintains amortized O(1)
 for @code{Set}, @code{Get}, @code{Delete} and @code{Len}.")
     (license license:expat)))
+
+(define-public go-github-com-errata-ai-ini
+  (package
+    (name "go-github-com-errata-ai-ini")
+    (version "1.63.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/errata-ai/ini")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0zs9dwxh8mzxm1zfck4ghs7hma1lz5ajh98kmyh888rn3npvrnm5"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/errata-ai/ini"))
+    (home-page "https://github.com/errata-ai/ini")
+    (synopsis "INI file read and write functionality in Golang")
+    (description
+     "This Package provides a functionality of INI file read and write,
+implementing features:
+@itemize
+@item load from multiple data sources(file, @code{[]byte}, @code{io.Reader}
+and @code{io.ReadCloser}) with overwrites
+@item read with recursion values
+@item read with parent-child sections
+@item read with auto-increment key names
+@item read with multiple-line values
+@item read with tons of helper methods
+@item read and convert values to Go types
+@item read and WRITE comments of sections and keys
+@item manipulate sections, keys and comments with ease
+@item keep sections and keys in order as you parse and save
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public go-github-com-errata-ai-regexp2
+  (package
+    (inherit go-github-com-dlclark-regexp2)
+    (name "go-github-com-errata-ai-regexp2")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/errata-ai/regexp2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0p28af5c7dn4knnksl9dxjb44cicsmadzb8kwzyyf20kr7hrq53q"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/errata-ai/regexp2"))
+    (home-page "https://github.com/errata-ai/regexp2")
+    (description
+     (string-append (package-description go-github-com-dlclark-regexp2)
+                    "  This package is a fork of dlclark/regexp2 providing a
+more similar API to regexp."))))
+
+(define-public go-github-com-expr-lang-expr
+  (package
+    (name "go-github-com-expr-lang-expr")
+    (version "1.16.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/expr-lang/expr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08p7gcxm7psgn1rzhhy2s2va59ssy77x8wd706gdp2pif7wln883"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/expr-lang/expr"))
+    (home-page "https://expr-lang.org/")
+    (synopsis "Expression language and expression evaluation for Go")
+    (description
+     "The package @strong{Expr} provides a Go-centric expression language
+designed to deliver dynamic configurations with unparalleled accuracy, safety,
+and speed.")
+    (license license:expat)))
+
+(define-public go-github-com-facebookgo-atomicfile
+  (package
+    (name "go-github-com-facebookgo-atomicfile")
+    (version "0.0.0-20151019160806-2de1f203e7d5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/facebookarchive/atomicfile")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vsx6r6y601jxvjqc8msbpr5v1037dfxxdd8h1q3s8wm6xhvj2v6"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/facebookgo/atomicfile"))
+    (home-page "https://github.com/facebookgo/atomicfile")
+    (synopsis "Atomically written/replaced file")
+    (description
+     "Package atomicfile provides the ability to write a file with an eventual
+rename on Close (using @code{os.Rename}).  This allows for a file to always be
+in a consistent state and never represent an in-progress write.")
+    ;; patents
+    ;;
+    ;; Additional Grant of Patent Rights Version 2
+    ;; <...>
+    ;; Facebook, Inc. ("Facebook") hereby grants to each recipient of the
+    ;; Software ("you") a perpetual, worldwide, royalty-free, non-exclusive,
+    ;; irrevocable (subject to the termination provision below) license under
+    ;; any Necessary Claims, to make, have made, use, sell, offer to sell,
+    ;; import, and otherwise transfer the Software.
+    ;; <...>
+    (license license:bsd-3)))
 
 (define-public go-github-com-facette-natsort
   (package
@@ -1144,10 +1900,68 @@ Alphanum Algorithm} developed by Dave Koelle in Go.")
 defined output to the standard output.")
     (license license:expat)))
 
+;; XXX: This repository has been archived by the owner on Nov 9, 2017. It is
+;; now read-only.
+(define-public go-github-com-flynn-archive-go-shlex
+  (let ((commit "3f9db97f856818214da2e1057f8ad84803971cff")
+        (revision "0"))
+    (package
+      (name "go-github-com-flynn-archive-go-shlex")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flynn-archive/go-shlex")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1j743lysygkpa2s2gii2xr32j7bxgc15zv4113b0q9jhn676ysia"))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:import-path "github.com/flynn-archive/go-shlex"))
+      (synopsis "Go lexer")
+      (description
+       "Shlex is a simple lexer for go that supports shell-style
+quoting, commenting, and escaping.")
+      (home-page "https://github.com/flynn-archive/go-shlex")
+      (license license:asl2.0))))
+
+(define-public go-github-com-fxamacker-cbor-v2
+  (package
+    (name "go-github-com-fxamacker-cbor-v2")
+    (version "2.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fxamacker/cbor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "039lk7n5155gy2sh55i1darcvxhv9fim2xmnvmx0xi9ihnrnczln"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/fxamacker/cbor/v2"))
+    (propagated-inputs
+     (list go-github-com-x448-float16))
+    (home-page "https://github.com/fxamacker/cbor")
+    (synopsis "CBOR Codec in Golang")
+    (description
+     "This package implements functionality for encoding and decoding
+@acronym{Concise Binary Object
+Representation,CBOR} (@url{https://www.rfc-editor.org/rfc/rfc8949.html,RFC
+8949}) and CBOR Sequences, with CBOR tags, Golang struct tags (@code{toarray},
+@code{keyasint}, @code{omitempty}), @code{float64/32/16}, and
+@code{big.Intp}.")
+    (license license:expat)))
+
 (define-public go-github-com-gabriel-vasile-mimetype
   (package
     (name "go-github-com-gabriel-vasile-mimetype")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method git-fetch)
@@ -1156,11 +1970,10 @@ defined output to the standard output.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11swnjczhrza0xi8q2wlk056nnbcghm44vqs52zfv6rwqvy6imhj"))))
+        (base32 "199x3zbrs3bca4xc4m66c2fvs4vzywqcfylqx6n14kys0sh1p73b"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.20
       #:import-path "github.com/gabriel-vasile/mimetype"
       #:phases #~(modify-phases %standard-phases
                    (add-before 'check 'add-supported-mimes-md
@@ -1211,7 +2024,6 @@ Differentiation between text and binary files}.
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.18
       #:import-path "github.com/go-logr/logr"
       #:phases
       #~(modify-phases %standard-phases
@@ -1230,6 +2042,61 @@ Differentiation between text and binary files}.
 interfaces to back that API.  Packages in the Go ecosystem can depend on it,
 while callers can implement logging with whatever backend is appropriate.")
     (license license:asl2.0)))
+
+(define-public go-github-com-go-task-slim-sprig
+  (let ((commit "afa1e2071829e4db655eb448d6c7c16eb0bc5766")
+        (revision "0"))
+    (package
+      (name "go-github-com-go-task-slim-sprig")
+      (version (git-version "2.20.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/go-task/slim-sprig")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1185y8qygv8gb3wpghx5d945wq68j4dbaiffq3h0dh453g4h1w7a"))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:import-path "github.com/go-task/slim-sprig"
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'remove-failing-tests
+              (lambda* (#:key import-path #:allow-other-keys)
+                (delete-file
+                 (string-append "src/" import-path "/network_test.go")))))))
+      (native-inputs
+       (list  go-github-com-stretchr-testify))
+      (home-page "https://github.com/go-task/slim-sprig")
+      (synopsis "Various useful template functions for Go")
+      (description
+       "Sprig provides over 100 functions that extend the Go template system.
+Slim-Sprig is a fork of Sprig that removes all external dependencies to make
+the library more lightweight.")
+      (license license:expat))))
+
+(define-public go-github-com-go-task-slim-sprig-v3
+  (package
+    (inherit go-github-com-go-task-slim-sprig)
+    (name "go-github-com-go-task-slim-sprig-v3")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-task/slim-sprig")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h6m9n8w6yk0fp1kpk574kac6l3ibkh71myjakvns1nmqphb085w"))))
+    (build-system go-build-system)
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments go-github-com-go-task-slim-sprig)
+       ((#:import-path _) "github.com/go-task/slim-sprig/v3")))))
 
 (define-public go-github-com-gobwas-glob
   (package
@@ -1253,6 +2120,116 @@ while callers can implement logging with whatever backend is appropriate.")
     (synopsis "Go globbing library")
     (description
      "This package provides a Go implementation of globs.")
+    (license license:expat)))
+
+(define-public go-github-com-goccy-go-yaml
+  (package
+    (name "go-github-com-goccy-go-yaml")
+    (version "1.11.3")
+    (home-page "https://github.com/goccy/go-yaml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rm2rfnlvv704zkb1mnjqv5xx32vfkzv7r2kc8if6gr9ryb7hmbf"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/goccy/go-yaml"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'remove-benchmarks
+            (lambda* (#:key import-path #:allow-other-keys)
+              (delete-file-recursively
+               (string-append "src/" import-path "/benchmarks"))))
+          ;; XXX: Replace when go-build-system supports nested path.
+          (replace 'check
+            (lambda* (#:key import-path tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  (invoke "go" "test" "-v" "./..."))))))))
+    (native-inputs
+     (list go-github-com-go-playground-validator-v10
+           go-github-com-google-go-cmp-cmp))
+    (propagated-inputs
+     (list go-github-com-fatih-color
+           go-golang-org-x-xerrors))
+    (synopsis "YAML support for the Go language")
+    (description
+     "This package provides features beyond the
+@uref{https://github.com/go-yaml/yaml, defacto YAML library} including:
+
+@itemize
+@item Pretty format for error notifications
+@item Support Scanner or Lexer or Parser as public API
+@item Support Anchor and Alias to Marshaler
+@item Allow referencing elements declared in another file via anchors
+@item Extract value or AST by YAMLPath (YAMLPath is like a JSONPath)
+@end itemize")
+    (license license:expat)))
+
+(define-public go-github-com-gookit-color
+  (package
+    (name "go-github-com-gookit-color")
+    (version "1.5.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gookit/color")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "012naz084chvdqzrrzv9pklqfh259hi2jcp2f3n39fppvjwmzgkf"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/gookit/color"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-failing-tests
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                ;; Error: Received unexpected
+                ;; error: open README.md: permission denied.
+                ;; Reported upstream, see
+                ;; <https://github.com/gookit/color/pull/91>.
+                (substitute* "utils_test.go"
+                  (("os.O_WRONLY") "os.O_RDONLY"))))))))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (propagated-inputs
+     (list go-github-com-xo-terminfo
+           go-golang-org-x-sys))
+    (home-page "https://github.com/gookit/color")
+    (synopsis "Terminal color rendering library")
+    (description
+     "This package provides a command-line color library with 16/256/True
+color support, universal API methods and Windows support.
+
+Features:
+@itemize
+@item supports rich color output: 16-color (4-bit), 256-color (8-bit), true
+color (24-bit, RGB)
+@item support converts HEX HSL value to RGB color
+@item generic API methods: @code{Print}, @code{Printf}, @code{Println},
+@code{Sprint}, @code{Sprintf}
+@item supports HTML tag-style color rendering, such as @code{<green>message</>
+<fg=red;bg=blue>text</>}
+@item basic colors: @code{Bold}, @code{Black}, @code{White}, @code{Gray},
+@code{Red}, @code{Green}, @code{Yellow}, @code{Blue}, @code{Magenta},
+@code{Cyan}
+@item additional styles: @code{Info}, @code{Note}, @code{Light}, @code{Error},
+@code{Danger}, @code{Notice}, @code{Success}, @code{Comment}, @code{Primary},
+@code{Warning}, @code{Question}, @code{Secondary}
+@item support by set @code{NO_COLOR} for disable color or use
+@code{FORCE_COLOR} for force open color render
+@item support RGB, 256, 16 color conversion
+@end itemize")
     (license license:expat)))
 
 (define-public go-github-com-hashicorp-errwrap
@@ -1459,7 +2436,6 @@ Groupcache.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.18
       #:import-path "github.com/hashicorp/golang-lru/v2"))))
 
 (define-public go-github-com-hashicorp-hcl
@@ -1551,6 +2527,34 @@ expressing configuration which is easy for both humans and machines to read.")
 @end itemize")
     (license license:bsd-3)))
 
+(define-public go-github-com-ianlancetaylor-demangle
+  ;; No release, see <https://github.com/ianlancetaylor/demangle/issues/21>.
+  (package
+    (name "go-github-com-ianlancetaylor-demangle")
+    (version "0.0.0-20230524184225-eabc099b10ab")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ianlancetaylor/demangle")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pvlg1adp50hnw8dz7il473xb197ixirg26cy5hj3ngb4qlajwvc"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/ianlancetaylor/demangle"))
+    (home-page "https://github.com/ianlancetaylor/demangle")
+    (synopsis "Symbol name demangler written in Go")
+    (description
+     "This package defines functions that demangle GCC/LLVM C++ and Rust
+symbol names.  This package recognizes names that were mangled according to
+the C++ ABI defined at https://codesourcery.com/cxx-abi/ and the
+@url{https://rust-lang.github.io/rfcs/2603-rust-symbol-name-mangling-v0.html,Rust
+ABI}.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-jbenet-go-random
   (package
     (name "go-github-com-jbenet-go-random")
@@ -1628,6 +2632,55 @@ more like a Context-WaitGroup hybrid.  @code{goprocess} is about being able to s
 and stop units of work, which may receive @code{Close} signals from many clients.")
     (license license:expat)))
 
+(define-public go-github-com-jdkato-twine
+  (package
+    (name "go-github-com-jdkato-twine")
+    (version "0.10.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jdkato/twine")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1hbpxcrcsbi975lklrhzyzk0fzn79pxicvfyf2sckmd2n6jb4ayy"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; FIXME: Adjust tests sute or check with upstram:
+      ;; === Failed
+      ;; === FAIL: nlp/segment TestGoldenRules (0.00s)
+      ;;     segment_test.go:143: 25. Double quotations inside sentence
+      ;;     segment_test.go:144: Actual: [She turned to him, "This is great." she said.]
+      ;;     segment_test.go:145: Actual: 2, Expected: 1
+      ;;     segment_test.go:146: ===
+      #:tests? #f
+      #:import-path "github.com/jdkato/twine"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-module-import-path
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (substitute* (find-files "." "\\.go$")
+                  (("gopkg.in/neurosnap/sentences.v1")
+                   "github.com/neurosnap/sentences")))))
+          (replace 'build
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (invoke "go" "build" "-v" "-x" "-ldflags=-s -w" "-trimpath" "./...")))))))
+    (native-inputs
+     (list gotestsum))
+    (propagated-inputs
+     (list go-github-com-montanaflynn-stats
+           go-github-com-neurosnap-sentences
+           go-github-com-errata-ai-regexp2))
+    (home-page "https://github.com/jdkato/twine")
+    (synopsis "NLP-related string utilities")
+    (description
+     "NLP-related string utility functions for Golang.")
+    (license license:expat)))
+
 (define-public go-github-com-jinzhu-copier
   (package
     (name "go-github-com-jinzhu-copier")
@@ -1703,33 +2756,30 @@ storing only one copy of each unique string in memory.  All functions may be
 called concurrently with themselves and each other.")
     (license license:expat)))
 
-(define-public go-github-com-ianlancetaylor-demangle
-  ;; No release, see <https://github.com/ianlancetaylor/demangle/issues/21>.
+(define-public go-github-com-k0kubun-go-ansi
   (package
-    (name "go-github-com-ianlancetaylor-demangle")
-    (version "0.0.0-20230524184225-eabc099b10ab")
+    (name "go-github-com-k0kubun-go-ansi")
+    (version "0.0.0-20180517002512-3bf9e2903213")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ianlancetaylor/demangle")
+             (url "https://github.com/k0kubun/go-ansi")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pvlg1adp50hnw8dz7il473xb197ixirg26cy5hj3ngb4qlajwvc"))))
+        (base32 "117afax4l268rbswf02icbgxncmd1pk2abkz7cv26iyszi8l26dq"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:import-path "github.com/ianlancetaylor/demangle"))
-    (home-page "https://github.com/ianlancetaylor/demangle")
-    (synopsis "Symbol name demangler written in Go")
+      #:import-path "github.com/k0kubun/go-ansi"))
+    (home-page "https://github.com/k0kubun/go-ansi")
+    (synopsis "Windows-portable ANSI escape sequence utility for Golang")
     (description
-     "This package defines functions that demangle GCC/LLVM C++ and Rust
-symbol names.  This package recognizes names that were mangled according to
-the C++ ABI defined at https://codesourcery.com/cxx-abi/ and the
-@url{https://rust-lang.github.io/rfcs/2603-rust-symbol-name-mangling-v0.html,Rust
-ABI}.")
-    (license license:bsd-3)))
+     "This library converts ANSI escape sequences to Windows API calls on
+Windows environment.  You can easily use this feature by replacing fmt with
+ansi.")
+    (license license:expat)))
 
 (define-public go-github-com-k0kubun-pp
   (package
@@ -1807,6 +2857,51 @@ customized globally.")
 word-splitting rules.")
       (home-page "https://github.com/kballard/go-shellquote")
       (license license:expat))))
+
+(define-public go-github-com-klauspost-cpuid
+  (package
+    (name "go-github-com-klauspost-cpuid")
+    (version "1.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/klauspost/cpuid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1s510210wdj5dkamii1qrk7v87k4qpdcrrjzflp5ha9iscw6b06l"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/klauspost/cpuid"))
+    (home-page "https://github.com/klauspost/cpuid")
+    (synopsis "CPU feature identification for Go")
+    (description
+     "@code{cpuid} provides information about the CPU running the current
+program.  CPU features are detected on startup, and kept for fast access
+through the life of the application.  Currently x86 / x64 (AMD64) is
+supported, and no external C (cgo) code is used, which should make the library
+very eas to use.")
+    (license license:expat)))
+
+(define-public go-github-com-klauspost-cpuid-v2
+  (package
+    (inherit go-github-com-klauspost-cpuid )
+    (name "go-github-com-klauspost-cpuid-v2")
+    (version "2.2.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/klauspost/cpuid")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fys5v9vslar483arj7wy4id5kg1c7vqv4437kgjnwvki69j9mxf"))))
+    (arguments
+     (list
+      #:import-path "github.com/klauspost/cpuid/v2"))))
 
 (define-public go-github-com-lestrrat-go-envload
   (package
@@ -1959,7 +3054,6 @@ Printf/Sprintf etc.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.19
       #:import-path "github.com/logrusorgru/aurora/v3"))
     (native-inputs
      (list go-github-com-stretchr-testify))))
@@ -1998,6 +3092,83 @@ implementing features like:
 @item interface-based IO functions
 @end itemize")
       (license license:expat))))
+
+(define-public go-github-com-masterminds-semver-v3
+  (package
+    (name "go-github-com-masterminds-semver-v3")
+    (version "3.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Masterminds/semver")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h4c647dgq6k5q78j3m98ccdrzd7kbcq4ahdy25j72rbxjmci8al"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/Masterminds/semver/v3"))
+    (native-inputs
+     (list go-github-com-stretchr-testify-next))
+    (home-page "https://github.com/Masterminds/semver/")
+    (synopsis "@code{semver} helps to work with semantic versions")
+    (description
+     "The semver package provides the ability to work with
+semantic versions.  Specifically it provides the ability to:
+@itemize
+@item Parse semantic versions
+@item Sort semantic versions
+@item Check if a semantic version fits within a set of constraints
+@item Optionally work with a @code{v} prefix
+@end itemize")
+    (license license:expat)))
+
+(define-public go-github-com-masterminds-sprig-v3
+  (package
+    (name "go-github-com-masterminds-sprig-v3")
+    (version "3.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Masterminds/sprig")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gkwalx8j8h1jdhk6dz8bq8zp7vivxvcivr83dcq0h6nrn4xjqnl"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/Masterminds/sprig/v3"
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; Tests tries to reach Google:
+          ;; tpl := `{{"www.google.com" | getHostByName}}`
+          (add-after 'unpack 'remove-network-tests
+            (lambda* (#:key import-path #:allow-other-keys)
+              (delete-file
+               (string-append "src/" import-path "/network_test.go")))))))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (propagated-inputs
+     (list go-github-com-google-uuid
+           go-github-com-huandu-xstrings
+           go-github-com-imdario-mergo
+           go-github-com-masterminds-goutils
+           go-github-com-masterminds-semver-v3
+           go-github-com-mitchellh-copystructure
+           go-github-com-mitchellh-reflectwalk
+           go-github-com-shopspring-decimal
+           go-github-com-spf13-cast
+           go-golang-org-x-crypto))
+    (home-page "https://github.com/Masterminds/sprig/")
+    (synopsis "Template functions for Go templates")
+    (description
+     "Sprig is a library that provides more than 100 commonly used template
+functions.")
+    (license license:expat)))
 
 (define-public go-github-com-matryer-try
   (package
@@ -2167,7 +3338,7 @@ the @code{cpan} module @code{Parse::CommandLine}.")
 (define-public go-github-com-mattn-go-sqlite3
   (package
     (name "go-github-com-mattn-go-sqlite3")
-    (version "1.14.6")
+    (version "1.14.22")
     (source
      (origin
        (method git-fetch)
@@ -2176,7 +3347,7 @@ the @code{cpan} module @code{Parse::CommandLine}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04anvqkc37mmc3z1dy4xfa6cas67zlxnnab0ywii7sylk864mhxz"))))
+        (base32 "05fcdh6likz0hkvxnrkz3r3l5gzxfjh93w5015m9hs1wi6qpdqyb"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -2211,6 +3382,45 @@ the @code{cpan} module @code{Parse::CommandLine}.")
      "This package provides a glob library that implements descending into
 other directories.  It is optimized for filewalking.")
     (license license:expat)))
+
+(define-public go-github-com-matttproud-golang-protobuf-extensions-v2
+  (package
+    (name "go-github-com-matttproud-golang-protobuf-extensions-v2")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/matttproud/golang_protobuf_extensions")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jw4vjycwx0a82yvixmp25805krdyqd960y8lnyggllb6br0vh41"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/matttproud/golang_protobuf_extensions/v2"
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; XXX: Activate when go-build-system supports submodules.
+          (delete 'build)
+          ;; XXX: Replace when go-build-system supports nested path.
+          (replace 'check
+            (lambda* (#:key import-path tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  (invoke "go" "test" "-v" "./..."))))))))
+    (propagated-inputs
+     (list go-github-com-golang-protobuf
+           go-google-golang-org-protobuf))
+    (home-page "https://github.com/matttproud/golang_protobuf_extensions")
+    (synopsis "Streaming Protocol Buffers in Go")
+    (description
+     "This package provides various Protocol Buffer extensions for the Go
+language, namely support for record length-delimited message streaming.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-mgutz-ansi
   (let ((commit "9520e82c474b0a04dd04f8a40959027271bab992")
@@ -2269,6 +3479,29 @@ The package allows complete control over what is sent out to the @acronym{DNS,
 Domain Name Service}.  The API follows the less-is-more principle, by
 presenting a small interface.")
     (license license:bsd-3)))
+
+(define-public go-github-com-mitchellh-colorstring
+  (package
+    (name "go-github-com-mitchellh-colorstring")
+    (version "0.0.0-20190213212951-d06e56a500db")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mitchellh/colorstring")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1d2mi5ziszfzdgaz8dg4b6sxa63nw1jnsvffacqxky6yz9m623kn"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/mitchellh/colorstring"))
+    (home-page "https://github.com/mitchellh/colorstring")
+    (synopsis "Functions to colorize strings for terminal output")
+    (description
+     "Colorstring provides functions for colorizing strings for terminal output.")
+    (license license:expat)))
 
 (define-public go-github-com-modern-go-concurrent
   (package
@@ -2368,6 +3601,59 @@ command line flags, config files, and default struct values.")
 @url{https://github.com/judwhite/go-svc/raw/master/svc/svc_windows_test.go,here}.")
       (license license:expat))))
 
+(define-public go-github-com-msteinert-pam
+  (package
+    (name "go-github-com-msteinert-pam")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/msteinert/pam")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qnr0zxyxny85andq3cbj90clmz2609j8z9mp0zvdyxiwryfhyhj"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; To run the full suite, the tests must be run as the root user.
+      #:tests? #f
+      #:import-path "github.com/msteinert/pam"))
+    (propagated-inputs
+     (list go-golang-org-x-term
+           ;; For header files, otherwise it needs to be added as an input in
+           ;; final package to prevent build failure:
+           ;; ../../../github.com/msteinert/pam/transaction.go:7:10: fatal
+           ;; error: security/pam_appl.h: No such file or directory
+           linux-pam))
+    (home-page "https://github.com/msteinert/pam")
+    (synopsis "Golang wrapper module for the PAM API")
+    (description
+     "This package provides a wrapper for the @acronym{Pluggable
+Authentication Modules, PAM} application API.")
+    (license license:bsd-2)))
+
+(define-public go-github-com-msteinert-pam-v2
+  (package
+    (inherit go-github-com-msteinert-pam)
+    (name "go-github-com-msteinert-pam-v2")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/msteinert/pam")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h02dcx00vgcsxgl5sly82dbixk8cimjb10q5p405bf4fz8z7q6k"))))
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments go-github-com-msteinert-pam)
+       ((#:import-path _ "github.com/msteinert/pam")
+        "github.com/msteinert/pam/v2")))))
+
 (define-public go-github-com-multiformats-go-base32
   (package
     (name "go-github-com-multiformats-go-base32")
@@ -2430,7 +3716,6 @@ command line flags, config files, and default struct values.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.21
       #:import-path "github.com/multiformats/go-multibase"
       #:phases
       #~(modify-phases %standard-phases
@@ -2470,7 +3755,6 @@ multibase} (self identifying base encodings) in Go.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.19
       #:import-path "github.com/multiformats/go-multicodec"
       #:phases
       #~(modify-phases %standard-phases
@@ -2529,7 +3813,6 @@ varints.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.20
       #:import-path "github.com/nats-io/nats.go"))
     (propagated-inputs (list go-golang-org-x-text
                          go-github-com-nats-io-nuid
@@ -2578,7 +3861,11 @@ very fast, and tries to be entropy pool friendly.")
        (sha256
         (base32 "1kl9l08aas544627zmhkgp843qx94sxs4inxm20nw1hx7gp79dz0"))))
     (build-system go-build-system)
-    (arguments '(#:import-path "github.com/nbrownus/go-metrics-prometheus"))
+    (arguments
+     (list
+      ;; The project looks abandoned, tests failed with a new go-metrics.
+      #:tests? #f
+      #:import-path "github.com/nbrownus/go-metrics-prometheus"))
     (native-inputs
      (list go-github-com-stretchr-testify))
     (propagated-inputs
@@ -2591,6 +3878,30 @@ very fast, and tries to be entropy pool friendly.")
 posts the metrics to the Prometheus client registry and just updates the
 registry.")
     (license license:asl2.0)))
+
+(define-public go-github-com-neurosnap-sentences
+  (package
+    (name "go-github-com-neurosnap-sentences")
+    (version "1.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neurosnap/sentences")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qkq635x54mqzydxmifh2l0kicacgqcbkw4vli1cnwwcs0x902f2"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/neurosnap/sentences"))
+    (home-page "https://github.com/neurosnap/sentences")
+    (synopsis "Multilingual command line sentence tokenizer in Golang")
+    (description
+     "This package provides functionality of converting a blob of text into a
+list of sentences.")
+    (license license:expat)))
 
 (define-public go-github-com-nsqio-go-diskqueue
   (package
@@ -2717,6 +4028,43 @@ comparison library, to Go.  Both a library and a command-line tool are
 included in this package.")
     (license license:expat)))
 
+(define-public go-github-com-otiai10-copy
+  (package
+    (name "go-github-com-otiai10-copy")
+    (version "1.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/otiai10/copy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fv4cwk4k5fsd3hq5akqxrd5qxj9qm6a2wlp6s1knblhzkm1jxzb"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/otiai10/copy"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'make-test-directory-writable
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (for-each make-file-writable (find-files "./test")))))
+          (add-after 'check 'remove-test-data
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                (delete-file-recursively "./test")))))))
+    (native-inputs
+     (list go-github-com-otiai10-mint))
+    (propagated-inputs
+     (list go-golang-org-x-sync go-golang-org-x-sys))
+    (home-page "https://github.com/otiai10/copy")
+    (synopsis "Go copy directory recursively")
+    (description
+     "This package implments recursive copy functinoality for directory.")
+    (license license:expat)))
+
 (define-public go-github-com-pbnjay-memory
   (let ((commit "7b4eea64cf580186c0eceb10dc94ba3a098af46c")
         (revision "2"))
@@ -2768,35 +4116,122 @@ processes.")
 on top of the standard library @code{flag} package.")
     (license license:bsd-3)))
 
+(define-public go-github-com-pion-logging
+  (package
+    (name "go-github-com-pion-logging")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pion/logging/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11ay8c15xk3pv7y9nd80szk3mci480x67yqlgb10vswrz4h4mx3v"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/pion/logging"))
+    (home-page "https://github.com/pion/logging/")
+    (synopsis "Logging library for Golang projects")
+    (description
+"This package provides a logging library used by @url{https://github.com/pion,
+Pion}.")
+    (license license:expat)))
+
+(define-public go-github-com-polydawn-refmt
+  (package
+    (name "go-github-com-polydawn-refmt")
+    (version "0.89.1-0.20231129105047-37766d95467a")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polydawn/refmt/")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0grgzacc7igfndk1v3n1g6k4wdz6bjsiqfq3n5br2zpr7n40ha9n"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/polydawn/refmt"))
+    (propagated-inputs
+     (list go-github-com-urfave-cli
+           go-github-com-warpfork-go-wish
+           go-github.com-smartystreets-goconvey
+           go-gopkg-in-yaml-v2))
+    (home-page "https://github.com/polydawn/refmt/")
+    (synopsis "Object mapping for Go language")
+    (description
+     "@code{refmt} is a serialization and object-mapping library.")
+    (license license:expat)))
+
 (define-public go-github-com-prometheus-client-model
-  (let ((commit "14fe0d1b01d4d5fc031dd4bec1823bd3ebbe8016")
-        (revision "2"))
-    (package
-      (name "go-github-com-prometheus-client-model")
-      (version (git-version "0.0.2" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/prometheus/client_model")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0zdmk6rbbx39cvfz0r59v2jg5sg9yd02b4pds5n5llgvivi99550"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/prometheus/client_model"
-         #:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           ;; Source-only package
-           (delete 'build))))
-      (propagated-inputs
-       (list go-github-com-golang-protobuf-proto))
-      (synopsis "Data model artifacts for Prometheus")
-      (description "This package provides data model artifacts for Prometheus.")
-      (home-page "https://github.com/prometheus/client_model")
-      (license license:asl2.0))))
+  (package
+    (name "go-github-com-prometheus-client-model")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/prometheus/client_model")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1pl9i969jx5vkhm8vd5vb8yrifv37aw6h8mjg04820pw0ygfbigy"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/prometheus/client_model"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Source-only package
+         (delete 'build))))
+    (propagated-inputs
+     (list go-github-com-golang-protobuf))
+    (synopsis "Data model artifacts for Prometheus")
+    (description "This package provides data model artifacts for Prometheus.")
+    (home-page "https://github.com/prometheus/client_model")
+    (license license:asl2.0)))
+
+(define-public go-github-com-pterm-pterm
+  (package
+    (name "go-github-com-pterm-pterm")
+    (version "0.12.79")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pterm/pterm")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xvc4ywc2998r8vsi3zpp49z04kc79q60bsvxv88cjvamxfjxrvk"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; Cycle: go-github-com-pterm-pterm -> go-github-com-marvinjwendt-testza
+      ;; -> go-github-com-pterm-pterm
+      #:tests? #f
+      #:import-path "github.com/pterm/pterm"))
+    (propagated-inputs
+     (list go-atomicgo-dev-cursor
+           go-atomicgo-dev-keyboard
+           go-atomicgo-dev-schedule
+           go-github-com-gookit-color
+           go-github-com-lithammer-fuzzysearch
+           go-github-com-mattn-go-runewidth
+           go-golang-org-x-term
+           go-golang-org-x-text))
+    (home-page "https://github.com/pterm/pterm")
+    (synopsis "Configurable consol outputs in Golang")
+    (description
+     "Package pterm is a modern go module to beautify console output.  It can be used
+without configuration, but if desired, everything can be customized down to the
+smallest detail.")
+    (license license:expat)))
 
 (define-public go-github-com-rcrowley-go-metrics
   (let ((commit "cac0b30c2563378d434b5af411844adff8e32960")
@@ -2827,6 +4262,33 @@ on top of the standard library @code{flag} package.")
 Metrics library.")
       (home-page "https://github.com/rcrowley/go-metrics")
       (license license:bsd-2))))
+
+(define-public go-github-com-remeh-sizedwaitgroup
+  (package
+    (name "go-github-com-remeh-sizedwaitgroup")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/remeh/sizedwaitgroup")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xwdzby27xzcghsqhli3il165iz3vkx3g4abgvkl99wysyhcvn0a"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/remeh/sizedwaitgroup"))
+    (home-page "https://github.com/remeh/sizedwaitgroup")
+    (synopsis "Goroutines limit amount implementation of standard @code{sync.WaitGroup}")
+    (description
+     "This package implements a feature of limiting the maximum number of
+concurrently started routines which has the same role and API as
+@code{sync.WaitGroup}.  It could for example be used to start multiples
+routines querying a database but without sending too much queries in order to
+not overload the given database.")
+    (license license:expat)))
 
 (define-public go-github-com-schollz-progressbar-v3
   (package
@@ -2872,6 +4334,37 @@ detect the number of bytes written to a stream, so you can use it as a
 is undetermined, a customizable spinner is shown.")
     (license license:expat)))
 
+(define-public go-github-com-sergi-go-diff
+  (package
+    (name "go-github-com-sergi-go-diff")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sergi/go-diff")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cbj8nshllq102iiav0k1s01b8gwbkzj674g71n938qqna32y2pa"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/sergi/go-diff/diffmatchpatch"
+      #:unpack-path "github.com/sergi/go-diff"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (home-page "https://github.com/sergi/go-diff/")
+    (synopsis "Algorithms to perform operations for synchronizing plain text")
+    (description "@code{go-diff} offers algorithms to perform operations required for
+synchronizing plain text:
+@itemize
+@item compare two texts and return their differences
+@item perform fuzzy matching of text
+@item apply patches onto text
+@end itemize")
+    (license license:expat)))
+
 (define-public go-github-com-shirou-gopsutil
   (package
     (name "go-github-com-shirou-gopsutil")
@@ -2888,7 +4381,6 @@ is undetermined, a customizable spinner is shown.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.18
       #:import-path "github.com/shirou/gopsutil"
       #:phases #~(modify-phases %standard-phases
                    (add-after 'unpack 'remove-v3
@@ -2932,7 +4424,6 @@ sensors).")
         (base32 "1xlfcx6giqaxdah2m02q2i8ynwlzar953wr8wqx1j3004xdgaivd"))))
     (arguments
      (list
-      #:go go-1.18
       #:import-path "github.com/shirou/gopsutil"
       #:phases
       #~(modify-phases %standard-phases
@@ -3008,10 +4499,9 @@ Use waterutil with it to work with TUN/TAP packets/frames.")
       ;; Package's tests appear to be hardcoded to the author's gitconfig
       ;; and require network access.
       #:tests? #f
-      #:go go-1.21
       #:import-path "github.com/Songmu/gitconfig"))
     (propagated-inputs
-     (list go-github-com-goccy-yaml))
+     (list go-github-com-goccy-go-yaml))
     (home-page "https://github.com/songmu/gitconfig")
     (synopsis "Go library to get configuration values from gitconfig")
     (description
@@ -3067,6 +4557,190 @@ well as a program to generate applications and command files.")
       (home-page "https://github.com/stathat/go")
       (license license:expat))))
 
+(define-public go-github-com-syndtr-goleveldb
+  (package
+    (name "go-github-com-syndtr-goleveldb")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syndtr/goleveldb")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "042k0gbzs5waqpxmd7nv5h93mlva861s66c3s9gfg1fym5dx4vmd"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/syndtr/goleveldb"
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; XXX: Replace when go-build-system supports nested path.
+          (delete 'build)
+          (replace 'check
+            (lambda* (#:key import-path tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  (invoke "go" "test" "-v" "./..."))))))))
+    (propagated-inputs
+     (list go-github-com-onsi-gomega
+           go-github-com-onsi-ginkgo
+           go-github-com-golang-snappy))
+    (home-page "https://github.com/syndtr/goleveldb")
+    (synopsis "LevelDB implementation in Go")
+    (description
+     "This package provides a Go implementation of the LevelDB key/value
+storage system.")
+    (license license:bsd-2)))
+
+(define-public go-github-com-thejerf-suture
+  (package
+    (name "go-github-com-thejerf-suture")
+    (version "3.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/thejerf/suture")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "166hbjc1gn7skvq9vcp5h1xkavw9zw6dwx63vhih8fzm3nbbp0ic"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/thejerf/suture"))
+    (home-page "https://github.com/thejerf/suture")
+    (synopsis "Supervisor trees for Go")
+    (description "Suture provides Erlang-ish supervisor trees for Go.
+\"Supervisor trees\" -> \"sutree\" -> \"suture\" -> holds your code together
+when it's trying to die.
+
+It is intended to deal gracefully with the real failure cases that can occur
+with supervision trees (such as burning all your CPU time endlessly restarting
+dead services), while also making no unnecessary demands on the \"service\"
+code, and providing hooks to perform adequate logging with in a production
+environment")
+    (license license:expat)))
+
+(define-public go-github-com-thejerf-suture-v4
+  (package
+    (inherit go-github-com-thejerf-suture)
+    (name "go-github-com-thejerf-suture-v4")
+    (version "4.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/thejerf/suture")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15qi7v2a1kbf70yi3w6y26wbwj0sm8hv9f6xjrb4rl6nv9l8j88c"))))))
+
+(define-public go-github-com-tidwall-gjson
+  (package
+    (name "go-github-com-tidwall-gjson")
+    (version "1.17.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tidwall/gjson")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gcjzbs5in4kics39d2v3j2v9gvfxkdgp0bdgbfmcsa5arqgq7g5"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/tidwall/gjson"))
+    (propagated-inputs
+     (list go-github-com-tidwall-match
+           go-github-com-tidwall-pretty))
+    (home-page "https://github.com/tidwall/gjson")
+    (synopsis "JSON parser for Golang")
+    (description
+     "This package provides a fast and simple way to get values from a JSON
+document.  It has features such as one line retrieval, dot notation paths,
+iteration, and parsing JSON lines.")
+    (license license:expat)))
+
+(define-public go-github-com-tidwall-match
+  (package
+    (name "go-github-com-tidwall-match")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tidwall/match")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n25md63xr5m66r6zc77n6fgcpv2ljrlk92ivp9hvp8xya22as9k"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/tidwall/match"))
+    (home-page "https://github.com/tidwall/match")
+    (synopsis "Simple string pattern matcher for Golang")
+    (description
+     "Package match provides a simple pattern matcher with unicode support.")
+    (license license:expat)))
+
+(define-public go-github-com-tidwall-pretty
+  (package
+    (name "go-github-com-tidwall-pretty")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tidwall/pretty")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0prj9vpjgrca70rvx40kkl566yf9lw4fsbcmszwamwl364696jsb"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/tidwall/pretty"))
+    (home-page "https://github.com/tidwall/pretty")
+    (synopsis "JSON beautifier and compactor for Golang")
+    (description
+     "This package provides fast methods for formatting JSON for human
+readability, or to compact JSON for smaller payloads.")
+    (license license:expat)))
+
+(define-public go-github-com-tidwall-sjson
+  (package
+    (name "go-github-com-tidwall-sjson")
+    (version "1.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tidwall/sjson")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16yaikpxiwqz00zxa70w17k2k52nr06svand88sv2br6b6i8v09r"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/tidwall/sjson"))
+    (propagated-inputs
+     (list go-github-com-tidwall-gjson
+           go-github-com-tidwall-pretty))
+    (home-page "https://github.com/tidwall/sjson")
+    (synopsis "Quick value JSON values setting in Golang")
+    (description
+     "This package provides a fast and simple way to set a value in a JSON
+document.")
+    (license license:expat)))
+
 (define-public go-github-com-tklauser-go-sysconf
   (package
     (name "go-github-com-tklauser-go-sysconf")
@@ -3083,7 +4757,6 @@ well as a program to generate applications and command files.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.18
       #:import-path "github.com/tklauser/go-sysconf"
       #:phases #~(modify-phases %standard-phases
                    (add-before 'check 'remove-failing-tests
@@ -3120,7 +4793,6 @@ well as a program to generate applications and command files.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.18
       #:import-path "github.com/tklauser/numcpus"
       #:phases #~(modify-phases %standard-phases
                    (add-before 'check 'remove-failing-tests
@@ -3172,6 +4844,34 @@ supported by the time package
 @end itemize")
     (license license:expat)))
 
+(define-public go-github-com-vitrun-qart
+  (let ((commit "bf64b92db6b05651d6c25a3dabf2d543b360c0aa")
+        (revision "0"))
+    (package
+      (name "go-github-com-vitrun-qart")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vitrun/qart")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xk7qki703xmay9ghi3kq2bjf1iw9dz8wik55739d6i7sn77vvkc"))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:import-path "github.com/vitrun/qart"))
+      (home-page "https://github.com/vitrun/qart")
+      (synopsis "Create QR codes with an embedded image")
+      (description
+       "This package provides a library for embedding human-meaningful
+graphics in QR codes.  However, instead of scribbling on redundant pieces and
+relying on error correction to preserve the meaning, @code{qart} engineers the
+encoded values to create the picture in a code with no inherent errors.")
+      (license license:bsd-3))))
+
 (define-public go-github-com-vividcortex-ewma
   (package
     (name "go-github-com-vividcortex-ewma")
@@ -3193,6 +4893,57 @@ supported by the time package
      "This package implements algorithms for
 @url{https://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average,exponentially
 weighted moving averages}.")
+    (license license:expat)))
+
+(define-public go-github-com-whyrusleeping-base32
+  (package
+    (name "go-github-com-whyrusleeping-base32")
+    (version "0.0.0-20170828182744-c30ac30633cc")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/whyrusleeping/base32")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "060jj8j9rnm3m47vv7jfz9ddybch3ryvn1p9vhc63bqn73knalhf"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/whyrusleeping/base32"))
+    (home-page "https://github.com/whyrusleeping/base32")
+    (synopsis "BASE32 encoding package from go with NoPadding option")
+    (description
+     "This package provides a base32 encoding package from go with NoPadding
+option.")
+    ;; No license provided, see
+    ;; <https://github.com/whyrusleeping/base32/issues/5>
+    (license  license:public-domain)))
+
+(define-public go-github-com-whyrusleeping-go-keyspace
+  (package
+    (name "go-github-com-whyrusleeping-go-keyspace")
+    (version "0.0.0-20160322163242-5b898ac5add1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/whyrusleeping/go-keyspace")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fkk7i7qxwbz1g621mm6a6inb69lr57cyc9ayyfiwhnjwfz78rbb"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/whyrusleeping/go-keyspace"))
+    (home-page "https://github.com/whyrusleeping/go-keyspace")
+    (synopsis "Comparing key metrics within a given keyspace")
+    (description
+     "This is a package extracted from @code{go-ipfs}.  Its purpose to be used
+to compare a set of keys based on a given metric.  The primary metric used is
+XOR, as in kademlia.")
     (license license:expat)))
 
 (define-public go-github-com-whyrusleeping-go-sysinfo
@@ -3247,6 +4998,34 @@ weighted moving averages}.")
 string.  The string can be a string retorned for @code{time.Duration} or a
 similar string with weeks or days too.")
     (license license:bsd-3)))
+
+(define-public go-go-etcd-io-bbolt
+  (package
+    (name "go-go-etcd-io-bbolt")
+    (version "1.3.6")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/etcd-io/bbolt")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0pj5245d417za41j6p09fmkbv05797vykr1bi9a6rnwddh1dbs8d"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "go.etcd.io/bbolt"
+       ;; Extending the test timeout to 30 minutes still times out on aarch64.
+       #:tests? ,(not target-arm?)))
+    (propagated-inputs
+     (list go-golang-org-x-sys))
+    (home-page "https://go.etcd.io/bbolt")
+    (synopsis "Embedded key/value database for Go")
+    (description "Bolt is a pure Go key/value store inspired by Howard Chu's
+LMDB project.  The goal of the project is to provide a simple, fast, and
+reliable database for projects that don't require a full database server such as
+Postgres or MySQL.")
+    (license license:expat)))
 
 (define-public go-go-uber-org-atomic
   (package
@@ -3315,7 +5094,6 @@ CPU quota.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.20
       #:import-path "go.uber.org/dig"))
     (native-inputs
      (list go-github-com-stretchr-testify-next))
@@ -3342,7 +5120,6 @@ object dependencies graph during the process startup.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.20
       #:import-path "go.uber.org/fx"))
     (native-inputs
      (list go-github-com-stretchr-testify-next))
@@ -3401,7 +5178,6 @@ applications out of reusable, composable modules.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.19
       #:import-path "go.uber.org/zap"
       #:phases
       #~(modify-phases %standard-phases
@@ -3434,27 +5210,10 @@ Go.")
 (define-public go-gopkg-in-alecthomas-kingpin-v2
   (package
     (inherit go-github-com-alecthomas-kingpin)
+    (name "go-gopkg-in-alecthomas-kingpin-v2")
     (arguments
      (list
       #:import-path "gopkg.in/alecthomas/kingpin.v2"))))
-
-(define-public go-gopkg-in-cheggaaa-pb-v1
-  (package
-    (inherit go-github-com-cheggaaa-pb-v3)
-    (name "go-gopkg-in-cheggaaa-pb-v1")
-    (version "1.0.28")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gopkg.in/cheggaaa/pb.v1.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "13a66cqbpdif804qj12z9ad8r24va9q41gfk71qbc4zg1wsxs3rh"))))
-    (arguments
-     (list
-      #:import-path "gopkg.in/cheggaaa/pb.v1"))))
 
 (define-public go-gopkg-in-natefinch-lumberjack.v2
   (package
@@ -3533,6 +5292,39 @@ values.")
 ;;; Executables:
 ;;;
 
+(define-public go-chroma
+  (package
+    (name "go-chroma")
+    (version "2.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alecthomas/chroma")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qgr4gywjks869sc85wb8nby612b8wvsa1dwpsbanjsljq7wq7mp"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:install-source? #f
+      #:import-path "github.com/alecthomas/chroma/cmd/chroma"))
+    (native-inputs
+     (list go-github-com-alecthomas-assert-v2
+           go-github-com-alecthomas-chroma-v2
+           go-github-com-alecthomas-kong
+           go-github-com-mattn-go-colorable
+           go-github-com-mattn-go-isatty))
+    (home-page "https://github.com/alecthomas/chroma")
+    (synopsis "General purpose syntax highlighter in pure Golang")
+    (description
+     (string-append (package-description go-github-com-alecthomas-chroma-v2)
+                    "  This package provides an command line interface (CLI)
+tool."))
+    (license license:asl2.0)))
+
 (define-public go-hclogvet
   (package
     (inherit go-github-com-hashicorp-go-hclog)
@@ -3555,7 +5347,6 @@ correctly.")))
     (name "go-numcpus")
     (arguments
      (list
-      #:go go-1.18
       #:import-path "github.com/tklauser/numcpus/cmd/numcpus"
       #:unpack-path "github.com/tklauser/numcpus"
       #:install-source? #f))
@@ -3576,6 +5367,34 @@ go-github-com-tklauser-numcpus source.")))
     (description
      "This package provides a CLI build from the
 go-github-com-orisano-pixelmatch source.")))
+
+(define-public go-sentences
+  (package
+    (inherit go-github-com-neurosnap-sentences)
+    (name "go-sentences")
+    (arguments
+     (list
+      #:import-path "github.com/neurosnap/sentences/cmd/sentences"
+      #:unpack-path "github.com/neurosnap/sentences"
+      #:install-source? #f))
+    (description
+     (string-append (package-description go-github-com-neurosnap-sentences)
+                    "  This package provides an command line interface (CLI)
+tool."))))
+
+(define-public go-tengo
+  (package
+    (inherit go-github-com-d5-tengo-v2)
+    (name "tengo")
+    (arguments
+     (list
+      #:import-path "github.com/d5/tengo/cmd/tengo"
+      #:unpack-path "github.com/d5/tengo"
+      #:install-source? #f))
+    (description
+     (string-append (package-description go-github-com-d5-tengo-v2)
+                    "\nThis package provides an command line interface (CLI)
+tool."))))
 
 ;;;
 ;;; Avoid adding new packages to the end of this file. To reduce the chances

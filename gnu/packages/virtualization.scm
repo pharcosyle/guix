@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013-2017, 2020-2022 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016-2021, 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016-2021, 2023, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -33,6 +33,8 @@
 ;;; Copyright © 2023 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2023, 2024 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
+;;; Copyright © 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2024 Raven Hallsby <karl@hallsby.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -222,8 +224,11 @@
                         "share/qemu/opensbi-riscv64-generic-fw_dynamic.bin"))
               (seabios (search-input-file %build-inputs
                                           "share/qemu/bios.bin"))
-              (ipxe (search-input-file %build-inputs
-                                       "share/qemu/pxe-virtio.rom"))
+              (ipxe
+                #$@(if (this-package-input "ipxe-qemu")
+                       #~((search-input-file %build-inputs
+                                             "share/qemu/pxe-virtio.rom"))
+                       #~((string-append #$output "/share/qemu"))))
               (out #$output))
           (list (string-append "--cc=" gcc)
                 ;; Some architectures insist on using HOST_CC.
@@ -256,8 +261,11 @@
               (let* ((seabios (dirname (search-input-file
                                         inputs "share/qemu/bios.bin")))
                      (seabios-firmwares (find-files seabios "\\.bin$"))
-                     (ipxe (dirname (search-input-file
-                                     inputs "share/qemu/pxe-virtio.rom")))
+                     (ipxe
+                       #$@(if (this-package-input "ipxe-qemu")
+                              #~((dirname (search-input-file
+                                            inputs "share/qemu/pxe-virtio.rom")))
+                              #~((string-append #$output "/share/qemu"))))
                      (ipxe-firmwares (find-files ipxe "\\.rom$"))
                      (openbios (search-input-file
                                 inputs "share/qemu/openbios-ppc"))
@@ -286,6 +294,28 @@
                                     "\"~a\",~%" file))
                           allowed-differences)
                 (close-port allowed-differences-whitelist))))
+          ;; If the ipxe firmware isn't available, remove it from the list
+          ;; of files expected to be available and remove some of the tests.
+          #$@(if (not (this-package-input "ipxe-qemu"))
+                 #~((add-after 'unpack 'dont-require-ipxe-firmware
+                      (lambda _
+                        (substitute* "pc-bios/meson.build"
+                          ((".*(pxe|efi)-.*") ""))
+                        (substitute* "tests/qtest/meson.build"
+                          ((".*qom-test.*") "")
+                          ((".*qos-test.*") "")
+                          ((".*test-hmp.*") "")
+                          ((".*'pxe-test':.*") "")
+                          ((",? ?'boot-serial-test',?") "")
+                          ((",? ?'endianness-test',?") "")
+                          ((",? ?'prom-env-test',?") "")
+                          ((",? ?'pxe-test',?") "")
+                          ((",? ?'test-filter-mirror',?") "")
+                          ((",? ?'test-filter-redirector',?") "")
+                          ((",? ?'test-netfilter',?") "")
+                          ;; Fix the slow_qtests array after the substitutions
+                          (("  : .*") "")))))
+                 #~())
           (add-after 'unpack 'extend-test-time-outs
             (lambda _
               ;; These tests can time out on heavily-loaded and/or slow storage.
@@ -307,9 +337,12 @@
               (substitute* "tests/qtest/meson.build"
                 ;; These tests fail to get the expected number of tests
                 ;; on arm platforms.
-                (("'arm-cpu-features',") ""))
-              ;; This fails because no Permission Denied error is raised.  It
-              ;; is unclear if this is indicative of a real problem.
+                (("'arm-cpu-features',") "")
+                ;; This test is known to be flaky.
+                ;; See <https://gitlab.com/qemu-project/qemu/-/issues/2121>.
+                (("\\['ahci-test'\\]") "[]"))
+              ;; This test appears to be flaky as well, probably resulting
+              ;; from a race condition.
               (delete-file "tests/qemu-iotests/tests/copy-before-write")))
           #$@(if (target-riscv64?)
                  '((add-after 'unpack 'disable-some-tests
@@ -447,41 +480,44 @@ exec smbd $@")))
                 (rename-file (string-append out "/share/doc/qemu")
                              (string-append qemu-doc "/html"))))))))
     (inputs
-     (list alsa-lib
-           bash-minimal
-           dtc
-           glib
-           gtk+
-           ipxe-qemu
-           libaio
-           libcacard                    ;smartcard support
-           attr libcap-ng               ;VirtFS support
-           libdrm
-           libepoxy
-           libjpeg-turbo
-           libpng
-           libseccomp
-           libslirp
-           liburing
-           libusb                       ;USB pass-through support
-           mesa
-           ncurses
-           openbios-qemu-ppc
-           opensbi-qemu
-           ;; ("pciutils" ,pciutils)
-           pixman
-           pulseaudio
-           sdl2
-           seabios-qemu
-           spice
-           usbredir
-           util-linux
-           vde2
-           virglrenderer
+     (append
+       (if (supported-package? ipxe-qemu)
+           (list ipxe-qemu)
+           '())
+       (list alsa-lib
+             bash-minimal
+             dtc
+             glib
+             gtk+
+             libaio
+             libcacard                  ;smartcard support
+             attr libcap-ng             ;VirtFS support
+             libdrm
+             libepoxy
+             libjpeg-turbo
+             libpng
+             libseccomp
+             libslirp
+             liburing
+             libusb                     ;USB pass-through support
+             mesa
+             ncurses
+             openbios-qemu-ppc
+             opensbi-qemu
+             ;; pciutils
+             pixman
+             pulseaudio
+             sdl2
+             seabios-qemu
+             spice
+             usbredir
+             util-linux
+             vde2
+             virglrenderer
 
-           ;; Formats to support for .qcow2 (and possibly other) compression.
-           zlib
-           `(,zstd "lib")))
+             ;; Formats to support for .qcow2 (and possibly other) compression.
+             zlib
+             `(,zstd "lib"))))
     (native-inputs
      ;; Note: acpica is here only to pretty-print firmware differences with IASL
      ;; (see the replace-firmwares phase above).
@@ -524,6 +560,29 @@ server and embedded PowerPC, and S390 guests.")
     ;; Several tests fail on MIPS; see <http://hydra.gnu.org/build/117914>.
     (supported-systems (fold delete %supported-systems
                              '("mips64el-linux" "i586-gnu")))))
+
+;; QEMU >= 8.1.0's riscv64 binfmt service is unreliable.
+(define-public qemu-7.2.4
+  (package
+    (inherit qemu)
+    (name "qemu")
+    (version "7.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.qemu.org/qemu-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "0795l8xsy67fnh4mbdz40jm880iisd7q6d7ly6nfzpac3gjr8zyf"))
+       (patches (search-patches "qemu-7.2.4-build-info-manual.patch"
+                                "qemu-disable-aarch64-migration-test.patch"
+                                "qemu-fix-agent-paths.patch"))
+       (modules (origin-modules (package-source qemu)))
+       (snippet (origin-snippet (package-source qemu)))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments qemu)
+       ((#:tests? tests #f) ;migration tests still fail
+        #f)))))
 
 (define-public qemu-minimal
   ;; QEMU without GUI support, only supporting the host's architecture
@@ -1638,7 +1697,8 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "18lhlnd3gmyzhbnjc16gdyzhjcd33prlxnca4xlidiidngbq21lm"))))
+                "18lhlnd3gmyzhbnjc16gdyzhjcd33prlxnca4xlidiidngbq21lm"))
+              (patches (search-patches "virt-manager-fix-gtk-cursor-theme-backtace.patch"))))
     (build-system python-build-system)
     (arguments
      (list #:use-setuptools? #f      ; uses custom distutils 'install' command
@@ -2258,7 +2318,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
 (define-public skopeo
   (package
     (name "skopeo")
-    (version "1.15.0")
+    (version "1.15.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2267,7 +2327,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f9n3ysdmll7vq8dmgpv03m8aqq3w9cfvbmxxpwmnv1nlfc67ihq"))))
+                "13y1fmv78hh5ycm7xlsg851y17s223q13b9srksnq6jcwgprqkm8"))))
     (build-system gnu-build-system)
     (native-inputs
      (list go-1.21
@@ -2289,6 +2349,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
       #~(list (string-append "CC=" #$(cc-for-target))
               "PREFIX="
               (string-append "DESTDIR=" #$output)
+              "GOGCFLAGS=-trimpath"
               (string-append "GOMD2MAN="
                              #$go-github-com-go-md2man "/bin/go-md2man"))
       #:tests? #f                       ; The tests require Docker
@@ -2327,9 +2388,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
               (wrap-program (string-append #$output "/bin/skopeo")
                 `("PATH" suffix
                   ;; We need at least newuidmap, newgidmap and mount.
-                  ("/run/setuid-programs")))))
-          (add-after 'install 'remove-go-references
-            (@@ (guix build go-build-system) remove-go-references)))))
+                  ("/run/setuid-programs"))))))))
     (home-page "https://github.com/containers/skopeo")
     (synopsis "Interact with container images and container image registries")
     (description
@@ -2670,7 +2729,7 @@ DOS or Microsoft Windows.")
            yajl
            ncurses
            openssl
-           ovmf
+           ovmf-i686
            pixman
            qemu-minimal
            seabios

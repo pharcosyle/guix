@@ -604,7 +604,7 @@ GLib/GIO, GTK, GStreamer and Webkit."
 
 (define-member (person "Tobias Geerinckx-Rice"
                        "me@tobias.gr")
-  core kernel mentors)
+  core mentors)
 
 (define-member (person "Leo Famulari"
                        "leo@famulari.name")
@@ -644,7 +644,7 @@ GLib/GIO, GTK, GStreamer and Webkit."
 
 (define-member (person "Ricardo Wurmus"
                        "rekado@elephly.net")
-  core mentors r sugar tex)
+  r sugar)
 
 (define-member (person "Christopher Baines"
                        "guix@cbaines.net")
@@ -668,7 +668,7 @@ GLib/GIO, GTK, GStreamer and Webkit."
 
 (define-member (person "Simon Tournier"
                        "zimon.toutoune@gmail.com")
-  julia core mentors)
+  julia core mentors r)
 
 (define-member (person "宋文武"
                        "iyzsong@envs.net")
@@ -688,7 +688,7 @@ GLib/GIO, GTK, GStreamer and Webkit."
 
 (define-member (person "Maxim Cournoyer"
                        "maxim.cournoyer@gmail.com")
-  gnome qt telephony)
+  documentation gnome qt telephony)
 
 (define-member (person "Katherine Cox-Buday"
                        "cox.katherine.e+guix@gmail.com")
@@ -733,6 +733,18 @@ GLib/GIO, GTK, GStreamer and Webkit."
 (define-member (person "Adam Faiz"
                        "adam.faiz@disroot.org")
   games)
+
+(define-member (person "Matthew Trzcinski"
+                       "matt@excalamus.com")
+  documentation)
+
+(define-member (person "Laurent Gatto"
+                       "laurent.gatto@gmail.com")
+  r)
+
+(define-member (person "Nicolas Goaziou"
+                       "guix@nicolasgoaziou.fr")
+  tex)
 
 
 (define (find-team name)

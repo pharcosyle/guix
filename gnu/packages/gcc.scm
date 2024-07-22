@@ -599,6 +599,9 @@ Go.  It also includes runtime support libraries for these languages.")
           '("armv8.3-a" "armv8.4-a" "armv8.5-a" "armv8.6-a"
             "armv8-r" "armv8.1-m.main")))
 
+(define %gcc-10-ppc64le-micro-architectures
+  '("power8" "power9" "power10" "powerpc64le"))
+
 (define %gcc-10-x86_64-micro-architectures
   ;; Suitable '-march' values for GCC 10.
   (append %gcc-7.5-x86_64-micro-architectures
@@ -730,6 +733,7 @@ It also includes runtime support libraries for these languages.")
     `((compiler-cpu-architectures
        ("aarch64" ,@%gcc-10-aarch64-micro-architectures)
        ("armhf" ,@%gcc-10-armhf-micro-architectures)
+       ("powerpc64le" ,@%gcc-10-ppc64le-micro-architectures)
        ("i686" ,@%gcc-10-x86_64-micro-architectures)
        ("x86_64" ,@%gcc-10-x86_64-micro-architectures))
       ,@(package-properties gcc-8)))))
@@ -767,6 +771,7 @@ It also includes runtime support libraries for these languages.")
        ("aarch64" ,@%gcc-11-aarch64-micro-architectures)
        ("armhf" ,@%gcc-11-armhf-micro-architectures)
        ("i686" ,@%gcc-11-x86_64-micro-architectures)
+       ("powerpc64le" ,@%gcc-10-ppc64le-micro-architectures)
        ("x86_64" ,@%gcc-11-x86_64-micro-architectures))
       ,@(package-properties gcc-8)))))
 
@@ -790,31 +795,63 @@ It also includes runtime support libraries for these languages.")
        ("aarch64" ,@%gcc-12-aarch64-micro-architectures)
        ("armhf" ,@%gcc-12-armhf-micro-architectures)
        ("i686" ,@%gcc-12-x86_64-micro-architectures)
+       ("powerpc64le" ,@%gcc-10-ppc64le-micro-architectures)
        ("x86_64" ,@%gcc-12-x86_64-micro-architectures))
       ,@(package-properties gcc-11)))))
 
 (define-public gcc-13
   (package
     (inherit gcc-11)
-    (version "13.2.0")
+    (version "13.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.xz"))
               (sha256
                (base32
-                "1nj3qyswcgc650sl3h0480a171ixp33ca13zl90p61m689jffxg2"))
+                "10y0l1hx1haz4cj4d4g9f2ci5h7z9555i52f90zs2hwm3iifji88"))
               (patches (search-patches "gcc-12-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))
               (modules '((guix build utils)))
               (snippet gcc-canadian-cross-objdump-snippet)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments gcc-11)
+       ((#:phases phases #~%standard-phases)
+       (if (target-hurd?)
+           #~(modify-phases #$phases
+               (delete 'patch-hurd-libpthread))
+           phases))))
     (properties
      `((compiler-cpu-architectures
         ("aarch64" ,@%gcc-13-aarch64-micro-architectures)
         ("armhf" ,@%gcc-13-armhf-micro-architectures)
         ("i686" ,@%gcc-13-x86_64-micro-architectures)
+        ("powerpc64le" ,@%gcc-10-ppc64le-micro-architectures)
         ("x86_64" ,@%gcc-13-x86_64-micro-architectures))
        ,@(package-properties gcc-11)))))
+
+(define-public gcc-14
+  (package
+    (inherit gcc-13)
+    (version "14.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0h3889kkfp9bzw8km9w1ssh5qjskg6yw02q8v3lkvzksk1acd0z2"))
+              (patches (search-patches "gcc-12-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))
+              (modules '((guix build utils)))
+              (snippet gcc-canadian-cross-objdump-snippet)))
+    (arguments (substitute-keyword-arguments (package-arguments gcc-13)
+                 ((#:phases phases #~%standard-phases)
+                  #~(modify-phases #$phases
+                      (add-before 'configure 'pre-x86-configure
+                        (lambda _
+                          (substitute* "gcc/config/i386/t-linux64"
+                            (("\\.\\./lib64") "../lib"))))))))))
 
 
 ;; Note: When changing the default gcc version, update
@@ -1198,6 +1235,7 @@ misnomer.")))
 (define-public libgccjit-10 (make-libgccjit gcc-10))
 (define-public libgccjit-11 (make-libgccjit gcc-11))
 (define-public libgccjit-12 (make-libgccjit gcc-12))
+(define-public libgccjit-14 (make-libgccjit gcc-14))
 
 (define-public libgccjit libgccjit-10)
 
@@ -1214,7 +1252,12 @@ provides the GNU compiler for the Go programming language.")
        (substitute-keyword-arguments (package-arguments gccgo)
          ((#:phases phases)
           #~(modify-phases #$phases
-              #$@(if (version>=? (package-version gccgo) "12.0")
+              #$@(if (and (version>=? (package-version gccgo) "12.0")
+                          ;; This somehow breaks gccgo@12 on riscv64-linux.
+                          (not (and (target-riscv64?)
+                                    (string=? (version-prefix
+                                                (package-version gccgo) 1)
+                                               "12"))))
                      #~((add-after 'unpack 'adjust-libgo-dependencies
                           (lambda _
                             (substitute* "Makefile.in"
@@ -1286,6 +1329,10 @@ provides the GNU compiler for the Go programming language."))
 ;; Provides go-1.18
 (define-public gccgo-13
   (make-gccgo gcc-13))
+
+;; Provides go-1.18
+(define-public gccgo-14
+  (make-gccgo gcc-14))
 
 (define %objc-search-paths
   (list (search-path-specification

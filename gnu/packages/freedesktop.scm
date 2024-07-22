@@ -37,6 +37,7 @@
 ;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2022 Samuel Culpepper <sculpepper@newstore.com>
 ;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2024 Dariqq <dariqq@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,7 +143,7 @@
 (define-public appstream
   (package
     (name "appstream")
-    (version "0.16.4")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -151,9 +152,7 @@
                        "appstream/releases/"
                        "AppStream-" version ".tar.xz"))
        (sha256
-        (base32 "1val1b3dggn9g33q2r9q7wsl75a64x4lcvswvkcjjbvakkbj5xyl"))
-       (patches
-        (search-patches "appstream-force-reload-stemmer.patch"))))
+        (base32 "195snvg2jw5ywqxz02xfb570yhxvaqp9d4w5a2lpay2fck7zddjs"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -165,9 +164,9 @@
             (lambda* (#:key inputs #:allow-other-keys)
               (let ((libstemmer.h (search-input-file inputs
                                                      "include/libstemmer.h")))
-              (substitute* "meson.build"
-                (("/usr/include")
-                 (dirname libstemmer.h))))))
+                (substitute* "meson.build"
+                  (("/usr/include")
+                   (dirname libstemmer.h))))))
           (add-before 'check 'check-setup
             (lambda _
               (setenv "HOME" (getcwd)))))))
@@ -183,7 +182,8 @@
            itstool
            libxslt
            pkg-config
-           python-wrapper))
+           python-wrapper
+           gi-docgen))
     (inputs
      (list curl libsoup-minimal-2 libstemmer libxmlb libxml2 libyaml lmdb))
     (propagated-inputs
@@ -212,7 +212,21 @@ application-centers for distributions.")
     (arguments
      (substitute-keyword-arguments (package-arguments appstream)
        ((#:configure-flags flags #~'())
-        #~(append '("-Dqt=true") #$flags))))))
+        #~(append '("-Dqt=true" "-Dqt-versions=5") #$flags))))))
+
+(define-public appstream-qt6
+  (package/inherit appstream
+    (name "appstream-qt6")
+    (native-inputs
+     (modify-inputs (package-native-inputs appstream)
+       (prepend qttools)))
+    (inputs
+     (modify-inputs (package-inputs appstream)
+       (prepend qtbase)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments appstream)
+       ((#:configure-flags flags #~'())
+        #~(append '("-Dqt=true" "-Dqt-versions=6") #$flags))))))
 
 (define-public farstream
   (package
@@ -578,9 +592,13 @@ display servers.  It supports many different languages and emoji.")
     (inputs
      (list glib libxml2))
     (native-inputs
-     (list gettext-minimal pkg-config python xdgmime
-           ;; For 'doc' output.
-           docbook-xml-4.1.2 docbook-xsl xmlto))
+     (append
+       (if (%current-target-system)
+           (list libxml2 this-package)
+           '())
+       (list gettext-minimal pkg-config python xdgmime
+             ;; For 'doc' output.
+             docbook-xml-4.1.2 docbook-xsl xmlto)))
     (outputs (list "out" "doc"))
     (home-page "https://www.freedesktop.org/wiki/Software/shared-mime-info")
     (synopsis "Database of common MIME types")
@@ -1156,48 +1174,67 @@ manager for the current system.")
 (define-public power-profiles-daemon
   (package
     (name "power-profiles-daemon")
-    (version "0.12")
+    (version "0.21")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.freedesktop.org/hadess/power-profiles-daemon")
+             (url "https://gitlab.freedesktop.org/upower/power-profiles-daemon")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1wqcajbj358zpyj6y4h1v34y2yncq76wqxd0jm431habcly0bqyr"))))
+         "0dn3ygv49q7mzs52ch3yphxf4hbry698r1ajj52f6jgw7mpwr5p4"))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
-     (list #:configure-flags #~(list "-Dsystemdsystemunitdir=false")
-           #:glib-or-gtk? #t
+     (list #:configure-flags #~(list "-Dsystemdsystemunitdir="
+                                     "-Dpylint=disabled"
+                                     "-Dgtk_doc=true"
+                                     (string-append "-Dzshcomp=" #$output
+                                                    "/share/zsh/site-functions/"))
            #:phases
            #~(modify-phases %standard-phases
-               (add-before 'install 'fake-pkexec
-                 (lambda _ (setenv "PKEXEC_UID" "-1")))
                (add-before 'configure 'correct-polkit-dir
                  (lambda _
-                   (substitute* "meson.build"
-                     (("polkit_gobject_dep\\..*")
-                      (string-append "'" #$output "/share/polkit-1/actions'")))))
+                   (setenv "PKG_CONFIG_POLKIT_GOBJECT_1_POLICYDIR"
+                           (string-append #$output "/share/polkit-1/actions"))))
                (add-after 'install 'wrap-program
                  (lambda _
                    (wrap-program
                        (string-append #$output "/bin/powerprofilesctl")
-                     `("GUIX_PYTHONPATH" = (,(getenv "GUIX_PYTHONPATH")))
-                     `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))))))
+                     `("GUIX_PYTHONPATH" = (,(string-append
+                                              #$(this-package-input "python-pygobject")
+                                              "/lib/python"
+                                              #$(version-major+minor
+                                                 (package-version (this-package-input "python")))
+                                              "/site-packages"))))))
+               (add-after 'install 'move-docs
+                 (lambda _
+                   (mkdir-p (string-append #$output:doc "/share"))
+                   (rename-file
+                    (string-append #$output "/share/gtk-doc")
+                    (string-append #$output:doc "/share/gtk-doc")))))))
     (native-inputs
-     (list `(,glib "bin") gobject-introspection pkg-config python vala))
+     (list `(,glib "bin")
+           gtk-doc/stable
+           libxslt
+           pkg-config
+           python
+           python-argparse-manpage
+           python-dbusmock
+           python-shtab
+           umockdev))
     (inputs
-     (list bash-minimal                           ;for 'wrap-program'
-           dbus
-           dbus-glib
+     (list bash-minimal                 ;for 'wrap-program'
+           bash-completion
            libgudev
-           glib polkit
+           glib
+           polkit
            python
            python-pygobject
            upower))
-    (home-page "https://gitlab.freedesktop.org/hadess/power-profiles-daemon")
+    (home-page "https://gitlab.freedesktop.org/upower/power-profiles-daemon")
     (synopsis "Power profile handling over D-Bus")
     (description
      "power-profiles-daemon offers to modify system behaviour based upon
@@ -1381,10 +1418,23 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
         . "https://wayland.freedesktop.org/releases.html")))
     (license license:expat)))
 
+(define-public wayland-protocols-next
+  (package (inherit wayland-protocols)
+           (name "wayland-protocols-next")
+           (version "1.36")
+           (source (origin
+                     (method url-fetch)
+                     (uri (string-append "https://gitlab.freedesktop.org/wayland/"
+                                         "wayland-protocols/-/releases/" version "/downloads/"
+                                         "wayland-protocols-" version ".tar.xz"))
+                     (sha256
+                      (base32
+                       "14kyxywpfkgpjpkrybs28q1s2prnz30k1b4zap5a3ybrbvh4vzbi"))))))
+
 (define-public wayland-utils
   (package
     (name "wayland-utils")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1393,7 +1443,7 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04k1yhyh7h4xawbhpz9pf6cpfmmp1l862fdgsvvnyp4hg9n3j9aj"))))
+                "1dj9p7vrv3a0fflqkwps8im2hz3ari385a3nqb4ar1ci3crxp204"))))
     (build-system meson-build-system)
     (native-inputs (list pkg-config))
     (inputs (list libdrm wayland wayland-protocols))
@@ -3087,16 +3137,22 @@ interfaces.")
 (define-public xdg-desktop-portal-kde
   (package
     (name "xdg-desktop-portal-kde")
-    (version "5.27.6")
+    (version "6.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wzp21l521d9z9mnfgiapzljqpg5qc5ghyzndpr8cz54c2bf9mdf"))))
+                "0dksk5zs4w79n9l8wspwdgzx2fj1xafsjjk4d6bv2hrhhly7bnxr"))))
     (build-system qt-build-system)
-    (native-inputs (list extra-cmake-modules pkg-config))
+    (arguments (list
+                #:tests? #f ;; colorschemetest test fail, because require dbus.
+                #:qtbase qtbase))
+    (native-inputs (list extra-cmake-modules pkg-config
+                         ;; require by test.
+                         python-minimal
+                         python-pygobject))
     (inputs (list cups
                   kcoreaddons
                   kconfig
@@ -3105,20 +3161,22 @@ interfaces.")
                   kio
                   kirigami
                   knotifications
-                  plasma-framework
+                  libplasma
                   plasma-wayland-protocols
+                  kstatusnotifieritem
                   kwayland
                   kwidgetsaddons
                   kwindowsystem
                   kiconthemes
-                  qtdeclarative-5
-                  qtwayland-5
+                  qtdeclarative
+                  qtwayland
                   wayland
                   kglobalaccel
                   kguiaddons
                   libxkbcommon
-                  kio-fuse
                   wayland-protocols))
+    (propagated-inputs
+     (list xdg-desktop-portal))
     (synopsis "Backend implementation for xdg-desktop-portal using Qt/KF5")
     (description "This package provides a backend implementation
 for xdg-desktop-portal that is using Qt/KF5.")
@@ -3215,7 +3273,7 @@ notifies the user using any notification daemon implementing
 (define-public waypipe
   (package
     (name "waypipe")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method git-fetch)
@@ -3224,7 +3282,7 @@ notifies the user using any notification daemon implementing
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1v08dv3dfz420v51ahz7qgv3429073kmgrf8f66s4c3jlpch2pa1"))))
+        (base32 "0pf1q8kyqyqa7gxar99i35q9np0k4vsf7xlrg12gyzc5k36lhknf"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config scdoc

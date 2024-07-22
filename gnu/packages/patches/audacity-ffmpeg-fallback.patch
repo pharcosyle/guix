@@ -13,20 +13,20 @@ Bugs-added-by: Marius Bakke <marius@gnu.org>
 
 diff --git a/libraries/lib-ffmpeg-support/CMakeLists.txt b/libraries/lib-ffmpeg-support/CMakeLists.txt
 index b8803a1f5..f86559cca 100644
---- a/libraries/lib-ffmpeg-support/CMakeLists.txt
-+++ b/libraries/lib-ffmpeg-support/CMakeLists.txt
+--- a/modules/mod-ffmpeg/lib-ffmpeg-support/CMakeLists.txt
++++ b/modules/mod-ffmpeg/lib-ffmpeg-support/CMakeLists.txt
 @@ -1,5 +1,7 @@
- 
+
  if (${_OPT}use_ffmpeg)
 +   pkg_check_modules(FFMPEG libavcodec libavformat libavutil)
 +
     set( SOURCES
        FFmpegTypes.h
- 
+
 @@ -107,6 +109,12 @@ if (${_OPT}use_ffmpeg)
        list(APPEND DEFINITIONS PRIVATE _DARWIN_C_SOURCE )
     endif()
- 
+
 +   if (FFMPEG_FOUND)
 +      pkg_get_variable(LIBAVCODEC_LIBDIR libavcodec libdir)
 +      list(APPEND DEFINITIONS PRIVATE
@@ -38,12 +38,12 @@ index b8803a1f5..f86559cca 100644
     )
 diff --git a/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp b/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp
 index 55d6f676b..46640ef83 100644
---- a/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp
-+++ b/libraries/lib-ffmpeg-support/FFmpegFunctions.cpp
+--- a/modules/mod-ffmpeg/lib-ffmpeg-support/FFmpegFunctions.cpp
++++ b/modules/mod-ffmpeg/lib-ffmpeg-support/FFmpegFunctions.cpp
 @@ -246,6 +246,18 @@ struct FFmpegFunctions::Private final
        if (library->IsLoaded())
           return library;
- 
+
 +#if defined(FFMPEG_PC_LIBDIR)
 +      {
 +         static const wxString libdir{FFMPEG_PC_LIBDIR};

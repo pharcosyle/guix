@@ -25,7 +25,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 luhux <luhux@outlook.com>
 ;;; Copyright © 2021 Ekaitz Zarraga <ekaitz@elenq.tech>
-;;; Copyright © 2021, 2022 Raphaël Mélotte <raphael.melotte@mind.be>
+;;; Copyright © 2021, 2022, 2024 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;; Copyright © 2021 ikasero <ahmed@ikasero.com>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
@@ -36,7 +36,7 @@
 ;;; Copyright © 2022, 2023 jgart <jgart@dismail.de>
 ;;; Copyright © 2023 Aaron Covrig <aaron.covrig.us@ieee.org>
 ;;; Copyright © 2023 Foundation Devices, Inc. <hello@foundationdevices.com>
-;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2023 Jaeme Sifat <jaeme@runbox.com>
 ;;; Copyright © 2024 Suhail <suhail@bayesians.ca>
 ;;; Copyright © 2024 Clément Lassieur <clement@lassieur.org>
@@ -102,6 +102,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -866,16 +867,23 @@ eye-candy, customizable, and reasonably lightweight.")
       ;; also to address a GCC 10 issue when doing PGO builds.
       #:build-type "release"
       ;; Enable LTO as recommended by INSTALL.md.
-      #:configure-flags #~'("-Db_lto=true")))
-    (native-inputs (list ncurses ;for 'tic'
-                         pkg-config scdoc wayland-protocols))
+      ;; when cross-compilation, enable lto will fail.
+      #:configure-flags (if (%current-target-system)
+                            #~'()
+                            #~'("-Db_lto=true"))))
+    (native-inputs (append
+                    (if (%current-target-system)
+                        (list wayland pkg-config-for-build)
+                        '())
+                    (list ncurses ;for 'tic'
+                          pkg-config scdoc wayland-protocols)))
     (native-search-paths
      ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
      ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
      (list (search-path-specification
             (variable "TERMINFO_DIRS")
             (files '("share/terminfo")))))
-    (inputs (list fcft libxkbcommon wayland))
+    (inputs (list fcft libxkbcommon wayland wayland-protocols))
     (synopsis "Wayland-native terminal emulator")
     (description
      "@command{foot} is a terminal emulator for systems using the Wayland
@@ -1032,7 +1040,7 @@ programmer to write text-based user interfaces.")
            go-github-com-gdamore-tcell
            go-github-com-rivo-uniseg
            go-github-com-saracen-walker
-           go-golang.org-x-sync-errgroup
+           go-golang-org-x-sync
            go-golang-org-x-term
            go-golang-org-x-crypto))
     (home-page "https://github.com/junegunn/fzf")
@@ -1500,7 +1508,7 @@ terminal are replicated to the others.
 (define-public tio
   (package
     (name "tio")
-    (version "2.7")
+    (version "3.3")
     (source
      (origin
        (method url-fetch)
@@ -1508,10 +1516,10 @@ terminal are replicated to the others.
              "https://github.com/tio/tio/releases/download/v"
              version "/tio-" version ".tar.xz"))
        (sha256
-        (base32 "19fswmyiwlify269h6nwdlbnhq4q7i8442xg81jinb4chhsf93xz"))))
+        (base32 "13favpvl343nbc0h26snn53lddwbznvd106rvvinnc12x6r3arjh"))))
     (build-system meson-build-system)
     (native-inputs (list pkg-config))
-    (inputs (list libinih))
+    (inputs (list glib lua))
     (home-page "https://tio.github.io/")
     (synopsis "Simple TTY terminal I/O application")
     (description "tio is a simple TTY terminal application which features a
@@ -1756,8 +1764,9 @@ and the ability to read and write via stdin and stdout.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/realh/roxterm.git")
+                     (url "https://github.com/realh/roxterm")
                      (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "19y4lxwj18pr231597rnyyk6f5hwvsajjv7w21wb5c62jjjyfrws"))))
@@ -1772,6 +1781,6 @@ and the ability to read and write via stdin and stdout.")
     (synopsis "ROXTerm terminal emulator")
     (description "This package provides a terminal emulator with hyperlink
 support.  It's based on VTE and aimed at power users.")
-    (home-page "https://realh.github.io/roxterm/")
+    (home-page "https://realh.github.io/roxterm/en/index.html")
     ;; src/gresources.c is under LGPL 2.1+
     (license (list license:gpl2+ license:lgpl2.1+))))

@@ -5,14 +5,13 @@
 ;;; Copyright © 2016, 2020, 2021 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017–2022 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
-;;; Copyright © 2019 Andy Tai <atai@atai.org>
+;;; Copyright © 2019, 2022, 2024 Andy Tai <atai@atai.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Christine Lemmer-Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2022 Felix Gruber <felgru@posteo.net>
-;;; Copyright © 2022 Andy Tai <atai@atai.org>
 ;;; Copyright © 2023 Simon South <simon@simonsouth.net>
 ;;; Copyright © 2023 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
@@ -64,7 +63,7 @@
                 #:select (%current-system cc-for-target)))
 
 (define-public asl
-  (let ((build "247"))
+  (let ((build "267"))
     (package
       (name "asl")
       (version (string-append "1.42-beta-" build))
@@ -75,7 +74,7 @@
                "http://john.ccac.rwth-aachen.de:8000/ftp/as/source/c_version/"
                "asl-current-142-bld" build ".tar.bz2"))
          (sha256
-          (base32 "1qgz5yzg50vpwzrjqvw8bgnvm67dqhfb8ldxyqwaqmrj3icshp5s"))))
+          (base32 "13j2ccfgji4jiqbbqmcchhcps11ypz8aq8fq9vd83ngbhavh6c9s"))))
       (build-system gnu-build-system)
       (arguments
        (list
@@ -223,7 +222,7 @@ to the clients.")
 (define-public simde
   (package
     (name "simde")
-    (version "0.7.2")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -232,7 +231,7 @@ to the clients.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xkf21gbkgz6zlxabkmgwvy7py6cdnfqx9aplj90gz25gzrr1mkb"))))
+        (base32 "0giijq5n3q1nv8c5skfq2dar70rgbsm7yk0gdj22wpsa58fc624a"))))
     (build-system meson-build-system)
     ;; We really want this for the headers, and the tests require a bundled library.
     (arguments '(#:configure-flags '("-Dtests=false")))
@@ -357,7 +356,7 @@ runtime")
 (define-public rgbds
   (package
     (name "rgbds")
-    (version "0.5.2")
+    (version "0.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -366,7 +365,7 @@ runtime")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13zy05xzh2yxyvzf78a5h59pabwrfr6qs5m453pfbdyd3msg2s7w"))))
+                "1gy75q0ikx0ki1wsrq97hxj9dw9436fcys2w91ipm90pbhk4ljva"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -645,6 +644,44 @@ intrinsics as defined in the @file{arm_neon.h} header and x86 SSE (up to
 SSE4.2) intrinsic functions as defined in corresponding x86 compilers headers
 files.")
       (license license:bsd-2))))
+
+(define-public cpu-features
+  (package
+    (name "cpu-features")
+    (version "0.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/cpu_features")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0297li3408zm1dqnibaasrb51vs7n7iscnxsji3b78g0pir7jwxr"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:configure-flags
+      #~(list "-DBUILD_TESTING=off" ;; XXX: insists on using bundled googletest
+              "-DBUILD_SHARED_LIBS=ON")))
+    (home-page "https://github.com/google/cpu_features")
+    (synopsis "Cross platform C99 library to get cpu features at runtime")
+    (description
+     "Cpu_features is a cross-platform C library to retrieve CPU features
+(such as available instructions) at runtime, and supports these CPU architectures
+@itemize
+@item x86-64
+@item AArch64
+@item ARM
+@item MIPS
+@item POWER
+@item RISC-V
+@item LoongArch
+@item S390x
+@end itemize")
+    (license license:asl2.0)))
+
 
 (define-public blinkenlights
   (package

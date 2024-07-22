@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2023 Clément Lassieur <clement@lassieur.org>
@@ -148,6 +148,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
   #:use-module (gnu packages golang-check)
+  #:use-module (gnu packages golang-compression)
   #:use-module (gnu packages golang-web)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages gperf)
@@ -200,7 +201,6 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages skribilo)
   #:use-module (gnu packages sphinx)
-  #:use-module (gnu packages syncthing)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
@@ -339,51 +339,60 @@ and its related documentation.")
 (define-public miniflux
   (package
     (name "miniflux")
-    (version "2.0.46")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/miniflux/v2")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1qv95kipjlg374kiq6gssh5jsb5arahq4jsb7vkg3njnx0ldwvkb"))))
+    (version "2.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miniflux/v2")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1m1rcxcjswni3adgjkn3hvb59cbfdh9cl22d5qqwn0lxs8mgqhfl"))))
     (build-system go-build-system)
     (arguments
-     (list #:go go-1.19
-           #:install-source? #f
-           #:import-path "miniflux.app"
-           #:build-flags
-           #~(list (string-append
-                    "-ldflags= -X miniflux.app/version.Version=" #$version))
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-before 'build 'disable-cgo
-                 (lambda _
-                   (setenv "CGO_ENABLED" "0")))
-               (add-after 'install 'install-manpage
-                 (lambda* (#:key import-path #:allow-other-keys)
-                   (let ((man1 (string-append #$output "/share/man/man1/"))
-                         (page (format #f "src/~a/miniflux.1" import-path)))
-                     (install-file page man1))))
-               (add-after 'install-manpage 'rename-binary
-                 (lambda _
-                   (let ((bindir (string-append #$output "/bin/")))
-                     (rename-file (string-append bindir "miniflux.app")
-                                  (string-append bindir "miniflux"))))))))
+     (list
+      #:go go-1.22
+      #:install-source? #f
+      #:import-path "miniflux.app/v2"
+      #:build-flags
+      #~(list (string-append
+               "-ldflags= -X miniflux.app/v2/internal/version.Version="
+               #$version))
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; XXX: Replace when go-build-system supports nested path.
+          (replace 'check
+            (lambda* (#:key import-path tests? #:allow-other-keys)
+              (when tests?
+                (with-directory-excursion (string-append "src/" import-path)
+                  (invoke "go" "test" "-v" "./...")))))
+          (add-after 'install 'install-manpage
+            (lambda* (#:key import-path #:allow-other-keys)
+              (let ((man1 (string-append #$output "/share/man/man1/"))
+                    (page (format #f "src/~a/miniflux.1" import-path)))
+                (install-file page man1))))
+          (add-after 'install-manpage 'rename-binary
+            (lambda _
+              (let ((bindir (string-append #$output "/bin/")))
+                (rename-file (string-append bindir "v2")
+                             (string-append bindir "miniflux"))))))))
     (inputs
-     (list go-github-com-coreos-go-oidc-v3
-           go-github-com-go-telegram-bot-api-telegram-bot-api
+     (list go-github-com-abadojack-whatlanggo
+           go-github-com-andybalholm-brotli
+           go-github-com-coreos-go-oidc-v3
+           go-github-com-go-webauthn-webauthn
            go-github-com-gorilla-mux
            go-github-com-lib-pq
-           go-github-com-matrix-org-gomatrix
            go-github-com-prometheus-client-golang
            go-github-com-puerkitobio-goquery
-           go-github-com-rylans-getlang
            go-github-com-tdewolff-minify-v2
            go-github-com-yuin-goldmark
+           go-golang-org-x-crypto
+           go-golang-org-x-net
+           go-golang-org-x-oauth2
            go-golang-org-x-term
+           go-golang-org-x-text
            go-mvdan-cc-xurls))
     (home-page "https://miniflux.app/")
     (synopsis "Minimalist and opinionated feed reader")
@@ -398,7 +407,7 @@ and its related documentation.")
 @item Use only modern vanilla Javascript (ES6 and Fetch API)
 @item Single binary compiled statically without dependency
 @item The number of features is voluntarily limited
-@end itemize\n")
+@end itemize")
     (license license:asl2.0)))
 
 (define-public mod-wsgi
@@ -459,24 +468,24 @@ replacing them with data URIs.")
 (define-public monolith
   (package
     (name "monolith")
-    (version "2.7.0")
+    (version "2.8.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/Y2Z/monolith.git")
+             (url "https://github.com/Y2Z/monolith")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ccwjsp8gdgp0wafc3zvlfmx3f58axc1k1ac80qha3g60xccqn56"))))
+        (base32 "0xr63302yb5k9c2sihd1iy97j5c44d4jrzfaiwm81d9li577ih58"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-atty" ,rust-atty-0.2)
-        ("rust-base64" ,rust-base64-0.13)
+        ("rust-base64" ,rust-base64-0.21)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-clap" ,rust-clap-3)
-        ("rust-cssparser" ,rust-cssparser-0.29)
+        ("rust-cssparser" ,rust-cssparser-0.33)
         ("rust-encoding-rs" ,rust-encoding-rs-0.8)
         ("rust-html5ever" ,rust-html5ever-0.24)
         ("rust-percent-encoding" ,rust-percent-encoding-2)
@@ -511,14 +520,14 @@ the same, being completely separated from the Internet.")
     ;; Track the ‘mainline’ branch.  Upstream considers it more reliable than
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
-    (version "1.23.3")
+    (version "1.27.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0m5s8a04jlpv6qhk09sfqbj4rxj38g6923w12j5y3ymrvf3mgjvm"))))
+                "170ja338zh7wdyva34cr7f3wfq59434sssn51d5jvakyz0y0w8xp"))))
     (build-system gnu-build-system)
     (inputs (list libxml2 libxslt openssl pcre zlib))
     (arguments
@@ -534,6 +543,7 @@ the same, being completely separated from the Internet.")
               "--with-http_sub_module"
               "--with-pcre-jit"
               "--with-debug"
+              "--with-compat"
               "--with-stream"
               "--with-stream_ssl_module"
               "--with-http_stub_status_module"
@@ -608,9 +618,9 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for the current nginx package.
-  (let ((version "1.23.3")
-        (revision 2916)
-        (changeset "178f55cf631a"))
+  (let ((version "1.27.0")
+        (revision 3081)
+        (changeset "1b23e39a3b94"))
     (package
       (name "nginx-documentation")
       (version (simple-format #f "~A-~A-~A" version revision changeset))
@@ -622,7 +632,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "0b03dnniwm3p3gd76vqs6lj2z4blqmb7y4lhn9vg7xjz0yqgzvn2"))))
+                 "0xnfda8xh8mv00fsycqbwicm8bb7rsvdqmmwv0h372kiwxnazjkh"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -632,7 +642,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
            (replace 'build
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((output (assoc-ref outputs "out")))
-                 (substitute* "umasked.sh"
+                 (substitute* "tools/umasked.sh"
                    ((" /bin/sh") (string-append " " (which "sh"))))
                  ;; The documentation includes a banner, which makes sense on
                  ;; the NGinx website, but doesn't make much sense when
@@ -734,6 +744,7 @@ ngx_http_accept_language_module~%")
                        "--with-http_v2_module"
                        "--with-pcre-jit"
                        "--with-debug"
+                       "--with-compat"
                        ;; Even when not cross-building, we pass the
                        ;; --crossbuild option to avoid customizing for the
                        ;; kernel version on the build machine.
@@ -2054,6 +2065,65 @@ traffic.  Websockify accepts the WebSockets handshake, parses it, and then
 begins forwarding traffic between the client and the target in both
 directions.")
     (license license:lgpl3)))
+
+;; This is a variant of esbuild that builds and installs the nodejs API.
+;; Eventually, this should probably be merged with the esbuild package.
+(define-public esbuild-node
+  (package
+    (inherit esbuild)
+    (name "esbuild-node")
+    (version (package-version esbuild))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/evanw/esbuild")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09r1xy0kk6c9cpz6q0mxr4why373pwxbm439z2ihq3k1d5kk7x4w"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove prebuilt binaries
+        '(delete-file-recursively "lib/npm/exit0"))))
+    (arguments
+     (list
+      #:import-path "github.com/evanw/esbuild/cmd/esbuild"
+      #:unpack-path "github.com/evanw/esbuild"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'build 'build-platform
+            (lambda* (#:key unpack-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" unpack-path)
+                ;; We're using Node 10, which doesn't have this method.
+                (substitute* "scripts/esbuild.js"
+                  (("exports.buildNativeLib" m)
+                   (string-append
+                    "Object.fromEntries = entries => entries.reduce((result, entry) => (result[entry[0]] = entry[1], result), {});\n"
+                    m)))
+                ;; Must be writable.
+                (for-each make-file-writable (find-files "." "."))
+                (invoke "node" "scripts/esbuild.js"
+                        (string-append #$output "/bin/esbuild"))
+                (let ((modules (string-append #$output "/lib/node_modules/esbuild")))
+                  (mkdir-p modules)
+                  (copy-recursively "npm/esbuild" modules)))))
+          (replace 'check
+            (lambda* (#:key tests? unpack-path #:allow-other-keys)
+              (when tests?
+                ;; The "Go Race Detector" is only supported on 64-bit
+                ;; platforms, this variable disables it.
+                ;; TODO: Causes too many rebuilds, rewrite to limit to x86_64,
+                ;; aarch64 and ppc64le.
+                #$(if (target-riscv64?)
+                      `(setenv "ESBUILD_RACE" "")
+                      #~(unless #$(target-64bit?)
+                          (setenv "ESBUILD_RACE" "")))
+                (with-directory-excursion (string-append "src/" unpack-path)
+                  (invoke "make" "test-go"))))))))
+    (native-inputs
+     (modify-inputs (package-native-inputs esbuild)
+       (append node)))))
 
 (define-public wwwoffle
   (package
@@ -5121,8 +5191,8 @@ Cloud.")
     (license license:expat)))
 
 (define-public guix-data-service
-  (let ((commit "957727c51aafe916da34a33778fa4e8112492fd6")
-        (revision "48"))
+  (let ((commit "b5fbde5ac832e34987a05b1445c1c465c19d5340")
+        (revision "52"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -5134,7 +5204,7 @@ Cloud.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0k6j7marz2q3lrmnj24dnh3h3f46walkz9kaa0205d4sdvi5li2k"))))
+                  "1dp26bj14jaac9f5332pd6hasm3wr1hg9wrbjm9m8wb7cdll9h2p"))))
       (build-system gnu-build-system)
       (arguments
        (list
@@ -5387,7 +5457,7 @@ you'd expect.")
            go-github-com-elliotchance-orderedmap
            go-github-com-fatih-color
            go-github-com-goccy-go-json
-           go-github-com-goccy-yaml
+           go-github-com-goccy-go-yaml
            go-github-com-jinzhu-copier
            go-github-com-magiconair-properties
            go-github-com-pelletier-go-toml-v2
@@ -6507,6 +6577,10 @@ deployments.")
                                               (search-input-file %build-inputs
                                                                  "/bin/gcc"))
                                "--localstatedir=/var")
+       ,@(if (target-x86-32?)
+             '(#:make-flags
+               (list "CFLAGS+=-fexcess-precision=standard"))
+             '())
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-absolute-file-names
@@ -6569,14 +6643,14 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.19.0")
+    (version "0.22.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qq5g6bbd1a1ml1wk8jj9z39a899jzqbf7aizr3pvyz0f4kz8mis"))))
+                "1dxnla1k6kra0nkvm20iszgmq0czr5bgx002qlljwf9fl25vm1ks"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config
@@ -8165,6 +8239,37 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
 @end itemize")
       (license license:bsd-2))))
 
+(define-public gemget
+  (package
+    (name "gemget")
+    (version "1.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/makew0rld/gemget")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03x9apk73lwyafc4fd2vs033z7vcpk4k0jf97452l7pnlx2v57rz"))))
+    (build-system go-build-system)
+    (native-inputs
+     (list go-github-com-dustin-go-humanize
+           go-github-com-makeworld-the-better-one-go-gemini
+           go-github-com-makeworld-the-better-one-go-gemini-socks5
+           go-github-com-schollz-progressbar-v3
+           go-github-com-spf13-pflag))
+    (arguments
+     (list
+      #:install-source? #f
+      #:import-path "github.com/makeworld-the-better-one/gemget"))
+    (home-page "https://github.com/makew0rld/gemget")
+    (synopsis "Command line downloader for the Gemini protocol")
+    (description
+     "Gemget is a command line downloader for the Gemini protocol.
+It works well with streams and can print headers for debugging as well.")
+    (license license:expat)))
+
 (define-public geomyidae
   (package
     (name "geomyidae")
@@ -8392,7 +8497,7 @@ compressed JSON header blocks.
 (define-public nghttp3
   (package
     (name "nghttp3")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
@@ -8401,7 +8506,7 @@ compressed JSON header blocks.
                            "nghttp3-" version ".tar.gz"))
        (sha256
         (base32
-         "0xfa3nbpv3d514ssjpxvizqmss8z330w9p0bp045w4qsyr1vkj8c"))))
+         "13s0jhqbs86a91702j8ybh4h5l75k3mi8cwdiikd9b03n5rq19s3"))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))

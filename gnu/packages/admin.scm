@@ -36,7 +36,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;; Copyright © 2021, 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2021, 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2021, 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021 qblade <qblade@protonmail.com>
 ;;; Copyright © 2021 Hyunseok Kim <lasnesne@lagunposprasihopre.org>
@@ -47,7 +47,7 @@
 ;;; Copyright © 2021 muradm <mail@muradm.net>
 ;;; Copyright © 2021 pineapples <guixuser6392@protonmail.com>
 ;;; Copyright © 2021 Petr Hodina <phodina@protonmail.com>
-;;; Copyright © 2021 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2021-2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;; Copyright © 2022 Wamm K. D. <jaft.r@outlook.com>
 ;;; Copyright © 2022 Roman Riabenko <roman@riabenko.com>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
@@ -65,6 +65,9 @@
 ;;; Copyright © 2023 Nicolas Graves <ngraves@ngraves.fr>
 ;;; Copyright © 2023 Tomás Ortín Fernández <tomasortin@mailbox.org>
 ;;; Copyright © 2024 dan <i@dan.games>
+;;; Copyright © 2024 gemmaro <gemmaro.dev@gmail.com>
+;;; Copyright © 2024 Richard Sent <richard@freakingpenguin.com>
+;;; Copyright © 2024 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,6 +117,7 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-windows)
@@ -122,6 +126,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages debian)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
@@ -232,23 +237,30 @@ simplicity in mind.")
 (define-public aide
   (package
     (name "aide")
-    (version "0.16.2")
+    (version "0.18.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/aide/aide/releases/download/v"
                            version "/aide-" version ".tar.gz"))
        (sha256
-        (base32 "15xp47sz7kk1ciffw3f5xw2jg2mb2lqrbr3q6p4bkbz5dap9iy8p"))))
+        (base32 "0q1sp0vwrwbmw6ymw1kwd4i8walijwppa0dq61b2qzni6b32srhn"))))
     (build-system gnu-build-system)
+    (arguments
+     (list #:configure-flags #~(list "--with-posix-acl"
+                                     "--with-selinux"
+                                     "--with-xattr"
+                                     "--with-config-file=/etc/aide.conf")))
     (native-inputs
-     (list bison flex))
+     (list bison flex pkg-config))
     (inputs
-     (list libgcrypt
+     (list acl
+           attr
+           libgcrypt
            libgpg-error
            libmhash
-           `(,pcre "static")
-           pcre
+           libselinux
+           pcre2
            `(,zlib "static")
            zlib))
     (synopsis "File and directory integrity checker")
@@ -373,23 +385,21 @@ interface and is based on GNU Guile.")
                                       "/lib/guile/3.0/site-ccache"))))))
                         #~%standard-phases)))
 
-    ;; Note: Use 'guile-3.0-latest' to address the continuation-related memory
-    ;; leak reported at <https://issues.guix.gnu.org/58631>.
-    (native-inputs (list pkg-config guile-3.0-latest
+    (native-inputs (list pkg-config guile-3.0
                          guile-fibers-1.1))       ;for cross-compilation
-    (inputs (list guile-3.0-latest guile-fibers-1.1))))
+    (inputs (list guile-3.0 guile-fibers-1.1))))
 
 (define-public shepherd-0.10
   (package
     (inherit shepherd-0.9)
-    (version "0.10.4")
+    (version "0.10.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0206r2l914qjahzd1qill57r1qcg1x8faj0f6qv3x42wqx6x28ky"))))
+                "0k40n9qm5r5rqf94isa1857ghd4329zc5rjf3ll2572gpiw3ij4x"))))
     (native-inputs (modify-inputs (package-native-inputs shepherd-0.9)
                      (replace "guile-fibers"
                        ;; Work around
@@ -397,7 +407,8 @@ interface and is based on GNU Guile.")
                        ;; affects any system without a functional real-time
                        ;; clock (RTC), but in practice these are typically Arm
                        ;; single-board computers.
-                       (if (target-arm?)
+                       (if (or (target-arm?)
+                               (target-riscv64?))
                            guile-fibers-1.1
                            guile-fibers))))
     (inputs (modify-inputs (package-inputs shepherd-0.9)
@@ -755,7 +766,7 @@ console.")
 (define-public btop
   (package
     (name "btop")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -764,7 +775,7 @@ console.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fbrkzg03n2vamg1pfzdb8wxm3xffy6gp4izhqppl45zngy3c0s1"))))
+                "084n0nbv1029lvfv4na2k9fqyray7m77dff1537b8ffk08ib4d4j"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f ;no test suite
@@ -825,7 +836,7 @@ on memory usage on GNU/Linux systems.")
 (define-public htop
   (package
     (name "htop")
-    (version "3.2.2")
+    (version "3.3.0")
     (source
      (origin
        (method git-fetch)
@@ -833,7 +844,7 @@ on memory usage on GNU/Linux systems.")
              (url "https://github.com/htop-dev/htop")
              (commit version)))
        (sha256
-        (base32 "0cyaprgnhfrc7rqq053903bjylaplvxkb65b04bsxmiva09lvf9s"))
+        (base32 "0g2rpp9plblmd9khic2f06089hfh0iy521dqqnr3vkin6s9m0f58"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -1563,7 +1574,8 @@ connection alive.")
                       (coreutils (assoc-ref inputs "coreutils*"))
                       (inetutils (assoc-ref inputs "inetutils"))
                       (grep      (assoc-ref inputs "grep*"))
-                      (sed       (assoc-ref inputs "sed*")))
+                      (sed       (assoc-ref inputs "sed*"))
+                      (debianutils (assoc-ref inputs "debianutils")))
                  (substitute* "client/scripts/linux"
                    (("/sbin/ip")
                     (search-input-file inputs "/sbin/ip")))
@@ -1578,7 +1590,7 @@ connection alive.")
                      ,(map (lambda (dir)
                              (string-append dir "/bin:"
                                             dir "/sbin"))
-                           (list inetutils coreutils grep sed))))))))))
+                           (list inetutils coreutils grep sed debianutils))))))))))
 
       (native-inputs
        (list config perl file))
@@ -1588,6 +1600,10 @@ connection alive.")
                 ,@(if (target-hurd?)
                       '()
                       `(("iproute" ,iproute)))
+
+                ;; dhclient-script provides hooks to users and uses run-parts in
+                ;; order to list users defined hooks.
+                ("debianutils" ,debianutils)
 
                 ;; isc-dhcp bundles a copy of BIND, which has proved vulnerable
                 ;; in the past.  Use a BIND-VERSION of our choosing instead.
@@ -1902,7 +1918,7 @@ realms/domains like Active Directory or IPA.")
 (define-public rename
   (package
     (name "rename")
-    (version "1.10")
+    (version "2.02")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1910,7 +1926,7 @@ realms/domains like Active Directory or IPA.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "137m8s06r4n038ivlr5r1d9a7q9l7shmwpvnyx053r9ndhvbnkh5"))))
+                "1pr0qmsb9gb5xqwpicabnr5jcxdbbvz1mgdqw3d3d0dn12060ysk"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -2698,7 +2714,7 @@ environment variable is set and output is to tty.")
 (define-public lr
   (package
     (name "lr")
-    (version "1.5.1")
+    (version "1.6")
     (source
      (origin
        (method git-fetch)
@@ -2707,10 +2723,10 @@ environment variable is set and output is to tty.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wv2acm4r5y5gg6f64v2hiwpg1f3lnr4fy1a9zssw77fmdc7ys3j"))))
+        (base32 "0qixmvxikyz02348xc0a718m9b1pzcazvf36rjbdk6ayn66g9hsd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
+     `(#:tests? #f ; There are no tests.
        #:make-flags (list (string-append "CC=" ,(cc-for-target))
                           (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
@@ -2796,7 +2812,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "7.3")
+    (version "7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2804,7 +2820,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "0ax2wf5j8k2fbm85s0rbj9sajn5q3j2a2k22wyqcyn0cin0ghi55"))))
+                "0gcrzcb4g7f994n6nws26g6x15yjija1gyzd359sjv7r3xj1z9p9"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
@@ -2845,13 +2861,13 @@ specified directories.")
 (define-public ansible-core
   (package
     (name "ansible-core")
-    (version "2.15.5")
+    (version "2.17.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "ansible-core" version))
+       (uri (pypi-uri "ansible_core" version))
        (sha256
-        (base32 "00hnwjk4dxgxbz4xlza2wqx20yks5xr7074hzlzsyja3ip5kkicc"))))
+        (base32 "007ginimzbizx2c3fp3vccizscyki0fp4yg3bzl3qz6ipdqrsi26"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build python-build-system)
@@ -2983,13 +2999,13 @@ provides the following commands:
 (define-public ansible
   (package
     (name "ansible")
-    (version "8.5.0")
+    (version "10.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "0bazj5h12wraf30bb2schzwk553y20n9vh45km4b5kgmvadm0z1j"))))
+        (base32 "0apj783acx4jzkf3bnibn4y5jc6jd8ly7l0rdqq8f1jpgxal933x"))))
     (build-system python-build-system)
     (propagated-inputs (list ansible-core))
     ;; The Ansible collections are found by ansible-core via the Python search
@@ -3227,31 +3243,31 @@ frequently used directories by typing only a small pattern.")
 (define-public fasd
   (package
     (name "fasd")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/clvv/fasd")
+                    (url "https://github.com/whjvenyl/fasd")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1awi71jdv3mhjrmar2d4z1i90kn7apd7aq1w31sh6w4yibz9kiyj"))))
+                "0q72a54dcahc9pan5qkmnsvpqiqgjjxwdxzzm8pxzylpr329jjyh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))  ;no configuration
        #:tests? #f                      ;no tests
        #:make-flags (list (string-append "PREFIX=" %output))))
-    (home-page "https://github.com/clvv/fasd")
+    (home-page "https://github.com/whjvenyl/fasd")
     (synopsis "Quick access to files and directories for shells")
     (description
-     "Fasd (pronounced similar to \"fast\") is a command-line productivity
-booster.  Fasd offers quick access to files and directories for POSIX shells.
-It is inspired by tools like autojump, z, and v.  Fasd keeps track of files
-and directories you have accessed so that you can quickly reference them in
-the command line.")
-    (license license:x11)))
+     "Fasd (pronounced similar to \"fast\") is a command-line productivity booster.
+Fasd offers quick access to files and directories for POSIX shells.  It is inspired
+by tools like @code{autojump}, @code{z}, and @code{v}.  Fasd keeps track of files and
+directories you have accessed so that you can quickly reference them in the command
+line.")
+    (license license:expat)))
 
 (define-public iftop
   (package
@@ -4245,6 +4261,37 @@ everyone's screenshots nowadays.")
 information tool.")
       (license license:expat))))
 
+(define-public fastfetch
+  (package
+    (name "fastfetch")
+    (version "2.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fastfetch-cli/fastfetch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "112dvfx7gvp6n20i1lkd0jbh897jf7bxjxq96bj4099j3x313y3m"))))
+    (build-system cmake-build-system)
+    (inputs (list dbus
+                  glib
+                  imagemagick
+                  libxcb
+                  mesa
+                  wayland
+                  zlib)) ;for imagemagick and an #ifdef
+    (native-inputs (list pkg-config))
+    (arguments (list #:tests? #f)) ; no test target
+    (home-page "https://github.com/fastfetch-cli/fastfetch")
+    (synopsis "Display system information in a stylized manner")
+    (description
+     "Fastfetch is a tool for fetching system information and displaying it in
+a stylized way.  Fastfetch displays this information next to a logo of the
+system distribution, akin to many similar tools.")
+    (license license:expat)))
+
 (define-public nnn
   (package
     (name "nnn")
@@ -4704,7 +4751,7 @@ cache of unix and unix-like systems.")
 (define-public solaar
   (package
     (name "solaar")
-    (version "1.0.7")
+    (version "1.1.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4713,7 +4760,7 @@ cache of unix and unix-like systems.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0k7mjdfvf28fay50b2hs2z4qk6s23h71wvl8777idlrz5i5f43j5"))))
+                "1fz3qgjx3ygr4clgh7iryxgvvjy510rgy8ixr2xld2wr0xa6p0mi"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4721,9 +4768,12 @@ cache of unix and unix-like systems.")
          (add-before 'build 'setenv-PATH
            (lambda _
              (setenv "PYTHONPATH" "lib"))))))
+    (native-inputs (list python-pytest))
     (propagated-inputs
      (list python-pygobject
            python-pyudev
+           python-dbus-python
+           python-evdev
            ;; For GUI.
            python-pyyaml
            python-psutil
@@ -5115,14 +5165,14 @@ Netgear devices.")
 (define-public atop
   (package
     (name "atop")
-    (version "2.9.0")
+    (version "2.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.atoptool.nl/download/atop-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "09prpw20ps6cd8qr63glbcip3jrvnnic0m7j1q02g8hjnw8z50ld"))
+                "14szbpvsm9czib1629cbh8qcp7pxhgn0vjrfv1yqwmw25k7p79p7"))
               (snippet
                ;; The 'mkdate' script generates a new 'versdate.h' header
                ;; containing the build date.  That makes builds
@@ -5150,8 +5200,10 @@ Netgear devices.")
                  ;; Otherwise, it creates a blank configuration file as a "default".
                  (("touch.*DEFPATH)/atop") "")
                  (("chmod.*DEFPATH)/atop") "")))))))
+    (native-inputs (list pkg-config))
     (inputs
-     (list ncurses
+     (list glib
+           ncurses
            python-wrapper       ; for `atopgpud`
            zlib))
     (home-page "https://www.atoptool.nl/")
@@ -5716,6 +5768,64 @@ mediate access to shared devices, such as graphics and input, for applications
 that require it.")
     (license license:expat)))
 
+(define-public sysdig
+  ;; Use the latest commit for now, as the latest 0.36.1 release does not yet
+  ;; support the falcosecurity-libs 0.16 API.
+  (let ((commit "598ad292b659425e475e5814d9e92c3c29188480")
+        (revision "0"))
+    (package
+      (name "sysdig")
+      (version (git-version "0.36.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/draios/sysdig")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0yyins3rb286dfibadfwwp2gwmdj7fsz3pdkpdvx05yvdqfkqds7"))
+                (patches
+                 (search-patches "sysdig-shared-falcosecurity-libs.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       (list #:tests? #f                ;no test suite
+             #:configure-flags
+             #~(list "-DUSE_BUNDLED_DEPS=OFF"
+                     ;; Already built and part of falcosecurity-libs, but
+                     ;; needed for the 'HAS_MODERN_BPF' define.
+                     "-DBUILD_SYSDIG_MODERN_BPF=ON"
+                     #$(string-append "-DSYSDIG_VERSION=" version))))
+      (native-inputs (list pkg-config))
+      (inputs
+       (list falcosecurity-libs
+             luajit
+             ncurses
+             nlohmann-json
+             yaml-cpp
+             zlib))
+      (home-page "https://github.com/draios/sysdig")
+      (synopsis "System exploration and troubleshooting tool")
+      (description "Sysdig is a simple tool for deep system visibility, with
+native support for containers.  It combines features of multiple system
+administration tools such as the @command{strace}, @command{tcpdump},
+@command{htop}, @command{iftop} and @command{lsof} into a single interface.
+The novel architecture of the tool means that the performance impact of the
+tracing on the system is very light, compared to the likes of
+@command{strace}.  The @command{sysdig} command has an interface similar to
+@command{strace}, while the @command{csysdig} command is better suited for
+interactive used, and has a user interface similar to @command{htop}.
+
+If you use Guix System, the kernel Linux has @acronym{BPF, Berkeley Packet
+Filter} support, and you should launch this tool using the @samp{--modern-bpf}
+argument of the @command{sysdig} or @command{csysdig} commands.  The following
+Bash aliases can be added to your @file{~/.bash_profile} file, for example:
+
+alias sysdig=sudo sysdig --modern-bpf
+alias cysdig=sudo csysdig --modern-bpf
+")                                      ;XXX no @example Texinfo support
+      (license license:asl2.0))))
+
 (define-public fail2ban
   (package
     (name "fail2ban")
@@ -6035,7 +6145,6 @@ file or files to several hosts.")
     (arguments
      (list #:import-path "github.com/digitalocean/doctl/cmd/doctl"
            #:unpack-path "github.com/digitalocean/doctl"
-           #:go go-1.19
            #:build-flags
            #~(list (string-append "-ldflags=-X github.com/digitalocean/doctl.Label=release"
                                   " -X github.com/digitalocean/doctl.Major="

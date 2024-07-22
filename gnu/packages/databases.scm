@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2022 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christine Lemmer-Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -59,7 +59,7 @@
 ;;; Copyright © 2022 muradm <mail@muradm.net>
 ;;; Copyright © 2022 Thomas Albers Raviola <thomas@thomaslabs.org>
 ;;; Copyright © 2021, 2022 jgart <jgart@dismail.de>
-;;; Copyright © 2023 Felix Gruber <felgru@posteo.ne
+;;; Copyright © 2023, 2024 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2023 Munyoki Kilyungi <me@bonfacemunyoki.com>
 ;;; Copyright © 2023 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2024 Troy Figiel <troy@troyfigiel.com>
@@ -195,7 +195,7 @@
 (define-public duckdb
   (package
     (name "duckdb")
-    (version "0.9.2")
+    (version "1.0.0")
     (source
       (origin
        (method git-fetch)
@@ -205,7 +205,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0dbsxyiz7c8sxflbfj87qv0b2s69zk802vsk5h00ra8w8fcbqlj0"))
+         "11yqgnf354g3fjj0rvsw8zzz915vf9i3jxmpchpwy09yzxd72cbg"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -527,14 +527,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.6.21")
+    (version "1.6.28")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "1vm27la2yanjhwwdwabci4c21yv9hy5iqas47kcxaza1zh79i267"))))
+        (base32 "0ma8qn97hng8vp52s3906g9id75yicf96950hm40zn47k1z2vl5i"))))
     (build-system gnu-build-system)
     (inputs
      (list libevent cyrus-sasl))
@@ -613,6 +613,38 @@ the API, and provides features such as:
 @item Local replication
 @end itemize")
     (license license:bsd-3)))
+
+(define-public python-adbc-driver-manager
+  (package
+    (name "python-adbc-driver-manager")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "adbc_driver_manager" version))
+       (sha256
+        (base32 "00i3zg6rbzdz767j9w22ajw8rxwbhkrmzwwlmx11q56cvnig0cm3"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; TODO: Pack arrow-adbc/c/driver/sqlite for tests.
+      #:tests? #f
+      #:build-backend "setuptools.build_meta"))
+    (propagated-inputs
+     (list python-typing-extensions))
+    (native-inputs
+     (list python-cython-3
+           python-pytest))
+    (home-page "https://arrow.apache.org/adbc/")
+    (synopsis "Generic entrypoint for ADBC drivers in Python")
+    (description
+     "This package contains bindings for the ADBC Driver Manager, as well as a
+@url{https://peps.python.org/pep-0249/,DBAPI 2.0/PEP 249-compatible} interface
+on top.  This can be used to load ADBC drivers at runtime and use them from
+Python.  Backend-specific packages like @code{adbc_driver_postgresql} wrap
+this package in a more convenient interface, and should be preferred where
+they exist.")
+    (license license:asl2.0)))
 
 (define-public python-prisma
   (package
@@ -855,7 +887,6 @@ autocompletion and syntax highlighting.")
      (list python-cli-helpers
            python-click
            python-configobj
-           python-cryptography
            python-prompt-toolkit
            python-pyaes
            python-pygments
@@ -1236,7 +1267,7 @@ developed in C/C++ to MariaDB and MySQL databases.")
 (define-public galera
   (package
     (name "galera")
-    (version "26.4.13")
+    (version "26.4.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1245,10 +1276,12 @@ developed in C/C++ to MariaDB and MySQL databases.")
                     (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "06kf6w0bjkgcmddjd3k1q4cjpg8i78l0c7hcf368h09i1hqd23i6"))))
+               (base32 "1agw763qx9778krcpmgvwcps73ipyjwl0niwsykcxldvzzs314r5"))))
     (build-system cmake-build-system)
     (inputs
-     (list check boost openssl))
+     (list boost openssl))
+    (native-inputs
+     (list check))
     (home-page "https://github.com/codership/galera/")
     (synopsis "Extension to the MariaDB database server")
     (description
@@ -1260,14 +1293,14 @@ and high-availability (HA).")
 (define-public postgresql-15
   (package
     (name "postgresql")
-    (version "15.4")
+    (version "15.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1yf8cfg9j2pfxh5lxfaq1ifbvrcvv2g5vjxnadk36ds4vi5mmv5s"))
+                "1xwq1592k1r64ki9bmkcyw39416kymabdfxbkpiqaqxbhnaf8vx4"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -1335,27 +1368,27 @@ pictures, sounds, or video.")
 (define-public postgresql-13
   (package
     (inherit postgresql-14)
-    (version "13.12")
+    (version "13.15")
     (source (origin
               (inherit (package-source postgresql-14))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "12r1kwjaclq2qn4qg3k6j0asrs4r0k0g1fkdpb3pnjsiwg7fv88d"))))))
+                "09f99rp5q1xp769r71if9ckb4cbm0nnx2xmy8b1bhcvd8hax9va2"))))))
 
 (define-public postgresql-11
   (package
     (inherit postgresql-13)
     (name "postgresql")
-    (version "11.21")
+    (version "11.22")
     (source (origin
               (inherit (package-source postgresql-13))
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0l7qrwzwyiy5dwg6j7nnd9mq245sycc4gcv6a6r7gpfmf5s87c07"))))
+                "1w71xf97i3hha6vl05xqf960k75nczs6375w3f2phwhdg9ywkdrc"))))
     (native-inputs
      (modify-inputs (package-native-inputs postgresql-13)
        (replace "docbook-xml" docbook-xml-4.2)))))
@@ -1615,16 +1648,16 @@ CSV, DB3, iXF, SQLite, MS-SQL or MySQL to PostgreSQL.")
 (define-public python-pymysql
   (package
     (name "python-pymysql")
-    (version "1.0.2")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "PyMySQL" version))
+       (uri (pypi-uri "pymysql" version))
        (sha256
-        (base32 "0dmdszskfri11b9m6n3lag31vzi10aqxz9gc583md3gka2ijfsc1"))))
-    (build-system python-build-system)
-    (inputs
-     (list python-cryptography))
+        (base32 "1l2cj0ps96g3bblvhdszgyjv9bi405bxrx0bqq1p8h9bmwd629z1"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs
+     (list python-cryptography python-pynacl))
     (arguments
      `(#:tests? #f))                    ; tests expect a running MySQL
     (home-page "https://github.com/PyMySQL/PyMySQL/")
@@ -1986,8 +2019,7 @@ which uses SQL to describe changes.")
                   "0x2q4m9ryw68kifalnm3x4bv9v2xrc2ffsiap8m9wnw6lf1h05la"))))
       (build-system python-build-system)
       (inputs
-       (list python-cryptography python-psycopg2 python-pymysql
-             python-sqlalchemy))
+       (list python-psycopg2 python-pymysql python-sqlalchemy))
       (home-page "https://github.com/coffeeandscripts/sqlcrush")
       (synopsis "Text console-based database viewer and editor")
       (description
@@ -2056,18 +2088,17 @@ extremely small.")
 (define-public perl-dbix-class
   (package
     (name "perl-dbix-class")
-    (version "0.082842")
+    (version "0.082843")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
                            "DBIx-Class-" version ".tar.gz"))
        (sha256
-        (base32 "1rh7idjjbibc1zmiaaarask434lh0lx7f2xyfwmy37k9fa0xcpmh"))))
+        (base32 "0lgjw7z4y2inf3yyfph1ljdp4f5zdmy9vh56fj8w9n19rdp0n7il"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-dbd-sqlite
-           perl-file-temp
            perl-module-install
            perl-package-stash
            perl-test-deep
@@ -2085,15 +2116,13 @@ extremely small.")
            perl-devel-globaldestruction
            perl-hash-merge
            perl-module-find
-           perl-moo
+           perl-moo-2
            perl-mro-compat
            perl-namespace-clean
            perl-path-class
-           perl-scalar-list-utils
            perl-scope-guard
            perl-sql-abstract-classic
            perl-sub-name
-           perl-text-balanced
            perl-try-tiny))
     (home-page "https://metacpan.org/release/DBIx-Class")
     (synopsis "Extensible and flexible object <-> relational mapper")
@@ -2105,6 +2134,9 @@ still providing access to as many of the capabilities of the database as
 possible, including retrieving related records from multiple tables in a
 single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
 \"ORDER BY\" and \"HAVING\" support.")
+    (properties
+     ;; This is needed for perl-catalyst-authentication-store-dbix-class
+     `((updater-extra-propagated-inputs . ("perl-data-page"))))
     (license license:perl-license)))
 
 (define-public perl-dbix-class-cursor-cached
@@ -2846,7 +2878,7 @@ more efficient access and storage of column subsets) and log-structured merge
 trees (LSM), for sustained throughput under random insert workloads.")
     (license license:gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
-    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
+    (supported-systems (delete "riscv64-linux" %64bit-supported-systems))))
 
 (define-public wiredtiger-3
   (package
@@ -3032,34 +3064,6 @@ PostgreSQL database back-end.  The database back-end can be local or it may be
 on another machine, accessed via TCP/IP.")
     (home-page "https://pqxx.org/")
     (license license:bsd-3)))
-
-(define-public go-go-etcd-io-bbolt
-  (package
-    (name "go-go-etcd-io-bbolt")
-    (version "1.3.6")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/etcd-io/bbolt")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "0pj5245d417za41j6p09fmkbv05797vykr1bi9a6rnwddh1dbs8d"))))
-    (build-system go-build-system)
-    (arguments
-     `(#:import-path "go.etcd.io/bbolt"
-       ;; Extending the test timeout to 30 minutes still times out on aarch64.
-       #:tests? ,(not target-arm?)))
-    (propagated-inputs
-     (list go-golang-org-x-sys))
-    (home-page "https://go.etcd.io/bbolt")
-    (synopsis "Embedded key/value database for Go")
-    (description "Bolt is a pure Go key/value store inspired by Howard Chu's
-LMDB project.  The goal of the project is to provide a simple, fast, and
-reliable database for projects that don't require a full database server such as
-Postgres or MySQL.")
-    (license license:expat)))
 
 (define-public python-peewee
   (package
@@ -3585,7 +3589,7 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
 relational, graph, and document data management with web application server
 and web services platform functionality.")
     ;; configure: error: ... can only be build on 64bit platforms
-    (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
+    (supported-systems %64bit-supported-systems)
     (license license:gpl2)))
 
 (define-public python-ccm
@@ -3645,6 +3649,53 @@ provides a full suite of well known enterprise-level persistence patterns,
 designed for efficient and high-performing database access, adapted into a
 simple and Pythonic domain language.")
     (license license:x11)))
+
+(define-public python-sqlalchemy-2
+  (package
+    (name "python-sqlalchemy")
+    (version "2.0.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "SQLAlchemy" version))
+       (sha256
+        (base32 "1y1l4lwhvgs7ivwhcp4vljjdsaha77x9859kz65virhzlxlyv9l6"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list python-pytest))
+    (propagated-inputs (list python-typing-extensions))
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-tests
+            (lambda _
+              ;; Remove expensive tests.
+              (for-each delete-file
+                        '("test/ext/mypy/test_mypy_plugin_py3k.py"
+                          "test/typing/test_mypy.py"
+                          "test/aaa_profiling/test_memusage.py"))
+              (substitute* "test/engine/test_pool.py"
+                ;; Disable a test that fails randomly.
+                (("def test_recycle_pool_no_race")
+                 "def _test_recycle_pool_no_race"))))
+          ;; According to the pyproject.toml, greenlet is optional.
+          (add-after 'unpack 'remove-dependency-on-greenlet
+            (lambda _
+              (substitute* "setup.cfg"
+                (("greenlet != 0.4.17")
+                 "#greenlet != 0.4.17"))
+              (substitute* "PKG-INFO"
+                (("Requires-Dist: greenlet")
+                 "#Requires-Dist: greenlet")))))))
+    (home-page "https://www.sqlalchemy.org")
+    (synopsis "SQL toolkit and object relational mapper")
+    (description
+     "SQLAlchemy is the Python SQL toolkit and @acronym{ORM, Object Relational Mapper}
+that gives application developers the full power and flexibility of SQL.  It provides
+a full suite of well known enterprise-level persistence patterns, designed for
+efficient and high-performing database access, adapted into a simple and Pythonic
+domain language.")
+    (license license:expat)))
 
 (define-public python-sqlalchemy-stubs
   (package
@@ -3880,7 +3931,7 @@ PickleShare.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.45.1.0")
+    (version "3.46.0.0")
     ;; The compressed release has fetching functionality disabled.
     (source
      (origin
@@ -3890,7 +3941,7 @@ PickleShare.")
              version "/apsw-" version ".zip"))
        (sha256
         (base32
-         "1vfrzb414pbh5k0cgcqkp039jvla2galapn4a551zgh8xi70bnrp"))))
+         "10yfbasi4mq63g0svyl1h49ylwn9znjylq78id16dzxzk9q9ipdx"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list unzip python-setuptools python-wheel))
@@ -4600,7 +4651,7 @@ with integrated support for finding required rows quickly.")
 (define-public apache-arrow
   (package
     (name "apache-arrow")
-    (version "15.0.1")
+    (version "16.1.0")
     (source
      (origin
        (method git-fetch)
@@ -4610,7 +4661,7 @@ with integrated support for finding required rows quickly.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zrcwsq9c976xncc1kg6lw24s5r3ag8vfzhmcnkvi5z2c9x4lvvc"))))
+         "1xl7apk7yaiv7cikpw5h846bsqb935cr3212b8bzhxqvkswxsm7f"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -5323,18 +5374,15 @@ connecting to MS SQL and Sybase servers over TCP/IP.")
 (define-public python-tinydb
   (package
     (name "python-tinydb")
-    (version "4.5.2")
+    (version "4.8.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "tinydb" version))
               (sha256
-               (base32 "1x9c4s42930wwal3ds0plwb57kg5c3gj7kbpy64c29vq478b463x"))))
-    (build-system python-build-system)
-    ;; PyPi tarball does not contain tests and github repository does not
-    ;; have a setup.py file (only pyproject).
-    (arguments `(#:tests? #f))
-    (propagated-inputs
-     (list python-typing-extensions))
+               (base32 "0r6mavw0wm03lbmqbgglsyff3vws86ddg3q8h29glpd7qnlqdmkd"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+      (list python-poetry-core python-pytest))
     (home-page "https://github.com/msiemens/tinydb")
     (synopsis "TinyDB is a lightweight document oriented database")
     (description
@@ -5441,6 +5489,8 @@ compatible with SQLite using a graphical user interface.")
 (define-public sqls
   (package
     (name "sqls")
+    ;; TODO: The latest version requires a way more packages to be available
+    ;; in Guix.
     (version "0.2.18")
     (source (origin
               (method git-fetch)
@@ -5456,18 +5506,19 @@ compatible with SQLite using a graphical user interface.")
      (list
       #:install-source? #f
       #:import-path "github.com/lighttiger2505/sqls"))
-    (inputs (list go-github-com-go-sql-driver-mysql
-                  go-github-com-lib-pq
-                  go-github-com-mattn-go-runewidth
-                  go-github-com-mattn-go-sqlite3
-                  go-github-com-olekukonko-tablewriter
-                  go-github-com-pkg-errors
-                  go-github-com-sourcegraph-jsonrpc2
-                  go-golang-org-x-crypto
-                  go-golang-org-x-xerrors
-                  go-gopkg-in-yaml-v2))
-    (native-inputs (list go-github-com-google-go-cmp-cmp
-                         go-github-com-k0kubun-pp))
+    (native-inputs
+     (list go-github-com-google-go-cmp-cmp
+           go-github-com-go-sql-driver-mysql
+           go-github-com-k0kubun-pp
+           go-github-com-lib-pq
+           go-github-com-mattn-go-runewidth
+           go-github-com-mattn-go-sqlite3
+           go-github-com-olekukonko-tablewriter
+           go-github-com-pkg-errors
+           go-github-com-sourcegraph-jsonrpc2
+           go-golang-org-x-crypto
+           go-golang-org-x-xerrors
+           go-gopkg-in-yaml-v2))
     (home-page "https://github.com/sqls-server/sqls")
     (synopsis "SQL language server written in Go")
     (description

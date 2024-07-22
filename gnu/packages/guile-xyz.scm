@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2021, 2022, 2023, 2024 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018, 2019, 2020, 2021, 2022, 2023 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018–2024 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
@@ -49,6 +49,7 @@
 ;;; Copyright © 2023 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2024 Ilya Chernyshov <ichernyshovvv@gmail.com>
 ;;; Copyright © 2024 Artyom Bologov <mail@aartaka.me>
+;;; Copyright © 2024 Felix Lechner <felix.lechner@lease-up.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -557,6 +558,33 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
      "guile-aspell is a Guile Scheme library for comparing a string against a
 dictionary and suggesting spelling corrections.")
     (license license:gpl3+)))
+
+(define-public guile-avatar
+  (let ((commit "c2860952fd09ecc878c3d4f1ee2f1678668fbb7a")
+        (revision "0"))
+    (package
+      (name "guile-avatar")
+      (version (git-version "0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://codeberg.org/lechner/guile-avatar")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1dq9zcx4q3m5s3cpixq4zvlmdrlcc626mpqb7nmmj7vnda8k717f"))))
+      (build-system guile-build-system)
+      (arguments
+       (list #:source-directory "scm"))
+      (inputs (list guile-3.0))
+      (propagated-inputs (list guile-hashing))
+      (home-page "https://codeberg.org/lechner/guile-avatar")
+      (synopsis "Get Libravatar URLs from an email address")
+      (description
+       "@code{guile-avatar} helps you to determine avatars (or profile
+pictures) for email addresses using the Libravatar specification.")
+      (license license:agpl3+))))
 
 (define-public guile2.0-bash
   ;; This project is currently retired.  It was initially announced here:
@@ -1121,7 +1149,7 @@ for calling methods on remote servers by exchanging JSON objects.")
 (define-public guile-ares-rs
   (package
     (name "guile-ares-rs")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method git-fetch)
@@ -1131,11 +1159,11 @@ for calling methods on remote servers by exchanging JSON objects.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ksj39ka8n7cbsqf56z67hyk2jcjz6zlkgnbdrqa9kp95p47xp41"))))
+         "06fc5kbcniysqixadi54vv96hy8l4wx6hqcii134fkb1d93078lq"))))
     (build-system guile-build-system)
     (arguments
      (list
-      #:source-directory "src"))
+      #:source-directory "src/guile"))
     ;; Remove guile-next dependency, when guile package get custom text port
     (inputs `(("guile" ,guile-next)))
     (propagated-inputs (list guile-fibers))
@@ -2262,7 +2290,7 @@ user which package sets would they like to install from it.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "1.0.7")
+    (version "1.0.12")
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
@@ -2271,7 +2299,7 @@ user which package sets would they like to install from it.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fxngiy8dmryh3gx4g1q7nnamc4dpszjh130g6d0pmi12ycxd2y9"))))
+                "0m5ssl4ngk2jl1zk0fnsss0asyvwanjaa5rrcksldqnh2ikcr4bm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -2690,8 +2718,7 @@ many readers as needed).")
                   (guix build utils))
        #:imported-modules ((guix build guile-build-system)
                            ,@%gnu-build-system-modules)
-       #:configure-flags (list "--with-ncursesw" ; Unicode support
-                               "--with-gnu-filesystem-hierarchy")
+       #:configure-flags (list "--with-gnu-filesystem-hierarchy")
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-libguile-ncurses-file-name
@@ -2737,12 +2764,14 @@ library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nb7swbliw9vx1ivhgd2m0r0p7nlkszw6s41zcgfwb5v1kp05sb4"))))
+                "1nb7swbliw9vx1ivhgd2m0r0p7nlkszw6s41zcgfwb5v1kp05sb4"))
+              (patches (search-patches "guile-lib-fix-tests-for-guile2.2.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0") ;placate guild warnings
        #:phases
        (modify-phases %standard-phases
+         (delete 'strip)
          (add-before 'configure 'patch-module-dir
            (lambda _
              (substitute* "src/Makefile.in"
@@ -4524,8 +4553,8 @@ function: raw, typed, and functional.")
       (license license:lgpl3+))))
 
 (define-public guile-gsl
-  (let ((commit "22ac81c45f33f897d7cc88744d427a6959682c24")
-        (revision "1"))
+  (let ((commit "d33de9219a167561132721ce79c94bcaf67724b0")
+        (revision "2"))
     (package
       (name "guile-gsl")
       (version (git-version "0.0.1" revision commit))
@@ -4537,7 +4566,7 @@ function: raw, typed, and functional.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0gwxyd5flq107ibqdqvx7dl5z23an171jwckn7dvlqc60b7n2x64"))))
+          (base32 "02ngki3z64cs5mabs61vnx2chagcc8srmgfvccpr4zkn36fw3cx8"))))
       (build-system guile-build-system)
       (arguments
        (list
@@ -4559,7 +4588,14 @@ function: raw, typed, and functional.")
       (synopsis "Bindings for GNU Scientific library in Guile")
       (description
        "This package provides a Guile Scheme wrapper for @code{libgsl.so}.
-Implements vector, matrix, and BLAS operations.")
+Implements
+@itemize
+@item GSL vectors.
+@item Matrices.
+@item BLAS operations.
+@item Eigensystem solutions.
+@item One-dimensional root solvers.
+@end itemize")
       (license license:gpl3+))))
 
 (define-public guile-ffi-fftw
@@ -4928,31 +4964,27 @@ over, or update a value in arbitrary data structures.")
 (define-public guile-xapian
   (package
     (name "guile-xapian")
-    (version "0.3.1")
-    (home-page "https://git.systemreboot.net/guile-xapian")
+    (version "0.4.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference (url home-page)
-                           (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://guile-xapian.systemreboot.net/releases/guile-xapian-"
+                           version ".tar.lz"))
        (sha256
         (base32
-         "0axbahbi52ji0fxhykn642265v58rdp2yqliqv456nqs038wb5ja"))))
+         "1szjwha8rin65mdm0dviha4pybiij89pq1wfjmrir1js4w5mk1hr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
     (inputs
      (list guile-3.0 xapian zlib))
     (native-inputs
-     (list autoconf
-           autoconf-archive
-           automake
-           libtool
-           pkg-config
+     (list pkg-config
+           lzip
            swig))
     (propagated-inputs
      (list guile-lib))
+    (home-page "https://guile-xapian.systemreboot.net")
     (synopsis "Guile bindings for Xapian")
     (description "@code{guile-xapian} provides Guile bindings for Xapian, a
 search engine library.  Xapian is a highly adaptable toolkit which allows
@@ -5412,7 +5444,7 @@ Scheme.")
 (define-public guile-jwt
   (package
     (name "guile-jwt")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
@@ -5422,12 +5454,12 @@ Scheme.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1p8sapiv5im18rjnzc8xnw6y7dr661rycf9g10z5ww0dl4rfz3z1"))))
+         "04c5aibcfb83bl194j27cw5x8bfbqvq5939brckaaapbrff6il6k"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake pkg-config))
     (propagated-inputs
-     (list guile-json-4))
+     (list guile-gcrypt guile-json-4))
     (inputs
      (list guile-3.0))
     (home-page "https://github.com/aconchillo/guile-jwt")
@@ -5708,8 +5740,8 @@ ffi-helper from nyacc.")
       (license license:lgpl3+))))
 
 (define-public schmutz
-  (let ((commit "add24588c59552537b8f1316df99a0cdd62c221e")
-        (revision "1"))
+  (let ((commit "f8043e6c258d2e29d153bc37cb17b130fee0579f")
+        (revision "2"))
     (package
       (name "schmutz")
       (version (git-version "0" revision commit))
@@ -5721,13 +5753,13 @@ ffi-helper from nyacc.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1z3n61sj62lnn15mandvyrpjzli07rp9r62ypvgg3a8bvh37yc89"))))
+                  "0cgk0b27f1vik3wnv1cz47ip7d8rkmqxfdlqba4avi9h5fah7xrw"))))
       (build-system cmake-build-system)
       (arguments `(#:tests? #f))
       (native-inputs
        (list pkg-config))
       (inputs
-       (list guile-2.2))
+       (list guile-3.0))
       (home-page "https://github.com/arximboldi/schmutz")
       (synopsis "Bind C++ code to Scheme")
       (description "Schmutz is a header-only library to declare Scheme bindings
@@ -6124,7 +6156,7 @@ in two different guises.")
 (define-public guile-tap
   (package
     (name "guile-tap")
-    (version "0.4.6")
+    (version "0.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6133,7 +6165,7 @@ in two different guises.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04ip5cbvsjjcicsri813f4711yh7db6fvc2px4788rl8p1iqvi6x"))))
+                "0yimi9ci5h6wh7bs3ir7p181pwbd2hxlhx7pqq53gr54mnad8qv4"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
@@ -6142,7 +6174,9 @@ in two different guises.")
                  (lambda _
                    (substitute* "Makefile"
                      (("PREFIX = /usr/local") (string-append "PREFIX="
-                                                             #$output)))))
+                                                             #$output)))
+                   (substitute* "bin/tap-harness"
+                     ((" guile ") (string-append " " (which "guile") " ")))))
                (replace 'build
                  (lambda _
                    (invoke "make")

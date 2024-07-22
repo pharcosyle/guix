@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2024 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,36 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system copy))
+
+(define-public specification-ipld
+  (let ((commit "84a5cc6c168314a26be0d447c26fe76e46ce2a42")
+        (revision "0"))
+    (package
+      (name "specification-ipld")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ipld/ipld")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0avgjp4hjkh4jmsxx09vnwi74rax6409k28h29jwfl95v42h6yyl"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan '(("./specs/schemas" "share/ipld/specs/"))
+         #:phases (modify-phases %standard-phases
+                    (delete 'strip))))
+      (home-page "https://ipld.io/")
+      (synopsis "InterPlanetary Linked Data")
+      (description
+       "This package provides specification schemas of
+@acronym{InterPlanetary Linked Data, IPLD} which may be used for the test
+suites of application implementing the standard.")
+      ;; This library is dual-licensed under either of Apache 2.0 or MIT
+      ;; terms.
+      (license (list license:expat license:asl2.0)))))
 
 (define-public specification-multibase
   (let ((commit "4c8344e37852773de155f587dcf5897771b3fc19")
@@ -107,3 +138,31 @@ CID}).")
 well-established cryptographic hash functions, addressing size + encoding
 considerations.")
       (license (list license:expat license:cc-by-sa3.0)))))
+
+(define-public specification-specreduce-data
+  (let ((commit "dcba1c601348ee3a5797ae2d84a068d83393058e")
+        (revision "0"))
+    (package
+      (name "specification-specreduce-data")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/astropy/specreduce-data")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1c6mrjfykkfbbyg489h7czr65nz6bcb3gszz5xa2cg2ccs00m8ii"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan '(("specreduce_data/" "share/specreduce_data//"))
+         #:phases (modify-phases %standard-phases
+                    (delete 'strip))))
+      (home-page "https://specreduce.readthedocs.io/")
+      (synopsis "Reference and calibration data for the reducing optical/IR spectra")
+      (description
+       "This package provides a general reference and calibration data for
+spectroscopic data reduction (e.g. standard star spectra, atmospheric
+extinction curves, line lists for calibration lamps).")
+      (license license:bsd-3))))

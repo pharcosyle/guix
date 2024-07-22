@@ -27,7 +27,7 @@
 ;;; Copyright © 2022 Gabriel Wicki <gabriel@erlikon.ch>
 ;;; Copyright © 2023 Reza Housseini <reza@housseini.me>
 ;;; Copyright © 2023 Hilton Chain <hako@ultrarare.space>
-;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2024 Timotej Lazar <timotej.lazar@araneo.si>;;
 ;;; Copyright © 2024 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
@@ -199,15 +199,20 @@ libenca and several charset conversion libraries and tools.")
          ;; For tests.
          ("perl" ,perl))))
     (arguments
-     '(#:make-flags (list "CC=gcc"
+     `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'check 'check-data
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key ,@(if (%current-target-system)
+                                 '(native-inputs)
+                                 '())
+                     inputs #:allow-other-keys)
              (for-each (lambda (i)
-                         (copy-file (assoc-ref inputs i)
+                         (copy-file (assoc-ref ,@(if (%current-target-system)
+                                                     '((or native-inputs inputs))
+                                                     '(inputs)) i)
                                     (string-append "data/" i)))
                        '("NormalizationTest.txt" "GraphemeBreakTest.txt"))
              (substitute* "data/GraphemeBreakTest.txt"
@@ -1466,7 +1471,7 @@ of a Unix terminal to HTML code.")
            go-github-com-spf13-afero
            go-github-com-urfave-cli
            go-github-com-yuin-goldmark
-           go-golang-org-x-net-html
+           go-golang-org-x-net
            go-gopkg-in-ini-v1
            go-gopkg-in-yaml-v2))
     (home-page "https://github.com/errata-ai/vale")
@@ -1478,9 +1483,6 @@ languages such as HTML, Markdown, Asciidoc, and reStructuredText.  The
 community around it also has a list of style guides implemented with Vale in
 @url{https://github.com/errata-ai/styles, their styles repo}.")
     (license license:expat)))
-
-(define-public go-github-com-errata-ai-vale
-  (deprecated-package "go-github-com-errata-ai-vale" vale))
 
 (define-public utf-8-lineseparator
   (package
@@ -1557,9 +1559,6 @@ JSON for post-processing
 @end itemize")
     (license license:expat)))
 
-(define-public go-github-com-aswinkarthik-csvdiff
-  (deprecated-package "go-github-com-aswinkarthik-csvdiff" csvdiff))
-
 (define-public miller
   (package
     (name "miller")
@@ -1576,7 +1575,6 @@ JSON for post-processing
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.19
       #:install-source? #f
       #:import-path "github.com/johnkerl/miller/cmd/mlr"
       #:unpack-path "github.com/johnkerl/miller"

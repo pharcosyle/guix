@@ -142,6 +142,32 @@ optimization problems in Python.")
 numerical software for solving convex second-order cone programs (SOCPs).")
     (license license:gpl3)))
 
+(define-public python-formulaic
+  (package
+    (name "python-formulaic")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "formulaic" version))
+       (sha256
+        (base32 "18gvd3f2x358jj0df8vx5fhhnvzw047rsrs03vmvqnxaly97kpb4"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list python-astor
+                             python-cached-property
+                             python-interface-meta
+                             python-numpy
+                             python-pandas
+                             python-scipy
+                             python-typing-extensions
+                             python-wrapt))
+    (native-inputs (list python-hatchling python-hatch-vcs python-pytest))
+    (home-page "https://github.com/matthewwardrop/formulaic")
+    (synopsis "Implementation of Wilkinson formulas")
+    (description "Formulaic is a high-performance implementation of Wilkinson
+formulas for Python.")
+    (license license:expat)))
+
 (define-public python-osqp
   (package
     (name "python-osqp")
@@ -463,7 +489,7 @@ logic, also known as grey logic.")
 (define-public python-scikit-image
   (package
     (name "python-scikit-image")
-    (version "0.22.0")
+    (version "0.23.2")
     (source
      (origin
        (method git-fetch)
@@ -472,10 +498,12 @@ logic, also known as grey logic.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10fzyq2w1ldvfkmj374l375yrx33xrlw39xc9kmk8fxfi77jpykd"))))
+        (base32 "1bc8i57sjk44vd9k1ilr6fpvfq1zbq9yfi22lz22k26mzrlisym3"))))
     (build-system pyproject-build-system)
     (arguments
      (list
+      ;; Disable flaky test
+      #:test-flags #~(list "-k" "not test_ellipse_parameter_stability")
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'build 'change-home-dir
@@ -542,29 +570,16 @@ swarm algorithm.")
 (define-public python-scikit-optimize
   (package
     (name "python-scikit-optimize")
-    (version "0.9.0")
+    (version "0.10.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/scikit-optimize/scikit-optimize")
+                    (url "https://github.com/holgern/scikit-optimize")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hsq6pmryimxc275yrcy4bv217bx7ma6rz0q6m4138bv4zgq18d1"))
-              (patches
-               ;; These are for compatibility with more recent versions of
-               ;; numpy and scikit-learn.
-               (search-patches "python-scikit-optimize-1148.patch"
-                               "python-scikit-optimize-1150.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Since scikit-learn 1.3 max_features no longer supports
-               ;; 'auto', which is identical to 'sqrt'
-               '(substitute* '("skopt/learning/forest.py"
-                               "skopt/learning/tests/test_forest.py")
-                  (("max_features=['\"]auto['\"]")
-                   "max_features='sqrt'")))))
+                "0pc6avzxz8l32km5jvv3maih0a5x2akxybvxl2hdg04qz2l0kz8b"))))
     (build-system pyproject-build-system)
     (propagated-inputs
      (list python-joblib
@@ -582,6 +597,63 @@ library to minimize (very) expensive and noisy black-box functions.  It
 implements several methods for sequential model-based optimization.
 @code{skopt} aims to be accessible and easy to use in many contexts.")
     (license license:bsd-3)))
+
+(define-public python-scikit-survival
+  (let ((revision "1")
+        ;; We need a later commit for support of a more recent sklearn and
+        ;; numpy 2.
+        (commit "bceb53ebb8306f959c70fae2be9d552f33dd3f21"))
+    (package
+      (name "python-scikit-survival")
+      (version (git-version "0.22.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sebp/scikit-survival")
+               (commit commit)
+               ;; This package contains a copy of Eigen.  It would be good to
+               ;; figure out how to use our own Eigen package.
+               (recursive? #true)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1m3z64nv4sgay0mdrrw4q4z5ylx63a9w2x43w1r4g8kpg7z9rdfc"))))
+      (build-system pyproject-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-before 'build 'set-version
+              (lambda _
+                (setenv "SETUPTOOLS_SCM_PRETEND_VERSION"
+                        #$(version-major+minor version)))))))
+      (propagated-inputs
+       (list python-ecos
+             python-importlib-resources
+             python-joblib
+             python-numexpr
+             python-numpy
+             python-osqp
+             python-pandas
+             python-scikit-learn
+             python-scipy))
+      (native-inputs
+       (list python-black
+             python-pypa-build
+             python-coverage
+             python-cython-3
+             python-packaging
+             python-pytest
+             python-setuptools-scm
+             python-tomli
+             python-tox))
+      (home-page "https://github.com/sebp/scikit-survival")
+      (synopsis "Survival analysis built on top of scikit-learn")
+      (description "Scikit-survival is a Python module for survival analysis
+built on top of scikit-learn.  It allows doing survival analysis while
+utilizing the power of scikit-learn, e.g., for pre-processing or doing
+cross-validation.")
+      (license license:gpl3+))))
 
 (define-public python-tdda
   (package
@@ -1141,7 +1213,7 @@ idea of the remaining amount of computation to be done.")
 (define-public python-pandera
   (package
     (name "python-pandera")
-    (version "0.17.2")
+    (version "0.18.0")
     (source
      (origin
        ;; No tests in the PyPI tarball.
@@ -1151,7 +1223,7 @@ idea of the remaining amount of computation to be done.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mnqk583z90k1n0z3lfa4rd0ng40v7hqfk7phz5gjmxlzfjbxa1x"))
+        (base32 "14b5aij5zjkwvsimg0v00qvp59mhhq7ljim4qghcn432vkg9gh47"))
        (modules '((guix build utils)))
        ;; These tests require PySpark and Modin. We need to remove the entire
        ;; directory, since the conftest.py in these directories contain
@@ -1169,7 +1241,8 @@ idea of the remaining amount of computation to be done.")
                            ;; positives. These tests currently fail.
                            "not test_python_std_list_dict_generics"
                            " and not test_python_std_list_dict_empty_and_none"
-                           " and not test_pandas_modules_importable"))))
+                           " and not test_pandas_modules_importable"
+                           " and not test_check_groups"))))
     ;; Pandera comes with a lot of extras. We test as many as possible, but do
     ;; not include all of them in the propagated-inputs. Currently, we have to
     ;; skip the pyspark and io tests due to missing packages python-pyspark
@@ -1423,6 +1496,32 @@ evaluating arrays of polynomials based on @code{numpy.ndarray objects}.")
     (supported-systems '("x86_64-linux" "aarch64-linux" "powerpc64le-linux"))
     (license license:bsd-2)))
 
+(define-public python-spin
+  (package
+  (name "python-spin")
+  (version "0.8")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (pypi-uri "spin" version))
+     (sha256
+      (base32 "0ff48nagfaai3j26g1db4zq2bwdv6kj5l7xhcs2l9kzg7qzrmhr7"))))
+  (build-system pyproject-build-system)
+  (propagated-inputs (list python-click python-colorama python-tomli))
+  (native-inputs (list python-pytest))
+  (home-page "https://github.com/scientific-python/spin")
+  (synopsis "Developer tool for scientific Python libraries")
+  (description "@code{spin} is a simple interface for common development
+tasks.  It comes with a few common build commands out the box, but can
+easily be customized per project.
+
+The impetus behind developing the tool was the mass migration of scientific
+Python libraries (SciPy, scikit-image, and NumPy, etc.) to Meson, after
+distutils was deprecated.  When many of the build and installation commands
+changed, it made sense to abstract away the nuisance of having to re-learn
+them.")
+  (license license:bsd-3)))
+
 (define-public python-baycomp
   (package
     (name "python-baycomp")
@@ -1446,6 +1545,38 @@ higher scores than the second, the probability that differences are within the
 region of practical equivalence (rope), or that the second classifier has
 higher scores.")
     (license license:expat)))
+
+(define-public python-fast-histogram
+  (package
+    (name "python-fast-histogram")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fast_histogram" version))
+       (sha256
+        (base32 "1sk9xa85cgm4sylzblwv3qr2dmm0ic06zkwxqa2xlazjiawp629r"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'build-extensions
+            (lambda _
+              (invoke "python" "setup.py" "build_ext" "--inplace"))))))
+    (propagated-inputs (list python-numpy))
+    (native-inputs (list python-hypothesis python-pytest))
+    (home-page "https://github.com/astrofrog/fast-histogram")
+    (synopsis "Fast simple 1D and 2D histograms")
+    (description
+     "The fast-histogram mini-package aims to provide simple and fast
+histogram functions for regular bins that don't compromise on performance. It
+doesn't do anything complicated - it just implements a simple histogram
+algorithm in C and keeps it simple. The aim is to have functions that are fast
+but also robust and reliable. The result is a 1D histogram function here that
+is 7-15x faster than @code{numpy.histogram}, and a 2D histogram function that
+is 20-25x faster than @code{numpy.histogram2d}.")
+    (license license:bsd-3)))
 
 (define-public python-fastcluster
   (package
@@ -1877,7 +2008,7 @@ annotations on an existing boxplots and barplots generated by seaborn.")
                              python-sympy))
     ;; Pint is optional, but we do not propagate it due to its size.
     (native-inputs (list python-pint python-pytest python-setuptools
-                         python-wheel))
+                         python-setuptools-scm python-wheel))
     (home-page "https://unyt.readthedocs.io")
     (synopsis "Library for working with data that has physical units")
     (description
@@ -2808,6 +2939,63 @@ embedding.")
 heavily biased to machine learning scenarios.  It works on top of
 @command{numpy} and (partially) @command{gnumpy}.")
     (license license:bsd-3)))
+
+(define-public python-corner
+  (package
+    (name "python-corner")
+    (version "2.2.2")
+    (source
+     (origin
+       (method git-fetch) ;no tests in PyPi archive
+       (uri (git-reference
+             (url "https://github.com/dfm/corner.py")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1i4dk4jxh0saysya2cnsfwlxwpldbdl174i9pwi4qj82av9jr2ii"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~(list
+         ;; XXX: Disable tests which failed with mismatched images, check why.
+         "-k" (string-append "not test_labels[png]"
+                             " and not test_title_quantiles[png]"
+                             " and not test_title_quantiles_default[png]"
+                             " and not test_title_quantiles_raises[png]"
+                             " and not test_bins[png]"
+                             " and not test_bins_log[png]"
+                             " and not test_titles1[png]"
+                             " and not test_titles2[png]"
+                             " and not test_pandas[png]"
+                             " and not test_tight[png]"
+                             " and not test_extended_overplotting[png]"
+                             " and not test_reverse_overplotting[png]"
+                             " and not test_arviz[png]"
+                             " and not test_range_fig_arg[png]"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'pretend-version
+            ;; XXX: Make sure you're either building from a fully intact git
+            ;; repository or PyPI tarballs. Most other sources (such as GitHub's
+            ;; tarballs, a git checkout without the .git folder) don't contain
+            ;; the necessary metadata and will not work.
+            (lambda _
+              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version))))))
+    (propagated-inputs
+     (list python-matplotlib))
+    (native-inputs
+     (list python-arviz python-pytest python-scipy python-setuptools-scm))
+    (home-page "http://corner.readthedocs.io/")
+    (synopsis "Make some beautiful corner plots")
+    (description
+     "This Python module uses @code{matplotlib} to visualize multidimensional
+samples using a scatterplot matrix. In these visualizations, each one- and
+two-dimensional projection of the sample is plotted to reveal covariances.
+corner was originally conceived to display the results of Markov Chain Monte
+Carlo simulations and the defaults are chosen with this application in mind but
+it can be used for displaying many qualitatively different samples.")
+    (license license:bsd-2)))
 
 (define-public python-paramz
   (package

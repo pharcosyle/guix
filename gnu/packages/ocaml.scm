@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2018-2020, 2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018-2020, 2023, 2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016-2024 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -28,7 +28,7 @@
 ;;; Copyright © 2022 John Kehayias <john.kehayias@protonmail.com>
 ;;; Copyright © 2022 Garek Dyszel <garekdyszel@disroot.org>
 ;;; Copyright © 2023 Csepp <raingloom@riseup.net>
-;;; Copyright © 2023 Foundation Devices, Inc. <hello@foundationdevices.com>
+;;; Copyright © 2023, 2024 Foundation Devices, Inc. <hello@foundation.xyz>
 ;;; Copyright © 2023 Arnaud DABY-SEESARAM <ds-ac@nanein.fr>
 ;;; Copyright © 2024 Sören Tempel <soeren@soeren-tempel.net>
 ;;;
@@ -1430,7 +1430,7 @@ Knuth’s LR(1) parser construction technique.")
            libgnomecanvas
            libgnomeui
            libglade
-           librsvg))
+           (librsvg-for-system)))
     (arguments
      `(#:tests? #f ; no check target
 
@@ -1503,7 +1503,7 @@ software engineering.")
 (define-public unison
   (package
     (name "unison")
-    (version "2.53.3")
+    (version "2.53.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1512,7 +1512,7 @@ software engineering.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05ihxk1yynw08586i06w19xab9r24h9hr6v9bknqm98qrlshm92w"))))
+                "1fy4c1wb6xn9gxdabs25yajbzik3amifyr7nzd4d9vn6r3gll9sw"))))
     (build-system dune-build-system)
     (propagated-inputs (list lablgtk3 zlib))
     (native-inputs (list ghostscript (texlive-updmap.cfg '()) hevea lynx which))
@@ -3185,6 +3185,34 @@ OCaml with fibers.")
 
 (define-public ocaml5.0-eio-luv
   (package-with-ocaml5.0 ocaml-eio-luv))
+
+(define-public ocaml-unionfind
+  (package
+    (name "ocaml-unionfind")
+    (version "20220122")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://gitlab.inria.fr/fpottier/unionfind")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hdh56rbg8vfjd61q09cbmh8l5wmry5ykivg7gsm0v5ckkb3531r"))))
+    (build-system dune-build-system)
+    (arguments
+     (list ;; The test allocates an Array that is too large for OCaml when on a
+           ;; 32-bit architecture.
+           #:tests? (target-64bit?)))
+    (home-page "https://gitlab.inria.fr/fpottier/unionFind")
+    (synopsis "Union-find data structure")
+    (description "This package provides two union-find data structure
+implementations for OCaml.  Both implementations are based on disjoint sets
+forests, with path compression and linking-by-rank, so as to guarantee good
+asymptotic complexity: every operation requires a quasi-constant number of
+accesses to the store.")
+    ;; Version 2 only, with linking exception.
+    (license license:lgpl2.0)))
 
 (define-public ocaml-uring
   (package
@@ -8570,8 +8598,7 @@ generate OCaml code from .glade files), libpanel, librsvg and quartz.")
   (package
     (inherit lablgtk3)
     (name "ocaml-lablgtk3-sourceview3")
-    (propagated-inputs (list lablgtk3))
-    (native-inputs (list gtksourceview-3 pkg-config))
+    (propagated-inputs (list gtksourceview-3 lablgtk3))
     (arguments
      `(#:package "lablgtk3-sourceview3"))
     (synopsis "OCaml interface to GTK+ gtksourceview library")

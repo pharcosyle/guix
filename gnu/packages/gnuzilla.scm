@@ -176,6 +176,14 @@
                   ((".*killed process should not have exitStatus.*")
                    ""))
 
+                ;; This was fixed sometime between 102.15.1 and 115.11.0.
+                ;; These tests are supposed to be skipped on all 64-bit systems.
+                #$@(if (target-riscv64?)
+                       #~((substitute* '("non262/Array/regress-157652.js"
+                                         "non262/regress/regress-422348.js")
+                            (("mips64") "mips64|riscv64")))
+                       #~())
+
                 ;; The test suite expects a lightly patched ICU.  Disable tests
                 ;; that do not work with the system version.  See
                 ;; "intl/icu-patches" for clues.
@@ -414,7 +422,7 @@ variable defined below.  It requires guile-json to be installed."
        (format #t "~{~s~%~}" data)
        data))))
 
-(define all-mozilla-locales
+(define-public all-mozilla-locales
   (mozilla-locales
    ;;                      sha256                            changeset    locale
    ;;---------------------------------------------------------------------------
@@ -495,6 +503,7 @@ variable defined below.  It requires guile-json to be installed."
    ("0c8dl12n5fjdd3bjaf8idyaxsf8ppbma132vdw8bk2wqnh4cv69a" "92110fd6e211" "rm")
    ("0mxxy56kj0k5jhjxjv8v4zz57pha819mz7j803lcilax7w52wgca" "5eeba1f64743" "ro")
    ("0jrd95n108r4sxdwgy39zjynm5nlzzmiijsfpxxfwj7886wl4faz" "47131134e349" "ru")
+   ("1lwm5jv3hvjp84a70186x2083nhr3mfcl7kpmw5in9amaflfi41b" "a5cd6d3d67ee" "sat")
    ("1q6pn3iixzcas9blf61bhvwgppbsh0am0wdz6a6p9f9978894d73" "880b7986692a" "sc")
    ("0xndsph4v725q3xcpmxxjb9vxv19sssqnng82m9215cdsv9klgpb" "bf5f6e362f6f" "sco")
    ("0l70n8817mbmbc09fsnn2aqjj9k9dhad2gmzgphmiilf9mqm2dpf" "1f705c926a99" "si")
@@ -523,9 +532,9 @@ variable defined below.  It requires guile-json to be installed."
 ;; XXXX: Workaround 'snippet' limitations.
 (define computed-origin-method (@@ (guix packages) computed-origin-method))
 
-(define %icecat-base-version "115.10.0")
-(define %icecat-version (string-append %icecat-base-version "-guix0-preview1"))
-(define %icecat-build-id "20240416000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-base-version "115.13.0")
+(define %icecat-version (string-append %icecat-base-version "-guix1"))
+(define %icecat-build-id "20240709000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -545,12 +554,12 @@ variable defined below.  It requires guile-json to be installed."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "1wpf4vcrvnvhnfzqavbkzqbn51bds1l9f6ld4mzh9xwm7mrkrz8a"))))
+              "0p2x1prwa1yn2d3i7vgjc4gg64x4si43l68aav9881hhjwc0v8iz"))))
 
          ;; The upstream-icecat-base-version may be older than the
          ;; %icecat-base-version.
-         (upstream-icecat-base-version "115.10.0")
-         (gnuzilla-commit "40e114e5e8fd0b4d3621d6c8aebf0c78100578f2")
+         (upstream-icecat-base-version "115.13.0")
+         (gnuzilla-commit "445980b18666c8214e5c62db3ae7108d5694242f")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -562,7 +571,7 @@ variable defined below.  It requires guile-json to be installed."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "1x6miiafhv9ncddm7xxjz88amq9bpv6sqnw5k0yz6fy1ghw9ckw0"))))
+              "12jdlr86kr26h2ml5j8pjsjc8lpjxw05hqpirvlgj317xv0amyz1"))))
 
          ;; 'search-patch' returns either a valid file name or #f, so wrap it
          ;; in 'assume-valid-file-name' to avoid 'local-file' warnings.
@@ -1133,11 +1142,7 @@ variable defined below.  It requires guile-json to be installed."
 software, which does not recommend non-free plugins and addons.  It also
 features built-in privacy-protecting features.  This package also includes the
 @command{geckodriver} command, which can be useful for automated web
-testing.
-
-WARNING: IceCat 115 has not yet been released by the upstream IceCat project.
-This is a preview release, and does not currently meet the privacy-respecting
-standards of the IceCat project.")
+testing.")
     (license license:mpl2.0)     ;and others, see toolkit/content/license.html
     (properties
      `((ftp-directory . "/gnu/gnuzilla")

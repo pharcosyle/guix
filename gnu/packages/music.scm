@@ -3,7 +3,7 @@
 ;;; Copyright © 2015-2024 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
-;;; Copyright © 2016, 2017, 2019, 2021-2023 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2021-2024 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
@@ -56,6 +56,7 @@
 ;;; Copyright © 2023 Yovan Naumovski <yovan@gorski.stream>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2024 Parnikkapore <poomklao@yahoo.com>
+;;; Copyright © 2024 hapster <o.rojon@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -183,6 +184,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages scsi)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
@@ -195,6 +197,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim)       ;for 'xxd'
@@ -431,6 +434,58 @@ and play MIDI files with a few clicks in a user-friendly interface offering
 score, keyboard, guitar, drum and controller views.")
     (license license:gpl3+)))
 
+(define-public libgpod
+  (package
+    (name "libgpod")
+    (version "0.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/p/gtkpod/libgpod")
+             (commit "8dc5015ae036b219c4c9579a156886aa3a722aa5")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yzngb7h1mibz4x56w9fh02vx8xi4wyq4fjc3ad0jayv3hxjjkqv"))))
+    (arguments
+     (list
+      #:configure-flags
+      #~(list
+         "--without-hal"
+         "--enable-udev"
+         (string-append "--with-udev-dir=" #$output "/lib/udev")
+         (string-append "--prefix=" #$output))
+
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-autotools-version-requirement
+            (lambda _
+              (setenv "ACLOCAL_FLAGS"
+                      (string-join
+                       (map (lambda (s) (string-append "-I " s))
+                            (string-split (getenv "ACLOCAL_PATH") #\:))
+                       " "))
+              (substitute* "configure.ac"
+                (("libplist >= 1\\.0") "libplist-2.0 >= 2.2")
+                (("-Werror") ""))
+              ;; patch for plist-2.0
+              (substitute* "tools/ipod-lockdown.c"
+                (("plist_dict_insert_item") "plist_dict_set_item"))
+              ;; it expects version-suffixed binary
+              (substitute* "gnome-autogen.sh"
+                (("automake-1\\.13") "automake")))))))
+
+    (build-system gnu-build-system)
+    (native-inputs
+     (list automake libtool autoconf intltool pkg-config `(,glib "bin") gtk-doc))
+    (propagated-inputs (list libimobiledevice gdk-pixbuf))
+    (inputs (list libxml2 sg3-utils sqlite taglib libplist))
+    (home-page "https://sourceforge.net/projects/gtkpod")
+    (synopsis "Library to access iPod contents")
+    (description "This package provides a library to access iPod contents.  It
+enables iPod support in music players such as Clementine.")
+    (license license:lgpl2.1+)))
+
 (define-public clementine
   (package
     (name "clementine")
@@ -512,7 +567,7 @@ score, keyboard, guitar, drum and controller views.")
            gst-libav
            libcdio
            libmygpo-qt
-           ;; TODO: Package libgpod.
+           libgpod
            libmtp
            libxml2
            protobuf
@@ -604,7 +659,7 @@ you create custom user interfaces for your MIDI hardware.")
 (define-public qmmp
   (package
     (name "qmmp")
-    (version "2.1.7")
+    (version "2.1.8")
     (source
      (origin
        (method url-fetch)
@@ -612,7 +667,7 @@ you create custom user interfaces for your MIDI hardware.")
                            (version-major+minor version) "/"
                            "qmmp-" version ".tar.bz2"))
        (sha256
-        (base32 "0wqy4dh5cci67d822zn2535l0vsvd9c9sqsbscz4j530c6y6g9z6"))))
+        (base32 "1vk9bbw8lfypn2a5vh8pdxrz5pa1iqja4p9gxjw2kax9qx1n2sl4"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -762,7 +817,7 @@ It is a fork of Clementine aimed at music collectors and audiophiles.")
 (define-public cmus
   (package
     (name "cmus")
-    (version "2.10.0")
+    (version "2.11.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -771,20 +826,18 @@ It is a fork of Clementine aimed at music collectors and audiophiles.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0csj59q2n7hz9zihq92kb4kzvb51rgzl65y6vd0chq6j3li1pb8x"))))
+                "1k50z99v2yqshycx6mbk4g5bsaalg5dgzjv3xvwq14abwkw44hli"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; cmus does not include tests
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; It's an idiosyncratic configure script that doesn't
-               ;; understand --prefix=..; it wants prefix=.. instead.
-               (invoke "./configure"
-                       (string-append "prefix=" out))
-               #t))))))
+     (list
+      #:tests? #f ; cmus does not include tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'configure
+            (lambda _
+              ;; It's an idiosyncratic configure script that doesn't
+              ;; understand --prefix=..; it wants prefix=.. instead.
+              (invoke "./configure" (string-append "prefix=" #$output)))))))
     ;; TODO: cmus optionally supports the following formats, which haven't yet
     ;; been added to Guix:
     ;;
@@ -2332,7 +2385,7 @@ a JACK session.")
 (define-public mixxx
   (package
     (name "mixxx")
-    (version "2.3.6")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -2340,90 +2393,85 @@ a JACK session.")
              (url "https://github.com/mixxxdj/mixxx")
              (commit version)))
        (file-name (git-file-name name version))
-       (patches
-        (search-patches "mixxx-link-qtscriptbytearray-qtscript.patch"
-                        "mixxx-system-googletest-benchmark.patch"))
        (sha256
-        (base32 "1v1sza75rf2q1m0bdc0j2k53qd34m12d1573jmac3g7vvyqh5n2m"))
+        (base32 "0cfdgrxfhck6cg4j9mb2rdp06n57kca1403qw92c3pmk1y05grq4"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete libraries that we already have or don't need.
         ;; TODO: try to unbundle more (see lib/).
         `(begin
-           (let ((third-parties '("apple" "benchmark" "googletest" "hidapi"
-                                  "libebur128")))
+           (let ((third-parties '("apple" "hidapi")))
              (with-directory-excursion "lib"
                (map (lambda (third-party)
-                      (delete-file-recursively third-party))
-                    third-parties)))
+                      (delete-file-recursively third-party)) third-parties)))
            #t))))
     (build-system qt-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Tests need a running X server.
-         (add-before 'check 'prepare-x-for-test
-           (lambda _
-             (system "Xvfb &")
-             (setenv "DISPLAY" ":0")))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (faad2 (assoc-ref inputs "faad2")))
-               (wrap-program (string-append out "/bin/mixxx")
-                 `("LD_LIBRARY_PATH" ":" prefix
-                   ,(list (string-append faad2 "/lib"))))))))))
-    (native-inputs
-     (list benchmark
-           googletest
-           python-wrapper
-           qttools-5
-           xorg-server-for-tests))
-    (inputs
-     (list bash-minimal
-           chromaprint
-           faad2
-           ffmpeg
-           fftw
-           flac
-           glu
-           hidapi
-           jack-1
-           lame
-           libdjinterop
-           libebur128
-           libid3tag
-           libkeyfinder
-           libmad
-           libmp4v2
-           libmodplug
-           libsndfile
-           libshout
-           ;; XXX: Mixxx complains the libshout-idjc package suffers from bug
-           ;; lp1833225 and refuses to use it.  Use the bundle for now.
-           ;; libshout-idjc
-           libusb
-           libvorbis
-           lilv
-           mp3guessenc
-           openssl
-           opusfile
-           portaudio
-           portmidi
-           protobuf
-           qtbase-5
-           qtdeclarative-5
-           qtkeychain
-           qtscript
-           qtsvg-5
-           qtx11extras
-           rubberband
-           soundtouch
-           sqlite
-           taglib
-           upower
-           vamp
-           wavpack))
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-bugged-test
+                    ;; This test regularly fails and aborts the build process, hence it
+                    ;; was disabled (no impact on functionality).  It appears this is a
+                    ;; problem for some upstream as well, as indicated by:
+                    ;; https://github.com/mixxxdj/mixxx/issues/12887 (featuring a
+                    ;; reference to another issue related to the same problem).
+                    (lambda _
+                      (substitute* "src/test/soundproxy_test.cpp"
+                        (("TEST_F\\(SoundSourceProxyTest, firstSoundTest\\)")
+                         "TEST_F(SoundSourceProxyTest, DISABLED_firstSoundTest)"))))
+                  (add-after 'install 'wrap-executable
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (faad2 (assoc-ref inputs "faad2")))
+                        (wrap-program (string-append out "/bin/mixxx")
+                          `("LD_LIBRARY_PATH" ":" prefix
+                            ,(list (string-append faad2 "/lib"))))))))))
+    (native-inputs (list benchmark googletest python-wrapper qttools-5
+                         xorg-server-for-tests))
+    (inputs (list bash-minimal
+                  chromaprint
+                  faad2
+                  ffmpeg
+                  fftw
+                  flac
+                  glu
+                  hidapi
+                  jack-1
+                  lame
+                  libdjinterop
+                  libebur128
+                  libid3tag
+                  libkeyfinder
+                  libmad
+                  libmp4v2
+                  libmodplug
+                  libsndfile
+                  libshout
+                  ;; XXX: Mixxx complains the libshout-idjc package suffers from bug
+                  ;; lp1833225 and refuses to use it.  Use the bundle for now.
+                  libshout-idjc
+                  libusb
+                  libvorbis
+                  lilv
+                  mp3guessenc
+                  openssl
+                  opusfile
+                  portaudio
+                  portmidi
+                  protobuf
+                  qtbase-5
+                  qtdeclarative-5
+                  qtkeychain
+                  qtscript
+                  qtsvg-5
+                  qtx11extras
+                  rubberband
+                  soundtouch
+                  sqlite
+                  taglib
+                  upower
+                  vamp
+                  wavpack
+                  c++-gsl))
     (home-page "https://mixxx.org/")
     (synopsis "DJ software to perform live mixes")
     (description "Mixxx is a DJ software.  It integrates the tools DJs need to
@@ -2925,7 +2973,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.53-1")
+    (version "0.55-0")
     (source (origin
               (method url-fetch)
               (uri
@@ -2933,7 +2981,7 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0g0ks2h55p0kwz2cc5n7d6vcl6crg299zfwwwwnzc6fibclaqksl"))))
+                "1gn3mc65v29b9s7qbqmi7y5ka4j7y997fyqrb3s1b5g7drxbwfph"))))
     (build-system gnu-build-system)
     (arguments
      (let ((wish (string-append "wish" (version-major+minor
@@ -5085,6 +5133,131 @@ includes instruments based on audio samples and various soft sythesizers.  It
 can receive input from a MIDI keyboard.")
     (license license:gpl2+)))
 
+(define-public stargate
+  (package
+    (name "stargate")
+    (version "24.02.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/stargatedaw/stargate")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hy0pf6gcw4hjhsvb1x60m1v0wqm28j7cc91g1vcna2f42kk8gyh"))
+              (modules '((guix build utils)))
+              (snippet
+               '(with-directory-excursion "src"
+                  ;; Delete bundled libraries.
+                  (delete-file-recursively "sg_py_vendor")
+                  ;; Disable compiling and installing bundled libraries.
+                  (substitute* "Makefile"
+                    ((" sg_py_vendor") "")
+                    (("install -m 755 vendor") "# install -m 755 vendor"))
+                  ;; Import python modules from packaged libraries.
+                  (substitute* (find-files "sglib" "\\.py$")
+                    (("from sg_py_vendor ") "")
+                    (("from sg_py_vendor.") "from "))
+                  (substitute* "engine/tests/test_daw.c"
+                    ;; Disable assignment of a string to an expression with
+                    ;; array type which fails tests.
+                    (("INSTALL_PREFIX =") "// INSTALL_PREFIX"))
+                  ;; Disable manual tests requiring opening a browser.
+                  (substitute* '("Makefile"
+                                 "engine/Makefile"
+                                 "engine/libcds/Makefile")
+                    (("\\$\\(BROWSER\\)") "# $(BROWSER)"))))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:test-target "tests"
+           #:make-flags
+           #~(list "PREFIX=/"
+                   "LIBDIR=/lib"
+                   "INCLUDEDIR=/include"
+                   (string-append "DESTDIR=" #$output)
+                   (string-append "CC=" #$(cc-for-target))
+                   (string-append "CXX=" #$(cxx-for-target)))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-portaudio-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "src/sgui/widgets/hardware_dialog.py"
+                     (("\\\"libportaudio")
+                      (string-append "\"" (assoc-ref inputs "portaudio")
+                                     "/lib/libportaudio")))))
+               (add-after 'patch-portaudio-path 'change-directory
+                 (lambda _
+                   (chdir "src")))
+               (delete 'configure) ;no configure script
+               (add-before 'build 'patch-paths
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "test_parse.sh"
+                     (("python") (which "python3")))
+                   (with-directory-excursion "files/share"
+                     (substitute* '"applications/stargate.desktop"
+                       (("/usr") #$output)))))
+               (replace 'build
+                 (lambda* (#:key (make-flags '()) (parallel-build? #t)
+                           #:allow-other-keys)
+                   (apply invoke "make" "-Cengine"
+                          `(,@(if parallel-build?
+                                `("-j" ,(number->string (parallel-job-count)))
+                                '())
+                          ,@make-flags))))
+               (add-before 'check 'check-setup
+                 (lambda _
+                   (setenv "HOME" "/tmp")
+                   (setenv "LD_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+                   ;; Test fails with AssertionError.
+                   (delete-file "test/sglib/models/daw/routing/test_midi.py")))
+               (add-after 'install 'wrap-program
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (wrap-program (string-append #$output "/bin/stargate")
+                     `("GUIX_PYTHONPATH" ":" prefix
+                       (,(getenv "GUIX_PYTHONPATH")))
+                     `("PATH" ":" prefix
+                       (,(getenv "PATH")))))))))
+    (native-inputs
+     (list pkg-config
+           python-gcovr
+           python-packaging
+           python-pytest
+           python-pytest-cov
+           python-pytest-runner))
+    (inputs
+     (list alsa-lib
+           bash-minimal
+           fftw
+           fftwf
+           jq
+           libsndfile
+           portaudio
+           portmidi
+           python
+           python-jinja2
+           python-mido
+           python-mutagen
+           python-numpy
+           python-psutil
+           python-pymarshal
+           python-pyqt
+           python-pyyaml
+           python-wavefile
+           python-yq
+           rubberband
+           valgrind
+
+           stargate-sbsms
+           stargate-soundtouch))
+    (home-page "https://github.com/stargatedaw/stargate")
+    (synopsis "Digital audio workstation")
+    (description
+     "Stargate is a digital audio workstation with built-in instrument and
+effect plugins and wave editor, providing innovative features, especially for
+EDM production.")
+    (license license:gpl3)))
+
 (define-public liquidsfz
   (package
     (name "liquidsfz")
@@ -5175,7 +5348,7 @@ includes LV2 plugins and a JACK standalone client.")
 (define-public musescore
   (package
     (name "musescore")
-    (version "4.2.1")
+    (version "4.3.2")
     (source
      (origin
        (method git-fetch)
@@ -5184,7 +5357,7 @@ includes LV2 plugins and a JACK standalone client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rc5ma1k0cjllfl86apbyj61sh0691lsmqnvqicyn0zi53z8w9v0"))
+        (base32 "1hx0l6d7avyfbh88hwn01h9q51mgd9zix91q2kgg1ax73pqxhfs2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5233,6 +5406,8 @@ includes LV2 plugins and a JACK standalone client.")
            qtsvg-5
            qtx11extras
            qtxmlpatterns))
+    (propagated-inputs
+     (list `(,alsa-plugins "pulseaudio"))) ;for libasound_module_conf_pulse.so
     (synopsis "Music composition and notation software")
     (description
      "MuseScore is a music score typesetter.  Its main purpose is the creation
@@ -5318,7 +5493,7 @@ studio.")
 (define-public gsequencer
   (package
     (name "gsequencer")
-    (version "6.5.2")
+    (version "6.16.8")
     (source
      (origin
        (method git-fetch)
@@ -5327,7 +5502,7 @@ studio.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16rkwb60v7igixligkcm86l8l8vab1bhmwg8m7ihb051ryqixa3i"))))
+        (base32 "1qp78j6gicm4ixkx5ihn2lilw3a2863y05zvw8w5gigyc2zmbqpp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -5413,7 +5588,7 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "23.12")
+    (version "24.06")
     (source
      (origin
        (method url-fetch)
@@ -5421,7 +5596,7 @@ specification and header.")
                            (version-major+minor version) "/"
                            "rosegarden-" version ".tar.xz"))
        (sha256
-        (base32 "0clkzrs931dypvqcn5hzx2v3bq9gc439g71phahgwkh4c1jfcmrz"))))
+        (base32 "09www13ndba14krzycwm44qgcy7j11wa6a6xiqh6i2hjghlx8v46"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -5911,8 +6086,8 @@ console music players.")
     (license license:gpl3+)))
 
 (define-public demlo
-  (let ((commit "fe9ec4c8ac2fa995ec18e6ac86d50d46df06ec01")
-        (revision "0"))
+  (let ((commit "985f81047a67c795e67f628b550064558476a7c3")
+        (revision "1"))
     (package
       (name "demlo")
       (version (git-version "3.8" revision commit))
@@ -5926,7 +6101,7 @@ console music players.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1afkbqhzn6da7zaf5ab7dvyqj1izqhzprwfb4hw448fllda9bdvk"))))
+           "1wx7pwgvg1fiq55jdc22353frcdlz548g97dy4j353lqxy8vxfyj"))))
       (build-system go-build-system)
       (native-inputs
        (list lua
@@ -5941,7 +6116,8 @@ console music players.")
       (inputs
        (list chromaprint ffmpeg))
       (arguments
-       `(#:import-path "gitlab.com/ambrevar/demlo"
+       `(#:go ,go-1.17
+         #:import-path "gitlab.com/ambrevar/demlo"
          #:phases
          (modify-phases %standard-phases
            (add-after 'install 'wrap-program
@@ -7254,7 +7430,8 @@ plugin and a standalone JACK application.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
-       #:make-flags (list "CC=gcc")
+       #:make-flags (list "CC=gcc"
+                          "NOOPT=true")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ;no configure target
@@ -7288,6 +7465,7 @@ plugin and a standalone JACK application.")
     (description "Wolf Shaper is a waveshaper plugin with a graph editor.
 It is provided as an LV2 plugin and as a standalone Jack application.")
     (home-page "https://pdesaulniers.github.io/wolf-shaper/")
+    (properties `((tunable? . #t)))
     (license license:gpl3)))
 
 (define-public wolf-spectrum

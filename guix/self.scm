@@ -2,6 +2,7 @@
 ;;; Copyright © 2017-2023 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2024 gemmaro <gemmaro.dev@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,7 +72,7 @@
       ("bzip2"              . ,(ref 'compression 'bzip2))
       ("xz"                 . ,(ref 'compression 'xz))
       ("git-minimal"        . ,(ref 'version-control 'git-minimal))
-      ("po4a"               . ,(ref 'gettext 'po4a))
+      ("po4a-minimal"       . ,(ref 'gettext 'po4a-minimal))
       ("gettext-minimal"    . ,(ref 'gettext 'gettext-minimal))
       ("gcc-toolchain"      . ,(ref 'commencement 'gcc-toolchain))
       ("glibc-utf8-locales" . ,(delay
@@ -291,8 +292,8 @@ DOMAIN, a gettext domain."
 
 (define (translate-texi-manuals source)
   "Return the translated texinfo manuals built from SOURCE."
-  (define po4a
-    (specification->package "po4a"))
+  (define po4a-minimal
+    (specification->package "po4a-minimal"))
 
   (define gettext-minimal
     (specification->package "gettext-minimal"))
@@ -317,9 +318,14 @@ DOMAIN, a gettext domain."
           (define (translate-tmp-texi po source output)
             "Translate Texinfo file SOURCE using messages from PO, and write
 the result to OUTPUT."
-            (invoke #+(file-append po4a "/bin/po4a-translate")
-              "-M" "UTF-8" "-L" "UTF-8" "-k" "0" "-f" "texinfo"
-              "-m" source "-p" po "-l" output))
+            (invoke #+(file-append po4a-minimal "/bin/po4a")
+              "--no-update"
+              "--variable" (string-append "localized=" output)
+              "--variable" (string-append "master=" source)
+              "--variable" (string-append "po=" po)
+              "--variable" (string-append "pot=" (string-append (tmpnam) ".pot"))
+              "--destdir=."
+              #+(file-append documentation-po "/po4a.cfg")))
 
           (define (canonicalize-whitespace str)
             ;; Change whitespace (newlines, etc.) in STR to #\space.

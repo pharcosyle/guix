@@ -29,7 +29,7 @@
 ;;; Copyright © 2020, 2021 Robert Karszniewicz <avoidr@posteo.de>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2021, 2023 Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
-;;; Copyright © 2021 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2021, 2024 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2021 jgart <jgart@dismail.de>
 ;;; Copyright © 2022 Aleksandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2022 Ricardo Wurmus <rekado@elephly.net>
@@ -41,6 +41,8 @@
 ;;; Copyright © 2023 Yovan Naumovski <yovan@gorski.stream>
 ;;; Copyright © 2023 gemmaro <gemmaro.dev@gmail.com>
 ;;; Copyright © 2024 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2024 Wilko Meyer <w@wmeyer.eu>
+;;; Copyright © 2024 Ashish SHUKLA <ashish.is@lostca.se>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,6 +117,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
@@ -162,6 +165,49 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public biboumi
+  (package
+   (name "biboumi")
+   (version "9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://git.louiz.org/biboumi/snapshot/biboumi-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32 "1jvygri165aknmvlinx3jb8cclny6cxdykjf8dp0a3l3228rmzqy"))
+              ;; see https://sources.debian.org/patches/biboumi/9.0-5/2001_cmake_ignore_git.patch/
+              (patches (search-patches "biboumi-cmake-ignore-git.patch"))))
+   (arguments
+    ;; Tests seem to partially depend on networking as well as
+    ;; louiz/Catch which we remove as a dependency via the patch above as
+    ;; the repository seems dead. Deactivating those for now, possibly fix
+    ;; some of them later.
+    `(#:tests? #f
+      #:configure-flags '("-DWITHOUT_SYSTEMD=1")
+      #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cmake-substitutions
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("/etc") (string-append (assoc-ref outputs "out") "/etc"))))))))
+   (build-system cmake-build-system)
+   (inputs (list botan
+                 expat
+                 libiconv
+                 libidn
+                 openssl
+                 postgresql ;; libpq
+                 sqlite
+                 ;; TODO: package optional dependency: udns
+                 (list util-linux "lib") ;; libuuid
+                 pkg-config))
+   (home-page "https://biboumi.louiz.org")
+   (synopsis "Biboumi is a XMPP gateway that connects to IRC")
+   (description "Biboumi is a Free, Libre and Open Source XMPP gateway that connects to IRC
+servers and translates between the two protocols. Its goal is to let XMPP
+users take part in IRC discussions, using their favourite XMPP client.")
+   (license license:zlib)))
 
 (define-public omemo-wget
   (package
@@ -1046,14 +1092,14 @@ control of your private keys, no previous conversation is compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.8.2")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03fyi0j44zcanj1rsdx93hkdskwfvhbywjiwd17f9q1a7yp8l8zz"))))
+                "0g2gi7207lydmm7zdq52ivw0vhvbnmhsybi89q5m3bcsw60cz9z8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -1069,15 +1115,16 @@ control of your private keys, no previous conversation is compromised.")
              (let ((source (assoc-ref inputs "googletest-source"))
                    (target "third_party/googletest"))
                (mkdir-p target)
-               (copy-recursively source target)
-               #t))))))
+               (copy-recursively source target)))))))
     (native-inputs
      `(("boost" ,boost)
        ("gettext" ,gettext-minimal)
        ("googletest-source" ,(package-source googletest))
        ("pkg-config" ,pkg-config)))
     (inputs
-     (list cyrus-sasl
+     ;; FIXME: Package cctz and remove the bundled copy from the source tarball.
+     (list argon2
+           cyrus-sasl
            icu4c
            openssl
            perl
@@ -1344,7 +1391,7 @@ Encryption to Gajim.")
 (define-public dino
   (package
     (name "dino")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
@@ -1352,7 +1399,7 @@ Encryption to Gajim.")
         (string-append "https://github.com/dino/dino/releases/download/v"
                        version "/dino-" version ".tar.gz"))
        (sha256
-        (base32 "01jbggjqsbqrzd76bq4h8ccnijsw3m3mav838mnk20kls8agq5d6"))))
+        (base32 "1zvxyvql695bwbic17z86vrh2j1qkwvab1irqjkvza4szbklr29i"))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -1455,7 +1502,7 @@ default.")
                   qtbase-5
                   qtdeclarative-5
                   qtgraphicaleffects
-                  qtlocation
+                  qtlocation-5
                   qtquickcontrols2-5
                   qtsvg-5
                   qtmultimedia-5
@@ -1727,20 +1774,24 @@ of the most common use cases is to define avatars for MUC rooms.")))
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.12")
+    (version "0.2.19")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/TokTok/c-toxcore")
-             (commit (string-append "v" version))))
+             (commit (string-append "v" version))
+             ;; XXX: c-toxcore now depends on a package called 'cmp', an
+             ;; implementation of MessagePack in C.  Fetch the submodule
+             ;; for now, maybe package it later.
+             (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0a6sqpm00d2rn0nviqfz4gh9ck1wzci6rxgmqmcyryl5ca19ffvp"))))
+         "0wq6grc5lfjip39gm0ji1cw6b1sdv1zvimg1g40haqzhj51755za"))))
     (arguments
-     `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
-                     ; for now.
+     (list #:tests? #f ; figure out how to run the tests
+           #:configure-flags #~(list "-DENABLE_STATIC=false")))
     (build-system cmake-build-system)
     (native-inputs
      (list pkg-config))
@@ -2291,7 +2342,7 @@ building the IRC clients and bots.")
 (define-public toxic
   (package
     (name "toxic")
-    (version "0.8.4")
+    (version "0.15.1")
     (source
      (origin
        (method git-fetch)
@@ -2299,29 +2350,25 @@ building the IRC clients and bots.")
              (url "https://github.com/JFreegman/toxic")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0p1cmj1kyp506y5xm04mhlznhf5wcylvgsn6b307ms91vjqs3fg2"))
+        (base32 "1cbgw9my7nd8b215a3db2jc74nibi9kj0yk5q3c9dnh306as6wzs"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:make-flags
-       (list
-        "CC=gcc"
-        (string-append "PREFIX="
-                       (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'enable-python-scripting
-           (lambda _
-             ;; XXX: For compatibility with Python 3.8, adjust python3-config
-             ;; invokation to include --embed; see
-             ;; <https://github.com/JFreegman/toxic/issues/533>.
-             (substitute* "cfg/checks/python.mk"
-               (("python3-config --ldflags")
-                "python3-config --ldflags --embed"))
-             (setenv "ENABLE_PYTHON" "1")
-             #t)))))
+     (list #:tests? #f                      ; no tests
+           #:make-flags #~(list (string-append "CC=" #$(cc-for-target))
+                                (string-append "PREFIX=" #$output))
+           #:phases
+           #~(modify-phases %standard-phases
+               (delete 'configure)
+               (add-before 'build 'enable-python-scripting
+                 (lambda _
+                   ;; XXX: For compatibility with Python 3.8, adjust
+                   ;; python3-config invocation to include --embed; see
+                   ;; <https://github.com/JFreegman/toxic/issues/533>.
+                   (substitute* "cfg/checks/python.mk"
+                     (("python3-config --ldflags")
+                      "python3-config --ldflags --embed"))
+                   (setenv "ENABLE_PYTHON" "1"))))))
     (inputs
      (list c-toxcore
            curl
@@ -2688,11 +2735,11 @@ replacement.")
     (license license:gpl2+)))
 
 (define-public tdlib
-  (let ((commit "c5c55092dd61b9eb15d6bbfd0f02c04c593450e7")
+  (let ((commit "af69dd4397b6dc1bf23ba0fd0bf429fcba6454f6")
         (revision "0"))
     (package
       (name "tdlib")
-      (version (git-version "1.8.24" revision commit))
+      (version (git-version "1.8.29" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -2700,7 +2747,7 @@ replacement.")
                (url "https://github.com/tdlib/td")
                (commit commit)))
          (sha256
-          (base32 "1kwbp4ay4zvk9jscp0xv9rv4jz2krm9jya8q81wnvn9qd0ybg94f"))
+          (base32 "04b3aj73q4zf1mqrryarhbv6yk59m7727iw2xy0gn0ml3i5ll66r"))
          (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
@@ -3246,39 +3293,10 @@ designed for experienced users.")
               (sha256
                (base32
                 "0939fiy7z53izznfhlr7c6vaskbmkbj3ncb09fzx5dmz9cjngy80"))))
-    ;; Using the go-build-system results in the same error message
-    ;; than in the bug 1551[1]. So we fix it by running go build
-    ;; manually in the git repository as-is as this is the solution
-    ;; given to that bug by the matterbridge developers.
-    ;; [1]https://github.com/42wim/matterbridge/issues/1551
-    (build-system gnu-build-system)
+    (build-system go-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace 'build
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (setenv "GOCACHE"
-                              (string-append (getcwd) "/go-build"))
-                      (setenv "GOBIN"
-                              (string-append (assoc-ref outputs "out") "/bin"))
-                      (invoke "go" "build" "-v" "-x")))
-                  (replace 'check
-                    (lambda* (#:key outputs tests? #:allow-other-keys)
-                      (when tests?
-                        (setenv "GOCACHE"
-                                (string-append (getcwd) "/go-build"))
-                        (setenv "GOBIN"
-                                (string-append (assoc-ref outputs "out")
-                                               "/bin"))
-                        (invoke "go" "test" "-v" "-x"))))
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (setenv "GOCACHE"
-                              (string-append (getcwd) "/go-build"))
-                      (setenv "GOBIN"
-                              (string-append (assoc-ref outputs "out") "/bin"))
-                      (invoke "go" "install" "-v" "-x"))))))
-    (native-inputs (list go))
+     (list
+      #:import-path "github.com/42wim/matterbridge"))
     (synopsis "Bridge together various messaging networks and protocols")
     (description
      "Relays messages between different channels from various

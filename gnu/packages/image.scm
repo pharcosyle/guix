@@ -35,7 +35,7 @@
 ;;; Copyright © 2022 Jai Vetrivelan <jaivetrivelan@gmail.com>
 ;;; Copyright © 2022 ( <paren@disroot.org>
 ;;; Copyright © 2022-2023 Bruno Victal <mirai@makinata.eu>
-;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2023-2024 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2023 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;; Copyright © 2024 chris <chris@bumblehead.com>
@@ -1268,7 +1268,8 @@ supplies a generic doubly-linked list and some string functions.")
                 (search-patches "freeimage-unbundle.patch"
                                 "freeimage-libtiff-compat.patch"
                                 "freeimage-CVE-2020-21428.patch"
-                                "freeimage-CVE-2020-22524.patch")
+                                "freeimage-CVE-2020-22524.patch"
+                                "freeimage-libraw-0.21-compat.patch")
                 ;; Take one patch from Arch Linux that adds LibRaw 0.20 compatibility.
                 (list (origin
                         (method url-fetch)
@@ -1974,7 +1975,7 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (define-public mini
   (package
     (name "mini")
-    (version "0.9.14")
+    (version "0.9.15")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1983,7 +1984,7 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01wn7h9rjz9h6cr11dd62jsb3315d1h6c33pdmwi2l7d8a4n3h8d"))))
+                "088rz9d639lhr8sbk9z67jy981ffd7swlc8ld0qr09v51hryhwya"))))
     (build-system gnu-build-system)
     (arguments
      (list #:phases
@@ -2457,7 +2458,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
 (define-public libavif
   (package
     (name "libavif")
-    (version "0.11.1")
+    (version "1.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2466,7 +2467,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02zmb62g0yx6rfz4w1isyzfrckv5i7dzyz26rp2mspbx9w6v8j4r"))))
+                "0k72q7yvfdn92wkslyifw14319nm981a8r3kd84i4ylxmrkgi0zm"))))
     (build-system cmake-build-system)
     (arguments
      (list

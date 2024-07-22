@@ -24,6 +24,7 @@
 ;;; Copyright © 2023 jgart <jgart@dismail.de>
 ;;; Copyright © 2023 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2024 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,8 +178,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.4.0")
-        (commit "4c94b9e983bc51d9504655f1e7727c4f6d14b6b7")
-        (revision 18))
+        (commit "843b85c42745d65c93d6af81cd3a9d835ff1f51c")
+        (revision 23))
     (package
       (name "guix")
 
@@ -194,7 +195,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "19lqlfafs5mrnciw4jz4iccx5zzhj4pyb20bz6cdqcqbf9nmkfp1"))
+                  "080idxx8i0dkwsvbx3yw20fs16v0vfzc7vc30zbvc96nvw36ryqb"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -490,10 +491,12 @@ $(prefix)/etc/openrc\n")))
                        ("automake" ,automake)
                        ("gettext" ,gettext-minimal)
                        ("texinfo" ,texinfo)
-                       ("graphviz" ,graphviz-minimal)
+                       ("graphviz" ,graphviz) ;non-minimal for PDF support
                        ("font-ghostscript" ,font-ghostscript) ;fonts for 'dot'
+                       ("imagemagick" ,imagemagick) ;for 'make dist'
+                       ("perl" ,perl)               ;for 'make dist'
                        ("help2man" ,help2man)
-                       ("po4a" ,po4a)))
+                       ("po4a" ,po4a-minimal)))
       (inputs
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
@@ -1004,8 +1007,8 @@ transactions from C or Python.")
     (license license:gpl2+)))
 
 (define-public bffe
-  (let ((commit "bdfaab91e82d7d43c35405da3b18c46cde8096de")
-        (revision "5"))
+  (let ((commit "7df2aa647d11342e3a446f44ef7626e58a1d5902")
+        (revision "6"))
     (package
       (name "bffe")
       (version (git-version "0" revision commit))
@@ -1016,7 +1019,7 @@ transactions from C or Python.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0qwnd49apwdx8wrfms2spii1kdg5ashf4591kyfyr89070jjmpa7"))
+                  "04gg21rjl3c1l8i2wnq8w1w6zfh2qmp9ay839ll90c1jf9bc3sn4"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (native-inputs
@@ -1545,8 +1548,8 @@ environments.")
                   "0k9zkdyyzir3fvlbcfcqy17k28b51i20rpbjwlx2i1mwd2pw9cxc")))))))
 
 (define-public guix-build-coordinator
-  (let ((commit "53dddfa62c281ac428325a9d642093979dce77d2")
-        (revision "102"))
+  (let ((commit "406db8a8db53731de432c452902a098915e876c2")
+        (revision "109"))
     (package
       (name "guix-build-coordinator")
       (version (git-version "0" revision commit))
@@ -1557,7 +1560,7 @@ environments.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "11i2qwnz7lhjvkg95vdv1520baa2lzqhb9slvm6xxql8lxmsjvj0"))
+                  "0yi3xji5qm6r5h6nmfbxqgaipp4al08h2mn6sci85ikm80vvy66a"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1803,8 +1806,8 @@ in an isolated environment, in separate namespaces.")
     (license license:gpl3+)))
 
 (define-public nar-herder
-  (let ((commit "71115bd073d58c48eb4a1d456ac4c89b262799ef")
-        (revision "30"))
+  (let ((commit "82f9371c714f14ca59efb8d67b20e9c85b5c86d1")
+        (revision "37"))
     (package
       (name "nar-herder")
       (version (git-version "0" revision commit))
@@ -1815,7 +1818,7 @@ in an isolated environment, in separate namespaces.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "139d2ajnm1s0y7iirbvxdr14g6ywkj7zrfskwbmvlkz5ldn7v9zb"))
+                  "0907hrb02qfa0xvkgzap7bwlx0w9ywfcfr6iw41w4rxarf7xkjlg"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -2041,7 +2044,8 @@ the boot loader configuration.")
        (sha256
         (base32 "0ij93vl9skcfdfgkmgd80q0q4c6q39dss4rds7phxizqqsr3d3sk"))
        (patches
-        (search-patches "flatpak-fix-path.patch"
+        (search-patches "flatpak-fix-fonts-icons.patch"
+                        "flatpak-fix-path.patch"
                         "flatpak-unset-gdk-pixbuf-for-sandbox.patch"))))
 
     ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to

@@ -12,6 +12,7 @@
 ;;; Copyright © 2021 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2022 Luis Felipe López Acevedo <luis.felipe.la@protonmail.com>
 ;;; Copyright © 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2024 Luis Higino <luishenriquegh2701@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
   #:use-module (gnu packages golang-check)
+  #:use-module (gnu packages golang-web)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gstreamer)
@@ -89,6 +91,70 @@
   #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
+
+(define-public cf-tool
+  (package
+    (name "cf-tool")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xalanq/cf-tool")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ad2mljjg4pr8jjk9i1asnld16xi1wdfnh25drngm3c590cmrnfj"))
+       (patches (search-patches "cf-tool-add-languages.patch"))
+       (modules '((guix build utils)))
+       ;; Remove assets and vendorized dependencies from checkout
+       (snippet '(begin
+                   (delete-file-recursively "assets")
+                   (delete-file-recursively "vendor")))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:install-source? #f
+      #:import-path "github.com/xalanq/cf-tool"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'add-alternate-name
+            (lambda* _
+              (let ((bin (string-append #$output "/bin")))
+                (symlink (string-append bin "/cf-tool")
+                         (string-append bin "/cf"))))))))
+    (native-inputs
+     (list go-github-com-docopt-docopt-go
+           go-github-com-fatih-color
+           go-github-com-k0kubun-go-ansi
+           go-github-com-mitchellh-go-homedir
+           go-github-com-olekukonko-tablewriter
+           go-github-com-puerkitobio-goquery
+           go-github-com-sergi-go-diff
+           go-github-com-shirou-gopsutil
+           go-github-com-skratchdot-open-golang
+           go-golang-org-x-crypto
+           go-golang-org-x-term))
+    (home-page "https://github.com/xalanq/cf-tool")
+    (synopsis
+     "Command-line interface tool for @url{https://codeforces.com, Codeforces}")
+    (description
+     "Codeforces Tool is a command-line interface tool for
+@url{https://codeforces.com,Codeforces}.  Its features include:
+@itemize
+@item support Contests, Gym, Groups and acmsguru
+@item support all programming languages in Codeforces
+@item submit codes
+@item watch submissions' status dynamically
+@item fetch problems' samples
+@item compile and test locally
+@item clone all codes of someone
+@item generate codes from the specified template (including timestamp, author, etc.)
+@item list problems' stats of one contest
+@item use default web browser to open problems' pages, standings' page, etc.
+@item setup a network proxy and  setup a mirror host
+@end itemize")
+    (license license:expat)))
 
 (define-public gcompris
   (package
@@ -154,7 +220,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "3.2")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
@@ -162,7 +228,7 @@ of categories with some of the activities available in that category.
              "mirror://kde/stable/gcompris/qt/src/gcompris-qt-"
              version ".tar.xz"))
        (sha256
-        (base32 "06yisr5qd2ri8qgpmlri0yic45fdfcdjn12anp17f6kvv83lk2js"))))
+        (base32 "1186ba3vn59fqdpgbvnvxqm8a3b7ginmw1sb3m5fr2az40xiqg9z"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases
@@ -433,135 +499,119 @@ specialized device.")
     (license license:gpl3)))
 
 (define-public openboard
-  ;; The last release builds from qtwebkit, which has been removed from
-  ;; Guix, so use the latest commit of the 1.7-dev branch, which builds with
-  ;; qtwebengine-5.
-  (let ((commit "47a96e1d6bbdc0250977d22f1b79f11fcc1cbeee")
-        (revision "0"))
-    (package
-      (name "openboard")
-      (version (git-version "1.7-dev" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/OpenBoard-org/OpenBoard")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "04pwmg41vlkwigym3zzkid6srh6f05b44g4mbihd6mhj6vsagx1f"))))
-      (build-system qt-build-system)
-      (arguments
-       (list
-        #:tests? #f                     ;no tests
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'set-initial-values
-              ;; Remove useless "Check for updates" action from menu.
-              ;; Also prevent pop-up window about importing Open Sankore
-              ;; documents since we don't package OpenBoard-Importer.
-              (lambda _
-                (substitute* "src/core/UBSettings.cpp"
-                  (("(appHideCheckForSoftwareUpdate = .*?)false(\\);)" _ beg end)
-                   (string-append beg "true" end))
-                  (("(appLookForOpenSankoreInstall = .*?)true(\\);)" _ beg end)
-                   (string-append beg "false" end)))))
-            (add-after 'unpack 'fix-build-error
-              ;; XXX: `errorOpeningVirtualKeyboard' variable is only
-              ;; defined when building for OSX.  Yet,
-              ;; "UBBoardController.cpp" relies on it unconditionally,
-              ;; resulting in a build failure.  Here, we get rid of
-              ;; that variable, assuming it is always false (its
-              ;; default value when building for OSX).
-              (lambda _
-                (substitute* "src/board/UBBoardController.cpp"
-                  (("if \\(!UBPlatformUtils::errorOpeningVirtualKeyboard\\)")
-                   ""))))
-            (add-after 'unpack 'fix-hard-coded-env
-              (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "src/frameworks/UBPlatformUtils_linux.cpp"
-                  (("/usr/bin/env") (search-input-file inputs "/bin/env")))))
-            (add-after 'unpack 'fix-library-path
-              (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "OpenBoard.pro"
-                  (("/usr/include/quazip5")
-                   (search-input-directory inputs "/include/quazip5"))
-                  (("/usr/include/poppler")
-                   (search-input-directory inputs "/include/poppler")))))
-            (replace 'configure
-              (lambda _
-                (invoke "qmake" "OpenBoard.pro")))
-            (replace 'install
-              (lambda* (#:key inputs #:allow-other-keys)
-                (let* ((share (string-append #$output "/share"))
-                       (openboard (string-append share "/openboard"))
-                       (i18n (string-append openboard "/i18n")))
-                  ;; Install data.
-                  (with-directory-excursion "resources"
-                    (for-each (lambda (directory)
-                                (let ((target
-                                       (string-append openboard "/" directory)))
-                                  (mkdir-p target)
-                                  (copy-recursively directory target)))
-                              '("customizations" "etc" "library"))
-                    (mkdir-p i18n)
-                    (for-each (lambda (f)
-                                (install-file f i18n))
-                              (find-files "i18n" "\\.qm$")))
-                  ;; Install desktop file an icon.
-                  (install-file "resources/images/OpenBoard.png"
-                                (string-append share
-                                               "/icons/hicolor/64x64/apps/"))
-                  (make-desktop-entry-file
-                   (string-append share "/applications/" #$name ".desktop")
-                   #:name "OpenBoard"
-                   #:comment "Interactive whiteboard application"
-                   #:exec "openboard %f"
-                   #:icon "OpenBoard"
-                   #:mime-type "application/ubz"
-                   #:categories '("Education"))
-                  ;; Install executable.
-                  (install-file "build/linux/release/product/OpenBoard" openboard)
-                  (let ((bin (string-append #$output "/bin")))
-                    (mkdir-p bin)
-                    (symlink (string-append openboard "/OpenBoard")
-                             (string-append bin "/openboard")))))))))
-      (native-inputs
-       (list qttools-5))
-      (inputs
-       (list alsa-lib
-             coreutils-minimal          ;for patched 'env' shebang
-             ffmpeg-4
-             freetype
-             lame
-             libass
-             libfdk
-             libressl
-             libtheora
-             libva
-             libvorbis
-             libvpx
-             libx264
-             opus
-             poppler
-             qtbase-5
-             qtdeclarative-5
-             qtmultimedia-5
-             qtsvg-5
-             qtwebchannel-5
-             qtwebengine-5
-             qtxmlpatterns
-             quazip-0
-             sdl
-             zlib))
-      (home-page "https://openboard.ch/")
-      (synopsis "Interactive whiteboard for schools and universities")
-      (description
-       "OpenBoard is a teaching software for interactive whiteboard
+  (package
+    (name "openboard")
+    (version "1.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenBoard-org/OpenBoard")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lxwf50n0bfjjnpq5z82f3apsv9mn834js7f2spw1k1f06a72z41"))))
+    (build-system qt-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;no tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'set-initial-values
+            ;; Remove useless "Check for updates" action from menu.  Also
+            ;; prevent pop-up window about importing Open Sankore documents
+            ;; since we don't package OpenBoard-Importer.
+            (lambda _
+              (substitute* "src/core/UBSettings.cpp"
+                (("(appHideCheckForSoftwareUpdate = .*?)false(\\);)" _ beg end)
+                 (string-append beg "true" end))
+                (("(appLookForOpenSankoreInstall = .*?)true(\\);)" _ beg end)
+                 (string-append beg "false" end)))))
+          (add-after 'unpack 'fix-hard-coded-env
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/frameworks/UBPlatformUtils_linux.cpp"
+                (("/usr/bin/env") (search-input-file inputs "/bin/env")))))
+          (add-after 'unpack 'fix-library-path
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "OpenBoard.pro"
+                (("/usr/include/quazip5")
+                 (search-input-directory inputs "/include/quazip5"))
+                (("/usr/include/poppler")
+                 (search-input-directory inputs "/include/poppler")))))
+          (replace 'configure
+            (lambda _
+              (invoke "qmake" "OpenBoard.pro")))
+          (replace 'install
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let* ((share (string-append #$output "/share"))
+                     (openboard (string-append share "/openboard"))
+                     (i18n (string-append openboard "/i18n")))
+                ;; Install data.
+                (with-directory-excursion "resources"
+                  (for-each (lambda (directory)
+                              (let ((target
+                                     (string-append openboard "/" directory)))
+                                (mkdir-p target)
+                                (copy-recursively directory target)))
+                            '("customizations" "etc" "library"))
+                  (mkdir-p i18n)
+                  (for-each (lambda (f)
+                              (install-file f i18n))
+                            (find-files "i18n" "\\.qm$")))
+                ;; Install desktop file an icon.
+                (install-file "resources/images/OpenBoard.png"
+                              (string-append share
+                                             "/icons/hicolor/64x64/apps/"))
+                (make-desktop-entry-file
+                 (string-append share "/applications/" #$name ".desktop")
+                 #:name "OpenBoard"
+                 #:comment "Interactive whiteboard application"
+                 #:exec "openboard %f"
+                 #:icon "OpenBoard"
+                 #:mime-type "application/ubz"
+                 #:categories '("Education"))
+                ;; Install executable.
+                (install-file "build/linux/release/product/OpenBoard" openboard)
+                (let ((bin (string-append #$output "/bin")))
+                  (mkdir-p bin)
+                  (symlink (string-append openboard "/OpenBoard")
+                           (string-append bin "/openboard")))))))))
+    (native-inputs
+     (list qttools-5))
+    (inputs
+     (list alsa-lib
+           coreutils-minimal            ;for patched 'env' shebang
+           ffmpeg-4
+           freetype
+           lame
+           libass
+           libfdk
+           libressl
+           libtheora
+           libva
+           libvorbis
+           libvpx
+           libx264
+           opus
+           poppler
+           qtbase-5
+           qtdeclarative-5
+           qtmultimedia-5
+           qtsvg-5
+           qtwebchannel-5
+           qtwebengine-5
+           qtxmlpatterns
+           quazip-0
+           sdl
+           zlib))
+    (home-page "https://openboard.ch/")
+    (synopsis "Interactive whiteboard for schools and universities")
+    (description
+     "OpenBoard is a teaching software for interactive whiteboard
 designed primarily for use in schools and universities.  It can be
 used both with interactive whiteboards or in a dual-screen setup with
 a pen-tablet display and a beamer.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public fet
   (package
@@ -627,34 +677,56 @@ hours.")
 language and very flexible regarding to new or unknown keyboard layouts.")
     (license license:gpl3+)))
 
+(define-public kqtquickcharts
+  (package
+    (name "kqtquickcharts")
+    (version "24.05.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kde/stable/release-service/"
+                                  version "/src/kqtquickcharts-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0b0nqg77lzfw6accfsr4yg9fgq78skryd1qwkqf1zijhq4h65708"))))
+    (build-system qt-build-system)
+    (native-inputs (list extra-cmake-modules))
+    (inputs (list qtdeclarative-5))
+    (home-page "https://invent.kde.org/libraries/kqtquickcharts")
+    (synopsis "QtQuick plugin to render beautiful and interactive charts")
+    (description
+     "This package provides a QtQuick plugin to render beautiful and interactive
+charts.")
+    (license (list license:lgpl2.0+ license:gpl2+))))
+
 (define-public ktouch
   (package
     (name "ktouch")
-    (version "21.12.2")
+    (version "24.05.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/release-service/"
-                            version "/src/ktouch-" version ".tar.xz"))
-        (sha256
-         (base32 "1rq2n8395sb17rqd295axv2pbwzhqs8ikjqx5ryn4lv1713alabl"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/"
+                           version "/src/ktouch-" version ".tar.xz"))
+       (sha256
+        (base32 "1636s1brigmd7wbmjlfgz2qlrrp592rrk9nylh9bi0j1nf3xa8c5"))))
     (build-system qt-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools pkg-config))
+     (list extra-cmake-modules kdoctools-5 pkg-config))
     (inputs
-     (list kcmutils
-           kcompletion
-           kconfig
-           kconfigwidgets
-           kcoreaddons
-           kdeclarative
-           ki18n
-           kiconthemes
-           kitemviews
-           ktextwidgets
-           kwidgetsaddons
-           kwindowsystem
-           kxmlgui
+     (list kcmutils-5
+           kcompletion-5
+           kconfig-5
+           kconfigwidgets-5
+           kcoreaddons-5
+           kdeclarative-5
+           ki18n-5
+           kiconthemes-5
+           kitemviews-5
+           ktextwidgets-5
+           kwidgetsaddons-5
+           kwindowsystem-5
+           kxmlgui-5
+           kqtquickcharts
            libxcb
            libxkbfile
            qtbase-5

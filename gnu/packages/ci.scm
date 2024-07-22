@@ -60,8 +60,8 @@
   #:use-module ((guix search-paths) #:select ($SSL_CERT_DIR)))
 
 (define-public cuirass
-  (let ((commit "7bcd3d079f0ec45ac50f0dbc14eb4ec68c6a6b53")
-        (revision "2"))
+  (let ((commit "ab5c751737b694b4d1e5fbbd7bc1ec559e94a7ce")
+        (revision "7"))
     (package
       (name "cuirass")
       (version (git-version "1.2.0" revision commit))
@@ -74,7 +74,7 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0x92dsck8ryyqz5cbs6i11wdrsbagrl85jddzc52rmwzqzrig9j2"))))
+           "1cakc6q7gvd1qnfq47j6swqjrkgikwaq3ziwdrdvb0d23l2xzz29"))))
       (build-system gnu-build-system)
       (arguments
        (list #:modules `((guix build utils)
@@ -153,7 +153,12 @@
 
              guix))
       (native-inputs
-       (list autoconf-2.71 automake pkg-config texinfo ephemeralpg))
+       (list autoconf-2.71
+             automake
+             pkg-config
+             texinfo
+             ephemeralpg
+             esbuild))
       (native-search-paths
        ;; For HTTPS access, Cuirass itself honors these variables, with the
        ;; same semantics as Git and OpenSSL (respectively).

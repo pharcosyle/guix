@@ -15,10 +15,12 @@
 ;;; Copyright © 2023 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2023 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2023 Vinicius Monego <monego@posteo.net>
-;;; Copyright © 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2023, 2024 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2024 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2024 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2024 Wilko Meyer <w@wmeyer.eu>
+;;; Copyright © 2024 David Elsing <david.elsing@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -419,6 +421,28 @@ that implements both the msgpack and msgpack-rpc specifications.")
                                 "/lib/lua/" lua-major+minor))))))
     (inputs
      `(("lua" ,lua-5.2)))))
+
+(define-public libscfg
+  (package
+    (name "libscfg")
+    (version "0.1.1")
+    (home-page "https://git.sr.ht/~emersion/libscfg")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.sr.ht/~emersion/libscfg")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b1ps7wba4anm3x1yndnd730dwl6rdz3zwjgxmsyq31fnjrjydv9"))))
+    (build-system meson-build-system)
+    (synopsis "Scfg library written in C")
+    (description
+     "This package provides a C library for to parse
+@uref{https://git.sr.ht/~emersion/scfg, scfg}, a simple configuration file
+format with one directive per line.")
+    (license license:expat)))
 
 (define-public libyaml
   (package
@@ -880,7 +904,7 @@ game development and other performance-critical applications.")
 (define-public flatbuffers-next
   (package
     (inherit flatbuffers)
-    (version "23.1.21")
+    (version "23.5.26")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -889,18 +913,7 @@ game development and other performance-critical applications.")
               (file-name (git-file-name "flatbuffers" version))
               (sha256
                (base32
-                "1z3a6l8g2y53i5xzraswfs2i0i3kk52zv7nzc2q3fgisbyiri3pz"))))))
-
-(define-public flatbuffers-next-shared
-  (package
-    (inherit flatbuffers-next)
-    (name "flatbuffers-shared")
-    (version "23.1.21")
-    (arguments
-     (substitute-keyword-arguments (package-arguments flatbuffers-next)
-       ((#:configure-flags  flags)
-        ;; Compile with -fPIC, needed for shared lib.
-        #~(cons "-DFLATBUFFERS_CXX_FLAGS=-fPIC" #$flags))))))
+                "0cd12dvkzqdafz46q4302mzgpzbz589zmmiga7bq07f2sqy4vrvv"))))))
 
 (define-public python-flatbuffers
   (package
@@ -939,3 +952,65 @@ format for Python.")
     (description "This package provides a Python wrapper library to the
 Apache Arrow-based Feather binary columnar serialization data frame format.")
     (license license:asl2.0)))
+
+(define-public libnop
+  (let ((commit "35e800d81f28c632956c5a592e3cbe8085ecd430")
+        (revision "0"))
+    (package
+      (name "libnop")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/google/libnop")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0qqbaljq54qiq0dky9nj47igfcs065ry526jg9a0aafbfl9krpy2"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:test-target "test"
+        #:phases
+        #~(modify-phases %standard-phases
+            (delete 'configure)
+            (replace 'check
+              (lambda* (#:key tests? #:allow-other-keys)
+                (when tests?
+                  (invoke "out/test"))))
+            (replace 'install
+              (lambda _
+                (copy-recursively
+                 "include" (string-append #$output "/include")))))))
+      (native-inputs (list googletest))
+      (home-page "https://github.com/google/libnop")
+      (synopsis "C++ Native Object Protocols")
+      (description "@code{libnop} is a header-only library for serializing and
+deserializing C++ data types without external code generators or runtime
+support libraries.")
+      (license license:asl2.0))))
+
+(define-public valijson
+  (package
+    (name "valijson")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tristanpenman/valijson")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ai6bj6mxd12mpvf1xwlad2vic5lsqy44adilp17wa7dq275vwf2"))))
+    (build-system cmake-build-system)
+    ;; The test suite is disabled as it requires Boost, Qt 5, Poco as well as
+    ;; other bundled libraries.
+    (arguments (list #:tests? #f))
+    (home-page "https://github.com/tristanpenman/valijson")
+    (synopsis "JSON schema validation C++ header-only library")
+    (description "Valijson is a header-only JSON Schema validation library for
+C++11.  It provides a simple validation API that allows loading JSON Schemas,
+and validate documents loaded by one of several supported parser libraries.")
+    (license license:bsd-2)))
