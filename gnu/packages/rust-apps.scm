@@ -2041,6 +2041,15 @@ bindings to C and C++ libraries.  This package provides the @command{bindgen}
 command.")
     (license license:bsd-3)))
 
+(define-public rust-bindgen
+  (package
+    (inherit rust-bindgen-cli)
+    (arguments
+     (substitute-keyword-arguments (package-arguments rust-bindgen-cli)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'install-completions)))))))
+
 (define-public sniffglue
   (package
     (name "sniffglue")
