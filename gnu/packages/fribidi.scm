@@ -22,13 +22,15 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix licenses)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages python))
 
 (define-public fribidi
   (package
     (name "fribidi")
-    (version "1.0.14")
+    (version "1.0.15")
     (source
       (origin
         (method url-fetch)
@@ -37,8 +39,10 @@
                         "/download/v" version "/fribidi-" version
                          ".tar.xz"))
         (sha256
-         (base32 "16i5saf2asvmiv2q80il2hqs4fq8gj0sb7qvk31jlr97f1521bkn"))))
-    (build-system gnu-build-system)
+         (base32 "11vmjvwwp2x9k9y0c2vsap9da83xbb7nkqyp6ap0i8mz6gv7zg0b"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list python-minimal)) ; For tests.
     (synopsis "Implementation of the Unicode bidirectional algorithm")
     (description
      "GNU FriBidi is an implementation of the Unicode Bidirectional
