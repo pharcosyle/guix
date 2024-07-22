@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013-2023 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2024 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2019, 2023 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017, 2021, 2022 Eric Bavier <bavier@posteo.net>
@@ -144,7 +144,7 @@
 ;;; Copyright © 2023 Parnikkapore <poomklao@yahoo.com>
 ;;; Copyright © 2023 Foundation Devices, Inc. <hello@foundationdevices.com>
 ;;; Copyright © c4droid <c4droid@foxmail.com>
-;;; Copyright © 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2023, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2023 Attila Lendvai <attila@lendvai.name>
 ;;; Copyright © 2023, 2024 Troy Figiel <troy@troyfigiel.com>
 ;;; Copyright © 2024 Timothee Mathieu <timothee.mathieu@inria.fr>
@@ -1314,7 +1314,7 @@ into dataclasses.")
      (list python-numpy))
     (native-inputs
      (list cmake
-           meson-python/newer
+           meson-python
            pkg-config
            pybind11
            python-pytest
@@ -3816,7 +3816,7 @@ help formatter.")
                   (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'prepare-python-module 'build-python-module
+          (add-after 'build 'build-python-module
             (assoc-ref py:%standard-phases 'build))
           (add-after 'build-python-module 'install-python-module
             (assoc-ref py:%standard-phases 'install)))
@@ -6233,14 +6233,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "6.0")
+    (version "6.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "18imkjacvpxfgg1lbpraqywx3j7hr5dv99d242byqvrh2jf53yv8"))))
+         "0hsa7g6ddynifrwdgadqcx80khhblfy94slzpbr7birn2w5ldpxz"))))
     (build-system python-build-system)
     (inputs
      (list libyaml python-cython))
@@ -8123,7 +8123,7 @@ errors when data is invalid.")
                   (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'prepare-python-module 'build-python-module
+          (add-after 'build 'build-python-module
             (assoc-ref py:%standard-phases 'build))
           (add-after 'build-python-module 'install-python-module
             (assoc-ref py:%standard-phases 'install)))
@@ -8546,6 +8546,9 @@ provides additional functionality on the produced Mallard documents.")
     ;; because we need libpython3.3m.so
     (inputs
      (list python))
+    (native-inputs
+     ;; Needed for some tests that link against it.
+     (list libxcrypt))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -9438,7 +9441,8 @@ comparison.
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
-        (base32 "18amhxyxa6yzy1nwky4ggdgvvxnbl3qz2lki05vfx0dqf6w7ia81"))))
+        (base32 "18amhxyxa6yzy1nwky4ggdgvvxnbl3qz2lki05vfx0dqf6w7ia81"))
+       (patches (search-patches "python-matplotlib-fix-legend-loc-best-test.patch"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -10381,7 +10385,9 @@ Python list with elements of type @code{PIL.Image} (from the
               (snippet '(begin
                           (delete-file-recursively "src/thirdparty")))
               (patches
-               (search-patches "python-pillow-CVE-2022-45199.patch"))))
+               (search-patches "python-pillow-CVE-2022-45199.patch"
+                               ;; Included in 10.1.0.
+                               "python-pillow-use-zlib-1.3.patch"))))
     (build-system python-build-system)
     (native-inputs (list python-pytest))
     (inputs (list freetype
@@ -13253,6 +13259,7 @@ implementation of D-Bus.")
   (package/inherit python-dbus
     (name "python2-dbus")
     (inputs `(("python" ,python-2)
+              ("libxcrypt" ,libxcrypt)  ;required by Python.h
               ,@(alist-delete "python"
                               (package-inputs python-dbus))))
     (arguments
@@ -20532,7 +20539,12 @@ for Python inspired by modern web development.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1x11kfn4g244fia9a7y4ly8dqv5zsxfg3l5azc54dl6gkp2bk7vx"))))
+         "1x11kfn4g244fia9a7y4ly8dqv5zsxfg3l5azc54dl6gkp2bk7vx"))
+       (modules '((guix build utils)))
+       ;; Adjust expected output for file@5.45.
+       (snippet #~(substitute* "test/libmagic_test.py"
+                    (("PDF document, version 1\\.2, 2 pages")
+                     "PDF document, version 1.2, 2 page(s)")))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -20551,7 +20563,7 @@ for Python inspired by modern web development.")
                   (replace 'check
                     (lambda* (#:key tests? #:allow-other-keys)
                       ;; The test suite mandates this variable.
-                      (setenv "LC_ALL" "en_US.UTF-8")
+                      (setenv "LC_ALL" "C.UTF-8")
                       (if tests?
                           (with-directory-excursion "test"
                             (invoke "python" "./libmagic_test.py"))
@@ -23079,7 +23091,10 @@ implementation of your Python package and its public API surface.")
              (when tests?
                (invoke "pytest" "-v")))))))
     (native-inputs
-     (list python-hypothesis python-pytest-cov python-pytest-mock
+     (list glibc-utf8-locales ;; Tests want en_US.UTF-8
+           python-hypothesis
+           python-pytest-cov
+           python-pytest-mock
            python-pytest))
     (propagated-inputs ; TODO: Add python-fastnumbers.
      (list python-pyicu))
@@ -23333,7 +23348,7 @@ OpenSSH Server for example.")
 (define-public python-pyelftools
   (package
     (name "python-pyelftools")
-    (version "0.29")
+    (version "0.30")
     (home-page "https://github.com/eliben/pyelftools")
     (source
      (origin
@@ -23342,7 +23357,7 @@ OpenSSH Server for example.")
                            (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mi7i9zlhkkap4q50ciak57ia46mj2jzq0713m3dh0x8j05k9xml"))
+        (base32 "0gk47mq5cqv6qz35aydn67wma5m70gv5f9f6pg38zny6vsfavmq3"))
        (snippet
         ;; Delete bundled readelf executable.
         '(delete-file "test/external_tools/readelf"))))
@@ -23359,9 +23374,9 @@ OpenSSH Server for example.")
     (synopsis
      "Analyze binary and library file information")
     (description "This Python library provides interfaces for parsing and
-     analyzing two binary and library file formats ; the Executable and Linking
-     Format (ELF), and debugging information in the Debugging With Attributed
-     Record Format (DWARF).")
+analyzing two binary and library file formats ; the Executable and Linking
+Format (ELF), and debugging information in the Debugging With Attributed
+Record Format (DWARF).")
     (license license:public-domain)))
 
 (define-public python-pefile
@@ -33889,8 +33904,7 @@ CMake.")
                             (string-append x11 "/lib/libX11.so.6")))
               (substitute* "Screenkey/xlib.py"
                            (("libXtst.so.6")
-                            (string-append xtst "/lib/libXtst.so.6")))
-              #t)))
+                            (string-append xtst "/lib/libXtst.so.6"))))))
           (add-after 'install 'wrap-screenkey
             (lambda* (#:key outputs #:allow-other-keys)
               (wrap-program
@@ -33899,7 +33913,8 @@ CMake.")
                 `("GI_TYPELIB_PATH"
                   ":" prefix (,(getenv "GI_TYPELIB_PATH")))))))))
     (inputs
-     (list python-distutils-extra
+     (list bash-minimal
+           python-distutils-extra
            python-tokenize-rt
            libx11
            libxtst
@@ -37572,7 +37587,7 @@ etc. to check code that uses @code{orjson}.")
                   (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'prepare-python-module 'build-python-module
+          (add-after 'build 'build-python-module
             (assoc-ref py:%standard-phases 'build))
           (add-after 'build-python-module 'install-python-module
             (assoc-ref py:%standard-phases 'install)))

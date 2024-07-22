@@ -51,7 +51,7 @@
   ;; Build-side modules imported by default.
   `((guix build texlive-build-system)
     (guix build union)
-    ,@%gnu-build-system-modules))
+    ,@%default-gnu-imported-modules))
 
 (define (default-texlive-bin)
   "Return the default texlive-bin package."

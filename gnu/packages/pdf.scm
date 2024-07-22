@@ -20,7 +20,7 @@
 ;;; Copyright © 2020-2024 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020, 2022 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020, 2024 Timotej Lazar <timotej.lazar@araneo.si>
-;;; Copyright © 2020, 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2022, 2023, 2024 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
 ;;; Copyright © 2022 Paul A. Patience <paul@apatience.com>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
@@ -133,8 +133,7 @@
                (base32 "0kp1dcww5zl04wnbqbi8vjzpc5qgr8gr8rcx0s6s4xbjnzvqqw8d"))))
     (build-system meson-build-system)
     (arguments
-     (list #:meson meson/newer
-           #:configure-flags #~(list "-Dcpp_std=c++23")
+     (list #:configure-flags #~(list "-Dcpp_std=c++23")
            #:test-options '(list "plainc")
            #:phases
            #~(modify-phases %standard-phases
@@ -265,10 +264,10 @@ information.")
                  `("QT_PLUGIN_PATH" ":" =
                    (,(string-append qtbase "/lib/qt5/plugins")))
                  `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
-                   (,(string-append qtbase "/lib/qt5/plugins/platforms"))))
-               #t))))))
+                   (,(string-append qtbase "/lib/qt5/plugins/platforms"))))))))))
     (inputs
-     (list python-poppler-qt5
+     (list bash-minimal
+           python-poppler-qt5
            python-pypdf2
            python-pyqt
            qtbase-5))
@@ -925,14 +924,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
     (name "qpdf")
-    (version "11.1.0")
+    (version "11.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                   "/qpdf-" version ".tar.gz"))
               (sha256
                (base32
-                "0bg2d4585nxss2zakq105ibhzzsa1bhwpmr0k8752fg2qqxcz9rl"))))
+                "0n8jfk4yf0m36rs9lg82pj9lv6pdqpfh8mhacc1ih9ahpigiycnr"))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags #~'("-DBUILD_STATIC_LIBS=OFF")))
@@ -951,7 +950,7 @@ program capable of converting PDF into other formats.")
     ;; Prior to the 7.0 release, QPDF was licensed under Artistic 2.0.
     ;; Users can still choose to use the old license at their option.
     (license (list license:asl2.0 license:clarified-artistic))
-    (home-page "https://qpdf.sourceforge.net/")))
+    (home-page "https://qpdf.sourceforge.io/")))
 
 (define-public qpdfview
   (package
@@ -1207,7 +1206,7 @@ vector formats.")
                     (,(search-input-file inputs "bin/xpdf"))))
                 (install-file "impressive.1" man1)))))))
     ;; TODO: Add dependency on pdftk.
-    (inputs (list python-pygame python-pillow sdl xpdf))
+    (inputs (list bash-minimal python-pygame python-pillow sdl xpdf))
     (home-page "https://impressive.sourceforge.net")
     (synopsis "PDF presentation tool with visual effects")
     (description
@@ -1450,7 +1449,7 @@ manage or manipulate PDFs.")
     (native-inputs
      (list intltool python-distutils-extra))
     (inputs
-     (list gtk+ poppler))
+     (list bash-minimal gtk+ poppler))
     (propagated-inputs
      (list img2pdf
            python-dateutil

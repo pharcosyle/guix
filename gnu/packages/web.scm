@@ -124,6 +124,7 @@
   #:use-module (gnu packages crates-gtk)
   #:use-module (gnu packages crates-tls)
   #:use-module (gnu packages crates-web)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -233,7 +234,7 @@
      `(#:tests? #f                      ; no target
        #:imported-modules
        ((guix build copy-build-system)
-        ,@%gnu-build-system-modules)
+        ,@%default-gnu-imported-modules)
        #:modules
        (((guix build copy-build-system) #:prefix copy:)
         (guix build gnu-build-system)
@@ -299,17 +300,18 @@
                "1id45r2ccgkbjm9i998997ch32lvicpyynyx8x6aa4420wmdf5ps"))))
     (build-system gnu-build-system)
     (native-inputs (list `(,pcre "bin")))       ;for 'pcre-config'
-    (inputs (list apr apr-util openssl perl)) ; needed to run bin/apxs
+    (inputs (list apr apr-util libxcrypt openssl perl)) ; needed to run bin/apxs
     (arguments
-     `(#:test-target "test"
-       #:configure-flags (list "--enable-rewrite"
-                               "--enable-userdir"
-                               "--enable-vhost-alias"
-                               "--enable-ssl"
-                               "--enable-mime-magic"
-                               (string-append "--sysconfdir="
-                                              (assoc-ref %outputs "out")
-                                              "/etc/httpd"))))
+     (list
+      #:test-target "test"
+      #:configure-flags #~(list "--enable-rewrite"
+                                "--enable-userdir"
+                                "--enable-vhost-alias"
+                                "--enable-ssl"
+                                "--enable-mime-magic"
+                                (string-append "--sysconfdir="
+                                               #$output
+                                               "/etc/httpd"))))
     (synopsis "Featureful HTTP server")
     (description
      "The Apache HTTP Server Project is a collaborative software development
@@ -529,7 +531,7 @@ the same, being completely separated from the Internet.")
                (base32
                 "170ja338zh7wdyva34cr7f3wfq59434sssn51d5jvakyz0y0w8xp"))))
     (build-system gnu-build-system)
-    (inputs (list libxml2 libxslt openssl pcre zlib))
+    (inputs (list libxcrypt libxml2 libxslt openssl pcre zlib))
     (arguments
      (list
       #:tests? #f                       ; no test target
@@ -685,7 +687,8 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
          (sha256
           (base32 "1hjysrl15kh5233w7apq298cc2bp4q1z5mvaqcka9pdl90m0vhbw"))))
       (build-system gnu-build-system)
-      (inputs `(("openssl" ,openssl)
+      (inputs `(("libxcrypt" ,libxcrypt)
+                ("openssl" ,openssl)
                 ("pcre" ,pcre)
                 ("nginx-sources" ,(package-source nginx))
                 ("zlib" ,zlib)))
@@ -1555,7 +1558,7 @@ efficiently.  It gives the application developer no more than 4 methods.")
                (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
                        "ec.tsv")))))))
    (inputs
-    (list curl gnu-make perl))
+    (list bash-minimal curl gnu-make perl))
    (home-page "https://github.com/marbl/Krona/wiki")
    (synopsis "Hierarchical data exploration with zoomable HTML5 pie charts")
    (description
@@ -2165,7 +2168,16 @@ changes, and much more.")
                (base32
                 "07w1aq8y8wld43wmbk2q8134p3bfkp2vma78mmsfgw2jn1bh3xhd"))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("--enable-nss")))
+    (arguments
+     (list
+      #:configure-flags ''("--enable-nss")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'use-C-unicode-locale
+            (lambda _
+              (substitute* "tests/commontest.c"
+                (("en_US\\.UTF-8")
+                 "C.UTF-8")))))))
     (native-inputs (list pkg-config))
     (propagated-inputs
      (list curl nss))
@@ -5262,7 +5274,8 @@ Cloud.")
                               (_ #t)))))))
             (delete 'strip))))          ; As the .go files aren't compatible
       (inputs
-       (list ephemeralpg
+       (list bash-minimal
+             ephemeralpg
              util-linux
              postgresql-13
              sqitch
@@ -5761,8 +5774,7 @@ NetSurf project.")
         '(begin
            ;; The POT file requires write permission during the build
            ;; phase.
-           (chmod "po/ikiwiki.pot" #o644)
-           #t))))
+           (chmod "po/ikiwiki.pot" #o644)))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -5773,16 +5785,14 @@ NetSurf project.")
                           (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
              (with-directory-excursion "po"
                (substitute* "Makefile"
-                            (("PERL5LIB=") "PERL5LIB=${PERL5LIB}:")))
-             #t))
+                            (("PERL5LIB=") "PERL5LIB=${PERL5LIB}:")))))
          (add-before 'build 'set-modification-times
            ;; The wiki '--refresh' steps, which are executed during
            ;; the check phase, require recent timestamps on files in
            ;; the 'doc' and 'underlays' directories.
            (lambda _
              (invoke "find"  "doc" "underlays" "-type" "f" "-exec"
-                     "touch" "{}" "+")
-             #t))
+                     "touch" "{}" "+")))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Six tests use IPC::Run.  For these tests the PERL5LIB
@@ -5808,8 +5818,7 @@ NetSurf project.")
                      (string-append (assoc-ref inputs "shared-mime-info")
                                     "/share"))
              ;; CC is needed by IkiWiki/Wrapper.pm.
-             (setenv "CC" "gcc")
-             #t))
+             (setenv "CC" "gcc")))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -5818,8 +5827,7 @@ NetSurf project.")
                (for-each (lambda (file)
                            (wrap-program file
                              `("PERL5LIB" ":" prefix (,path))))
-                         (find-files bin))
-               #t))))))
+                         (find-files bin))))))))
     (native-inputs
      (list which
            gettext-minimal
@@ -5829,7 +5837,8 @@ NetSurf project.")
            cvs
            mercurial))
     (inputs
-     (list python-wrapper
+     (list bash-minimal
+           python-wrapper
            perl-authen-passphrase
            perl-cgi-simple
            perl-db-file
@@ -6798,7 +6807,7 @@ functions of Tidy.")
                  `("PATH" ":" prefix (,mbed)))))))))
     (inputs
      ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha".
-     (list libxslt libxml2 mbedtls-for-hiawatha
+     (list bash-minimal libxcrypt libxslt libxml2 mbedtls-for-hiawatha
            `(,nghttp2 "lib") zlib))
     (home-page "https://www.hiawatha-webserver.org")
     (synopsis "Webserver with focus on security")
@@ -8594,7 +8603,8 @@ It does not support server push.")
      (list autoconf automake uglify-js pkg-config
            (lookup-package-native-input guix "guile")))
     (inputs
-     (list (lookup-package-native-input guix "guile")
+     (list bash-minimal
+           (lookup-package-native-input guix "guile")
            guix
            guile-zlib
            guile-commonmark
