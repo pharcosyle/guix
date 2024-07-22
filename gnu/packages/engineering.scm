@@ -2700,6 +2700,12 @@ Newton-Raphson power flow solvers in the C++ library lightsim2grid, and the
                 "0ji1c8b9cbgb0w18dx976hza690npkypz8kav4a3yin2wysjvf64"))
               (file-name (git-file-name name version))))
     (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags '(list ;; Missing docscrape dependency.
+                          "--ignore=doc/sphinxext/tests/test_docscrape.py"
+                          ;; these test require network
+                          "--ignore=skrf/tests/test_network.py")))
     (propagated-inputs (list python-matplotlib
                              python-networkx
                              python-numpy

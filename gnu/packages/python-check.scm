@@ -153,8 +153,7 @@ data in a standard way.")
          "-k" (string-append "not test_doc_readme "
                              "and not test_sphinx "
                              "and not test_pep561_mypy"))))
-    (native-inputs
-     (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/beartype/beartype")
     (synopsis "Fast runtime type checking for Python")
     (description "Beartype aims to be a very fast runtime type checking tool
@@ -217,7 +216,11 @@ tests in cram.")
          "17518f2fn5l98lyk9p8r7215c1whi61imzrh6ahrmcksr8w0zz04"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest-flake8 python-pytest-xdist python-tabulate))
+     (list python-pytest-flake8
+           python-pytest-xdist
+           python-setuptools
+           python-tabulate
+           python-wheel))
     (propagated-inputs
      (list python-pytest python-six))
     (home-page "https://github.com/nicoulaj/pytest-csv")
@@ -302,16 +305,7 @@ are useful when writing automated tests in Python.")
        (uri (pypi-uri "cucumber-tag-expressions" version))
        (sha256
         (base32 "0q7rn4l4ppjd1zsglr37ccc5xccg4iigaw827282zfzfsvzda573"))))
-    (build-system python-build-system)
-    (arguments
-     (list #:phases
-           #~(modify-phases %standard-phases
-               (replace 'check
-                 (lambda* (#:key tests? #:allow-other-keys)
-                   (when tests?
-                     ;; Ignore the configuration file since we don't
-                     ;; need HTML reports, etc.
-                     (invoke "pytest" "-c" "/dev/null" "-vv")))))))
+    (build-system pyproject-build-system)
     (native-inputs
      (list python-invoke python-pathpy python-pytest))
     (home-page "https://github.com/cucumber/tag-expressions-python")
@@ -426,7 +420,9 @@ result documents that can be read by tools such as Jenkins or Bamboo.")
            python-greenlet
            python-pytest
            python-pytest-asyncio
-           python-pytest-trio))
+           python-pytest-trio
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/joerick/pyinstrument")
     (synopsis "Call stack profiler for Python")
     (description
@@ -889,6 +885,7 @@ were inadvertently left open at the end of a unit test.")
      (list
       #:test-flags #~(list "-k" (string-append
                                  "not test_default_behavior"
+                                 " and not test_strict_behavior"
                                  " and not test_strict_with_decorator"))))
     (native-inputs
      (list python-pytest python-setuptools python-setuptools-scm
@@ -1217,7 +1214,11 @@ simpler.")
         (base32 "01qhbkb3n8c5c4id94w6b06q9wb7b6a33mqwyrkdfzk5pzv1gcyd"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;there are none
-    (native-inputs (list python-coverage python-pytest))
+    (native-inputs
+     (list python-coverage
+           python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/tarpas/pytest-testmon")
     (synopsis "Selects tests affected by changed files and methods")
     (description
@@ -1246,7 +1247,11 @@ simpler.")
                            ;; No keyboard interrupt in our build environment.
                            " and not test_actual_test"))))
     (native-inputs
-     (list python-hypothesis python-pytest python-pytest-cov))
+     (list python-hypothesis
+           python-pytest
+           python-pytest-cov
+           python-setuptools
+           python-wheel))
     (propagated-inputs
       (list python-async-generator python-outcome python-pytest python-trio))
     (home-page "https://github.com/python-trio/pytest-trio")
@@ -1524,20 +1529,22 @@ service processes for your tests with pytest.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "1wqkr3g5gmqdxmhzfsxbwy8pm3cadaj6a8cxq58w9bacly4hqbh0"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
-             (when tests?
-               (substitute* "setup.cfg"
-                 ((".*timeout.*") ""))
-               ;; Make the installed plugin discoverable by Pytest.
-               (add-installed-pythonpath inputs outputs)
-               (invoke "pytest" "-vv")))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'pre-check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (substitute* "setup.cfg"
+                  ((".*timeout.*") ""))))))))
     (native-inputs
-     (list python-pydantic python-pytest python-pytest-isort))
+     (list python-pydantic
+           python-pytest
+           python-pytest-isort
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/samuelcolvin/pytest-toolbox")
     (synopsis "Numerous useful plugins for Pytest")
     (description
@@ -1609,34 +1616,40 @@ notebooks.")
        (uri (pypi-uri "nbval" version))
        (sha256
         (base32 "0h3xrnw0mj1srigrx2rfnd73h8s0xjycclmjs0vx7qkfyqpcvvyg"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'fix-test
-           (lambda _
-             ;; This test fails because of a mismatch in the output of LaTeX
-             ;; equation environments.  Seems OK to skip.
-             (delete-file
-              "tests/ipynb-test-samples/test-latex-pass-correctouput.ipynb")))
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "pytest" "-vv" "-k"
-                       (string-append
-                        ;; This only works with Pytest < 5.
-                        "not nbdime_reporter"
-                        ;; https://github.com/computationalmodelling/nbval/pull/148.
-                        " and not test_timeouts"
-                        ;; It seems the output format has changed; the following
-                        ;; test fails with "Unexpected output fields from
-                        ;; running code: {'text/plain'}".
-                        " and not test_conf_ignore_stderr "))))))))
+     (list
+      #:test-flags
+      '(list
+        ;; This test fails because of a mismatch in the output of LaTeX
+        ;; equation environments.  Seems OK to skip.
+        "--ignore=tests/ipynb-test-samples/test-latex-pass-correctouput.ipynb"
+        "-k" (string-append
+              ;; This only works with Pytest < 5.
+              "not nbdime_reporter"
+              ;; https://github.com/computationalmodelling/nbval/pull/148.
+              " and not test_timeouts"
+              ;; It seems the output format has changed; the following
+              ;; test fails with "Unexpected output fields from
+              ;; running code: {'text/plain'}".
+              " and not test_conf_ignore_stderr "))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'fix-test
+            (lambda _
+              ;; This test fails because of a mismatch in the output of LaTeX
+              ;; equation environments.  Seems OK to skip.
+              (delete-file "tests/\
+ipynb-test-samples/test-latex-pass-correctouput.ipynb"))))))
     (native-inputs
-     (list python-pytest python-pytest-cov python-sympy))
+     (list python-pytest
+           python-pytest-cov
+           python-setuptools
+           python-sympy
+           python-wheel))
     (propagated-inputs
      (list python-ipykernel python-jupyter-client python-nbformat
-           python-six))
+           python-six python-coverage))
     (home-page "https://github.com/computationalmodelling/nbval")
     (synopsis "Pytest plugin to validate Jupyter notebooks")
     (description
@@ -1751,7 +1764,7 @@ simplify testing of asynchronous tornado applications.")
                (add-installed-pythonpath inputs outputs)
                (invoke "pytest" "--verbose")))))))
     (propagated-inputs
-     (list python-pytest python-tornado))
+     (list python-pytest python-tornado-6))
     (home-page "https://github.com/eukaryote/pytest-tornasync")
     (synopsis "Pytest plugin for testing Tornado code")
     (description
@@ -2110,6 +2123,7 @@ them using any Python VM with basically no runtime overhead.")
     (native-inputs
      (list python-beartype
            python-mypy
+           python-setuptools
            python-typeguard
            python-wheel))
     (propagated-inputs (list python-numpy python-typing-extensions))

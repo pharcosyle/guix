@@ -3813,12 +3813,7 @@ this library provides functions to facilitate such comparisons.")
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32 "0lxi2g2025lz5k7k5dd5fc1lfijqi2yw6qqyjzp073z6laa8cckw"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _
-                      (invoke "pytest" "-vv"))))))
+    (build-system pyproject-build-system)
     (native-inputs
      (list python-mock python-pytest-cov))
     (propagated-inputs
@@ -5627,6 +5622,7 @@ mechanism of @code{dogpile}.")
      (list python-beautifulsoup4
            python-black
            python-cogapp
+           python-pip
            python-pytest
            python-pytest-asyncio
            python-pytest-runner

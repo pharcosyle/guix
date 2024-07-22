@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2024 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2020, 2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020, 2023 Marius Bakke <marius@gnu.org>
@@ -210,13 +210,13 @@ PyPI (pypi.org).")
 (define-public python-typing-extensions
   (package
     (name "python-typing-extensions")
-    (version "4.9.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "typing_extensions" version))
               (sha256
                (base32
-                "10spkx7xjbxwcsgkqv483c5kn53s042wkrmfr1mdf9vzqf48yir3"))))
+                "1jxkj4pni8pdyrn79sq441lsp40xzw363n0qvfc6zfcgkv4dgaxh"))))
     (build-system pyproject-build-system)
     ;; Disable the test suite to keep the dependencies to a minimum.  Also,
     ;; the test suite requires Python's test module, not available in Guix.
@@ -478,18 +478,20 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-packaging-bootstrap
   (package
     (name "python-packaging-bootstrap")
-    (version "21.3")
+    (version "23.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "packaging" version))
        (sha256
         (base32
-         "1sygirdrqgv4f1ckh9nhpcw1yfidrh3qjl86wq8vk6nq4wlw8iyx"))))
-    (build-system python-build-system)
+         "1ifgjb0d0bnnm78hv3mnl7hi233m7jamb2plma752djh83lv13q4"))))
+    (build-system pyproject-build-system)
     (arguments `(#:tests? #f))         ;disabled to avoid extra dependencies
     (propagated-inputs
      (list python-pyparsing python-six-bootstrap))
+    (native-inputs
+     (list python-flit-core))
     (home-page "https://github.com/pypa/packaging")
     (synopsis "Core utilities for Python packages")
     (description "Packaging is a Python module for dealing with Python packages.

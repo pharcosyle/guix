@@ -195,6 +195,8 @@ family of functions.")
        (sha256
         (base32 "0cgysij0dix0fikyz2x4f8jvaskm5s5a04s07chzaz2dw1fpxdq8"))))
     (build-system pyproject-build-system)
+    (arguments  ; disable flaky test
+     (list #:test-flags '(list "-k" "not test_integrate_variable[x23-i]")))
     (propagated-inputs (list python-makefun python-multipledispatch
                              python-numpy python-opt-einsum
                              python-typing-extensions))
@@ -4941,6 +4943,7 @@ Neural Networks for a wide range of applications related to structured data.")
               (sha256
                (base32
                 "0mqrhq3s23mn8n4i0q791pshn3dgplp0h9ny0pmmp798q0798dzs"))))
+    (arguments (list #:tests? #f))      ; no tests in PyPI archive.
     (build-system pyproject-build-system)
     (propagated-inputs (list python-click
                              python-fastapi-for-pytorch-lightning
@@ -5015,7 +5018,8 @@ Actions for the Lightning suite of libraries.")
                          python-parameterized
                          python-pytest
                          python-pytest-cov
-                         python-scikit-learn))
+                         python-scikit-learn
+                         python-setuptools))
     (home-page "https://captum.ai")
     (synopsis "Model interpretability for PyTorch")
     (description "Captum is a model interpretability and understanding library
@@ -5595,6 +5599,7 @@ inference.")
     (native-inputs (list python-flake8
                          python-flake8-print
                          python-pytest
+                         python-setuptools
                          python-setuptools-scm
                          python-twine))
     (home-page "https://github.com/cornellius-gp/linear_operator/")
@@ -5627,6 +5632,7 @@ linear algebra routines needed for structured matrices (or operators).")
                          python-flake8-print
                          python-nbval
                          python-pytest
+                         python-setuptools
                          python-twine))
     (home-page "https://gpytorch.ai")
     (synopsis "Implementation of Gaussian Processes in PyTorch")
