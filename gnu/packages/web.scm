@@ -290,14 +290,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.58")
+    (version "2.4.62")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1id45r2ccgkbjm9i998997ch32lvicpyynyx8x6aa4420wmdf5ps"))))
+               "1v19azi8kpzlyy9nrlbk1l4257l48sljslnvm0nxikj4pzkqhhb7"))))
     (build-system gnu-build-system)
     (native-inputs (list pcre2))       ;for 'pcre-config'
     (inputs (list apr apr-util libxcrypt openssl perl)) ; needed to run bin/apxs
@@ -329,14 +329,14 @@ and its related documentation.")
   (hidden-package
     (package
       (inherit httpd)
-      (version "2.4.58")
+      (version "2.4.62")
       (source (origin
                (method url-fetch)
                (uri (string-append "mirror://apache/httpd/httpd-"
                                    version ".tar.bz2"))
                (sha256
                 (base32
-                 "1id45r2ccgkbjm9i998997ch32lvicpyynyx8x6aa4420wmdf5ps")))))))
+                 "1v19azi8kpzlyy9nrlbk1l4257l48sljslnvm0nxikj4pzkqhhb7")))))))
 
 (define-public miniflux
   (package
