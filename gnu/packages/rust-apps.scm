@@ -2853,7 +2853,7 @@ support, watch support (like @command{top}) and a tree view.")
        #:cargo-development-inputs
        (("rust-pretty-assertions" ,rust-pretty-assertions-1)
         ("rust-serial-test" ,rust-serial-test-2))))
-    (native-inputs (list python-cython))
+    (native-inputs (list python-cython-3))
     (home-page "https://github.com/eqrion/cbindgen")
     (synopsis "Tool for generating C bindings to Rust code")
     (description
