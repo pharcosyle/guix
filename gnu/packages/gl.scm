@@ -356,7 +356,7 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
              ((or (target-ppc64le?) (target-ppc32?) (target-riscv64?))
               '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,svga,swrast,virgl,zink"))
              (else
-              '("-Dgallium-drivers=crocus,iris,nouveau,r300,r600,radeonsi,\
+              '("-Dgallium-drivers=crocus,nouveau,r300,r600,radeonsi,\
 svga,swrast,virgl,zink")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
@@ -375,7 +375,7 @@ svga,swrast,virgl,zink")))
          ;; Explicitly enable Vulkan on some architectures.
          #$@(cond
              ((or (target-x86-32?) (target-x86-64?))
-              '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast"))
+              '("-Dvulkan-drivers=amd,swrast"))
              ((or (target-ppc64le?) (target-ppc32?))
               '("-Dvulkan-drivers=amd,swrast"))
              ((target-aarch64?)
