@@ -90,6 +90,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages java)
   #:use-module (gnu packages llvm)
@@ -2040,20 +2041,40 @@ timestamps in the file header with a fixed time (1 January 2008).
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.9.2")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/libzip-" version ".tar.xz"))
               (sha256
                (base32
-                "0dsrpb1faywhm0j8akx21gp7cn99wpz3h543jw8r7p5jnx99hgn9"))))
-    (native-inputs
-     (list perl pkg-config))
-    (inputs
-     (list gnutls xz openssl zlib
-           `(,zstd "lib")))
+                "0603v55hywbxgifvhxhxfq7m80g77pwvrxk4d1i0kgcb9idqsg6w"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/nih-at/libzip/commit"
+                        "/c719428916b4d19e838f873b1a177b126a080d61.patch"))
+                  (file-name (string-append name
+                                            "-subtle-build-issue-fix.patch"))
+                  (sha256
+                   (base32
+                    "1hnd8m9p1b4b5yi04rp30yylcpvmvxf7mrwsdljsm94fcvds2p31")))))))
     (build-system cmake-build-system)
+    (native-inputs
+     (list groff-minimal
+           perl
+           pkg-config))
+    (inputs
+     (list gnutls))
+    (propagated-inputs
+     ;; These are all in the 'Libs.private' field of libzip.pc.
+     (list bzip2
+           openssl
+           xz
+           zlib
+           `(,zstd "lib")))
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
     (description "Libzip is a C library for reading, creating, and modifying
