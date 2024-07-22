@@ -1380,7 +1380,7 @@ Some codes examples can be find at:
                 (("/etc/dbus-1/system.d") "/tmp")))))))
     (native-inputs (list googletest pkg-config))
     (inputs (list expat))
-    (propagated-inputs (list elogind)) ;required by sdbus-c++.pc
+    (propagated-inputs (list basu)) ;required by sdbus-c++.pc
     (home-page "https://github.com/Kistler-Group/sdbus-cpp")
     (synopsis "High-level C++ D-Bus library")
     (description "@code{sdbus-c++} is a high-level C++ D-Bus library designed
