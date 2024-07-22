@@ -1081,18 +1081,21 @@ the form of functions.  It also provides the command @command{xpath}.")
 (define-public pugixml
   (package
     (name "pugixml")
-    (version "1.12.1")
+    (version "1.14")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/zeux/pugixml/releases/download/v"
-                          version "/pugixml-" version ".tar.gz"))
-      (sha256
-       (base32 "1ixg6fpr7vhkg9bn2g2qmmwpy974z7nx7zq81whm2h6c36lp3xnw"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zeux/pugixml/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17w1m27qmi75raaxxsjjns3q57yzp9ihqnk2qmlzq12ysnplj6y7"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
-       #:tests? #f))                    ; no tests
+     (list
+      #:configure-flags #~(list "-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      (list pkg-config))
     (home-page "https://pugixml.org")
