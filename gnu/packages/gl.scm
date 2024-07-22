@@ -280,7 +280,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "24.0.4")
+    (version "24.1.4")
     (source
      (origin
        (method url-fetch)
@@ -290,7 +290,7 @@ also known as DXTn or DXTC) for Mesa.")
                                  "mesa-" version ".tar.xz")))
        (sha256
         (base32
-         "1w25lwdrb0ffrx2fjk9izbvpcgf9ypfc7v32zybwvjwql0qbvzlh"))))
+         "1qdd6ycmflcckk33hbvsxbniwk35fsqd9hc9509d0fi6cpvcdxvw"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; The following are in the Requires.private field of gl.pc.
@@ -308,8 +308,10 @@ also known as DXTn or DXTC) for Mesa.")
            (list clang-18
                  llvm-18)
            (list llvm-for-mesa))
-       (list elfutils                   ;libelf required for r600 when using llvm
+       (list clang
+             elfutils                   ;libelf required for r600 when using llvm
              expat
+             libclc
              libva-minimal
              libxml2
              libxrandr
@@ -328,6 +330,7 @@ also known as DXTn or DXTC) for Mesa.")
             python-libxml2              ;for OpenGL ES 1.1 and 2.0 support
             python-mako
             python-packaging
+            python-ply
             python-wrapper
             (@ (gnu packages base) which))
       (if (target-aarch64?)
