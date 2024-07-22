@@ -367,9 +367,12 @@ routines such as routines for numerical integration and optimization.")
              (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (propagated-inputs
      (list python-dask
-           python-numpy))
+           python-numpy
+           python-click))
     (native-inputs
      (list python-cython
+           python-setuptools
+           python-wheel
            ;; The following are all needed for the tests
            htslib
            python-h5py
@@ -586,7 +589,7 @@ swarm algorithm.")
            python-scikit-learn
            python-scipy))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (home-page "https://scikit-optimize.github.io/")
     (synopsis "Sequential model-based optimization toolbox")
     (description "Scikit-Optimize, or @code{skopt}, is a simple and efficient
@@ -669,7 +672,8 @@ cross-validation.")
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests?
                         (invoke "tdda" "test")))))))
-    (native-inputs (list python-numpy python-pandas))
+    (native-inputs (list python-numpy python-pandas python-setuptools
+                         python-wheel))
     (home-page "https://www.stochasticsolutions.com")
     (synopsis "Test-driven data analysis library for Python")
     (description
@@ -831,7 +835,9 @@ spheres, cubes, etc.")
            python-cppheaderparser
            python-pytest
            python-pyyaml
-           python-setuptools-scm))
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (propagated-inputs (list python-numpy python-scipy))
     (home-page "https://github.com/pyamg/pyamg")
     (synopsis "Algebraic Multigrid Solvers in Python")
@@ -952,6 +958,8 @@ tissue-specificity metrics for gene expression.")
            python-pytest
            python-pytest-mock
            python-pytest-xdist
+           python-setuptools
+           python-wheel
            ;; Needed to test clipboard support.
            xorg-server-for-tests))
     (home-page "https://pandas.pydata.org")
@@ -1190,7 +1198,9 @@ a convention of suggesting best recommended practices for using
            python-numpy
            python-pytest
            python-pytest-cov
-           python-pytest-xdist))
+           python-pytest-xdist
+           python-setuptools
+           python-wheel))
     (home-page "https://nalepae.github.io/pandarallel/")
     (synopsis "Tool to parallelize Pandas operations across CPUs")
     (description
@@ -1337,6 +1347,8 @@ production-critical data pipelines or reproducible research settings.  With
                          ;; Optional imports. We do not propagate them due to
                          ;; their size.
                          python-numba ;speedup of joins
+                         python-setuptools
+                         python-wheel
                          rdkit)) ;chemistry submodule
     (home-page "https://github.com/pyjanitor-devs/pyjanitor")
     (synopsis "Tools for cleaning and transforming pandas DataFrames")
@@ -1421,7 +1433,8 @@ Python module with the same interface, but (hopefully) faster.")
            python-scikit-learn
            python-scipy))
     (native-inputs
-     (list python-pytest python-pytest-cov))
+     (list python-pytest python-pytest-cov python-setuptools
+           python-wheel))
     (home-page "https://github.com/johannfaouzi/pyts")
     (synopsis "Python package for time series classification")
     (description
@@ -1472,7 +1485,8 @@ written in C.")
                 "01g21v91f4d66xd0bvap0n6d6485w2fnq1636gx6h2s42550rlbd"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-importlib-metadata python-numpy))
-    (native-inputs (list python-pytest python-sympy))
+    (native-inputs (list python-pytest python-setuptools python-sympy
+                         python-wheel))
     (home-page "https://numpoly.readthedocs.io/en/master/")
     (synopsis "Polynomials as a numpy datatype")
     (description "Numpoly is a generic library for creating, manipulating and
@@ -1682,7 +1696,7 @@ multiple deep learning frameworks.")
              (string-append "not test_datetime_conversion_warning"
                             " and not test_timedelta_conversion_warning"))))
     (native-inputs
-     (list python-setuptools-scm python-pytest))
+     (list python-setuptools python-setuptools-scm python-pytest python-wheel))
     (propagated-inputs
      (list python-numpy python-packaging python-pandas))
     (home-page "https://github.com/pydata/xarray")
@@ -1849,7 +1863,9 @@ parentdir_prefix = pytensor-
     (native-inputs (list python-cython
                          python-pytest
                          python-pytest-mock
-                         python-versioneer))
+                         python-versioneer
+                         python-setuptools
+                         python-wheel))
     (propagated-inputs (list python-cons
                              python-etuples
                              python-filelock
@@ -1991,7 +2007,8 @@ annotations on an existing boxplots and barplots generated by seaborn.")
                              python-numpy
                              python-sympy))
     ;; Pint is optional, but we do not propagate it due to its size.
-    (native-inputs (list python-pint python-pytest python-setuptools-scm))
+    (native-inputs (list python-pint python-pytest python-setuptools-scm
+                         python-setuptools python-wheel))
     (home-page "https://unyt.readthedocs.io")
     (synopsis "Library for working with data that has physical units")
     (description
@@ -2709,7 +2726,9 @@ aggregated sum and more.")
                          python-pandas
                          python-pytest
                          python-pytest-cov
+                         python-setuptools
                          python-setuptools-scm
+                         python-wheel
                          tzdata-for-tests))
     (home-page "https://github.com/has2k1/plotnine")
     (synopsis "Grammar of Graphics for Python")
@@ -2813,7 +2832,9 @@ to do spectral analysis in Python.")
            python-pandas
            python-nose
            python-pytest
-           python-xarray))
+           python-setuptools
+           python-xarray
+           python-wheel))
     (home-page "https://github.com/jupyter-widgets/traittypes")
     (synopsis "Trait types for NumPy, SciPy and friends")
     (description "The goal of this package is to provide a reference
@@ -3087,7 +3108,7 @@ science including tools for accessing data sets in Python.")
                 "12i68jj9n1qj9phjnj6f0kmfhlsd3fqjlk9p6d4gs008azw5m8yn"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-numpy))
-    (native-inputs (list pybind11 python-pytest))
+    (native-inputs (list pybind11 python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/nschloe/pyfma")
     (synopsis "Fused multiply-add for Python")
     (description "@code{pyfma} provides an implementation of fused
@@ -3131,7 +3152,7 @@ functions, convolutions, artificial neural networks etc.")
                     " and not TestDatasetOverlayArray"
                     " and not TestReader"
                     " and not test_filewriter.py"))))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-flit-core))
     (inputs (list gdcm libjpeg-turbo))
     (propagated-inputs (list python-numpy python-pillow))
     (home-page "https://github.com/pydicom/pydicom")
@@ -3177,7 +3198,7 @@ data.")
 import six
 ")))))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pandas))
+    (native-inputs (list python-pandas python-setuptools python-wheel))
     (propagated-inputs (list python-numpy python-scipy python-six
                              python-tables))
     (home-page "https://github.com/uchicago-cs/deepdish")
@@ -3403,7 +3424,8 @@ NeuroML2 models.")
                     " and not test_pr_level_patient"
                     " and not test_pr_level_series"
                     " and not test_scp_cancelled"))))
-    (native-inputs (list python-pyfakefs python-pytest))
+    (native-inputs (list python-pyfakefs python-pytest python-setuptools
+                         python-wheel))
     (propagated-inputs (list python-pydicom python-sqlalchemy))
     (home-page "https://github.com/pydicom/pynetdicom")
     (synopsis "Python implementation of the DICOM networking protocol")
@@ -3454,7 +3476,8 @@ and from numpy arrays.")
                 "0mrm4rd6x1sm6hkvhk20mkqp9q53sl3lbvq6hqzyymkw1iqq6bhy"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-lxml python-six))
-    (native-inputs (list python-pytest python-numpy python-tables))
+    (native-inputs (list python-pytest python-numpy python-tables
+                         python-setuptools python-wheel))
     (home-page "https://libneuroml.readthedocs.org/en/latest/")
     (synopsis
      "Python library for working with NeuroML descriptions of neuronal models")

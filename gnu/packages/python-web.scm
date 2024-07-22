@@ -212,11 +212,13 @@
            python-pytest-rerunfailures
            python-pytest-vcr
            python-pytest-xdist
+           python-setuptools
            python-types-requests
            python-types-toml
            python-types-urllib3
            python-typing-extensions
-           python-urllib3))
+           python-urllib3
+           python-wheel))
     (home-page "https://github.com/huggingface/huggingface_hub")
     (synopsis "Client library for accessing the huggingface.co hub")
     (description
@@ -320,7 +322,9 @@ reusable library for parsing, manipulating, and generating URIs.")
                          python-pytest-checkdocs
                          python-pytest-cov
                          python-pytest-enabler
-                         python-pytest-mypy))
+                         python-pytest-mypy
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/jaraco/portend")
     (synopsis "Monitor TCP ports for bound or unbound states")
     (description
@@ -434,7 +438,8 @@ by calling @code{FrozenList.freeze}.")
     (build-system pyproject-build-system)
     (arguments (list #:test-flags #~(list "tests")))
     (propagated-inputs (list python-frozenlist))
-    (native-inputs (list python-pytest python-pytest-asyncio python-pytest-cov))
+    (native-inputs (list python-pytest python-pytest-asyncio python-pytest-cov
+                         python-setuptools python-wheel))
     (home-page "https://github.com/aio-libs/aiosignal")
     (synopsis "Callback manager for Python @code{asyncio} projects")
     (description "This Python module provides @code{Signal}, an abstraction to
@@ -620,7 +625,7 @@ using @url{https://github.com/saghul/pycares,pycares}.")
                (base32
                 "1xbfa4gmlmyj6bihdl5p4mr7nd6z79rfi92wcqkmcy4f643frivr"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (inputs (list openssl))
     (propagated-inputs
      (list python-certifi python-pylsqpack python-pyopenssl))
@@ -755,7 +760,9 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
                          python-httpx
                          python-pytest
                          python-pytest-asyncio
-                         python-starlette))
+                         python-starlette
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/simonw/asgi-csrf")
     (synopsis "ASGI middleware for protecting against CSRF attacks")
     (description "This Asynchronous Server Gateway Interface (ASGI)
@@ -796,7 +803,9 @@ that is then compared to a @code{csrftoken} hidden form field or a
     (native-inputs (list python-pytest
                          python-pytest-asyncio
                          python-pytest-trio
-                         python-starlette))
+                         python-starlette
+                         python-setuptools
+                         python-wheel))
     (propagated-inputs (list python-sniffio))
     (home-page "https://github.com/florimondmanca/asgi-lifespan")
     (synopsis "Programmatic startup/shutdown of ASGI apps")
@@ -942,7 +951,9 @@ Model} (SAM) templates into AWS CloudFormation templates.")
            python-pytest-benchmark
            python-requests
            python-sqlalchemy
-           python-webtest))
+           python-webtest
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-aiohttp
            python-botocore
@@ -1279,7 +1290,9 @@ over a different origin than that of the web application.")
            python-pytest-randomly
            python-pytest-timeout
            python-pytest-xdist
-           python-six))
+           python-six
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/httplib2/httplib2")
     (synopsis "Comprehensive HTTP client library")
     (description
@@ -1495,6 +1508,7 @@ content using a variety of algorithms.")
                 "138bh6x1yy0qpk63bxa7mxnd97gfdm1fkpwm8wrdz3g3z0fca79c"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-cryptography python-deprecated))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/latchset/jwcrypto")
     (synopsis "Implementation of JOSE Web standards")
     (description
@@ -1517,7 +1531,7 @@ Encryption} (JOSE) Web Standards.")
         (base32 "1vinddg8sbh3v9n1r1wmvjx6ydk8xp7scbvhb3csl4y9xz7vhk6g"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-pytest-cov))
+     (list python-pytest python-pytest-cov python-setuptools python-wheel))
     (inputs
      (list pcre))
     (home-page "https://github.com/Kronuz/pyScss")
@@ -1675,7 +1689,7 @@ for use in Python programs that implement HTTP/2.")
         (base32 "17b97c56y31hi0n0x0cb5a87x4xr9jijf2y06pzj0977k6zgn6cg"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/python-hyper/h11")
     (synopsis "Pure-Python, bring-your-own-I/O implementation of HTTP/1.1")
     (description
@@ -1950,7 +1964,7 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
                 "1acd1a4f66gi4plqnsml7cf33qp83mxsnmnqpdwkpj7597xkvyl4"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-setuptools-scm))
+     (list python-setuptools python-setuptools-scm python-wheel))
     (home-page "https://github.com/sanic-org/html5tagger")
     (synopsis "Create HTML documents from Python")
     (description
@@ -2036,7 +2050,9 @@ Amazon S3 compatible object storage server.")
            python-flaky
            python-nose
            python-pytest
-           python-pytest-xdist))
+           python-pytest-xdist
+           python-setuptools
+           python-wheel))
     (inputs
      (list curl gnutls))
     (home-page "http://pycurl.io/")
@@ -2131,7 +2147,9 @@ is Python’s.")
            python-pytest-socket
            python-requests-mock
            python-setuptools-scm
-           python-tox))
+           python-tox
+           python-setuptools
+           python-wheel))
     (home-page "https://omnipathdb.org/")
     (synopsis "Python client for the OmniPath web service")
     (description "This package provides a Python client for the OmniPath web
@@ -2161,7 +2179,7 @@ service.")
     (propagated-inputs (list python-aiohttp python-requests python-tqdm
                              python-typing-extensions))
     (native-inputs (list python-black python-pytest python-pytest-asyncio
-                         python-pytest-mock))
+                         python-pytest-mock python-setuptools python-wheel))
     (home-page "https://github.com/openai/openai-python")
     (synopsis "Python client library for the OpenAI API")
     (description "This package provides a Python client library for the
@@ -2366,7 +2384,7 @@ for clients and servers.")
                                      "and not encutils "
                                      "and not website.logging")))))))
     (native-inputs
-     (list python-pytest python-jaraco-test))
+     (list python-pytest python-jaraco-test python-setuptools python-wheel))
     (home-page "https://github.com/jaraco/cssutils")
     (synopsis
       "CSS Cascading Style Sheets library for Python")
@@ -2414,7 +2432,7 @@ cssutils not receiving updates as of 1.0.2.")
                 "1x4nrvb1p1byi1whmspik7lbh303akdlh762dayfxam3hycsh5kk"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-lxml python-pytest))
+     (list python-lxml python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/scrapy/cssselect")
     (synopsis "CSS3 selector parser and translator to XPath 1.0")
     (description
@@ -2544,7 +2562,7 @@ set out in RFC 7540 Section 5.3 (Stream Priority).")
         (base32 "0rahm1j9danv1l6i6as80acwv16ycihxkhrvwjiqh9drxhk5ymmd"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list python-h11))
     (home-page "https://github.com/python-hyper/wsproto/")
@@ -3692,7 +3710,8 @@ than Python’s urllib2 library.")
      (propagated-inputs (list python-cryptography
                               python-pyspnego
                               python-requests))
-    (native-inputs (list python-pytest python-pytest-mock))
+    (native-inputs (list python-pytest python-pytest-mock python-setuptools
+                         python-wheel))
     (home-page "https://github.com/requests/requests-kerberos")
     (synopsis "Kerberos authentication handler for python-requests")
     (description "This package provides a Kerberos authentication handler for
@@ -4288,7 +4307,7 @@ presume or force a developer to use a particular tool or library.")
                 "178jzz6jxlxllcjqamzh5q7ahfh90m5cl1il9vmjs3xhz65z35pf"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-brotli python-flask))
-    (native-inputs (list python-setuptools-scm))
+    (native-inputs (list python-setuptools-scm python-setuptools python-wheel))
     (home-page "https://github.com/colour-science/flask-compress")
     (synopsis "Compress responses in a Flask app")
     (description
@@ -4311,6 +4330,7 @@ headers required for a compressed response and compresses the response data.")
     (arguments
      (list #:tests? #false)) ;there are none
     (propagated-inputs (list python-flask))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/maxcountryman/flask-seasurf/")
     (synopsis "CSRF extension for Flask")
     (description "SeaSurf is a Flask extension for preventing cross-site
@@ -4742,7 +4762,7 @@ transfers.")
                             "flask_jwt/__init__.py")
                (("access_token.decode\\('utf-8'\\)") "access_token")))))))
     (propagated-inputs (list python-flask python-pyjwt))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/mattupstate/flask-jwt")
     (synopsis "JWT token authentication for Flask apps")
     (description "This package implements JWT token authentication for Flask
@@ -4769,7 +4789,9 @@ apps.")
     (native-inputs
      (list python-blinker
            python-mock
-           python-pytest))
+           python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://www.github.com/flask-restful/flask-restful/")
     (synopsis "Flask module for creating REST APIs")
     (description
@@ -5435,9 +5457,9 @@ package from WTForms.  The package has been renamed to
            (delete-file "tests/test_proxy.py") #t))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-nose))
+     (list python-pytest python-wheel))
     (propagated-inputs
-     (list python-six))
+     (list python-six python-setuptools))
     (home-page "https://pythonpaste.readthedocs.io/")
     (synopsis
      "Python web development tools, focusing on WSGI")
@@ -5585,7 +5607,7 @@ for URL parsing and changing.")
                 "1vbd3ndhmxi8scxgxs6sc7r0rdaliqd80384n06nyb3haqz25inm"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-arrow python-pytz python-requests))
-    (native-inputs (list python-requests-mock))
+    (native-inputs (list python-requests-mock python-setuptools python-wheel))
     (home-page "https://github.com/ucfopen/canvasapi")
     (synopsis "API wrapper for the Canvas LMS")
     (description
@@ -5710,6 +5732,7 @@ with oauthlib.")
            python-stem
            python-validators
            python-waitress))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/benbusby/whoogle-search")
     (synopsis "Self-hosted, ad-free, privacy-respecting metasearch engine")
     (description
@@ -5807,7 +5830,7 @@ ecosystem.")
                    ;; Pretend to be a CI system to skip flaky tests.
                    (setenv "CI" "true"))))))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list python-idna))
     (home-page "https://github.com/python-hyper/hyperlink")
@@ -6588,7 +6611,9 @@ and serve updated contents upon changes to the directory.")
            python-pytest-httpbin
            python-pytest-trio
            python-uvicorn
-           python-trustme))
+           python-setuptools
+           python-trustme
+           python-wheel))
     (propagated-inputs
      (list python-anyio
            python-certifi
@@ -6622,7 +6647,7 @@ Some things HTTP Core does do:
    (package/inherit python-httpcore
      (name "python-httpcore-bootstrap")
      (arguments (list #:tests? #f))
-     (native-inputs '()))))
+     (native-inputs (list python-setuptools python-wheel)))))
 
 (define-public python-httpx
   (package
@@ -6666,7 +6691,9 @@ Some things HTTP Core does do:
            python-trio
            python-trio-typing
            python-trustme
-           python-uvicorn))
+           python-uvicorn
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-charset-normalizer
            python-brotli
@@ -6898,7 +6925,7 @@ major web browsers.")
                                 "/include/rapidjson" "'"))
                 (("if not os.path.isdir.*") "if False:")))))))
     (native-inputs
-     (list rapidjson python-pytest python-pytz))
+     (list rapidjson python-pytest python-pytz python-setuptools python-wheel))
     (home-page "https://github.com/python-rapidjson/python-rapidjson")
     (synopsis "Python wrapper around rapidjson")
     (description "This package provides a python wrapper around rapidjson.")
@@ -7695,6 +7722,7 @@ as a Python package.")
      ;; PyPi sources does not contain tests, recursive dependency on
      ;; python-sanic.
      (list #:tests? #f))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/sanic-org/sanic-routing/")
     (synopsis "Routing component for Sanic")
     (description "Internal package for @code{python-sanic}, which provides
@@ -7717,6 +7745,7 @@ the @code{BasicRouter}.")
      ;; python-sanic.
      (list #:tests? #f))
     (propagated-inputs (list python-httpx python-sanic-bootstrap))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/sanic-org/sanic-testing/")
     (synopsis "Test clients for Sanic")
     (description "Internal package for @code{python-sanic}, which is
@@ -7813,7 +7842,7 @@ fast.  It allows the usage of the @code{async/await} syntax added in Python
      (inherit python-sanic)
      (name "python-sanic-bootstrap")
      (arguments (list #:tests? #f))
-     (native-inputs '())))
+     (native-inputs (list python-setuptools python-wheel))))
 
 (define-public python-socketio
   (package
@@ -8407,7 +8436,7 @@ GCS, Azure Blob Storage, gzip, bz2, etc.)")
          "1cd4b3w5g3pfccsg79kjj27fwi216ip927rjq7isp8pfjzlp8nzd"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/scrapy/w3lib")
     (synopsis "Python library of web-related functions")
     (description
@@ -8704,7 +8733,7 @@ by asyncio.")
             python-typing-extensions
             python-w3lib))
     (native-inputs
-      (list python-psutil python-pytest))
+      (list python-psutil python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/scrapy/parsel")
     (synopsis "Extract data from HTML and XML using XPath and CSS selectors")
     (description "Parsel is a library to extract and remove data from
@@ -9501,7 +9530,8 @@ hardware on Grid'5000 or via OpenStack, to Vagrant, Chameleon, and more.")
                             ;; Integration tests depend on docker.
                             (delete-file-recursively "tests/integration"))))))
     (propagated-inputs (list python-requests))
-    (native-inputs (list python-pytest python-pyyaml python-setuptools-scm))
+    (native-inputs (list python-pytest python-pyyaml python-setuptools
+                         python-setuptools-scm python-wheel))
     (home-page "https://github.com/netbox-community/pynetbox")
     (synopsis "NetBox API client library")
     (description "Python module to query and edit data stored in a

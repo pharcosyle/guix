@@ -482,7 +482,8 @@ similar XML files, in the same way the @command{diff} utility does it.")
         (base32 "04hnrdcf03g1s0x3sr72sh9gnszz6kyfsl9dg8a4n0zvvhn6z5yz"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-pytest-cov python-pytest-asyncio))
+     (list python-pytest python-pytest-cov python-pytest-asyncio
+           python-setuptools python-wheel))
     (propagated-inputs (list python-typing-extensions))
     (home-page "https://github.com/aio-libs/janus/")
     (synopsis
@@ -945,6 +946,7 @@ and variables you'll need already imported and created.
              (substitute* "setup.py"
                ((".\\*\"") "\"")))))))
     (propagated-inputs (list python-numpy python-scipy))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/joachimwolff/fit_nbinom")
     (synopsis "Negative binomial maximum likelihood estimator")
     (description "This package provides an implementation in Python using
@@ -963,7 +965,8 @@ scipy and numpy of negative binomial maximum likelihood estimation.")
                 "0523jrzjj29kxpdllmfhrfj9kysi9mphp2m7ippjkn5b07i1g2pd"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-six))
-    (native-inputs (list python-pytest python-pytest-runner))
+    (native-inputs (list python-pytest python-pytest-runner
+                         python-setuptools python-wheel))
     (home-page "https://github.com/Chilipp/docrep")
     (synopsis "Python package for docstring repetition")
     (description "Docrep is the documentation repetition module.  This module
@@ -1001,7 +1004,7 @@ dictionary, can be convert to a dictionary, and is ordered by insertion.")
                (base32
                 "058sah2nyg44xq5wxywlzc3abzcv9fifnlvsflwma9mfp01nw0ab"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-poetry-core))
+    (native-inputs (list python-poetry-core python-setuptools))
     (home-page "https://github.com/pawelzny/dotty_dict")
     (synopsis "Python library for accessing dictionaries using a dot syntax")
     (description "This package provides a library that wraps the traditional
@@ -1041,6 +1044,7 @@ features of the Python's built-in dict.")
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;there are none
     (propagated-inputs (list python-matplotlib python-numpy))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/Phlya/adjustText")
     (synopsis "Adjust text position in matplotlib plots to minimize overlaps")
     (description
@@ -1202,6 +1206,7 @@ HoloViews, and Datashader.")
                 "196ins0m7f90xz5dw764dlx060ziqbcydqzzq40b4ir5858baf3r"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;the tests are not run automatically
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://gitlab.com/dslackw/colored")
     (synopsis "Simple library for color and formatting to terminal")
     (description "This is a very simple Python library for color and
@@ -1224,7 +1229,8 @@ names for 256 color terminal setups.")
         (base32 "0kyy9qhvrb5m9h8xmri7c88i0k1g5qc7017anw39gx44an7mn33y"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-coverage python-flake8 python-pytest))
+     (list python-coverage python-flake8 python-pytest python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-colorama))
     (home-page "http://github.com/timofurrer/colorful")
@@ -1634,7 +1640,8 @@ Specification v2.0 (PEP 249).")
                (base32
                 "0gxkw607nrd67ck4w8jri9vfrm5g60qvp8b134m8zkiphbxjnx0l"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest python-jinja2 python-pygments))
+    (native-inputs (list python-pytest python-jinja2 python-pygments
+                         python-setuptools python-wheel))
     (arguments
      (list
       ;; Some tests fail, presumably because of slight version mismatches of
@@ -1716,7 +1723,7 @@ Markdown.  All extensions are found under the module namespace of pymdownx.")
     (native-inputs
      (list python-pytest python-pytest-benchmark python-pytest-cov
            python-pytest-mpl python-pytest-subtests
-           python-setuptools-scm))
+           python-setuptools python-setuptools-scm python-wheel))
     (propagated-inputs
      (list python-typing-extensions
            python-uncertainties))
@@ -1741,6 +1748,7 @@ different units.")
                 "1gpy1z2i4vq1mcrhysxahz4339pbl9rzk58rf5m5gf5ym9xji6ii"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;there are none
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/piccolomo/plotext")
     (synopsis "Plots in the terminal")
     (description "Plotext lets you plot directly to the terminal.")
@@ -1782,7 +1790,8 @@ scatter plots, histograms and heatmaps in the terminal using braille dots.")
       ;; This fails because portserver ends up in bin, not site-packages
       '(list "--ignore=src/tests/portserver_test.py")))
     (propagated-inputs (list python-psutil))
-    (native-inputs (list python-pytest net-tools))
+    (native-inputs (list python-pytest python-setuptools python-wheel
+                         net-tools))
     (home-page "https://github.com/google/python_portpicker")
     (synopsis "Choose unique available network ports")
     (description
@@ -1895,6 +1904,8 @@ generator MkDocs.")
            python-matplotlib
            python-pandas
            python-poetry-core
+           python-setuptools
+           python-wheel
            python-pytest))
     (home-page "https://github.com/crflynn/skranger")
     (synopsis "Python bindings for C++ ranger random forests")
@@ -2062,7 +2073,7 @@ threads.")
     (build-system pyproject-build-system)
     (native-inputs
      (list python-setuptools-scm python-tornado-6 python-typeguard
-           python-pytest))
+           python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/jd/tenacity")
     (synopsis "Retrying library for python")
     (description "Tenacity is a general-purpose python library to simplify the
@@ -2169,6 +2180,7 @@ of a loop structure or other iterative computation.")
            python-requests
            python-shellescape
            python-webcolors))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/phseiff/github-flavored-markdown-to-html/")
     (synopsis "Github-flavored Markdown")
     (description
@@ -2219,9 +2231,8 @@ Python library and command line interface.")
               ;; which is patched above.
               (delete-file "tests/test_config.py"))))))
     (native-inputs
-     (list python-pytest
-           python-pytest-xdist
-           python-scikit-image))
+     (list python-pytest python-pytest-xdist
+           python-scikit-image python-setuptools python-wheel))
     (inputs
      (list openjpeg  ; glymur/lib/openjp2.py
            libtiff)) ; glymur/lib/tiff.py
@@ -2512,7 +2523,7 @@ utilities such as ping(1).")
                              python-click-plugins
                              python-cligj
                              python-numpy
-                             python-setuptools
+                             python-setuptools ; For pkg_resources.
                              python-snuggs))
     (native-inputs (list gdal
                          python-boto3
@@ -2521,7 +2532,8 @@ utilities such as ping(1).")
                          python-packaging
                          python-pytest
                          python-pytest-cov
-                         python-shapely))
+                         python-shapely
+                         python-wheel))
     (home-page "https://github.com/rasterio/rasterio")
     (synopsis "Fast and direct raster I/O for use with Numpy and SciPy")
     (description "This package implements fast and direct raster I/O for use
@@ -2548,7 +2560,7 @@ with Numpy and SciPy.")
              ;; Cython extensions have to be built before running the tests.
              (invoke "python" "setup.py" "build_ext" "--inplace"))))))
     (native-inputs
-     (list python-cython python-matplotlib python-pytest))
+     (list python-cython python-matplotlib python-pytest python-setuptools python-wheel))
     (inputs
      (list geos))
     (propagated-inputs
@@ -2834,7 +2846,9 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
     (native-inputs
      (list python-netcdf4
            python-pytest
-           python-setuptools-scm))
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (propagated-inputs
      (list python-h5py python-packaging))
     (home-page "https://h5netcdf.org")
@@ -2889,7 +2903,7 @@ concepts.")
         (base32 "11pgxsqap9l7jsf52649q9mpj8a0w6p9im929lpr9s26ynnnn6ks"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-h5py python-numpy))
-    (native-inputs (list python-nose))
+    (native-inputs (list python-nose python-setuptools python-wheel))
     (home-page "https://github.com/frejanordsiek/hdf5storage")
     (synopsis "Read and write Python data types from and to HDF5 files")
     (description
@@ -2919,6 +2933,7 @@ untrusted sources, pickling is avoided in this package.")
                  (base32
                   "1qfqnhvfx5mm7bdajjnnagmvns1zxyksjzh3k5la2ag6a8bp5gki"))))
       (build-system pyproject-build-system)
+      (native-inputs (list python-setuptools python-wheel))
       (home-page "https://github.com/hjson/hjson-py")
       (synopsis "Python package to parse HJSON documents")
       (description "This package provides a Python library and a command-line
@@ -3011,7 +3026,7 @@ Unicode-to-LaTeX conversion.")
      (list python-black python-lsp-server python-tomli))
     (native-inputs
      (list python-flake8 python-isort python-mypy python-pytest
-           python-pytest-runner))
+           python-pytest-runner python-setuptools python-wheel))
     (home-page "https://github.com/rupert/pyls-black")
     (synopsis "Black plugin for the Python Language Server")
     (description "Black plugin for the Python Language Server.")
@@ -3176,7 +3191,7 @@ and lookups.")
         (base32 "0lvshl2fhwa568d3y3vmx45hdp8gk5w9yl3b2q5d66r5vqn1sfwl"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-setuptools-scm python-pytest))
+     (list python-setuptools-scm python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list python-boolean.py))
     (home-page "https://github.com/nexB/license-expression")
@@ -3212,7 +3227,7 @@ conventions and aliases in the same expression.")
                 (("os\\.environ\\.get\\('WAND_MAGICK_LIBRARY_SUFFIX'\\)")
                  "\".Q16\"")))))))
     (native-inputs
-     (list python-pytest))
+     (list python-setuptools python-pytest python-wheel))
     (inputs
      (list imagemagick))
     (home-page "https://docs.wand-py.org/")
@@ -3298,7 +3313,8 @@ inter-process communication.")
         (base32
          "058av1r760ws7z6qffsjpqa39fmdxw0s1wnyr7p50y3zclg6cyqk"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest python-setuptools-scm))
+    (native-inputs (list python-pytest python-setuptools-scm
+                         python-setuptools python-wheel))
     (home-page "https://github.com/tox-dev/py-filelock")
     (synopsis "Platform independent file lock")
     (description "@code{filelock} contains a single module implementing
@@ -3559,7 +3575,8 @@ class.")
          ;; These tests fail with "OSError: [Errno 19] No such device".
          "-k" "not BasicTestUdpMulticastBusIPv")))
     (propagated-inputs
-     (list python-msgpack python-typing-extensions python-wrapt))
+     (list python-msgpack python-typing-extensions python-wrapt
+           python-setuptools))
     (native-inputs
      (list ;; python-canalystii ; Not packed yet
            python-codecov
@@ -3572,7 +3589,8 @@ class.")
            python-pytest
            python-pytest-cov
            python-pytest-runner
-           python-pytest-timeout))
+           python-pytest-timeout
+           python-wheel))
     (home-page "https://github.com/hardbyte/python-can")
     (synopsis "Controller Area Network (CAN) interface module for Python")
     (description "This package defines the @code{can} module, which provides
@@ -3707,6 +3725,7 @@ a library.")
         (base32 "1920wbh2b7a8qn7zx2iiqbcdaax335l81a73x9pp8h11yzs2jdmh"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false))  ;There are none
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/gvalkov/optparse-pretty")
     (synopsis "Compact help formatter for optparse")
     (description
@@ -3917,6 +3936,7 @@ for additional processing.")
                         ;; XXX: Fails with: "In procedure utime: No such file
                         ;; or directory".
                         (delete 'ensure-no-mtimes-pre-1980))))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/fastai/fastprogress")
     (synopsis "Progress bar for Jupyter Notebook and console")
     (description
@@ -4150,6 +4170,8 @@ of @code{xmlfile}.")
            python-pytest
            python-pytest-rerunfailures
            python-pytest-xdist
+           python-setuptools
+           python-wheel
            unzip
            (origin
              (method url-fetch)
@@ -4179,7 +4201,11 @@ server.")
        (sha256
         (base32 "0f8ym32vdn8wyziiy5bz8iiwvgj7dlccy86wkfcn5syqgivgqnv9"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-lxml python-pillow python-pytest))
+    (native-inputs (list python-lxml
+                         python-pillow
+                         python-pytest
+                         python-setuptools
+                         python-wheel))
     (propagated-inputs (list python-et-xmlfile python-jdcal))
     (home-page "https://openpyxl.readthedocs.io")
     (synopsis "Python library to read/write Excel 2010 XLSX/XLSM files")
@@ -4512,7 +4538,9 @@ Python.")
            python-pytest-subtests
            python-responses
            python-tox
-           python-types-requests))
+           python-types-requests
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/omni-us/jsonargparse/")
     (synopsis "Implement minimal boilerplate CLIs derived from type hints")
     (description
@@ -4741,7 +4769,7 @@ commands.")
                (base32
                 "1a4h0jpsr3wjciqg9a5kslxv65d3qqgmqgkpai4cl77wlpcxfk89"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://jiffyclub.github.io/palettable/")
     (synopsis "Color palettes for Python")
     (description "Palettable (formerly brewer2mpl) is a library of color
@@ -4822,7 +4850,8 @@ syntax.")
                            (string-append "not test_sending_empty_netstring"
                             " and not test_sending_one_netstring"
                             " and not test_sending_two_netstrings"))))
-    (native-inputs (list python-pytest python-twisted))
+    (native-inputs (list python-pytest python-twisted python-setuptools
+                         python-wheel))
     (home-page "https://launchpad.net/parsley")
     (synopsis "Parsing and pattern matching Python library")
     (description
@@ -4973,7 +5002,9 @@ PDF, PNG, EPS and SVG).")
                          python-pytest-cov
                          python-pytest-mypy
                          python-pytest-timeout
-                         python-redis))
+                         python-redis
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/WoLpH/portalocker")
     (synopsis "Python library for file locking")
     (description "Portalocker is a library to provide an easy API to file
@@ -5063,7 +5094,9 @@ and is not compatible with JSON.")
           python-pytest
           python-pytest-astropy
           python-pytest-cov
-          python-setuptools-scm))
+          python-setuptools-scm
+          python-setuptools
+          python-wheel))
   (home-page "https://extension-helpers.readthedocs.io")
   (synopsis "Astropy ecosystem utilities for building and installing packages")
   (description
@@ -5558,12 +5591,14 @@ clickgen is using @code{anicursorgen} and @code{xcursorgen} under the hood.")
            python-orjson
            python-pandas
            python-pytz
+           python-setuptools ; For pkg_resources.
            python-sqlalchemy
            python-urllib3
            python-zstandard))
     (native-inputs
      (list python-cython
-           python-pytest))
+           python-pytest
+           python-wheel))
     (home-page "https://github.com/ClickHouse/clickhouse-connect")
     (synopsis
      "ClickHouse database core driver for Python, Pandas, and Superset")
@@ -5608,7 +5643,7 @@ well-tested and interoperable CLIs for handling GeoJSON.")
                 "05c6cjpnf9s72gyn5dckxbmd8rf2kgdzfsl7pqzrnc1lcdl13zmv"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-click))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/janLuke/cloup")
     (synopsis "Extension library for python-click")
     (description
@@ -5700,7 +5735,9 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
            python-coveralls
            python-pytest
            python-pytest-cov
-           python-tox))
+           python-setuptools
+           python-tox
+           python-wheel))
     (propagated-inputs (list python-pyparsing))
     (home-page "https://github.com/shinichi-takii/ddlparse")
     (synopsis "Parses and converts DDL to BigQuery JSON schema")
@@ -5736,7 +5773,8 @@ and convert DDL to BigQuery JSON schema.")
               (when tests?
                 (setenv "JSON_SCHEMA_TEST_SUITE" "json")
                 (invoke "trial" "jsonschema")))))))
-    (native-inputs (list python-setuptools-scm python-twisted))
+    (native-inputs (list python-setuptools-scm python-twisted
+                         python-setuptools python-wheel))
     (propagated-inputs
      (list python-attrs
            python-importlib-metadata
@@ -5939,7 +5977,9 @@ memory usage and transliteration quality.")
            python-cryptography
            python-pytest
            python-sphinx
-           python-sphinx-rtd-theme))
+           python-sphinx-rtd-theme
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/progrium/pyjwt")
     (synopsis "JSON Web Token implementation in Python")
     (description
@@ -6084,7 +6124,7 @@ provides Python-specific tags that represent an arbitrary Python object.")
         (base32 "1q31krwxdvwawdn1kfqmpplix31d4jhs0qng26908hawsf0yjqlb"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-case))
+     (list python-pytest python-case python-setuptools python-wheel))
     (home-page "https://github.com/celery/vine")
     (synopsis "Promises for Python")
     (description
@@ -6186,7 +6226,7 @@ work on your part.")
                (base32
                 "17f55gi55rg47nm88fn3f8851ph03dgykdp011lxr3j6hk18lyfv"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/tsutsu3/uc.micro-py")
     (synopsis "Unicode data files for linkify-it-py projects")
     (description "This package contains a micro subset of Unicode data files
@@ -6208,7 +6248,7 @@ for linkify-it-py projects.")
                 "0fg0a1lc8xbb62y9krxcp708ll58dxcwm8i7rrwpkd5sh2229f6x"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-uc-micro-py))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/tsutsu3/linkify-it-py")
     (synopsis "Links recognition library with full Unicode support")
     (description "This is Python port of
@@ -6233,7 +6273,7 @@ recognition library with full Unicode support.  It has features like:
                 "19a8dga8rnmjn5gy1cy1wdi28swbkdkypwbqikbxil6ynqcg3c20"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-setuptools-scm))
+     (list python-pytest python-setuptools python-setuptools-scm python-wheel))
     (home-page "https://github.com/smarie/python-makefun")
     (synopsis "Library to dynamically create python functions")
     (description "@code{makefun} helps create functions dynamically with a
@@ -6304,7 +6344,7 @@ for Python.")
        (sha256
         (base32 "0lp86yadzf8dph67f6g3yxmvnhrzzi863z58jmsrx2j059q1ld9i"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (propagated-inputs (list python-markupsafe))
     (home-page "https://jinja.palletsprojects.com/")
     (synopsis "Python template engine")
@@ -6511,7 +6551,7 @@ bookmarks using a declarative input in the form of a markdown file.")
      (list
       #:test-flags  ; disabled to avoid having to depend on ipython/jupyter
       #~(list "-k" "not test_parallel_call_cached_function_defined_in_jupyter")))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (propagated-inputs (list python-psutil))
     (home-page "https://joblib.readthedocs.io/")
     (synopsis "Using Python functions as pipeline jobs")
@@ -6912,7 +6952,9 @@ via commands such as @command{rst2man}, as well as supporting Python code.")
            python-flake8
            python-mock
            python-pyparsing
-           python-pytest))
+           python-pytest
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-lxml))
     (home-page "https://github.com/python-openxml/python-docx/")
@@ -7105,6 +7147,7 @@ working with Valve's VDF text format.")
                (base32
                 "1qm4xdmzd4q5pc9h5gjdpr5m7lg06k8dvqnjn7d07d3fhani8d90"))))
     (build-system pyproject-build-system)
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/mina86/pygtrie")
     (synopsis "Pure Python trie data structure implementation")
     (description
@@ -7170,7 +7213,7 @@ software version simply.")
     (propagated-inputs
      (list python-wrapt))
     (native-inputs
-     (list python-bumpversion python-pytest))
+     (list python-bumpversion python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/tantale/deprecated")
     (synopsis "Python decorator to deprecate classes, functions or methods")
     (description "The @code{deprecated} decorator provides a convenient way to deprecate
@@ -8777,7 +8820,7 @@ color scales, and color space conversion easy.  It has support for:
                 "1ps34laa0kvvp33az173hp5l0hnk8cr0bfqmlgw64ry5cv09qjg0"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-pytest-mock))
+     (list python-pytest python-pytest-mock python-setuptools python-wheel))
     (propagated-inputs
      (list python-cryptography python-gssapi python-krb5 python-ruamel.yaml))
     (home-page "https://github.com/jborean93/pyspnego")
@@ -8800,7 +8843,7 @@ readable format.")
         (base32 "1v34xdvh6i5cn5srwicvp0i2kvv8fzsv0v9p72ng081nsczmhgvr"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-cffi libgit2))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/libgit2/pygit2")
     (synopsis "Python bindings for libgit2")
     (description "Pygit2 is a set of Python bindings to the libgit2 shared library.")
@@ -9013,7 +9056,9 @@ semantic version parser for Node.js.")
                (base32
                 "1r1lcq59v6l75wkbp7mypanr69a6fv6m58v6dw3v6b4vwz5nqg0z"))))
     (build-system pyproject-build-system)
-    (propagated-inputs (list python-appdirs python-nose python-pyyaml))
+    (propagated-inputs (list python-appdirs python-nose python-pyyaml
+                             python-setuptools))
+    (native-inputs (list python-wheel))
     (home-page "https://github.com/simonvh/norns")
     (synopsis "Simple YAML-based config module")
     (description "This package provides a simple YAML-based config module.")
@@ -9323,8 +9368,10 @@ tests = True~%" #$(this-package-input "tcl") #$(this-package-input "tk"))))))
            python-pytest
            python-pytest-timeout
            python-pytest-xdist
+           python-setuptools
            python-setuptools-scm
-           python-setuptools-scm-git-archive))
+           python-setuptools-scm-git-archive
+           python-wheel))
     (home-page "https://matplotlib.org/")
     (synopsis "2D plotting library for Python")
     (description
@@ -9523,6 +9570,7 @@ complex-valued functions.")
      (list
       #:tests? #f))     ; no tests
     (propagated-inputs (list python-ply))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "http://senexcanis.com/open-source/cppheaderparser/")
     (synopsis
      "Parse C++ header files and generate a data structure representing the class")
@@ -9542,6 +9590,7 @@ and generate a data structure representing the class﻿.")
        (sha256
         (base32 "06zysv86j7wqb1rl88ab4clbjf7iahhv9gfyqlasr18hggqkpd43"))))
     (build-system pyproject-build-system)
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/nucleic/cppy")
     (synopsis "C++ header library for Python extension modules")
     (description "This package is a small C++ header library which makes it
@@ -9974,7 +10023,7 @@ and therefore easier to read and write.")
               ;; NOTE: Any value works, the variable just has to be present.
               (setenv "SKIP_ONLINE" "1"))))))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (inputs
      (list bash-minimal))
     (home-page "https://github.com/pypa/distlib")
@@ -10093,7 +10142,7 @@ retrieve text and metadata from PDFs as well as merge entire files together.")
                       "--exclude=^test_use_poppler_path_with_trailing_slash$")))
     (propagated-inputs (list python-pillow))
     (inputs (list poppler))
-    (native-inputs (list python-nose which))
+    (native-inputs (list python-nose which python-setuptools python-wheel))
     (home-page "https://github.com/Belval/pdf2image")
     (synopsis
      "Python wrapper around @command{pdftoppm} and @command{pdftocairo}")
@@ -10567,7 +10616,9 @@ experimental data and metadata at the Laboratory for Fluorescence Dynamics.")
            python-editorconfig
            python-numpy
            python-pillow
-           python-pytest))
+           python-pytest
+           python-setuptools
+           python-wheel))
     (inputs
      ;; XXX: Build is failing with FFmpeg 6.0, unresolved upstream.
      ;; See https://github.com/PyAV-Org/PyAV/issues/1106
@@ -10700,10 +10751,10 @@ from FFMPEG, reliably terminating the process when done.")
               (delete-file "tests/test_freeimage.py"))))))
     (inputs (list freeimage))
     (propagated-inputs
-     (list python-imageio-ffmpeg python-numpy python-pillow python-tifffile))
+     (list python-imageio-ffmpeg python-numpy python-pillow python-tifffile python-setuptools))
     (native-inputs
      (list python-black python-flake8 python-fsspec python-pytest
-           python-pytest-cov))
+           python-pytest-cov python-wheel))
     (home-page "https://imageio.github.io/")
     (synopsis "Library for reading and writing a wide range of image data")
     (description
@@ -10990,7 +11041,9 @@ any machine that can run Python.")
       (list pkg-config
             python-cython
             python-pytest
-            python-pytest-cov))
+            python-pytest-cov
+            python-setuptools
+            python-wheel))
     (inputs
      (list pango))
     (home-page "https://manimpango.manim.community/")
@@ -11455,7 +11508,8 @@ older Python versions.")
     (build-system pyproject-build-system)
     (propagated-inputs
      (list python-dataclasses python-smart-open python-typer))
-    (native-inputs (list python-mock python-pytest))
+    (native-inputs (list python-mock python-pytest python-setuptools
+                         python-wheel))
     (home-page "https://github.com/justindujardin/pathy")
     (synopsis "Path interface for local and cloud bucket storage")
     (description "Pathy is a python package (with type annotations) for
@@ -11700,7 +11754,9 @@ class constructs.")
                          python-pytest-checkdocs
                          python-pytest-cov
                          python-pytest-enabler
-                         python-pytest-mypy))
+                         python-pytest-mypy
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/jaraco/jaraco.collections")
     (synopsis "Provides various collection objects")
     (description
@@ -11896,7 +11952,9 @@ releases.")
                          python-pytest-cov
                          python-pytest-enabler
                          python-pytest-flake8
-                         python-pytest-mypy))
+                         python-pytest-mypy
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/jaraco/jaraco.test")
     (synopsis "Testing support by jaraco")
     (description "This package provides testing support by jaraco.")
@@ -11927,7 +11985,9 @@ releases.")
                          python-pytest-checkdocs
                          python-pytest-cov
                          python-pytest-enabler
-                         python-pytest-mypy))
+                         python-pytest-mypy
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/jaraco/jaraco.text")
     (synopsis "Provides various routines for text manipulation")
     (description
@@ -12339,6 +12399,7 @@ container data structures in Python).")
             python-pyzmq
             python-tornado-6
             python-traitlets))
+     (native-inputs (list python-setuptools python-wheel))
      (home-page "https://jupyter.org/")
      (synopsis "Jupyter protocol implementation and client libraries")
      (description
@@ -12376,7 +12437,9 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
              python-pytest-timeout
              python-async-generator
              python-ipython
-             python-ipykernel-bootstrap))
+             python-ipykernel-bootstrap
+             python-setuptools
+             python-wheel))
       (properties (alist-delete 'hidden? (package-properties base))))))
 
 (define-public python-ipykernel
@@ -12452,7 +12515,9 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
            ;; and causes deprecation warnings.  Using the bootstrap variant
            ;; avoids that.
            python-pytest-bootstrap
-           python-pytest-timeout))
+           python-pytest-timeout
+           python-setuptools
+           python-wheel))
     (home-page "https://ipython.org")
     (synopsis "IPython Kernel for Jupyter")
     (description "This package provides the IPython kernel for Jupyter.")
@@ -12471,7 +12536,7 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
                          ;; left out here to break the cycle.
                          #:phases #~(modify-phases %standard-phases
                                       (delete 'sanity-check))))
-        (native-inputs '())
+        (native-inputs (list python-setuptools python-wheel))
         (propagated-inputs
          (modify-inputs (package-propagated-inputs parent)
            (replace "python-jupyter-client" python-jupyter-client-bootstrap)
@@ -12541,7 +12606,9 @@ callback signature using a prototype function.")
            python-unidecode))
     (native-inputs
      (list python-pytest
-           python-pytest-cov))
+           python-pytest-cov
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/titipata/pubmed_parser")
     (synopsis "Parser for Pubmed Open-Access Subset and MEDLINE XML repository")
     (description
@@ -13319,7 +13386,7 @@ algorithm.")
        (sha256
         (base32 "01j48np3g50g6insjkszsz0vifwlm6gspria5vdwlkbciywznnhv"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://altgraph.readthedocs.io")
     (synopsis "Python graph network package")
     (description
@@ -13520,7 +13587,9 @@ Python style, together with a fast and comfortable execution environment.")
            python-wrapper
            python-pytest
            python-pandas
-           python-requests-mock))))
+           python-requests-mock
+           python-setuptools
+           python-wheel))))
 
 (define-public snakemake-7
   (package
@@ -13622,7 +13691,9 @@ Python style, together with a fast and comfortable execution environment.")
            python-wrapper
            python-pytest
            python-pandas
-           python-requests-mock))))
+           python-requests-mock
+           python-setuptools
+           python-wheel))))
 
 (define-public python-pyqrcode
   (package
@@ -13906,6 +13977,7 @@ falling into the Python interpreter.")
                  "{ name = \"Maarten van der Sande\", email = \"maartenvandersande@hotmail.com\"}")
                 (("license = \"MIT\"") "license = { file = \"LICENSE\"}")))))))
     (propagated-inputs (list python-numba python-numpy python-pandas))
+    (native-inputs (list python-setuptools python-wheel python-toml))
     (home-page "https://github.com/Maarten-vd-Sande/qnorm")
     (synopsis "Quantile normalization")
     (description "This tool implements quantile normalization. It properly
@@ -13966,7 +14038,9 @@ low-level X clients.  It is written entirely in Python.")
     (build-system pyproject-build-system)
     (native-inputs
      (list python-pytest
-           python-six)) ; required for conversion, not at run-time
+           python-setuptools
+           python-six ; required for conversion, not at run-time
+           python-wheel))
     (home-page
      "https://docs.python.org/3/library/functools.html#functools.singledispatch")
     (synopsis "Backport of singledispatch feature from Python 3.4")
@@ -14402,7 +14476,8 @@ plugin for flake8 to check PEP-8 naming conventions.")
          "0yvs59ymz5gdix34a95wxlxvk9bnvjgrzsnmnc3ws7whpfv3yasm"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-packaging))
-    (native-inputs (list python-pypa-build python-pytest python-tomli))
+    (native-inputs (list python-pypa-build python-pytest python-setuptools
+                         python-tomli python-wheel))
     (home-page "https://github.com/FFY00/python-pyproject-metadata")
     (synopsis "Dataclass for PEP 621 metadata")
     (description "This project does not implement the parsing of
@@ -15172,6 +15247,7 @@ add functionality and customization to your projects with their own plugins.")
         (base32 "1zrfr1shin5wyfnfxc7jpk013594wasrp4ni9l70fhjlf2mvb3w7"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;there are none.
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/irgeek/StrEnum")
     (synopsis "Enum that inherits from str")
     (description "StrEnum is a Python @code{enum.Enum} that inherits from
@@ -15217,7 +15293,8 @@ the @code{sendfile(2)} system call.")
     ;; Using Pytest instead of the Makefile causes the command line tests to
     ;; fail on unknown Pytest arguments.
     (arguments (list #:test-flags #~(list "-k" "not TestCommandLineParser")))
-    (native-inputs (list python-psutil python-pytest))
+    (native-inputs (list python-psutil python-pytest python-setuptools
+                         python-wheel))
     (propagated-inputs (list python-pyopenssl python-pysendfile))
     (home-page "https://github.com/giampaolo/pyftpdlib/")
     (synopsis "Asynchronous and scalable Python FTP server library")
@@ -15408,6 +15485,7 @@ should be stored on various operating systems.")
         (base32 "0vm1r1jlaiagj0l9yf7j6zn9w3733dr2169911c0svgrr3gwiwn9"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-six))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/google/pasta")
     (synopsis "pasta is an AST-based Python refactoring library")
     (description "This package provides \"pasta\", an AST-based Python
@@ -15961,7 +16039,7 @@ designed to efficiently cope with extremely large amounts of data.")
     (build-system pyproject-build-system)
     (propagated-inputs (list python-deprecated))
     (native-inputs (list python-coverage python-coveralls python-nose2
-                         python-numpy))
+                         python-numpy python-setuptools python-wheel))
     (home-page "https://github.com/scottgigante/tasklogger")
     (synopsis "Extension to the core Python logging library")
     (description "This package provides an extension to the core Python
@@ -16008,7 +16086,8 @@ asyncio.")
                 "0yv1wayrw9g6k0c2f721kha7wsv0s1fdlxpf5x7f34iqzq9z272h"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-numpy python-pyparsing))
-    (native-inputs (list python-hypothesis python-pytest))
+    (native-inputs (list python-hypothesis python-pytest python-setuptools
+                         python-wheel))
     (home-page "https://github.com/mapbox/snuggs")
     (synopsis "Snuggs are S-expressions for Numpy")
     (description "Snuggs are S-expressions for Numpy.")
@@ -16476,7 +16555,7 @@ domains support.")
      (build-system pyproject-build-system)
      (arguments
       (list #:tests? #f))
-     (native-inputs (list python-setuptools-scm))
+     (native-inputs (list python-setuptools python-setuptools-scm python-wheel))
      (home-page "https://github.com/jaraco/path")
      (synopsis "Object-oriented file system path manipulation library")
      (description "@code{path} (formerly @code{path.py}) implements path
@@ -17107,7 +17186,9 @@ significantly better performance.")
            python-pylint
            python-pytest
            python-pytest-benchmark
-           python-pytest-cache))
+           python-pytest-cache
+           python-setuptools
+           python-wheel))
     (home-page
      "https://github.com/horejsek/python-fastjsonschema")
     (synopsis
@@ -17190,7 +17271,7 @@ systems, as a command line tool, and as a Python library.")
             (delete-file-recursively "bleach/_vendor/html5lib")))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-html5lib python-tinycss2))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/mozilla/bleach")
     (synopsis "Whitelist-based HTML-sanitizing tool")
     (description "Bleach is an easy whitelist-based HTML-sanitizing tool.")
@@ -17726,7 +17807,7 @@ simulation, statistical modeling, machine learning and much more.")
         (base32
          "1r9ixxnish9j3dq4h0z0cwlkr4f5lgi6d8mhbzw59hbbjlmp2qhd"))))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (build-system pyproject-build-system)
     (arguments
      (list #:test-flags
@@ -17928,7 +18009,7 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
     (build-system pyproject-build-system)
     (propagated-inputs (list python-pydantic python-srsly
                              python-typing-extensions))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/explosion/confection")
     (synopsis "Config system for Python")
     (description "Confection is a lightweight library that offers a
@@ -17995,7 +18076,8 @@ config files.")
     (propagated-inputs (list java-antlr4-runtime-python
                              python-pydevd
                              python-pyyaml))
-    (native-inputs (list icedtea antlr4 python-pytest python-pytest-mock))
+    (native-inputs (list icedtea antlr4 python-pytest python-pytest-mock
+                         python-setuptools python-wheel))
     (home-page "https://github.com/omry/omegaconf")
     (synopsis "Flexible configuration system")
     (description "OmegaConf is a hierarchical configuration system and
@@ -18014,10 +18096,10 @@ consistent API regardless of how the configuration was created.")
                (base32
                 "1l866g1dcf2ljf8fl7ggpxk1rggry0lya4d5b264gradi1qp81p7"))))
     (build-system pyproject-build-system)
-    (native-inputs
-     (list python-mock python-pytest))
     (propagated-inputs
      (list python-pyyaml))
+    (native-inputs
+     (list python-mock python-pytest python-setuptools python-wheel))
     (synopsis "Replacement for argparse")
     (description "A drop-in replacement for argparse that allows options to also
 be set via config files and/or environment variables.")
@@ -19136,6 +19218,7 @@ in pure Python.")
                (base32
                 "14hwk9j5zjc8rvirw95mrb07zdnpjaxjx2mj3rnq8pnlyaa809r4"))))
     (build-system pyproject-build-system)
+    (arguments (list #:tests? #f)) ; No tests in PyPi tarball.
     (native-inputs
      (list python-poetry-core))
     (home-page "https://github.com/srstevenson/xdg-base-dirs")
@@ -19547,7 +19630,8 @@ RabbitMQ messaging server is the most popular implementation.")
                                       '("billiard/popen_spawn_win32.py"
                                         "billiard/_win.py")))))))
     (native-inputs
-     (list python-case python-psutil python-pytest))
+     (list python-case python-psutil python-pytest python-setuptools
+           python-wheel))
     (home-page "https://github.com/celery/billiard")
     (synopsis "Python multiprocessing fork with improvements and bugfixes")
     (description
@@ -19648,7 +19732,8 @@ synchronously (wait until ready).")
            python-scikit-learn
            python-scipy
            python-toolz))
-    (native-inputs (list python-cython python-pytest python-setuptools-scm))
+    (native-inputs (list python-cython python-pytest python-setuptools-scm
+                         python-setuptools python-wheel))
     (home-page "https://pypi.org/project/cesium/")
     (synopsis "Library for time-series feature extraction and processing")
     (description
@@ -19725,7 +19810,8 @@ ISO 8859, etc.).")
                  (lambda _
                    (setenv "QT_QPA_PLATFORM" "offscreen"))))))
     (native-inputs
-     (list python-pytest python-pytest-cov python-pytest-xdist))
+     (list python-pytest python-pytest-cov python-pytest-xdist
+           python-setuptools python-wheel))
     (inputs
      (list qtbase-5))
     (propagated-inputs
@@ -19913,7 +19999,9 @@ checking library.")
             python-pytest
             python-pytest-cov
             python-pytest-dependency
-            python-tomli))
+            python-tomli
+            python-setuptools
+            python-wheel))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -21023,7 +21111,9 @@ def get_requires_for_build_sdist(config_settings=None):
                          python-pytest-flake8
                          python-pytest-mypy
                          ;; For the version number
-                         python-setuptools-scm))
+                         python-setuptools-scm
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/jaraco/inflect")
     (synopsis "Correctly generate plurals, singular nouns, ordinals, indefinite articles")
     (description
@@ -21064,7 +21154,8 @@ underscored string.")
         (base32 "1jivws8dsscsmyqngbc71r4qw8qmn98pqmhylz01r5dd1ljfw9bi"))))
     (build-system pyproject-build-system)
     (inputs (list mit-krb5))
-    (native-inputs (list python-cython python-k5test python-pytest))
+    (native-inputs (list python-cython python-k5test python-pytest
+                         python-setuptools python-wheel))
     (home-page "https://github.com/jborean93/pykrb5")
     (synopsis "Kerberos API bindings for Python")
     (description "This library provides Python functions that wraps the
@@ -22148,7 +22239,8 @@ etc.")
       #:test-flags
       '(list "--ignore=pymemcache/test/test_compression.py")))
     (native-inputs
-     (list python-faker python-pytest python-pytest-cov))
+     (list python-faker python-pytest python-pytest-cov python-setuptools
+           python-wheel))
     (home-page "https://github.com/pinterest/pymemcache")
     (synopsis "Comprehensive, fast, pure Python memcached client")
     (description
@@ -22421,7 +22513,8 @@ Design spec without sacrificing ease of use or application performance.")
        (sha256
         (base32 "0x57idiy19lzyn32klgm06r223z8gr2aqqk91gysbshq7jg8g3pf"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest python-pytest-asyncio))
+    (native-inputs (list python-pytest python-pytest-asyncio
+                         python-setuptools python-wheel))
     (home-page "https://github.com/simonw/asyncinject")
     (synopsis
      "Run async workflows using pytest-fixtures-style dependency injection")
@@ -22733,6 +22826,7 @@ JSON) codec.")
         (base32 "16ynrq245c3nywv476izrc4bcacm9gxjzgr67ng91g929ny6bfl4"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false))  ;there are none
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/fchollet/namex")
     (synopsis
      "Separate implementation and public API surface of Python packages")
@@ -23227,7 +23321,8 @@ from the header, as well as section details and data available.")
     (propagated-inputs
      (list pigz python-isal python-typing-extensions))
     (native-inputs
-     (list python-pytest python-pytest-timeout python-setuptools-scm))
+     (list python-pytest python-pytest-timeout python-setuptools-scm
+           python-setuptools python-wheel))
     (home-page "https://github.com/marcelm/xopen/")
     (synopsis "Open compressed files transparently")
     (description "This module provides an @code{xopen} function that works
@@ -23311,6 +23406,7 @@ efficient as possible on all supported Python versions.")
                 "1gqfh00ics2k1sm5g46l3bi8cl5fc5d1cwzh1ylvcxvdvypklqc7"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;there are none
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/noahmorrison/chevron")
     (synopsis "Mustache templating language renderer")
     (description "This package provides a Python implementation of the
@@ -23373,7 +23469,9 @@ Mustache templating language renderer.")
            python-pyarrow
            python-pytest
            python-pytest-runner
-           python-setuptools-scm))
+           python-setuptools-scm
+           python-setuptools
+           python-wheel))
     (home-page "https://www.duckdb.org")
     (synopsis "DuckDB embedded database")
     (description "DuckDB is an in-process SQL OLAP database management
@@ -24232,6 +24330,7 @@ point is the point of maximum curvature.")
            python-jinja2
            python-pluggy
            python-pygments
+           python-setuptools ; For pkg_resources.
            python-tomli))
     (native-inputs
      (list python-flake8
@@ -24446,7 +24545,8 @@ while only declaring the test-specific fields.")
      ;; Disable tests that require internet.
      (list #:test-flags '(list "-k" "not net")))
     (native-inputs
-     (list python-pytest python-testfixtures python-click python-requests))
+     (list python-pytest python-testfixtures python-click python-requests
+           python-setuptools python-wheel))
     (home-page "https://github.com/pndurette/gTTS")
     (synopsis "Google Translate text-to-speech interface")
     (description
@@ -24977,7 +25077,9 @@ manipulation, or @code{stdout}.")
            python-mypy
            python-pytest
            python-pytz
-           python-simplejson))
+           python-simplejson
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/marshmallow-code/marshmallow")
     (synopsis "Convert complex datatypes to and from native Python datatypes")
     (description "@code{marshmallow} provides a library for converting complex
@@ -25039,7 +25141,9 @@ datatypes to and from native Python datatypes.")
            python-marshmallow
            python-mypy
            python-pytest
-           python-pyyaml))
+           python-pyyaml
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/marshmallow-code/apispec")
     (synopsis "Swagger/OpenAPI specification generator")
     (description "@code{python-apispec} is a pluggable API specification
@@ -25058,7 +25162,7 @@ Swagger.")
                (base32
                 "1wyw30402xq2a8icrsjmy9v43jyvawcjd85ccb2zicqlg4k5pcqd"))))
     (build-system pyproject-build-system)
-    (propagated-inputs (list python-apispec))
+    (propagated-inputs (list python-apispec python-setuptools))
     (native-inputs
      (list python-bottle
            python-flake8
@@ -25068,7 +25172,8 @@ Swagger.")
            python-pytest
            python-pyyaml
            python-tornado
-           python-tox))
+           python-tox
+           python-wheel))
     (home-page "https://github.com/marshmallow-code/apispec-webframeworks")
     (synopsis "Web framework plugins for apispec")
     (description "This package provides plugins for using @code{apispec} with
@@ -25115,7 +25220,9 @@ web frameworks.")
            python-flex
            python-marshmallow
            python-pytest
-           python-pytest-cov))
+           python-pytest-cov
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/rochacbruno/flasgger/")
     (synopsis "Extract Swagger specs from your Flask project")
     (description "@code{python-flasgger} allows extracting Swagger specs
@@ -25348,7 +25455,8 @@ library.")
                                 (add-installed-pythonpath inputs outputs)
                                 (invoke "pytest" "tests")))))))
       (inputs (list libx11 mesa))
-      (native-inputs (list xorg-server-for-tests python-pytest python-psutil))
+      (native-inputs (list xorg-server-for-tests python-pytest python-psutil
+                           python-setuptools python-wheel))
       (home-page "https://github.com/moderngl/glcontext")
       (synopsis "Portable OpenGL Context for ModernGL")
       (description "Python-glcontext is a library providing an OpenGL
@@ -25506,7 +25614,7 @@ design and layout.")
         (base32 "0inh57664sx2vlbd3913dsc9nz21ysb9vk591qpkg90qhxp8kmcg"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (home-page "https://code.launchpad.net/~tseaver/pkginfo/trunk")
     (synopsis "Query metadatdata from sdists, bdists, and installed packages")
     (description
@@ -25608,7 +25716,7 @@ interpreter when it prints a stack trace.")
                (base32
                 "0jwy5wwl0rcsgnx7hhq4z7ji3lx271sar4v2a1rmyh5vsj7sn784"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-setuptools-scm))
+    (native-inputs (list python-setuptools python-setuptools-scm python-wheel))
     (propagated-inputs (list python-html5tagger))
     (home-page "https://github.com/sanic-org/tracerite")
     (synopsis "Human-readable HTML tracebacks")
@@ -25740,6 +25848,7 @@ Git.")
     (arguments '(#:tests? #f))          ;no tests
     (propagated-inputs
      (list python-semantic-version python-typing-extensions))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/PyO3/setuptools-rust")
     (synopsis "Setuptools plugin for Rust extensions")
     (description
@@ -25830,7 +25939,9 @@ particularly convenient for use in tests.")
            python-pytest-mypy
            python-setuptools-scm
            python-types-freezegun
-           python-types-pytz))
+           python-types-pytz
+           python-setuptools
+           python-wheel))
     (propagated-inputs (list python-jaraco-functools python-pytz))
     (home-page "https://github.com/jaraco/tempora")
     (synopsis "Python date and time objects and routines")
@@ -25954,7 +26065,9 @@ queue.")
      (list python-pytest
            python-pytest-asyncio
            python-pytest-repeat
-           python-pytest-timeout))
+           python-pytest-timeout
+           python-setuptools
+           python-wheel))
     (home-page "https://zict.readthedocs.io/en/latest/")
     (synopsis "Composable mutable mapping tools")
     (description "This package provides abstract @code{MutableMapping} classes
@@ -26054,7 +26167,7 @@ such as lines length, trailing spaces, indentation, etc.")
     (propagated-inputs
      (list python-importlib-metadata python-platformdirs python-tomli))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/google/yapf")
     (synopsis "Formatter for Python code")
     (description "YAPF is a formatter for Python code.  It's based off of
@@ -26144,7 +26257,7 @@ files, and Makefiles.")
         (base32 "1q7ajgqjfivxqsqgnhp4lc4p6jxyh4zprcsdbpd6dw54inaf0av5"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/Suor/whatever")
     (synopsis "Make anonymous functions by partial application of operators")
     (description "@code{whatever} provides an easy way to make anonymous
@@ -26166,7 +26279,7 @@ functions by partial application of operators.")
        (file-name (git-file-name name version))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-whatever))
+     (list python-pytest python-whatever python-setuptools python-wheel))
     (home-page "https://github.com/Suor/funcy")
     (synopsis "Functional tools")
     (description "@code{funcy} is a library that provides functional tools.
@@ -26479,7 +26592,9 @@ with PEP 484 argument (and return) type annotations.")
     (build-system pyproject-build-system)
     (arguments
      '())
-    (propagated-inputs (list python-typing-extensions))))
+    (propagated-inputs (list python-typing-extensions))
+    (native-inputs (modify-inputs (package-native-inputs python-typeguard)
+                                  (append python-setuptools python-wheel)))))
 
 (define-public bpython
   (package
@@ -26645,7 +26760,7 @@ working with iterables.")
                 "040i6bjqvl33j30v865shsk30s3h7f16pqwiaj5kig857dfmqm4r"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-bitarray python-xxhash))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/joseph-fox/python-bloomfilter")
     (synopsis "Bloom filter")
     (description "This package provides a scalable Bloom filter implemented in
@@ -27363,7 +27478,8 @@ and corruption checks.")
                     (lambda* (#:key tests? #:allow-other-keys)
                       (when tests?
                         (invoke "pytest")))))))
-    (native-inputs (list python-diskcache python-more-itertools python-pytest))
+    (native-inputs (list python-diskcache python-more-itertools
+                         python-setuptools python-pytest python-wheel))
     (home-page "https://github.com/harlowja/fasteners")
     (synopsis "Python package that provides useful locks")
     (description
@@ -27809,7 +27925,8 @@ tool).")
            python-msgpack
            python-typing-extensions))
     (native-inputs
-     (list python-cython python-pytest python-setuptools-scm))
+     (list python-cython python-pytest python-setuptools-scm
+           python-setuptools python-wheel))
     (home-page "https://github.com/zarr-developers/numcodecs")
     (synopsis "Buffer compression and transformation codecs")
     (description
@@ -27935,6 +28052,7 @@ N-dimensional arrays for Python.")
            python-pandas
            python-scipy
            python-scikit-learn
+           python-setuptools ; For pkg_resources.
            python-zarr))
     (native-inputs
      (list python-awkward
@@ -27981,7 +28099,7 @@ object-oriented library such as @code{scikit-learn}.")
                (with-directory-excursion "/tmp"
                  (invoke "nosetests" "-v"))))))))
     (native-inputs
-     (list python-nose))
+     (list python-nose python-setuptools python-wheel))
     (home-page "https://pypi.org/project/dill/")
     (synopsis "Serialize all of Python")
     (description "Dill extends Python's @code{pickle} module for serializing
@@ -28033,6 +28151,7 @@ preload_resources\
                (invoke "python" "-m" "multiprocess.tests")))))))
     (propagated-inputs
      (list python-dill))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://pypi.org/project/multiprocess/")
     (synopsis "Multiprocessing and multithreading in Python")
     (description
@@ -28305,6 +28424,7 @@ they use the same path.")
     (build-system pyproject-build-system)
     (propagated-inputs
      (list python-locket python-numpy python-pandas python-pyzmq python-toolz))
+    (native-inputs (list python-setuptools))
     (home-page "https://github.com/dask/partd/")
     (synopsis "Appendable key-value storage")
     (description "Partd stores key-value pairs.  Values are raw bytes.  We
@@ -28345,7 +28465,8 @@ append on old values.  Partd excels at shuffling operations.")
     (propagated-inputs
      (list python-aiohttp python-libarchive-c python-requests python-tqdm))
     (native-inputs
-     (list python-pytest python-pytest-mock python-numpy))
+     (list python-pytest python-pytest-mock python-numpy python-setuptools
+           python-wheel))
     (home-page "https://github.com/intake/filesystem_spec")
     (synopsis "File-system specification")
     (description "The purpose of this package is to produce a template or
@@ -28656,6 +28777,7 @@ RFC 8265 and RFC 8266.")
         (base32
          "0ga3b0m8lfsv1m3260p83lhis52yvz3d42q8gip4gfj823849hnj"))))
     (build-system pyproject-build-system)
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/abseil/abseil-py")
     (synopsis "Abseil Python common libraries")
     (description
@@ -28960,7 +29082,8 @@ programs that do multiple things at the same time with parallelized I/O.")
        (sha256
         (base32 "15wa66cs165wawh4pi808ac43n67b8jqddi5ppdcbkj5gfi68hpi"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-attrs python-pytest))
+    (native-inputs (list python-attrs python-pytest python-setuptools
+                         python-wheel))
     (propagated-inputs
      (list python-mypy python-mypy-extensions python-trio
            python-typing-extensions))
@@ -29047,7 +29170,7 @@ and dates in \"human readable\" forms.  For example, it would display
           "017p9x0bssf7g9slmf30ddh1baawsmxas4nivx334pkfjxp23agr"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest python-twisted))
+     (list python-pytest python-setuptools python-twisted python-wheel))
     (home-page "https://github.com/crossbario/txaio")
     (synopsis "Compatibility layer between Python asyncio and Twisted")
     (description "Txaio provides a compatibility layer between the Python
@@ -29673,36 +29796,38 @@ for YAML and JSON.")
 
 (define-public python-dbus-python
   (package
-  (name "python-dbus-python")
-  (version "1.3.2")
-  (source
-   (origin
-     (method url-fetch)
-     (uri (pypi-uri "dbus-python" version))
-     (sha256
-      (base32 "1y28h90v2ib8zqhs3r2yr7ycg8ccwvw3gqkvadlm12v1129q2rxd"))))
-  (build-system pyproject-build-system)
-  (arguments
-   (list #:phases #~(modify-phases %standard-phases
-                      (add-after 'unpack 'patch-requirements
-                        (lambda _
-                          (substitute* (list "pyproject.toml" "setup.py")
-                            (("'(ninja|patchelf)',?") ""))
-                          (substitute* "setup.cfg"
-                            (("(ninja|patchelf)") "")))))))
-  (inputs (list dbus glib))
-  (propagated-inputs (list python-pygobject))
-  (native-inputs (list pkg-config
-                       python-meson-python
-                       meson ninja patchelf
-                       python-sphinx python-sphinx-rtd-theme
-                       python-tappy
-                       python-wheel))
-  (home-page "https://dbus.freedesktop.org/doc/dbus-python/")
-  (synopsis "Python bindings for libdbus")
-  (description "This package provides Python bindings to libdbus, the
+    (name "python-dbus-python")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dbus-python" version))
+       (sha256
+        (base32 "1y28h90v2ib8zqhs3r2yr7ycg8ccwvw3gqkvadlm12v1129q2rxd"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:phases #~(modify-phases %standard-phases
+                        (add-after 'unpack 'patch-requirements
+                          (lambda _
+                            (substitute* (list "pyproject.toml" "setup.py")
+                              (("'(ninja|patchelf)',?") ""))
+                            (substitute* "setup.cfg"
+                              (("(ninja|patchelf)") "")))))))
+    (inputs (list dbus glib))
+    (propagated-inputs (list python-pygobject))
+    (native-inputs (list pkg-config
+                         python-meson-python
+                         meson ninja patchelf
+                         python-setuptools
+                         python-sphinx
+                         python-sphinx-rtd-theme
+                         python-tappy
+                         python-wheel))
+    (home-page "https://dbus.freedesktop.org/doc/dbus-python/")
+    (synopsis "Python bindings for libdbus")
+    (description "This package provides Python bindings to libdbus, the
 reference implementation of the D-Bus protocol.")
-  (license license:expat)))
+    (license license:expat)))
 
 (define-public python-dbusmock
   (package
@@ -30214,7 +30339,7 @@ scripts to load entry points more quickly.")
              (when tests?
                (invoke "python" "-m" "unittest" "discover" "-v")))))))
     ;; ModuleNotFoundError: No module named 'poetry'
-    (native-inputs (list python-poetry-core))
+    (native-inputs (list python-poetry-core python-six))
     (home-page "https://github.com/vlasovskikh/funcparserlib")
     (synopsis
      "Recursive descent parsing library based on functional combinators")
@@ -30490,7 +30615,9 @@ but portable.")
            python-pytest-cov
            python-pytest-mock
            python-pytest-sugar
-           python-pytest-toolbox))
+           python-pytest-toolbox
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/samuelcolvin/watchgod")
     (synopsis "Simple, modern file watching and code reload in Python")
     (description
@@ -30613,7 +30740,7 @@ lowercase.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/code:"
                                     (getenv "GUIX_PYTHONPATH"))))))))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/drj11/pypng")
     (synopsis "Pure Python PNG image encoder/decoder")
     (description
@@ -31798,7 +31925,7 @@ placement and scaling of SVG figures and adding markers, such as labels.")
       ;; Avoid python-pytest-coverage
       #:test-flags '(list "-c /dev/null")))
     (propagated-inputs (list python-six python-wcwidth))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/jquast/blessed")
     (synopsis "Wrapper around terminal capabilities")
     (description
@@ -32075,7 +32202,8 @@ It adds a simple and readable way to print stuff during development.")
      (list python-dateutil python-pytz python-regex python-ruamel.yaml
            python-tzlocal))
     (native-inputs
-     (list python-flake8 python-pytest python-parameterized tzdata-for-tests))
+     (list python-flake8 python-pytest python-parameterized tzdata-for-tests
+           python-setuptools python-wheel))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -32605,6 +32733,7 @@ class.")
            python-av
            python-numpy
            python-pillow))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/damiafuentes/DJITelloPy")
     (synopsis
      "DJI Tello drone video streaming, swarms and state packets library")
@@ -32705,7 +32834,8 @@ EDU SDK.  This library has the following features:
                 (invoke "pycodestyle" "--max-line-length=88"
                         "git_version.py" "versioneer.py")))))))
     (native-inputs
-     (list git python-flake8 python-pycodestyle python-pyflakes))
+     (list git python-flake8 python-pycodestyle python-pyflakes
+           python-setuptools python-wheel))
     (propagated-inputs
      (list python-tomli))
     (home-page "https://github.com/python-versioneer/python-versioneer")
@@ -32973,7 +33103,9 @@ older versions of Python and so are packaged here.")
                          python-sphinx
                          python-sphinx-autobuild
                          python-sphinx-rtd-theme
-                         python-tox))
+                         python-tox
+                         python-setuptools
+                         python-wheel))
     (home-page "https://github.com/Delgan/loguru")
     (synopsis "Python logging made (stupidly) simple")
     (description "Python logging made (stupidly) simple")
@@ -34370,7 +34502,7 @@ function implementations based on the types of the arguments.")
        (sha256
         (base32 "07xv92q7f4bkp6dzkqvcv0zxr11729qdak4s3ldmbhdwgsf44g5h"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/coady/multimethod")
     (synopsis "Python support for multiple argument dispatching")
     (description
@@ -34962,7 +35094,7 @@ and powerful way to handle real-world data, featuring:
     (propagated-inputs
      (list python-msgpack python-ruamel.yaml python-tomli python-tomli-w))
     (native-inputs
-     (list python-cython python-pytest python-wheel))
+     (list python-cython python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/cdgriffith/Box")
     (synopsis "Advanced Python dictionaries with dot notation access")
     (description
@@ -35154,7 +35286,7 @@ Python @code{set} interface.")
            python-ruamel.yaml-0.16 python-toml python-tomli))
     (native-inputs
      (list python-django python-flask python-pytest python-pytest-cov
-           python-pytest-mock))
+           python-pytest-mock python-setuptools python-wheel))
     (home-page "https://www.dynaconf.com/")
     (synopsis "The dynamic configurator for your Python project")
     (description
@@ -35331,7 +35463,7 @@ of several plugins.")
     (arguments (list #:test-flags '(list "-k" "not test_execute")))
     (propagated-inputs
      (list python-cloudpickle python-importlib-metadata))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://pydoit.org")
     (synopsis "Automation tool to execute any kind of task in a build-tools
 fashion")
@@ -35385,6 +35517,7 @@ to:
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;no tests
     (propagated-inputs (list python-doit python-rich-click))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/pydoit/pydevtool")
     (synopsis "CLI dev tools powered by pydoit")
     (description "This package provides command line tools, powered by pydoit.
@@ -35554,6 +35687,7 @@ Python, with static types.")
                 "0cas3cjkhrvsz2rmqnhqiihy9j79wxi9xbih8jk0p9r48c2q3iyy"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-types-urllib3))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/python/typeshed")
     (synopsis "Typing stubs for requests")
     (description "This package provides typing stubs for requests.")
@@ -35586,6 +35720,7 @@ Python, with static types.")
                (base32
                 "0zcipjdnbnc8ymk8mh9n5mypa0qr03rqj98lbmahldcdrrap6md1"))))
     (build-system pyproject-build-system)
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/python/typeshed")
     (synopsis "Typing stubs for urllib3")
     (description "This package provides typing stubs for urllib3.")
@@ -35603,6 +35738,7 @@ Python, with static types.")
                 "1vdwp1jjg27b22qxgm49v21nb8vm1iki3bfsm0fnq2rsz5alfwz2"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-importlib-resources))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/JelleZijlstra/typeshed_client")
     (synopsis "Library for accessing stubs in typeshed")
     (description
@@ -35998,7 +36134,9 @@ than trying to just split strings.")
            python-pytest-timeout
            python-mock
            python-numpy
-           python-psutil))
+           python-psutil
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/explosion/srsly")
     (synopsis "Serialization utilities for Python")
     (description "This package bundles some of the best Python serialization
@@ -36199,7 +36337,7 @@ implementing a pre-defined interface.")
         (sha256
           (base32 "0j2aw4ipalj208594x80blpgkh1i63gqqa4nb67b823av9hirn11"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (propagated-inputs
      (list python-itemadapter python-jmespath python-parsel python-w3lib))
     (home-page "https://github.com/scrapy/itemloaders")
@@ -36250,7 +36388,7 @@ objects.")
                (base32 "1irw4sqrsgpc0ibxdv1hlx0d0jr1fqs48bj6mpfylzqkag9ywlfj"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest))
+     (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/cgdeboer/iteround")
     (synopsis "Sum-safe rounding for Iterables")
     (description "Iteround is a standard library sum-safe rounding library for
@@ -36364,7 +36502,10 @@ object, which can be useful if you want to force your objects into a table.")
            python-mock
            python-numpy
            python-pytest
-           python-pyyaml))
+           python-pyyaml
+           python-setuptools
+           python-wheel
+           python-toml))
     (home-page "https://github.com/seperman/deepdiff")
     (synopsis "Deep difference and search of any Python object/data")
     (description
@@ -36393,7 +36534,9 @@ other.")
               (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version))))))
     (native-inputs
      (list python-setuptools-scm
-           python-pytest))
+           python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://deepmerge.readthedocs.io/en/latest/")
     (synopsis "Merge nested data structures")
     (description
@@ -36845,7 +36988,7 @@ versa.  Extended WKB/WKT are also supported.")
                (base32
                 "1c0xx3p3lzrlyqhmccyq9c50f8v9pqk2992gb4nl50h2yy1m3s8v"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://nedbatchelder.com/code/cog")
     (synopsis "Content generation tool that leverages Python")
     (description "Cog is a file generation tool.  It allows using pieces of
@@ -37295,7 +37438,10 @@ path.")
            python-ruamel.yaml
            python-slugify
            python-tornado
-           tzdata-for-tests))
+           tzdata-for-tests
+           python-setuptools
+           python-wheel
+           python-toml))
     (home-page "https://github.com/spanezz/staticsite")
     (synopsis "Static site generator")
     (description "Statistic is a static site generator based on Markdown and
@@ -37388,8 +37534,9 @@ markdown-compliant strings.")
                (base32
                 "1v5c9bim8af6g8kgxp2dhm96n5vkr8sqi56w0bdh1xy49v03lw3g"))))
     (build-system pyproject-build-system)
-    (propagated-inputs (list python-pillow))
+    (propagated-inputs (list python-pillow python-setuptools))
     (inputs (list zbar))
+    (native-inputs (list python-wheel))
     (home-page "https://github.com/Polyconseil/zbarlight")
     (synopsis "Simple Python wrapper for the zbar barcode library")
     (description "Zbarlight is a simple wrapper for the zbar library.  It can
@@ -37408,6 +37555,7 @@ read all zbar supported codes.")
                 "0bqkrjxp2fbz34x3wxkxji39kxinypzg8q2994sibiay29mpipxb"))))
     (build-system pyproject-build-system)
     (inputs (list openssl))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://zeroc.com")
     (synopsis "RPC framework")
     (description
@@ -37428,6 +37576,7 @@ interfaces.")
         (base32 "0fdp90mzy0sd4kyw8kd8kybd1ni765fvqn8hz2wx5sqbjjkm4d5k"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-cffi python-typing-extensions))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/mideind/BinPackage")
     (synopsis
      "Vocabulary of the modern Icelandic language, in a Python package")
@@ -37480,6 +37629,7 @@ with one function call.  IceCream makes print debugging a little sweeter.")
         (base32 "1ajcjngvr4rlgb0q6p6vjz2sncwhvq3msjy6qaiz5g37vgvw2ij8"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-cffi))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/mideind/Icegrams")
     (synopsis "Trigram statistics for Icelandic")
     (description

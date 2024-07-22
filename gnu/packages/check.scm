@@ -887,7 +887,7 @@ has been designed to be fast, light and unintrusive.")
                  (base32
                   "0gymjcnvjx9snyrzdbmjnk93ibb161q72xam29vnl3yyac4r1330"))))
       (build-system pyproject-build-system)
-      (native-inputs (list python-nose))
+      (native-inputs (list python-nose python-setuptools python-wheel))
       (propagated-inputs
        (list python-cached-property python-configargparse
              python-jinja2 python-six
@@ -1516,7 +1516,7 @@ supports coverage of subprocesses.")
         (base32 "0bdxwaak5clhsd63b9q65nf2amqqv5hfn7dskfakyldxsqnnh0y6"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-dotenv))
-    (native-inputs (list python-pytest))
+    (native-inputs (list python-pytest python-setuptools python-wheel))
     (home-page "https://github.com/quiqua/pytest-dotenv")
     (synopsis "Automatically detect and load a .env file before running tests")
     (description
@@ -1640,7 +1640,8 @@ contacting the real http server.")
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;no tests included
     (propagated-inputs (list python-attrs python-pytest))
-    (native-inputs (list python-pytest python-pytest-cov python-xmlschema))
+    (native-inputs (list python-pytest python-pytest-cov python-setuptools
+                         python-wheel python-xmlschema))
     (home-page "https://github.com/pytest-dev/pytest-nunit")
     (synopsis "Pytest plugin for generating NUnit3 test result XML output")
     (description
@@ -1866,7 +1867,8 @@ same arguments.")
         (base32
          "1psf5dqxvc38qzxvc305mkg5xpdmdkbkkfiyqlmdnkgh7z5dx025"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-setuptools-scm python-filelock python-pytest))
+    (native-inputs (list python-setuptools-scm python-filelock python-pytest
+                         python-setuptools python-wheel))
     (propagated-inputs (list python-execnet python-pytest-forked))
     (home-page "https://github.com/pytest-dev/pytest-xdist")
     (synopsis
@@ -1939,7 +1941,8 @@ timeout has been exceeded.")
      ;; 'hypothesis' plugin is not in the environment (due to
      ;; <http://issues.guix.gnu.org/25235>), which would cause the test suite
      ;; to fail (see: https://github.com/pytest-dev/pytest-forked/issues/54).
-     (list python-pytest-bootstrap python-setuptools-scm))
+     (list python-pytest-bootstrap python-setuptools
+           python-setuptools-scm python-wheel))
     (home-page "https://github.com/pytest-dev/pytest-forked")
     (synopsis "Pytest plugin to run tests in isolated forked subprocesses")
     (description "This package provides a Pytest plugin which enables running
@@ -2264,7 +2267,7 @@ executed.")
                  (lambda _
                    (setenv "SETUPTOOLS_SCM_PRETEND_VERSION"
                            #$(package-version this-package)))))))
-    (native-inputs (list python-setuptools-scm))
+    (native-inputs (list python-setuptools-scm python-setuptools python-wheel))
     (propagated-inputs (list python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-asyncio")
     (synopsis "Pytest support for asyncio")
@@ -2701,7 +2704,9 @@ a Pytest test execution.")
                              python-mypy
                              python-pytest
                              python-pyyaml
+                             python-setuptools
                              python-regex))
+    (native-inputs (list python-wheel))
     (home-page "https://github.com/TypedDjango/pytest-mypy-plugins")
     (synopsis "Pytest plugin for writing tests for mypy plugins")
     (description "This package provides a pytest plugin for writing tests for
@@ -2775,12 +2780,15 @@ mypy plugins.")
            python-pytest-cov
            python-pytest-enabler
            python-pytest-flake8
-           python-pytest-mypy))
+           python-pytest-mypy
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-jaraco-context
            python-jaraco-functools
            python-more-itertools
            python-packaging
+           python-pip
            python-pip-run
            python-tempora))
     (home-page "https://github.com/jaraco/pytest-perf")

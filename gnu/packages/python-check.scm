@@ -106,6 +106,7 @@
        (sha256
         (base32 "0cs8xya465wvb9dw0kdl7cvkxwrslhbma66y44r1mmsajcll7imc"))))
     (build-system pyproject-build-system)
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/assertpy/assertpy")
     (synopsis "Simple assertion library for unit testing")
     (description
@@ -655,7 +656,8 @@ astropy related packages.")
                     " and not test_generate"
                     " and not test_default_format"))))
     (native-inputs
-     (list python-pytest python-setuptools-scm))
+     (list python-pytest python-setuptools-scm
+           python-setuptools python-wheel))
     (propagated-inputs
      (list python-numpy))
     (home-page "https://github.com/astropy/pytest-arraydiff")
@@ -722,8 +724,10 @@ running the tests.")
                          ;; Requiring git available.
                          " and not test_generate_diff_basic"))))
     (native-inputs
-     (list python-numpy python-pytest python-setuptools-scm))
-    (home-page "https://github.com/scientific-python/pytest-doctestplus")
+     (list python-numpy python-pytest python-setuptools python-setuptools-scm
+           python-wheel))
+    (propagated-inputs (list python-setuptools)) ;for pkg_resources
+    (home-page "https://github.com/astropy/pytest-doctestplus")
     (synopsis "Pytest plugin with advanced doctest features")
     (description
      "This package contains a plugin for the Pytest framework that provides
@@ -772,7 +776,9 @@ for interactively selecting and running Pytest tests.")
      (list python-pytest
            python-pytest-cov
            python-pytest-doctestplus
-           python-setuptools-scm))
+           python-setuptools-scm
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/astropy/pytest-filter-subpackage")
     (synopsis "Pytest plugin for filtering based on sub-packages")
     (description
@@ -885,7 +891,8 @@ were inadvertently left open at the end of a unit test.")
                                  "not test_default_behavior"
                                  " and not test_strict_with_decorator"))))
     (native-inputs
-     (list python-pytest python-setuptools-scm))
+     (list python-pytest python-setuptools python-setuptools-scm
+           python-wheel))
     (propagated-inputs
      (list python-packaging))
     (home-page "https://github.com/astropy/pytest-remotedata")
@@ -979,7 +986,9 @@ framework and makes it easy to undo any monkey patching.  The fixtures are:
      (list
       #:test-flags #~(list "-m" "mpl_image_compare")))
     (native-inputs
-     (list python-pytest))
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-jinja2
            python-matplotlib
@@ -1959,7 +1968,8 @@ the implementation of that name.")
                 (("def test_memory_profiler")
                  "def __off_test_memory_profiler")))))))
     (native-inputs
-     (list python-pytest python-pytest-fixture-config python-safety))
+     (list python-pytest python-pytest-fixture-config python-safety
+           python-setuptools python-wheel))
     (propagated-inputs (list python-psutil))
     (home-page "https://github.com/pythonprofilers/memory_profiler")
     (synopsis "Memory profiler for Python")
@@ -2452,7 +2462,7 @@ tests at one time.")
     (native-inputs
      (list python-pbr python-ddt python-pytest))
     (propagated-inputs
-     (list python-aiohttp))
+     (list python-aiohttp python-setuptools))
     (home-page "https://github.com/pnuckowski/aioresponses")
     (synopsis "Mock out requests made by ClientSession from aiohttp package")
     (description
@@ -2700,7 +2710,9 @@ which make writing and running functional and integration tests easier.")
     (native-inputs
      (list python-jinja2
            python-pytest
-           python-tox))
+           python-tox
+           python-setuptools
+           python-wheel))
     (home-page "https://nox.thea.codes/")
     (synopsis "Flexible test automation")
     (description
@@ -2854,7 +2866,8 @@ parametrize.  This plugin allows you to use all four.")
         (base32 "1ncpd74hmsz4sadvjg99fnfscxpgh3mc2siini0dhxzwgwdkk5i7"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-httpx))
-    (native-inputs (list python-pytest python-pytest-asyncio))
+    (native-inputs (list python-pytest python-pytest-asyncio python-setuptools
+                         python-wheel))
     (home-page "https://colin-b.github.io/pytest_httpx/")
     (synopsis "Pytest plugin to mock httpx")
     (description "This package provides a pytest fixture to mock httpx
@@ -2931,7 +2944,8 @@ running acceptance tests on headless servers.")
                                       ;; skip test that uses python-pint
                                       ;; pint has many dependencies
                                       "not test_whitelists_with_python")))))))
-    (native-inputs (list python-pytest python-pytest-cov))
+    (native-inputs (list python-pytest python-pytest-cov
+                         python-setuptools python-wheel))
     (propagated-inputs (list python-toml))
     (home-page "https://github.com/jendrikseipp/vulture")
     (synopsis "Find dead Python code")
