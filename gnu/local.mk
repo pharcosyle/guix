@@ -358,6 +358,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/hunspell.scm				\
   %D%/packages/hurd.scm				\
   %D%/packages/hyperledger.scm			\
+  %D%/packages/hyprland.scm			\
   %D%/packages/i2p.scm				\
   %D%/packages/ibus.scm				\
   %D%/packages/icu4c.scm			\
@@ -1527,6 +1528,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hueplusplus-mbedtls.patch		\
   %D%/packages/patches/hurd-rumpdisk-no-hd.patch		\
   %D%/packages/patches/hwloc-1-test-btrfs.patch			\
+  %D%/packages/patches/hyprcursor-dirs.patch    		\
   %D%/packages/patches/i7z-gcc-10.patch				\
   %D%/packages/patches/icecat-makeicecat.patch			\
   %D%/packages/patches/icecat-102-makeicecat.patch		\
