@@ -737,7 +737,7 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.26.0")
+    (version "1.26.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -746,7 +746,7 @@ freedesktop.org project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "010bqvic471prhja1j5xqni9dhqc36ikqpxi8ih0fs13wph70p4s"))
+                "094k23i10jjmgdzhv5lj7xpc3fgkwi9afcihf0l2fjj71ym8l9fy"))
               (patches
                (search-patches "libinput-udev-program-absolute-path.patch"))))
     (build-system meson-build-system)
