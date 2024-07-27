@@ -282,7 +282,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "24.1.4")
+    (version "24.2.0-rc2")
     (source
      (origin
        (method url-fetch)
@@ -292,7 +292,7 @@ also known as DXTn or DXTC) for Mesa.")
                                  "mesa-" version ".tar.xz")))
        (sha256
         (base32
-         "1qdd6ycmflcckk33hbvsxbniwk35fsqd9hc9509d0fi6cpvcdxvw"))))
+         "1l5r61k1fbx9v2f4xrv8c9w3hxkzn482mrp0igqc5wmd9b5hf8iv"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; The following are in the Requires.private field of gl.pc.
@@ -333,6 +333,7 @@ also known as DXTn or DXTC) for Mesa.")
             python-mako
             python-packaging
             python-ply
+            python-pyyaml
             python-wrapper
             (@ (gnu packages base) which))
       (if (target-x86-64?)
@@ -451,11 +452,11 @@ svga,swrast,virgl,zink")))
                                                        (uri (crate-uri name version))
                                                        (sha256 (base32 hash))))))
                                 '(("syn"
-                                   "2.0.39"
-                                   "0ymyhxnk1yi4pzf72qk3lrdm9lgjwcrcwci0hhz5vx7wya88prr3")
+                                   "2.0.68"
+                                   "1sf1y2hajhjav38ipg63c934xrgkz4v42fz24a0ckmmri06sf7wh")
                                   ("proc-macro2"
-                                   "1.0.70"
-                                   "0fzxg3dkrjy101vv5b6llc8mh74xz1vhhsaiwrn68kzvynxqy9rr")
+                                   "1.0.86"
+                                   "0xrv22p8lqlfdf1w0pj4si8n2ws4aw0kilmziwf0vpv5ys6rwway")
                                   ("unicode-ident"
                                    "1.0.12"
                                    "0jzf1znfpb2gx8nr8mvmyqs1crnv79l57nxnbiszc7xf7ynbjm1k")
