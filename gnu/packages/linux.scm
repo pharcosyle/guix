@@ -9404,7 +9404,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "6.5.0")
+    (version "6.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -9412,7 +9412,7 @@ compatible with Python's ConfigParser style of .INI files, including RFC
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0rd6kb96dbvsy14gws5l2cvi4hbq3hks96pd788mshfckk7ifwrq"))))
+                "01x86xb9h91ikdnkhzd3ggavy3qb4d4ckwfg3xxcsmml84b2qk4d"))))
     (build-system gnu-build-system)
     (outputs (list "out" "python"))
     (arguments
