@@ -87,15 +87,15 @@
 (define-public lua
   (package
     (name "lua")
-    (version "5.3.5")
+    (version "5.4.7")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://www.lua.org/ftp/lua-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32 "1b2qn2rv96nmbm6zab4l877bd4zq7wpwm8drwjiy2ih4jqzysbhc"))
-             (patches (search-patches "lua-pkgconfig.patch"
-                                      "lua-liblua-so.patch"))))
+              (method url-fetch)
+              (uri (string-append "https://www.lua.org/ftp/lua-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "0c0ypz7p1ajax3rhy4ml50d1r49fqg64xlykyrc9iil6xwl5xgwz"))
+              (patches (search-patches "lua-5.4-pkgconfig.patch"
+                                       "lua-5.4-liblua-so.patch"))))
     (build-system gnu-build-system)
     (inputs (list readline))
     (arguments
@@ -130,17 +130,19 @@ automatic memory management with incremental garbage collection, making it ideal
 for configuration, scripting, and rapid prototyping.")
     (license license:x11)))
 
-(define-public lua-5.4
+(define-public lua-5.4 lua)
+
+(define-public lua-5.3
   (package (inherit lua)
-           (version "5.4.7")
+           (version "5.3.5")
            (source (origin
                      (method url-fetch)
                      (uri (string-append "https://www.lua.org/ftp/lua-"
                                          version ".tar.gz"))
                      (sha256
-                      (base32 "0c0ypz7p1ajax3rhy4ml50d1r49fqg64xlykyrc9iil6xwl5xgwz"))
-                     (patches (search-patches "lua-5.4-pkgconfig.patch"
-                                              "lua-5.4-liblua-so.patch"))))))
+                      (base32 "1b2qn2rv96nmbm6zab4l877bd4zq7wpwm8drwjiy2ih4jqzysbhc"))
+                     (patches (search-patches "lua-pkgconfig.patch"
+                                              "lua-liblua-so.patch"))))))
 
 (define-public lua-5.2
   (package (inherit lua)
