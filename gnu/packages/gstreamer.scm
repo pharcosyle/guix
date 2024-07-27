@@ -562,6 +562,7 @@ This package provides the core library and elements.")
     (propagated-inputs
      (list glib                     ;required by gstreamer-sdp-1.0.pc
            gstreamer                ;required by gstreamer-plugins-base-1.0.pc
+           libdrm                   ;required by gstreamer-allocators-1.0.pc
            libgudev                 ;required by gstreamer-gl-1.0.pc
            ;; wayland-client.h is referred to in
            ;; include/gstreamer-1.0/gst/gl/wayland/gstgldisplay_wayland.h
