@@ -371,14 +371,14 @@ another.")
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.38")
+    (version "0.4.39")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "13b6529bqkq41ghy5lqnpbm7gny383aq9yyqmqzslrr5fza9hnm5"))))
+                "1h0c0k9l64g5b84asx2li4di8ngj0lp0gc63p6hmz0lvyj3j7v9k"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -468,7 +468,7 @@ the GStreamer multimedia framework.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.22.9")
+    (version "1.24.5")
     (source
      (origin
        (method url-fetch)
@@ -477,7 +477,7 @@ the GStreamer multimedia framework.")
              version ".tar.xz"))
        (sha256
         (base32
-         "1gcfnjf2gic31sr2n47i58017r8v4063f7gc107wikg88z9j8w8y"))))
+         "0yrs4l4fdaym7gl843f0njnygdmngmwln4s330sldw9b4l4z5pib"))))
     (build-system meson-build-system)
     (arguments
      (list #:disallowed-references (list python)
@@ -549,7 +549,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.22.9")
+    (version "1.24.5")
     (source
      (origin
       (method url-fetch)
@@ -557,11 +557,12 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0d1kl35w3ilgvizws4pw7jy66pwxp0hqrgrlicw714wf5pfy1hzs"))))
+        "0zcancysfh95l6n0r48000fnh3il8ifdbfskd8xfzxgfb6dyqcqf"))))
     (build-system meson-build-system)
     (propagated-inputs
      (list glib                     ;required by gstreamer-sdp-1.0.pc
            gstreamer                ;required by gstreamer-plugins-base-1.0.pc
+           libdrm                   ;required by gstreamer-allocators-1.0.pc
            libgudev                 ;required by gstreamer-gl-1.0.pc
            ;; wayland-client.h is referred to in
            ;; include/gstreamer-1.0/gst/gl/wayland/gstgldisplay_wayland.h
@@ -648,7 +649,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.22.9")
+    (version "1.24.5")
     (source
      (origin
        (method url-fetch)
@@ -657,7 +658,7 @@ for the GStreamer multimedia library.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "1dkq2hx0r02fd2q2163jnwdvccdgdcql1vq8xba3gxpzxg7rz596"))))
+        (base32 "0xds4h49gqxqbzrcj2s281mi22rgid37sckpkblvsddhj99grp5s"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -767,14 +768,14 @@ model to base your own plug-in on, here it is.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.22.9")
+    (version "1.24.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "078ahh1q5z610fjhjhcwqggdqglc677kzzafaqv3cfpmsl7mvihv"))
+                "0iy85m2chrj5ncxdfkr7x13fli53flv51awfvh4xc52k4vbvya9h"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -966,7 +967,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.22.9")
+    (version "1.24.5")
     (source
      (origin
        (method url-fetch)
@@ -974,7 +975,7 @@ par compared to the rest.")
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0dk2ma19gccsl82rxaylv4fk5jwa3i5bcw8nzk9iv80mc3b8bxhb"))))
+        (base32 "0vbplwfi3gjzh41g9sza37b8zvarvl82jh0098548w07w2v6fcik"))))
     (build-system meson-build-system)
     (arguments
      (list #:glib-or-gtk? #t         ; To wrap binaries and/or compile schemas
@@ -1023,7 +1024,7 @@ think twice about shipping them.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.22.9")
+    (version "1.24.5")
     (source
      (origin
        (method url-fetch)
@@ -1032,7 +1033,7 @@ think twice about shipping them.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "1n47pcpf5hzq2n8h599fqvnpy90ckdx698irqdr7q7hws8kpsbqr"))))
+        (base32 "089mf1fpnwj95fw14jwkmklf7pafbk1qyr3lni01rmbflpgnplbz"))))
     (build-system meson-build-system)
     (native-inputs (list perl pkg-config python-wrapper ruby))
     (inputs (list ffmpeg))
@@ -1046,7 +1047,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 (define-public gst-editing-services
   (package
     (name "gst-editing-services")
-    (version "1.22.9")
+    (version "1.24.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1054,7 +1055,7 @@ decoders, muxers, and demuxers provided by FFmpeg.")
                     "gst-editing-services-" version ".tar.xz"))
               (sha256
                (base32
-                "03a4a35zidsirgj1sxfzibgvsmcvrld8hq8lxz0f1kfw08waslrm"))))
+                "1bww6rmg4g2y0yvh0kydmchhpghcla7kj6w596vjvz9rb2hs1smc"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1114,7 +1115,7 @@ binary, but none of the actual plugins.")))
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.22.9")
+    (version "1.24.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1122,7 +1123,7 @@ binary, but none of the actual plugins.")))
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "0280h2jw4qnbrc725cbk69racflqnfk95da46xq6i8pxzrpmr79z"))))
+                "1xhvcifjijwnxmml6bpvay51csx4rv02mpl2kvynw9z68k0p0df2"))))
     (build-system meson-build-system)
     (arguments
      (list
