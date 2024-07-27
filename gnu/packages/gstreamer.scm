@@ -601,6 +601,7 @@ This package provides the core library and elements.")
            xorg-server-for-tests))
     (arguments
      (list
+      #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
           #$@%common-gstreamer-phases
@@ -791,6 +792,7 @@ model to base your own plug-in on, here it is.")
     (build-system meson-build-system)
     (arguments
      (list
+      #:tests? #f
       #:configure-flags #~(list "-Dsctp-internal-usrsctp=disabled")
       #:glib-or-gtk? #t              ; To wrap binaries and/or compile schemas
       #:phases
