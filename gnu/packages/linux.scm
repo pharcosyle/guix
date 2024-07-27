@@ -1169,12 +1169,6 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                        "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
 
-(define-public linux-libre-version         linux-libre-6.9-version)
-(define-public linux-libre-gnu-revision    linux-libre-6.9-gnu-revision)
-(define-public linux-libre-pristine-source linux-libre-6.9-pristine-source)
-(define-public linux-libre-source          linux-libre-6.9-source)
-(define-public linux-libre                 linux-libre-6.9)
-
 (define-public linux-libre-6.10
   (make-linux-libre* linux-libre-6.10-version
                      linux-libre-6.10-gnu-revision
@@ -1182,6 +1176,12 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                      '("x86_64-linux" "i686-linux" "armhf-linux"
                        "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
+
+(define-public linux-libre-version         linux-libre-6.10-version)
+(define-public linux-libre-gnu-revision    linux-libre-6.10-gnu-revision)
+(define-public linux-libre-pristine-source linux-libre-6.10-pristine-source)
+(define-public linux-libre-source          linux-libre-6.10-source)
+(define-public linux-libre                 linux-libre-6.10)
 
 (define-public linux-libre-6.6
   (make-linux-libre* linux-libre-6.6-version
@@ -10076,7 +10076,7 @@ persistent over reboots.")
                                 "linux/posix_types.h"
                                 "linux/stddef.h"
                                 "linux/types.h"))))))))
-    (native-inputs (list linux-libre-headers-6.9 pkg-config))
+    (native-inputs (list linux-libre-headers-6.10 pkg-config))
     (propagated-inputs (list elfutils zlib)) ;in Requires.private of libbpf.pc
     (home-page "https://github.com/libbpf/libbpf")
     (synopsis "BPF CO-RE (Compile Once – Run Everywhere)")
