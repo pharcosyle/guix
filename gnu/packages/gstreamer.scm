@@ -372,14 +372,14 @@ another.")
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.38")
+    (version "0.4.39")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "13b6529bqkq41ghy5lqnpbm7gny383aq9yyqmqzslrr5fza9hnm5"))))
+                "1h0c0k9l64g5b84asx2li4di8ngj0lp0gc63p6hmz0lvyj3j7v9k"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -563,6 +563,7 @@ This package provides the core library and elements.")
     (propagated-inputs
      (list glib                     ;required by gstreamer-sdp-1.0.pc
            gstreamer                ;required by gstreamer-plugins-base-1.0.pc
+           libdrm                   ;required by gstreamer-allocators-1.0.pc
            libgudev                 ;required by gstreamer-gl-1.0.pc
            ;; wayland-client.h is referred to in
            ;; include/gstreamer-1.0/gst/gl/wayland/gstgldisplay_wayland.h
