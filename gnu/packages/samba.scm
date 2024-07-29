@@ -176,7 +176,7 @@ external dependencies.")
   (hidden-package
    (package
      (name "samba")
-     (version "4.19.4")
+     (version "4.19.7")
      (source
       ;; For updaters: the current PGP fingerprint is
       ;; 81F5E2832BD2545A1897B713AA99442FB680B620.
@@ -185,7 +185,7 @@ external dependencies.")
         (uri (string-append "https://download.samba.org/pub/samba/stable/"
                             "samba-" version ".tar.gz"))
         (sha256
-         (base32 "134ny3giyrmgcd0kdjv3drfgd4r7spsv118nrb49icbdhqxxj9j0"))))
+         (base32 "0ig4zrz3hlwbxkcj3rppdvx3pnh8s1ccs2774ff7pg6ny8581frb"))))
      (build-system gnu-build-system)
      (arguments
       (list
@@ -295,7 +295,7 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public samba
   (package
     (inherit samba/pinned)
-    (version "4.19.4")
+    (version "4.19.7")
     (source
      ;; For updaters: the current PGP fingerprint is
      ;; 81F5E2832BD2545A1897B713AA99442FB680B620.
@@ -304,7 +304,7 @@ Desktops into Active Directory environments using the winbind daemon.")
        (uri (string-append "https://download.samba.org/pub/samba/stable/"
                            "samba-" version ".tar.gz"))
        (sha256
-        (base32 "134ny3giyrmgcd0kdjv3drfgd4r7spsv118nrb49icbdhqxxj9j0"))))
+        (base32 "0ig4zrz3hlwbxkcj3rppdvx3pnh8s1ccs2774ff7pg6ny8581frb"))))
     (properties (alist-delete 'hidden? (package-properties samba/pinned)))))
 
 (define-public talloc
