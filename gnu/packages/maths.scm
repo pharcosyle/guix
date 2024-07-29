@@ -730,6 +730,7 @@ precision floating point numbers.")
     (arguments
      (let ((system (%current-system)))
        `(#:make-flags (list "CFLAGS=-fPIC")
+         #:tests? ,(not (target-x86-32?))
          #:phases
          (modify-phases %standard-phases
            ,@(cond

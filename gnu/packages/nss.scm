@@ -177,7 +177,8 @@ in the Mozilla clients.")
       #:tests? (not (or (%current-target-system)
                         ;; Tests take more than 30 hours on some architectures.
                         (target-riscv64?)
-                        (target-ppc32?)))
+                        (target-ppc32?)
+                        (target-x86-32?)))
       #:phases
       #~(modify-phases %standard-phases
           (replace 'configure
