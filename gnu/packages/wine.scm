@@ -215,26 +215,29 @@
               (setenv "WIDL_TIME_OVERRIDE" "315532800")))
           ;; Explicitly set the 32-bit version of vulkan-loader when installing
           ;; to i686-linux or x86_64-linux.
-          ;; TODO: Add more JSON files as they become available in Mesa.
           #$@(match (%current-system)
                ((or "i686-linux" "x86_64-linux")
                 #~((add-after 'install 'wrap-executable
                      (lambda* (#:key inputs #:allow-other-keys)
-                       (let ((icd (string-append #$output "/share/vulkan/icd.d")))
-                         (mkdir-p icd)
-                         (copy-file (search-input-file
-                                     inputs
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json")
-                                    (string-append icd "/radeon_icd.i686.json"))
-                         (copy-file (search-input-file
-                                     inputs
-                                     "/share/vulkan/icd.d/intel_icd.i686.json")
-                                    (string-append icd "/intel_icd.i686.json"))
-                         (wrap-program (string-append #$output "/bin/wine-preloader")
-                           `("VK_ICD_FILENAMES" ":" =
-                             ,(list
-                               (string-append icd "/radeon_icd.i686.json")
-                               (string-append icd "/intel_icd.i686.json")))))))))
+                       (let* ((icd "share/vulkan/icd.d")
+                              (icd-files (find-files
+                                          (search-input-directory inputs icd)
+                                          (lambda (file _)
+                                            (string-suffix?
+                                             "i686"
+                                             (basename file ".json"))))))
+                         (wrap-program
+                             (string-append #$output "/bin/wine-preloader")
+                           `("VK_ICD_FILENAMES" ":" = ,icd-files))
+                         ;; Wine64 needs these so put them in the Wine output
+                         ;; so they're easy to get at. Kinda hacky.
+                         (let ((icd-out (string-append #$output "/" icd)))
+                           (mkdir-p icd-out)
+                           (for-each (lambda (file)
+                                       (copy-file file (string-append
+                                                        icd-out
+                                                        "/" (basename file))))
+                                     icd-files)))))))
                (_
                 #~()))
           (add-after 'install 'install-mono
@@ -294,22 +297,19 @@ integrate Windows applications into your desktop.")
                            (string-append #$output "/bin/wine-preloader"))))
             ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
             ;; when installing to x86_64-linux so both are available.
-            ;; TODO: Add more JSON files as they become available in Mesa.
             #$@(match (%current-system)
                  ("x86_64-linux"
                   #~((delete 'wrap-executable)
                      (add-after 'copy-wine32-binaries 'wrap-executable
-                       (lambda* (#:key inputs #:allow-other-keys)
-                         (let ((icd-files (map
-                                           (lambda (basename)
-                                             (search-input-file
-                                              inputs
-                                              (string-append "/share/vulkan/icd.d/"
-                                                             basename)))
-                                           '("radeon_icd.x86_64.json"
-                                             "intel_icd.x86_64.json"
-                                             "radeon_icd.i686.json"
-                                             "intel_icd.i686.json"))))
+                       (lambda _
+                         (let* ((icd "share/vulkan/icd.d")
+                                (icd-files
+                                 (apply append
+                                        (map (lambda (input)
+                                               (find-files
+                                                (string-append input "/" icd)))
+                                             (list #$(this-package-input "mesa")
+                                                   #$(this-package-input "wine"))))))
                            (for-each (lambda (exe)
                                        (wrap-program
                                            (string-append #$output "/bin/" exe)
