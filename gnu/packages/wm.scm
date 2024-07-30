@@ -75,6 +75,7 @@
 ;;; Copyright © 2024 bigbug <bigbookofbug@proton.me>
 ;;; Copyright © 2024 dan <i@dan.games>
 ;;; Copyright © 2024 Wamm K. D. <jaft.r@outlook.com>
+;;; Copyright © 2024 Ashish SHUKLA <ashish.is@lostca.se>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2321,7 +2322,7 @@ core/thread.")
 (define-public mako
   (package
     (name "mako")
-    (version "1.8.0")
+    (version "1.9.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2330,7 +2331,7 @@ core/thread.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05g1gp61qd9n9w4lq925i4wgryagvah6x489g17j7rnw59q4qhdi"))))
+                "0wcyhnpah1g5qpixfwlpybsjcl22iv39jrxlbi84xv2gfyi2vmj2"))))
     (build-system meson-build-system)
     (arguments
      (list #:phases
@@ -3303,7 +3304,7 @@ read and write, and compatible with JSON.")
 (define-public labwc
   (package
     (name "labwc")
-    (version "0.7.2")
+    (version "0.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3312,7 +3313,7 @@ read and write, and compatible with JSON.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vlignyv9bczkc8xcmzaj4x88v072qhc79j2pjwnxy9xv0282d7i"))))
+                "0xwgbqv0ablcjaq77c98m4rpgfylr1mja081ay9lccpjqycgbhgc"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config gettext-minimal scdoc))
@@ -3919,6 +3920,7 @@ configuration."))))
                   alsa-lib
                   json-c
                   libmpdclient
+                  pulseaudio
                   eudev))
     (synopsis "X11 and Wayland status panel")
     (description

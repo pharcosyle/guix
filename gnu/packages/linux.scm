@@ -81,6 +81,7 @@
 ;;; Copyright © 2024 Gabriel Wicki <gabriel@erlikon.ch>
 ;;; Copyright © 2024 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2024 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2024 Ashish SHUKLA <ashish.is@lostca.se>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -510,10 +511,27 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
+;; The current "mainline" kernel.
+
+(define-public linux-libre-6.10-version "6.10.1")
+(define-public linux-libre-6.10-gnu-revision "gnu")
+(define deblob-scripts-6.10
+  (linux-libre-deblob-scripts
+   linux-libre-6.10-version
+   linux-libre-6.10-gnu-revision
+   (base32 "1j43v1z4g1f681wvna2dh9vxaz0pgni0wchbh1xhyhhfcqbm1f47")
+   (base32 "00bx8g1ijswi9zypmwqhxsk9fdkzmarxdbdx5h6gpn7z4d1qly3j")))
+(define-public linux-libre-6.10-pristine-source
+  (let ((version linux-libre-6.10-version)
+        (hash (base32 "0szpkhrwfqwj068vz032daf3zycv5c93gjxiisjziifi3kyrs43h")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-6.10)))
+
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
 
-(define-public linux-libre-6.9-version "6.9.10")
+(define-public linux-libre-6.9-version "6.9.11")
 (define-public linux-libre-6.9-gnu-revision "gnu")
 (define deblob-scripts-6.9
   (linux-libre-deblob-scripts
@@ -523,7 +541,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "18vfz1fx4vjssfh1w7aqfjf91y2g34a2qnzbl9pyawa7qnqxq33n")))
 (define-public linux-libre-6.9-pristine-source
   (let ((version linux-libre-6.9-version)
-        (hash (base32 "18adcli0pazz7x62ws4hrj64prs6fmxln3p3xaii6zd6bwrjxlgg")))
+        (hash (base32 "1q8kyn9cxc1ykf3cvifmfqk2p2p4x53l7h704hh92gichgh89pyy")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.9)))
@@ -533,7 +551,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
 
-(define-public linux-libre-6.6-version "6.6.41")
+(define-public linux-libre-6.6-version "6.6.42")
 (define-public linux-libre-6.6-gnu-revision "gnu")
 (define deblob-scripts-6.6
   (linux-libre-deblob-scripts
@@ -543,12 +561,12 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "15xb4miirfmi1khlq4zhb8zmmh82f41jhsfbsfpv8v98yfka2nmb")))
 (define-public linux-libre-6.6-pristine-source
   (let ((version linux-libre-6.6-version)
-        (hash (base32 "1vrjw0yhzmmnbrxyzjrfyz1s8bixciv1ly9pkgcqbasqh5brrjcy")))
+        (hash (base32 "10z6fjvpiv3l11rpsd6fgi7dr6a3d38c6zlp8ihffx6pjz1ch0c8")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.6)))
 
-(define-public linux-libre-6.1-version "6.1.100")
+(define-public linux-libre-6.1-version "6.1.101")
 (define-public linux-libre-6.1-gnu-revision "gnu")
 (define deblob-scripts-6.1
   (linux-libre-deblob-scripts
@@ -558,7 +576,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "11jbnj0d3262grf9vkn0668kvfxifxw98ccvn81wkaykll01k5nx")))
 (define-public linux-libre-6.1-pristine-source
   (let ((version linux-libre-6.1-version)
-        (hash (base32 "1fd8cmdni1lgjzgn74i5dih5kx3b1axqyhiddxn4s8qgl30nxamr")))
+        (hash (base32 "0k5kjb2n78dcfpqqj8n76fxqbmifs2gqd2z1g9had7s2d2m9yigi")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.1)))
@@ -650,6 +668,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-6.10-source
+  (source-with-patches linux-libre-6.10-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-6.9-source
   (source-with-patches linux-libre-6.9-pristine-source
@@ -770,6 +793,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-6.10
+  (make-linux-libre-headers* linux-libre-6.10-version
+                             linux-libre-6.10-gnu-revision
+                             linux-libre-6.10-source))
 
 (define-public linux-libre-headers-6.9
   (make-linux-libre-headers* linux-libre-6.9-version
@@ -1147,6 +1175,14 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-source          linux-libre-6.9-source)
 (define-public linux-libre                 linux-libre-6.9)
 
+(define-public linux-libre-6.10
+  (make-linux-libre* linux-libre-6.10-version
+                     linux-libre-6.10-gnu-revision
+                     linux-libre-6.10-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux"
+                       "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
+
 (define-public linux-libre-6.6
   (make-linux-libre* linux-libre-6.6-version
                      linux-libre-6.6-gnu-revision
@@ -1300,6 +1336,34 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_CHARGER_GPIO" . m)
                         ("CONFIG_SND_SOC_ES8316" . m))
                       (default-extra-linux-options linux-libre-version))))
+
+(define-public linux-libre-lts-arm64-generic
+  (make-linux-libre* linux-libre-lts-version
+                     linux-libre-lts-gnu-revision
+                     linux-libre-lts-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"
+                     #:extra-options
+                     (append
+                      `(;; Provide support for ath9k wireless
+                        ("CONFIG_ATH9K_HTC" . m)
+                        ;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t)
+                        ;; Pinebook display, battery, charger and usb
+                        ("CONFIG_DRM_ANALOGIX_ANX6345" . m)
+                        ("CONFIG_CHARGER_AXP20X" . m)
+                        ("CONFIG_INPUT_AXP20X_PEK" . m)
+                        ("CONFIG_CHARGER_AXP20X" . m)
+                        ("CONFIG_BATTERY_AXP20X" . m)
+                        ("CONFIG_PINCTRL_AXP209" . m)
+                        ("CONFIG_AXP20X_POWER" . m)
+                        ("CONFIG_AXP20X_ADC" . m)
+                        ;; Pinebook PRO battery and sound support
+                        ("CONFIG_BATTERY_CW2015" . m)
+                        ("CONFIG_CHARGER_GPIO" . m)
+                        ("CONFIG_SND_SOC_ES8316" . m))
+                      (default-extra-linux-options linux-libre-lts-version))))
 
 (define-public linux-libre-arm64-generic-5.10
   (make-linux-libre* linux-libre-5.10-version
@@ -1748,7 +1812,7 @@ graphics card on Optimus laptops.")
 (define-public ddcci-driver-linux
   (package
     (name "ddcci-driver-linux")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method git-fetch)
@@ -1758,8 +1822,7 @@ graphics card on Optimus laptops.")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19vi7dk4jv5wm18cznz4lj2fb1c7m7j3ig62x4a6qy9djxf9z472"))
-       (patches (search-patches "ddcci-driver-linux-linux-6.8.patch"))))
+        (base32 "0j2bgzadrbcyf3k4zplv7p5yqb9pw2ca6wzkqjhhidaah2722vlf"))))
     (build-system linux-module-build-system)
     (arguments
      (list #:tests? #f                  ; no tests
@@ -2378,7 +2441,7 @@ partitions.  Write functionality is also provided but check the README.")
 (define-public dwarves
   (package
     (name "dwarves")
-    (version "1.26")
+    (version "1.27")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2387,7 +2450,7 @@ partitions.  Write functionality is also provided but check the README.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xfq0r3whc3dk922ss8i5vwyfcqhgc95dy27mm69j5niy7i5kzrd"))
+                "0qwc3772az1h3c78pyswawyvyq9spj5s1prj7ckfij9nazp3a007"))
               (patches
                (search-patches "dwarves-threading-reproducibility.patch"))))
     (build-system cmake-build-system)

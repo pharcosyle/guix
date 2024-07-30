@@ -6304,8 +6304,8 @@ and limited version of the images provided by the KanjiVG project.")
 (define-public emacs-kbd
   ;; Package has no release.  Version is extracted from "Version:" keyword in
   ;; main file.
-  (let ((commit "a7f4c9b9770fa6a58895c5f121df82652bb1b737")
-        (revision "0"))
+  (let ((commit "b9048e928ac403c8a1cf09b4fec75776dc4ecf4f")
+        (revision "1"))
     (package
       (name "emacs-kbd")
       (version (git-version "0.0.1" revision commit))
@@ -6317,14 +6317,8 @@ and limited version of the images provided by the KanjiVG project.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0jv9yfsncgf96308c041hvps3jlc151xb0aipm0vasbma3x83ygm"))))
+          (base32 "1rcx6aasr2vnhzqx03w3y39w78w0kvqf5j4j863nk18dalx585b2"))))
       (build-system emacs-build-system)
-      (arguments
-       (list
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'enter-lisp-directory
-              (lambda _ (chdir "lisp"))))))
       (home-page "https://github.com/slotThe/kbd-mode")
       (synopsis "Minor mode for syntax highlighting kmonad's @file{.kbd} files")
       (description
@@ -15194,6 +15188,41 @@ customizable 256 color support to @code{term} and @code{ansi-term}.")
     (description
      "This projects aims to become an aesthetic, functional and
 efficient tabs plugin for Emacs with a lot of customization options.")
+    (license license:gpl3+)))
+
+(define-public emacs-org-remark
+  (package
+    (name "emacs-org-remark")
+    (version "1.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nobiot/org-remark")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1b6nmd64jzy6a7fz4x5p276sl36xa72y3ajbl72vr5ndqp94rlz1"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-org))
+    (home-page "https://nobiot.github.io/org-remark/")
+    (synopsis "Highlight & annotate text using Org mode")
+    (description "Org-remark lets you highlight and annotate text files,
+websites, EPUB books and Info documentation using Org mode.
+
+Features:
+
+@itemize
+@item Highlight and annotate any text file.  The highlights and notes are kept
+in an Org file as the plain text database.  This lets you easily manage your
+marginal notes and use the built-in Org facilities on them – e.g. create a
+sparse tree based on the category of the notes
+@item Create your your own highlighter pens with different colors, type (e.g.
+underline, squiggle, etc. optionally with Org’s category for search and filter
+on your highlights and notes)
+@item Have the same highlighting and annotating functionality for websites
+(when browsing with EWW), EPUB books with @code{nov.el}, Info documentation
+@end itemize")
     (license license:gpl3+)))
 
 (define-public emacs-mocker

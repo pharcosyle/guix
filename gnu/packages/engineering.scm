@@ -1982,48 +1982,32 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
   ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27344#236>.
   (package
     (name "libngspice")
-    (version "42")
+    (version "43")
     (source
      (origin
        (method url-fetch)
-       (uri (list
-             (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
-                            version "/ngspice-" version ".tar.gz")
-             (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
-                            "old-releases/" version
-                            "/ngspice-" version ".tar.gz")))
+       (uri (list (string-append
+                   "mirror://sourceforge/ngspice/ng-spice-rework/" version
+                   "/ngspice-" version ".tar.gz")
+                  (string-append
+                   "mirror://sourceforge/ngspice/ng-spice-rework/"
+                   "old-releases/" version "/ngspice-" version ".tar.gz")))
        (sha256
-        (base32 "02p5ar1cqwn70dw5xzx5v3qhm1p1xgb1xpzs1ljklcxjda2f6zvk"))))
+        (base32 "169nn6bw5628m2k8cy77yd1vs22plj83grisq58j07sk11pnmp8l"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; No tests for libngspice exist.
-       ;; The transient tests for ngspice fail.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-timestamps
-           (lambda _
-             (substitute* "configure"
-               (("`date`") "Thu Jan  1 00:00:01 UTC 1970"))))
-         (add-after 'unpack 'delete-program-manuals
-           (lambda _
-             (substitute* "man/man1/Makefile.in"
-               (("^man_MANS = ngspice\\.1 ngnutmeg\\.1 ngsconvert\\.1 ngmultidec\\.1")
-                "man_MANS = "))))
-         (add-after 'install 'delete-scripts
-           (lambda* (#:key outputs #:allow-other-keys)
-             (delete-file-recursively
-              (string-append (assoc-ref outputs "out")
-                             "/share/ngspice/scripts")))))
-       #:configure-flags
-       (list "--enable-openmp"
-             "--enable-ciderlib"
-             "--enable-xspice"
-             "--with-ngshared")))
-    (native-inputs
-     (list bison flex))
-    (inputs
-     (list libxaw openmpi))
+     (list
+      #:tests? #f ;there are no tests for libngspice
+      #:phases #~(modify-phases %standard-phases
+                   (add-after 'install 'delete-scripts
+                     (lambda _
+                       (delete-file-recursively
+                        (string-append #$output
+                                       "/share/ngspice/scripts")))))
+      #:configure-flags #~(list "--enable-openmp" "--enable-ciderlib"
+                                "--enable-xspice" "--with-ngshared")))
+    (native-inputs (list bison flex))
+    (inputs (list libxaw openmpi))
     (home-page "https://ngspice.sourceforge.net/")
     (synopsis "Mixed-level/mixed-signal circuit simulator")
     (description
@@ -2031,31 +2015,28 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
 @code{Spice3f5}, a circuit simulator, and @code{Xspice}, an extension that
 provides code modeling support and simulation of digital components through
 an embedded event driven algorithm.")
-    (license (list license:lgpl2.0+ ; code in frontend/numparam
-                   (license:non-copyleft "file:///COPYING") ; spice3 bsd-style
-                   license:bsd-3 ; ciderlib
-                   license:public-domain)))) ; xspice
+    (license (list license:lgpl2.0+ ;code in frontend/numparam
+                   (license:non-copyleft "file:///COPYING") ;spice3 bsd-style
+                   license:bsd-3 ;ciderlib
+                   license:public-domain)))) ;xspice
 
 (define-public ngspice
   ;; The ngspice executables (see libngpsice above.)
-  (package (inherit libngspice)
+  (package
+    (inherit libngspice)
     (name "ngspice")
     (arguments
      (substitute-keyword-arguments (package-arguments libngspice)
+       ((#:tests? _ #f) #t)
        ((#:configure-flags flags)
-        `(cons "--with-readline=yes"
-               (delete "--with-ngshared" ,flags)))
+        #~(cons "--with-readline=yes"
+                (delete "--with-ngshared"
+                        #$flags)))
        ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'delete-include-files
-             (lambda _
-               (substitute* "src/Makefile.in"
-                 (("^SUBDIRS = misc maths frontend spicelib include/ngspice")
-                  "SUBDIRS = misc maths frontend spicelib"))))
-           (delete 'delete-program-manuals)
-           (delete 'delete-scripts)))))
-    (inputs
-     (list libngspice readline))))
+        #~(modify-phases #$phases
+            (delete 'delete-scripts)))))
+    (native-inputs (list perl))
+    (inputs (list libngspice readline))))
 
 (define trilinos-serial-xyce
   ;; Note: This is a Trilinos containing only the packages Xyce needs, so we
@@ -3022,6 +3003,32 @@ computation of nodal connectivity of sub-elements (faces and edges),
 arithmetic operations on fields, entity location functionalities, and
 interpolation toolkit.")
     (license license:gpl3+)))
+
+(define-public python-motulator
+  (package
+    (name "python-motulator")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "motulator" version))
+       (sha256
+        (base32 "01qv4d4rgkwk653vz1qz1nmakniv86572j5ikrxwd63rwv5ckggf"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f)) ; there are no tests
+    (propagated-inputs (list python-matplotlib python-numpy python-scipy))
+    (native-inputs (list python-hatchling
+                         python-ipykernel
+                         python-toml))
+    (home-page "https://aalto-electric-drives.github.io/motulator/")
+    (synopsis "Motor Drive Simulator in Python")
+    (description "This package includes simulation models for an induction
+motor, a synchronous reluctance motor, and a permanent-magnet synchronous
+motor.  The motor models are simulated in the continuous-time domain while the
+control algorithms run in discrete time.  The default solver is the explicit
+Runge-Kutta method of order 5(4) from @code{scipy.integrate.solve_ivp.}")
+    (license license:expat)))
 
 (define-public cgns
   (package

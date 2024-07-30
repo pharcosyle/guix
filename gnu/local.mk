@@ -65,6 +65,7 @@
 # Copyright © 2023 Herman Rimm <herman@rimm.ee>
 # Copyright © 2023 Troy Figiel <troy@troyfigiel.com>
 # Copyright © 2024 David Elsing <david.elsing@posteo.net>
+# Copyright © 2024 Ashish SHUKLA <ashish.is@lostca.se>
 #
 # This file is part of GNU Guix.
 #
@@ -1120,7 +1121,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
   %D%/packages/patches/dbxfs-remove-sentry-sdk.patch		\
-  %D%/packages/patches/ddcci-driver-linux-linux-6.8.patch	\
   %D%/packages/patches/debops-constants-for-external-program-names.patch \
   %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/dee-vapi.patch			\
@@ -1374,6 +1374,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghc-language-haskell-extract-ghc-8.10.patch	\
   %D%/packages/patches/ghc-memory-fix-32bit.patch		\
   %D%/packages/patches/ghc-persistent-fix-32bit.patch		\
+  %D%/packages/patches/ghc-unique-support-newer-hashable.patch	\
   %D%/packages/patches/ghostscript-CVE-2023-36664.patch		\
   %D%/packages/patches/ghostscript-CVE-2023-36664-fixup.patch	\
   %D%/packages/patches/ghostscript-leptonica-hurd.patch		\
@@ -2026,7 +2027,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-vega-datasets-remove-la-riots-code.patch	\
   %D%/packages/patches/python-versioneer-guix-support.patch	\
-  %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/python-werkzeug-tests.patch		\
   %D%/packages/patches/python-xmp-toolkit-add-missing-error-codes.patch	\
   %D%/packages/patches/python-zeep-Fix-pytest_httpx-test-cases.patch	\
@@ -2312,7 +2312,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xygrib-fix-finding-data.patch		\
   %D%/packages/patches/xygrib-newer-proj.patch			\
   %D%/packages/patches/yggdrasil-extra-config.patch	\
-  %D%/packages/patches/zathura-use-struct-initializers.patch    \
   %D%/packages/patches/zig-0.9-riscv-support.patch		\
   %D%/packages/patches/zig-use-baseline-cpu-by-default.patch	\
   %D%/packages/patches/zig-use-system-paths.patch		\
