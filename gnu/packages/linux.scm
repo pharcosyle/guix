@@ -4967,7 +4967,7 @@ interface.")
     (description
      "The @acronym{CRDA, Central Regulatory Domain Agent} acts as the udev
 helper for communication between the kernel Linux and user space for regulatory
-compliance.")
+compliance. This is only necessary for linux kernels before 4.16.")
     (license license:copyleft-next)))
 
 (define-public wireless-regdb
