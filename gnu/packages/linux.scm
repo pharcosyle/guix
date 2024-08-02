@@ -4973,14 +4973,14 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2023.05.03")
+    (version "2024.07.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://kernel.org/software/network/wireless-regdb/"
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
-               (base32 "04lc9jp8zxhyqxvkhrm637sswi2xm48jw8jnp3iflnknnf5d0m7j"))
+               (base32 "1szmhn6ry0zgmwddk83mykygvddgl74y7pihpvvvyjp23d7a2clq"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(begin
@@ -4994,16 +4994,6 @@ compliance.")
             (lambda _
               (substitute* "Makefile"
                 (("gzip") "gzip --no-name"))))
-          (add-after 'unpack 'omit-signature
-            (lambda _
-              (substitute* "Makefile"
-                ;; Signing requires a REGDB_PUBCERT and REGDB_PRIVKEY which we
-                ;; don't provide (see below).  Disable it.
-                ((" regulatory\\.db\\.p7s") "")
-                ;; regulatory.db is built as a dependency of regulatory.db.p7s,
-                ;; but ‘make install’ depends only on the latter while
-                ;; installing both (and failing).  Depend on it explicitly.
-                (("^install: " all) (string-append all "regulatory.db ")))))
           (delete 'configure))  ; no configure script
 
       ;; The 'all' target of the makefile depends on $(REGDB_CHANGED), which
