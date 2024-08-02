@@ -57,7 +57,7 @@
                 #:select (file-system-packages))
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (alsa-utils btrfs-progs crda eudev
+                #:select (alsa-utils btrfs-progs eudev
                           e2fsprogs f2fs-tools fuse gpm kbd lvm2 rng-tools
                           util-linux xfsprogs))
   #:use-module (gnu packages bash)
@@ -3708,7 +3708,7 @@ login manager daemon.")
         ;; less critical, but handy.
         (service udev-service-type
                  (udev-configuration
-                   (rules (list lvm2 fuse alsa-utils crda))))
+                   (rules (list lvm2 fuse alsa-utils))))
 
         (service sysctl-service-type)
 
