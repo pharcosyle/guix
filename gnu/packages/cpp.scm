@@ -1632,44 +1632,47 @@ Google's C++ code base.")
                   (delete "-DABSL_RUN_TESTS=ON" ,flags))))))))
 
 (define-public abseil-cpp
-  (let ((base abseil-cpp-20220623.1))
-    (package
-      (inherit base)
-      (name "abseil-cpp")
-      (version "20240722.0")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/abseil/abseil-cpp")
-                      (commit version)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1pmrigimzic2k3ix3l81j2jpfgjgbajz0qbc5s57zljr2w7fjn77"))
-                (patches
-                 (search-patches "abseil-cpp-20220623.1-no-kepsilon-i686.patch"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:configure-flags flags #~'())
-          (if (target-riscv64?)
-              #~(cons* "-DCMAKE_SHARED_LINKER_FLAGS=-latomic"
-                       #$flags)
-              flags))
-         ((#:phases phases)
-          #~(modify-phases #$phases
-              (add-before 'check 'set-env-vars
-                (lambda* (#:key inputs #:allow-other-keys)
-                 ;; absl_time_test requires this environment variable.
-                 (setenv "TZDIR" (string-append #$(package-source this-package)
-                                                "/absl/time/internal/cctz/testdata/zoneinfo"))))
+  (package
+    (name "abseil-cpp")
+    (version "20240722.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/abseil/abseil-cpp")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pmrigimzic2k3ix3l81j2jpfgjgbajz0qbc5s57zljr2w7fjn77"))
+              (patches
+               (search-patches "abseil-cpp-20220623.1-no-kepsilon-i686.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DBUILD_SHARED_LIBS=ON"
+              "-DABSL_BUILD_TESTING=ON"
+              "-DABSL_BUILD_TEST_HELPERS=ON"
+              "-DABSL_USE_EXTERNAL_GOOGLETEST=ON"
               #$@(if (target-riscv64?)
-                     #~((replace 'check
-                          (lambda* (#:key tests? #:allow-other-keys)
-                            (when tests?
-                              (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-                              (invoke "ctest" "-E"
-                                      "absl_symbolize_test|absl_log_format_test")))))
-                     #~()))))))))
+                     '("-DCMAKE_SHARED_LINKER_FLAGS=-latomic")
+                     '()))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'set-env-vars
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; absl_time_test requires this environment variable.
+              (setenv "TZDIR" (search-input-directory inputs
+                                                      "share/zoneinfo")))))))
+    (native-inputs
+     (list googletest
+           tzdata-for-tests))
+    (home-page "https://abseil.io")
+    (synopsis "Augmented C++ standard library")
+    (description "Abseil is a collection of C++ library code designed to
+augment the C++ standard library.  The Abseil library code is collected from
+Google's C++ code base.")
+    (license license:asl2.0)))
 
 (define (abseil-cpp-for-c++-standard base version)
   (hidden-package

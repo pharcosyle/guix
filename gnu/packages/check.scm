@@ -1064,7 +1064,7 @@ command.")
 (define-public googletest
   (package
     (name "googletest")
-    (version "1.14.0")
+    (version "1.15.2")
     (source
      (origin
        (method git-fetch)
@@ -1073,7 +1073,7 @@ command.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19c7f248rkg302yrbl5x7irfyi6a9whbpf45wn4bn9fk0625qi5p"))))
+        (base32 "0wvivz9hxxs8gdmqx0v4g012lqi43fpzvndwmx6i0wdcwi4pdqnl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))

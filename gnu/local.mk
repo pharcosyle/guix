@@ -1434,7 +1434,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-skip-failing-test.patch		\
   %D%/packages/patches/glibc-2.33-riscv64-miscompilation.patch	\
-  %D%/packages/patches/glibc-2.39-git-updates.patch	\
   %D%/packages/patches/glibc-2.39-fmod-libm-a.patch		\
   %D%/packages/patches/glibc-2.40-dl-cache.patch		\
   %D%/packages/patches/glibc-2.40-CVE-2025-0.patch		\
@@ -1453,6 +1452,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-cross-objcopy.patch		\
   %D%/packages/patches/glibc-cross-objdump.patch		\
   %D%/packages/patches/glibc-dl-cache.patch			\
+  %D%/packages/patches/glibc-2.35-dl-cache.patch		\
   %D%/packages/patches/glibc-hidden-visibility-ldconfig.patch	\
   %D%/packages/patches/glibc-hurd-clock_gettime_monotonic.patch	\
   %D%/packages/patches/glibc-2.31-hurd-clock_gettime_monotonic.patch	\
@@ -1495,6 +1495,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnumach-version.patch			\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnupg-1-build-with-gcc10.patch		\
+  %D%/packages/patches/gnutls-no-dlopen-compression.patch	\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
@@ -2430,6 +2431,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/zig-0.13-build-respect-PKG_CONFIG-env-var.patch	\
   %D%/packages/patches/zig-0.13-fix-runpath.patch		\
   %D%/packages/patches/zsh-egrep-failing-test.patch		\
+  %D%/packages/patches/zsh-texinfo-7-compat.patch		\
   %D%/packages/patches/zuo-bin-sh.patch			\
   %D%/packages/patches/zxing-cpp-1.2.0-gcc-14.patch
 
