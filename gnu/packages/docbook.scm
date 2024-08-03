@@ -347,8 +347,8 @@ V4.1.2 that adds support for MathML in equation markup.")
 ;;; stylesheets used (see:
 ;;; https://github.com/docbook/xslt10-stylesheets/issues/109).
 (define-public docbook-xsl
-  (let ((commit "fe16c90013b64e316c3e21ef92d1e8813c10f88c")
-        (revision "0")
+  (let ((commit "efd62655c11cc8773708df7a843613fa1e932bf8")
+        (revision "1")
         (base-version "1.79.2"))
     (package
       (name "docbook-xsl")
@@ -371,7 +371,7 @@ V4.1.2 that adds support for MathML in equation markup.")
                        ((" webhelp") ""))))
                 (sha256
                  (base32
-                  "1bl8dwrcy7skrlh80fpsmiw045bv2j0aym231ikcv3hvm2pi98dj"))))
+                  "074krkbx5kid3497j8clr729hix83d28y36nlq4r9g2ipbdc58kp"))))
       (build-system gnu-build-system)
       (arguments
        (list

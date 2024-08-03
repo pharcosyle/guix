@@ -314,14 +314,14 @@ output is indexed in many ways to simplify browsing.")
 (define-public automake
   (package
     (name "automake")
-    (version "1.16.5")
+    (version "1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/automake/automake-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0sdl32qxdy7m06iggmkkvf7j520rmmgbsjzbm7fgnxwxdp6mh7gh"))
+                "146rkdcwri2dkwn3pjrjs9v0wm4xyav9vvq4yw5vj4qy87yc2849"))
               (patches
                (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
@@ -495,7 +495,7 @@ complexity of working with shared libraries across platforms.")
 
 (define-public config
   (let ((revision "2")
-        (commit "948ae97ca5703224bd3eada06b7a69f40dd15a02"))
+        (commit "00b15927496058d23e6258a28d8996f87cf1f191"))
     (package
       (name "config")
       (version (git-version "0.0.0" revision commit)) ;no release tag
@@ -507,7 +507,7 @@ complexity of working with shared libraries across platforms.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0jz2zzr9qswwan1zlvmkif6yadbqxirvhr1njamb0kyf5k6qa3z6"))))
+                  "16b5p1va4x4fcqj9iax8yvarpg0gvpv50452cb1kwzbp2wv61ywb"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
