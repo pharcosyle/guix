@@ -123,14 +123,14 @@ manufacturers.")
 (define-public nasm
   (package
     (name "nasm")
-    (version "2.16.01")
+    (version "2.16.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.nasm.us/pub/nasm/releasebuilds/"
                                   version "/nasm-" version ".tar.xz"))
               (sha256
                (base32
-                "0n152sghkzrpjsd18ay9hyffldzhnzb0lp7cwbpfyx93h3s4axy7"))))
+                "0j31c6md9iiwyyvdsg56s0f67mpzg9jx3h5n4sq5vl5vc33s24hl"))))
     (build-system gnu-build-system)
     (native-inputs (list perl ; For docs.
                          python-minimal)) ; For tests.

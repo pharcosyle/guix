@@ -64,6 +64,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
@@ -143,23 +144,14 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.25.3")
+    (version "0.25.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                            "download/" version "/p11-kit-" version ".tar.xz"))
        (sha256
-        (base32 "1p1aid11psx00b94d400y614vqcwq3kwl315kmpri678nwdwxpfq"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri "https://github.com/p11-glue/p11-kit/pull/614.patch")
-           (file-name (string-append name "-hurd-fixes.patch"))
-           (sha256
-            (base32
-             "1bx4xg7l0j13dnhv912y99nzgdp1l74jwg9wwlm1q76g7f79fgsn")))))))
+        (base32 "1rcq2578aq3ag288qnvdmj4a2wbihncndbr6iw0vxcfda1jail04"))))
     (build-system meson-build-system)
     (native-inputs
      (append (list pkg-config)))
@@ -186,7 +178,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.8.3")
+    (version "3.8.6")
     (source (origin
               (method url-fetch)
               ;; Note: Releases are no longer on ftp.gnu.org since the
@@ -194,10 +186,11 @@ living in the same process.")
               (uri (string-append "mirror://gnupg/gnutls/v"
                                   (version-major+minor version)
                                   "/gnutls-" version ".tar.xz"))
-              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"
+                                       "gnutls-no-dlopen-compression.patch"))
               (sha256
                (base32
-                "0ghpyhhfa3nsraph6dws50jb3dc8g2cfl7dizdnyrm179fawakzp"))))
+                "1pdw1qgfi9v1vp2lywx1g869rggy5354w7vzjd1jvcrwwnm8h59f"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? (not (or (%current-target-system)
@@ -245,6 +238,9 @@ living in the same process.")
                            (lambda _
                              (setenv "GNUTLS_TEST_TIMEOUT" "60000"))))
                       #~())
+               (replace 'bootstrap
+                 (lambda _
+                   (invoke "autoreconf" "-vfi")))
                (add-after 'install 'move-doc
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; Copy the 4.1 MiB of section 3 man pages to "doc".
@@ -259,8 +255,11 @@ living in the same process.")
                "debug"
                "doc"))                  ;4.1 MiB of man pages
     (native-inputs
-     (append (list pkg-config texinfo which
-                   util-linux)          ;one test needs 'setsid'
+     (append (list
+              ;; The whole autoreconf clique. Not sure these are all necessary.
+              autoconf automake libtool gettext-minimal gtk-doc perl
+              pkg-config texinfo which
+              util-linux)               ;one test needs 'setsid'
              (if (target-hurd?)
                  '()
                  (list iproute          ;for 'ss'
