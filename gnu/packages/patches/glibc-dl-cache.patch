@@ -81,7 +81,7 @@ diff --git a/elf/dl-load.c b/elf/dl-load.c
 index f3201e7c14..a69aec3428 100644
 --- a/elf/dl-load.c
 +++ b/elf/dl-load.c
-@@ -2152,28 +2152,6 @@ _dl_map_object (struct link_map *loader, const char *name,
+@@ -2038,14 +2038,6 @@ _dl_map_object (struct link_map *loader, const char *name,
  			loader ?: GL(dl_ns)[LM_ID_BASE]._ns_loaded,
  			LA_SER_LIBPATH, &found_other_class);
  
@@ -93,24 +93,10 @@ index f3201e7c14..a69aec3428 100644
 -			&loader->l_runpath_dirs, &realname, &fb, loader,
 -			LA_SER_RUNPATH, &found_other_class);
 -
--      if (fd == -1)
--        {
--          realname = _dl_sysdep_open_object (name, namelen, &fd);
--          if (realname != NULL)
--            {
--              fd = open_verify (realname, fd,
--                                &fb, loader ?: GL(dl_ns)[nsid]._ns_loaded,
--                                LA_SER_CONFIG, mode, &found_other_class,
--                                false);
--              if (fd == -1)
--                free (realname);
--            }
--        }
--
  #ifdef USE_LDCONFIG
        if (fd == -1
  	  && (__glibc_likely ((mode & __RTLD_SECURE) == 0)
-@@ -2232,6 +2210,28 @@ _dl_map_object (struct link_map *loader, const char *name,
+@@ -2104,6 +2096,14 @@ _dl_map_object (struct link_map *loader, const char *name,
  	}
  #endif
  
@@ -121,20 +107,6 @@ index f3201e7c14..a69aec3428 100644
 +	fd = open_path (name, namelen, mode,
 +			&loader->l_runpath_dirs, &realname, &fb, loader,
 +			LA_SER_RUNPATH, &found_other_class);
-+
-+      if (fd == -1)
-+        {
-+          realname = _dl_sysdep_open_object (name, namelen, &fd);
-+          if (realname != NULL)
-+            {
-+              fd = open_verify (realname, fd,
-+                                &fb, loader ?: GL(dl_ns)[nsid]._ns_loaded,
-+                                LA_SER_CONFIG, mode, &found_other_class,
-+                                false);
-+              if (fd == -1)
-+                free (realname);
-+            }
-+        }
 +
        /* Finally, try the default path.  */
        if (fd == -1

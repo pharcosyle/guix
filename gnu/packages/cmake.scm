@@ -166,7 +166,7 @@ using the CMake build system.")
 (define-public cmake-bootstrap
   (package
     (name "cmake-bootstrap")
-    (version "3.29.3")
+    (version "3.29.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmake.org/files/v"
@@ -174,7 +174,18 @@ using the CMake build system.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1jxw72i1crv3h6rff4vkamq1bmcx31yy5magjl2am76l90afwai5"))))
+                "1wy1758xw4y3rvfma0qda56ayf7z09nw2mipjadjwlaxqcpipv9d"))
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/Kitware/CMake/commit"
+                        "/7bfe120c07f9fb571ed3e6e30db99d01da52bf60.patch"))
+                  (file-name (string-append name "-curl-8.9-test-fix.patch"))
+                  (sha256
+                   (base32
+                    "0qvybfh72maz4jb68hvmhykwbn4ys2daxm47imv9gpgrdjlc21ij")))))))
     (build-system gnu-build-system)
     (arguments
      (list
