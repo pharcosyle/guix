@@ -45,7 +45,7 @@
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.5.20240511")
+    (version "6.5.20240727")
     (source
      (origin
        (method git-fetch)
@@ -57,7 +57,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nv8sy2dpfa3knir2ijn9lxg5jfjmgj2fc0qpgw27f1fy1i4irhs"))))
+         "1rmqp2snaxbrax64ksqsi93ql6ncq8kif09k6hcd0ivk213i8z8c"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                ;1 MiB of man pages
@@ -234,7 +234,7 @@ ncursesw library provides wide character support.")
 (define-public dialog
   (package
     (name "dialog")
-    (version "1.3-20240307")
+    (version "1.3-20240619")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -242,7 +242,7 @@ ncursesw library provides wide character support.")
                     version ".tgz"))
               (sha256
                (base32
-                "1vrl9msmp51y0ff9iw8ycklb7g2warisv6bb889h495vd8f3379k"))))
+                "0zalk6qk6m4zfwh6qs56m7gf6pp0w1v04d156lwgvcrxjqc4732x"))))
     (build-system gnu-build-system)
     (inputs
      (list ncurses))

@@ -1,0 +1,517 @@
+Revert https://gitlab.com/gnutls/gnutls/-/merge_requests/1800.
+
+diff --git a/lib/Makefile.am b/lib/Makefile.am
+index 6d4e8d225adfb7286165b0659c208ba8387b9dd0..a50d3114ea8dbf37f5fe5e7844a91c688215c793 100644
+--- b/lib/Makefile.am
++++ a/lib/Makefile.am
+@@ -156,9 +156,17 @@
+ 	ext/libgnutls_ext.la \
+ 	auth/libgnutls_auth.la algorithms/libgnutls_alg.la \
+ 	extras/libgnutls_extras.la
+-thirdparty_libadd = $(LTLIBINTL) $(LIBSOCKET) $(LTLIBNSL) \
++thirdparty_libadd = $(LTLIBZ) $(LTLIBINTL) $(LIBSOCKET) $(LTLIBNSL) \
+ 	$(P11_KIT_LIBS) $(LIB_SELECT) $(GNUTLS_LIBS_PRIVATE)
+ 
++if HAVE_LIBBROTLI
++thirdparty_libadd += $(LIBBROTLIENC_LIBS) $(LIBBROTLIDEC_LIBS)
++endif
++
++if HAVE_LIBZSTD
++thirdparty_libadd += $(LIBZSTD_LIBS)
++endif
++
+ if HAVE_LIBIDN2
+ thirdparty_libadd += $(LIBIDN2_LIBS)
+ endif
+diff --git a/lib/compress.c b/lib/compress.c
+index a6b04fdfa564b8c06868e8656ee294cbccaba93a..a0a7c699c39a76ab0baa769929bcc304885a2937 100644
+--- b/lib/compress.c
++++ a/lib/compress.c
+@@ -1,8 +1,7 @@
+ /*
+  * Copyright (C) 2017-2022 Red Hat, Inc.
+  *
+- * Authors: Nikos Mavrogiannopoulos,
+- *          Zoltan Fridrich
++ * Author: Nikos Mavrogiannopoulos
+  *
+  * This file is part of GnuTLS.
+  *
+@@ -21,14 +20,8 @@
+  *
+  */
+ 
+-#include "config.h"
+-
+ #include "compress.h"
+ 
+-#ifndef _WIN32
+-#include <dlfcn.h>
+-#endif
+-
+ #ifdef HAVE_LIBZ
+ #include <zlib.h>
+ #endif
+@@ -42,204 +35,22 @@
+ #include <zstd.h>
+ #endif
+ 
+-#ifdef HAVE_LIBZ
+-static void *_zlib_handle;
+-
+-#if HAVE___TYPEOF__
+-static __typeof__(compressBound)(*_gnutls_zlib_compressBound);
+-static __typeof__(compress)(*_gnutls_zlib_compress);
+-static __typeof__(uncompress)(*_gnutls_zlib_uncompress);
+-#else
+-static uLong (*_gnutls_zlib_compressBound)(uLong sourceLen);
+-static int (*_gnutls_zlib_compress)(Bytef *dest, uLongf *destLen,
+-				    const Bytef *source, uLong sourceLen);
+-static int (*_gnutls_zlib_uncompress)(Bytef *dest, uLongf *destLen,
+-				      const Bytef *source, uLong sourceLen);
+-#endif /* HAVE___TYPEOF__ */
+-
+-static void zlib_deinit(void)
+-{
+-#ifndef _WIN32
+-	if (_zlib_handle != NULL) {
+-		dlclose(_zlib_handle);
+-		_zlib_handle = NULL;
+-	}
+-#endif /* _WIN32 */
+-}
+-
+-static int zlib_init(void)
+-{
+-#ifndef _WIN32
+-	if (_zlib_handle != NULL)
+-		return 0;
+-	if ((_zlib_handle = dlopen("libz.so.1", RTLD_NOW | RTLD_GLOBAL)) ==
+-	    NULL)
+-		goto error;
+-	if ((_gnutls_zlib_compressBound =
+-		     dlsym(_zlib_handle, "compressBound")) == NULL)
+-		goto error;
+-	if ((_gnutls_zlib_compress = dlsym(_zlib_handle, "compress")) == NULL)
+-		goto error;
+-	if ((_gnutls_zlib_uncompress = dlsym(_zlib_handle, "uncompress")) ==
+-	    NULL)
+-		goto error;
+-	return 0;
+-error:
+-	zlib_deinit();
+-	return gnutls_assert_val(GNUTLS_E_INTERNAL_ERROR);
+-#else
+-	return gnutls_assert_val(GNUTLS_E_UNIMPLEMENTED_FEATURE);
+-#endif /* _WIN32 */
+-}
+-#endif /* HAVE_LIBZ */
+-
+-#ifdef HAVE_LIBBROTLI
+-static void *_brotlienc_handle;
+-static void *_brotlidec_handle;
+-
+-#if HAVE___TYPEOF__
+-static __typeof__(BrotliEncoderMaxCompressedSize)(
+-	*_gnutls_BrotliEncoderMaxCompressedSize);
+-static __typeof__(BrotliEncoderCompress)(*_gnutls_BrotliEncoderCompress);
+-static __typeof__(BrotliDecoderDecompress)(*_gnutls_BrotliDecoderDecompress);
+-#else
+-static size_t (*_gnutls_BrotliEncoderMaxCompressedSize)(size_t input_size);
+-static BROTLI_BOOL (*_gnutls_BrotliEncoderCompress)(
+-	int quality, int lgwin, BrotliEncoderMode mode, size_t input_size,
+-	const uint8_t input_buffer[BROTLI_ARRAY_PARAM(input_size)],
+-	size_t *encoded_size,
+-	uint8_t encoded_buffer[BROTLI_ARRAY_PARAM(*encoded_size)]);
+-static BrotliDecoderResult (*_gnutls_BrotliDecoderDecompress)(
+-	size_t encoded_size,
+-	const uint8_t encoded_buffer[BROTLI_ARRAY_PARAM(encoded_size)],
+-	size_t *decoded_size,
+-	uint8_t decoded_buffer[BROTLI_ARRAY_PARAM(*decoded_size)]);
+-#endif /* HAVE___TYPEOF__ */
+-
+-static void brotli_deinit(void)
+-{
+-#ifndef _WIN32
+-	if (_brotlienc_handle != NULL) {
+-		dlclose(_brotlienc_handle);
+-		_brotlienc_handle = NULL;
+-	}
+-	if (_brotlidec_handle != NULL) {
+-		dlclose(_brotlidec_handle);
+-		_brotlidec_handle = NULL;
+-	}
+-#endif /* _WIN32 */
+-}
+-
+-static int brotli_init(void)
+-{
+-#ifndef _WIN32
+-	if (_brotlienc_handle != NULL || _brotlidec_handle != NULL)
+-		return 0;
+-	if ((_brotlienc_handle = dlopen("libbrotlienc.so.1",
+-					RTLD_NOW | RTLD_GLOBAL)) == NULL)
+-		goto error;
+-	if ((_brotlidec_handle = dlopen("libbrotlidec.so.1",
+-					RTLD_NOW | RTLD_GLOBAL)) == NULL)
+-		goto error;
+-	if ((_gnutls_BrotliEncoderMaxCompressedSize =
+-		     dlsym(_brotlienc_handle,
+-			   "BrotliEncoderMaxCompressedSize")) == NULL)
+-		goto error;
+-	if ((_gnutls_BrotliEncoderCompress =
+-		     dlsym(_brotlienc_handle, "BrotliEncoderCompress")) == NULL)
+-		goto error;
+-	if ((_gnutls_BrotliDecoderDecompress = dlsym(
+-		     _brotlidec_handle, "BrotliDecoderDecompress")) == NULL)
+-		goto error;
+-	return 0;
+-error:
+-	brotli_deinit();
+-	return gnutls_assert_val(GNUTLS_E_INTERNAL_ERROR);
+-#else
+-	return gnutls_assert_val(GNUTLS_E_UNIMPLEMENTED_FEATURE);
+-#endif /* _WIN32 */
+-}
+-#endif /* HAVE_LIBBROTLI */
+-
+-#ifdef HAVE_LIBZSTD
+-static void *_zstd_handle;
+-
+-#if HAVE___TYPEOF__
+-static __typeof__(ZSTD_isError)(*_gnutls_ZSTD_isError);
+-static __typeof__(ZSTD_compressBound)(*_gnutls_ZSTD_compressBound);
+-static __typeof__(ZSTD_compress)(*_gnutls_ZSTD_compress);
+-static __typeof__(ZSTD_decompress)(*_gnutls_ZSTD_decompress);
+-#else
+-static unsigned (*_gnutls_ZSTD_isError)(size_t code);
+-static size_t (*_gnutls_ZSTD_compressBound)(size_t srcSize);
+-static size_t (*_gnutls_ZSTD_compress)(void *dst, size_t dstCapacity,
+-				       const void *src, size_t srcSize,
+-				       int compressionLevel);
+-static size_t (*_gnutls_ZSTD_decompress)(void *dst, size_t dstCapacity,
+-					 const void *src,
+-					 size_t compressedSize);
+-#endif /* HAVE___TYPEOF__ */
+-
+-static void zstd_deinit(void)
+-{
+-#ifndef _WIN32
+-	if (_zstd_handle != NULL) {
+-		dlclose(_zstd_handle);
+-		_zstd_handle = NULL;
+-	}
+-#endif /* _WIN32 */
+-}
+-
+-static int zstd_init(void)
+-{
+-#ifndef _WIN32
+-	if (_zstd_handle != NULL)
+-		return 0;
+-	if ((_zstd_handle = dlopen("libzstd.so.1", RTLD_NOW | RTLD_GLOBAL)) ==
+-	    NULL)
+-		goto error;
+-	if ((_gnutls_ZSTD_isError = dlsym(_zstd_handle, "ZSTD_isError")) ==
+-	    NULL)
+-		goto error;
+-	if ((_gnutls_ZSTD_compressBound =
+-		     dlsym(_zstd_handle, "ZSTD_compressBound")) == NULL)
+-		goto error;
+-	if ((_gnutls_ZSTD_compress = dlsym(_zstd_handle, "ZSTD_compress")) ==
+-	    NULL)
+-		goto error;
+-	if ((_gnutls_ZSTD_decompress =
+-		     dlsym(_zstd_handle, "ZSTD_decompress")) == NULL)
+-		goto error;
+-	return 0;
+-error:
+-	zstd_deinit();
+-	return gnutls_assert_val(GNUTLS_E_INTERNAL_ERROR);
+-#else
+-	return gnutls_assert_val(GNUTLS_E_UNIMPLEMENTED_FEATURE);
+-#endif /* _WIN32 */
+-}
+-#endif /* HAVE_LIBZSTD */
+-
+ typedef struct {
+ 	gnutls_compression_method_t id;
+ 	const char *name;
+-	int (*init)(void);
+-	void (*deinit)(void);
+ } comp_entry;
+ 
+-static comp_entry comp_algs[] = {
+-	{ GNUTLS_COMP_NULL, "NULL", NULL, NULL },
++static const comp_entry comp_algs[] = { { GNUTLS_COMP_NULL, "NULL" },
+ #ifdef HAVE_LIBZ
+-	{ GNUTLS_COMP_ZLIB, "ZLIB", zlib_init, zlib_deinit },
++					{ GNUTLS_COMP_ZLIB, "ZLIB" },
+ #endif
+ #ifdef HAVE_LIBBROTLI
+-	{ GNUTLS_COMP_BROTLI, "BROTLI", brotli_init, brotli_deinit },
++					{ GNUTLS_COMP_BROTLI, "BROTLI" },
+ #endif
+ #ifdef HAVE_LIBZSTD
+-	{ GNUTLS_COMP_ZSTD, "ZSTD", zstd_init, zstd_deinit },
++					{ GNUTLS_COMP_ZSTD, "ZSTD" },
+ #endif
+-	{ GNUTLS_COMP_UNKNOWN, NULL, NULL, NULL }
+-};
++					{ GNUTLS_COMP_UNKNOWN, NULL } };
+ 
+ static const gnutls_compression_method_t alg_list[] = { GNUTLS_COMP_NULL,
+ #ifdef HAVE_LIBZ
+@@ -253,36 +64,6 @@
+ #endif
+ 							0 };
+ 
+-/* Initialize given compression method
+- *
+- * Calling any of the compression functions without first initializing
+- * the respective compression method results in undefined behavior.
+- */
+-int _gnutls_compression_init_method(gnutls_compression_method_t method)
+-{
+-	comp_entry *p;
+-
+-	for (p = comp_algs; p->name; ++p)
+-		if (p->id == method)
+-			return p->init ? p->init() : GNUTLS_E_INVALID_REQUEST;
+-
+-	return GNUTLS_E_INVALID_REQUEST;
+-}
+-
+-/* Deinitialize all compression methods
+- * 
+- * If no compression methods were initialized,
+- * this function does nothing.
+- */
+-void _gnutls_compression_deinit(void)
+-{
+-	comp_entry *p;
+-
+-	for (p = comp_algs; p->name; ++p)
+-		if (p->deinit)
+-			p->deinit();
+-}
+-
+ /**
+  * gnutls_compression_get_name:
+  * @algorithm: is a Compression algorithm
+@@ -345,15 +126,15 @@
+ 	switch (alg) {
+ #ifdef HAVE_LIBZ
+ 	case GNUTLS_COMP_ZLIB:
+-		return _gnutls_zlib_compressBound(src_len);
++		return compressBound(src_len);
+ #endif
+ #ifdef HAVE_LIBBROTLI
+ 	case GNUTLS_COMP_BROTLI:
+-		return _gnutls_BrotliEncoderMaxCompressedSize(src_len);
++		return BrotliEncoderMaxCompressedSize(src_len);
+ #endif
+ #ifdef HAVE_LIBZSTD
+ 	case GNUTLS_COMP_ZSTD:
+-		return _gnutls_ZSTD_compressBound(src_len);
++		return ZSTD_compressBound(src_len);
+ #endif
+ 	default:
+ 		return 0;
+@@ -372,7 +153,7 @@
+ 		int err;
+ 		uLongf comp_len = dst_len;
+ 
+-		err = _gnutls_zlib_compress(dst, &comp_len, src, src_len);
++		err = compress(dst, &comp_len, src, src_len);
+ 		if (err != Z_OK)
+ 			return gnutls_assert_val(GNUTLS_E_COMPRESSION_FAILED);
+ 		ret = comp_len;
+@@ -383,9 +164,10 @@
+ 		BROTLI_BOOL err;
+ 		size_t comp_len = dst_len;
+ 
+-		err = _gnutls_BrotliEncoderCompress(
+-			BROTLI_DEFAULT_QUALITY, BROTLI_DEFAULT_WINDOW,
+-			BROTLI_DEFAULT_MODE, src_len, src, &comp_len, dst);
++		err = BrotliEncoderCompress(BROTLI_DEFAULT_QUALITY,
++					    BROTLI_DEFAULT_WINDOW,
++					    BROTLI_DEFAULT_MODE, src_len, src,
++					    &comp_len, dst);
+ 		if (!err)
+ 			return gnutls_assert_val(GNUTLS_E_COMPRESSION_FAILED);
+ 		ret = comp_len;
+@@ -395,9 +177,9 @@
+ 	case GNUTLS_COMP_ZSTD: {
+ 		size_t comp_len;
+ 
+-		comp_len = _gnutls_ZSTD_compress(dst, dst_len, src, src_len,
+-						 ZSTD_CLEVEL_DEFAULT);
+-		if (_gnutls_ZSTD_isError(comp_len))
++		comp_len = ZSTD_compress(dst, dst_len, src, src_len,
++					 ZSTD_CLEVEL_DEFAULT);
++		if (ZSTD_isError(comp_len))
+ 			return gnutls_assert_val(GNUTLS_E_COMPRESSION_FAILED);
+ 		ret = comp_len;
+ 	} break;
+@@ -425,7 +207,7 @@
+ 		int err;
+ 		uLongf plain_len = dst_len;
+ 
+-		err = _gnutls_zlib_uncompress(dst, &plain_len, src, src_len);
++		err = uncompress(dst, &plain_len, src, src_len);
+ 		if (err != Z_OK)
+ 			return gnutls_assert_val(GNUTLS_E_DECOMPRESSION_FAILED);
+ 		ret = plain_len;
+@@ -436,8 +218,7 @@
+ 		BrotliDecoderResult err;
+ 		size_t plain_len = dst_len;
+ 
+-		err = _gnutls_BrotliDecoderDecompress(src_len, src, &plain_len,
+-						      dst);
++		err = BrotliDecoderDecompress(src_len, src, &plain_len, dst);
+ 		if (err != BROTLI_DECODER_RESULT_SUCCESS)
+ 			return gnutls_assert_val(GNUTLS_E_DECOMPRESSION_FAILED);
+ 		ret = plain_len;
+@@ -447,8 +228,8 @@
+ 	case GNUTLS_COMP_ZSTD: {
+ 		size_t plain_len;
+ 
+-		plain_len = _gnutls_ZSTD_decompress(dst, dst_len, src, src_len);
+-		if (_gnutls_ZSTD_isError(plain_len))
++		plain_len = ZSTD_decompress(dst, dst_len, src, src_len);
++		if (ZSTD_isError(plain_len))
+ 			return gnutls_assert_val(GNUTLS_E_DECOMPRESSION_FAILED);
+ 		ret = plain_len;
+ 	} break;
+diff --git a/lib/compress.h b/lib/compress.h
+index 7d31206e6f4816ec30a6c1a5a996934039837ceb..e36bef5625b1dc0c7d5b1d53814ee296b1d47243 100644
+--- b/lib/compress.h
++++ a/lib/compress.h
+@@ -25,8 +25,6 @@
+ 
+ #include "gnutls_int.h"
+ 
+-int _gnutls_compression_init_method(gnutls_compression_method_t method);
+-void _gnutls_compression_deinit(void);
+ size_t _gnutls_compress_bound(gnutls_compression_method_t alg, size_t src_len);
+ int _gnutls_compress(gnutls_compression_method_t alg, uint8_t *dst,
+ 		     size_t dst_len, const uint8_t *src, size_t src_len);
+diff --git a/lib/ext/compress_certificate.c b/lib/ext/compress_certificate.c
+index 3648eb0e3caa789bac557fc3e6a0ec7a0b80e22c..2a51ae0c77cbf58d91ca3b344c5931d1d405fdb7 100644
+--- b/lib/ext/compress_certificate.c
++++ a/lib/ext/compress_certificate.c
+@@ -20,13 +20,34 @@
+  *
+  */
+ 
+-#include "compress.h"
+ #include "errors.h"
+ #include "gnutls_int.h"
+ #include "hello_ext_lib.h"
+ #include "num.h"
+ #include "ext/compress_certificate.h"
+ 
++/* Check whether certificate compression method is valid, ie. supported by gnutls
++ */
++static inline int is_valid_method(gnutls_compression_method_t method)
++{
++	switch (method) {
++#ifdef HAVE_LIBZ
++	case GNUTLS_COMP_ZLIB:
++		return 1;
++#endif
++#ifdef HAVE_LIBBROTLI
++	case GNUTLS_COMP_BROTLI:
++		return 1;
++#endif
++#ifdef HAVE_LIBZSTD
++	case GNUTLS_COMP_ZSTD:
++		return 1;
++#endif
++	default:
++		return 0;
++	}
++}
++
+ /* Converts compression algorithm number established in RFC8879 to internal compression method type
+  */
+ gnutls_compression_method_t
+@@ -138,7 +159,6 @@
+ 	gnutls_session_t session, const gnutls_compression_method_t *methods,
+ 	size_t methods_len)
+ {
+-	int ret;
+ 	unsigned i;
+ 	compress_certificate_ext_st *priv;
+ 
+@@ -152,8 +172,8 @@
+ 		return gnutls_assert_val(GNUTLS_E_INVALID_REQUEST);
+ 
+ 	for (i = 0; i < methods_len; ++i)
+-		if ((ret = _gnutls_compression_init_method(methods[i])) < 0)
+-			return gnutls_assert_val(ret);
++		if (!is_valid_method(methods[i]))
++			return gnutls_assert_val(GNUTLS_E_INVALID_REQUEST);
+ 
+ 	priv = gnutls_malloc(sizeof(*priv));
+ 	if (priv == NULL)
+diff --git a/lib/global.c b/lib/global.c
+index 924ec945de9a0c31209be5f98861c950028bf52f..a04943a3e8cb9d7115b492c4e054ac785ad96081 100644
+--- b/lib/global.c
++++ a/lib/global.c
+@@ -25,7 +25,6 @@
+ #include "errors.h"
+ #include <libtasn1.h>
+ #include "dh.h"
+-#include "compress.h"
+ #include "random.h"
+ #include <gnutls/pkcs11.h>
+ 
+@@ -416,7 +415,6 @@
+ 
+ 		_gnutls_system_key_deinit();
+ 		gnutls_crypto_deinit();
+-		_gnutls_compression_deinit();
+ 		_gnutls_rnd_deinit();
+ 		_gnutls_hello_ext_deinit();
+ 		asn1_delete_structure(&_gnutls_gnutls_asn);
+diff --git a/tests/tls13/compress-cert-cli.c b/tests/tls13/compress-cert-cli.c
+index f541e71028ec470699c0511c671b6c5dbcc85651..cc7065c7dd6d961c2c28536c48a2bd3494bc6404 100644
+--- b/tests/tls13/compress-cert-cli.c
++++ a/tests/tls13/compress-cert-cli.c
+@@ -23,21 +23,10 @@
+ #include "config.h"
+ #endif
+ 
++#include <stdbool.h>
++#include <stdint.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+-
+-#if defined(_WIN32) || !defined(HAVE_LIBZ) || !defined(HAVE_LIBBROTLI) || \
+-	!defined(HAVE_LIBZSTD)
+-
+-int main(int argc, char **argv)
+-{
+-	exit(77);
+-}
+-
+-#else
+-
+-#include <stdbool.h>
+-#include <stdint.h>
+ #include <string.h>
+ #include <errno.h>
+ #include <gnutls/gnutls.h>
+@@ -247,7 +236,8 @@
+ 
+ void doit(void)
+ {
++#if !defined(HAVE_LIBZ) || !defined(HAVE_LIBBROTLI) || !defined(HAVE_LIBZSTD)
++	exit(77);
++#endif
+ 	run();
+ }
+-
+-#endif /* _WIN32 */
