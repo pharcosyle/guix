@@ -50,14 +50,14 @@
   ;; enough to avoid massive rebuilds.
   (package
     (name "gdb")
-    (version "14.2")
+    (version "15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0wkprsjyyh204fdjlkaz20k847l88i9y8m9zqsv15vcd3l3dhk9d"))))
+                "1wjl6f86pyrkyy0xhsf362ywnr559i6sm9f5m6y388apsjn4w99q"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -145,25 +145,25 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
     (properties `((hidden? . #t)))
     (license gpl3+)))
 
-(define-public gdb-14
+(define-public gdb-15
   (package
     (inherit gdb/pinned)
-    (version "14.2")
+    (version "15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0wkprsjyyh204fdjlkaz20k847l88i9y8m9zqsv15vcd3l3dhk9d"))))
+                "1wjl6f86pyrkyy0xhsf362ywnr559i6sm9f5m6y388apsjn4w99q"))))
     (properties '())))
 
 (define-public gdb
   ;; The "default" version.
-  gdb-14)
+  gdb-15)
 
 (define-public gdb-multiarch
-  (package/inherit gdb-14
+  (package/inherit gdb-15
     (name "gdb-multiarch")
     (arguments
      `(#:configure-flags
@@ -172,17 +172,17 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
              "--enable-interwork"
              "--enable-languages=c,c++"
              "--disable-nls")
-       ,@(package-arguments gdb-14)))
+       ,@(package-arguments gdb-15)))
     (synopsis "The GNU debugger (with all architectures enabled)")))
 
 (define-public gdb-minimal
-  (package/inherit gdb-14
+  (package/inherit gdb-15
     (name "gdb-minimal")
-    (inputs (fold alist-delete (package-inputs gdb-14)
+    (inputs (fold alist-delete (package-inputs gdb-15)
                   '("libxml2" "ncurses" "python-wrapper" "source-highlight")))))
 
 (define-public avr-gdb
-  (package/inherit gdb-14
+  (package/inherit gdb-15
     (name "avr-gdb")
     (arguments
      `(#:configure-flags
@@ -191,7 +191,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
              "--enable-languages=c,c++"
              "--with-system-readline"
              "--enable-source-highlight")
-       ,@(package-arguments gdb-14)))
+       ,@(package-arguments gdb-15)))
     (synopsis "The GNU Debugger for AVR")
     (description
      "GDB is the GNU debugger.  With it, you can monitor what a program is

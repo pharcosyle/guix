@@ -293,7 +293,7 @@ files and generates build instructions for the Ninja build system.")
 (define-public meson
   (package
     (name "meson")
-    (version "1.4.1")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
@@ -302,7 +302,7 @@ files and generates build instructions for the Ninja build system.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0jazp9djwy7g0an88i10432c3219m2lsp3ncji1fcsjzi9rsv2hv"))))
+         "1vab706pw1q17vh9rbsmlirgiji3k6wljl735lxffp95vwx56zjn"))))
     (build-system python-build-system)
     (arguments
      (list
