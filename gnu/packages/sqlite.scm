@@ -64,13 +64,13 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.45.3")
+   (version "3.46.0")
    (source (origin
              (method url-fetch)
              (uri (sqlite-uri version 2024))
              (sha256
               (base32
-               "0c8m34w9mvm5f21b8nr0rkyil0dfdrrjgxibyih9rh9466jrr05j"))))
+               "0zbs853s8ly693qdg0l7vs4shwn3plmvdczr2s478wsj6dxnm3kg"))))
    (build-system gnu-build-system)
    (inputs (list readline))
    (outputs '("out" "static"))
