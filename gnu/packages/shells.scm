@@ -399,7 +399,7 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (version "6.24.10")
+    (version "6.24.13")
     (source (origin
               (method url-fetch)
               ;; Old tarballs are moved to old/.
@@ -409,7 +409,7 @@ written by Paul Haahr and Byron Rakitzis.")
                                         "old/tcsh-" version ".tar.gz")))
               (sha256
                (base32
-                "0r36lfmn01s1g93487gvr4nsrcmvzw0bz4yp7v9kjhdppq7mqiqk"))
+                "06n7ln059l9f97n6zn40p2zfkvfcqq9lvwl5z4micpf8x597v4hy"))
               (patches
                (search-patches "tcsh-fix-autotest.patch"))))
     (build-system gnu-build-system)
@@ -497,7 +497,8 @@ history mechanism, job control and a C-like syntax.")
          "1mdc8lnq8qxq1ahxp8610n799pd7a9kqg3liy7xq2pjvvp71x3cv"))
        (patches
         (append
-         (search-patches "zsh-egrep-failing-test.patch")
+         (search-patches "zsh-egrep-failing-test.patch"
+                         "zsh-texinfo-7-compat.patch")
          (list
           (origin
             (method url-fetch)

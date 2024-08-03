@@ -51,6 +51,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system pyproject)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt)
@@ -241,18 +242,22 @@ with a PKCS #11 Cryptographic Token Interface.")
 (define-public pcsc-lite
   (package
     (name "pcsc-lite")
-    (version "2.0.0")
+    (version "2.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://pcsclite.apdu.fr/files/"
-                                  "pcsc-lite-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/rousseau/PCSC")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mlk32gpzmzjf5v8qn56lpyyba625jzzw8rkrmpyvr8h8nvf5hyn"))))
-    (build-system gnu-build-system)
+                "16x5z0q5pabpcm8xa5f95d04p8l4vj17d8p3f1sd3fifc5c9xfnz"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers"
-                           "--disable-libsystemd")))
+     (list #:configure-flags
+           #~(list "-Dusbdropdir=/var/lib/pcsc/drivers"
+                   "-Dlibsystemd=false"
+                   "-Dpolkit=false")))
     (native-inputs
      (list flex
            perl                         ;for pod2man

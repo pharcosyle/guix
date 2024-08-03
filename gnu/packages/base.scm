@@ -453,7 +453,6 @@ used to apply commands with arbitrarily long arguments.")
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
-      #:tests? #f
       ,@(if (system-hurd?)
             '(#:make-flags            ; these tests fail deterministically
               (list (string-append "XFAIL_TESTS="
@@ -478,6 +477,14 @@ used to apply commands with arbitrarily long arguments.")
                        (("#!/bin/sh") (string-append "#!" (which "sh"))))))
                  (add-after 'unpack 'remove-tests
                    (lambda _
+                     ;; No localtime in the build container.
+                     (for-each (lambda (f)
+                                 (call-with-output-file f
+                                   (lambda (port)
+                                     (display "int main() { return 77; }"
+                                              port))))
+                               '("gnulib-tests/test-localtime_r.c"
+                                 "gnulib-tests/test-localtime_r-mt.c"))
                      ,@(if (system-hurd?)
                            '((substitute*
                                  ;; These tests hang
@@ -830,15 +837,14 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   (version "2.39")
+   (version "2.40")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "09nrwb0ksbah9k35jchd28xxp2hidilqdgz7b8v5f30pz1yd8yzp"))
-            (patches (search-patches "glibc-2.39-git-updates.patch"
-                                     "glibc-ldd-powerpc.patch"
+              "18h50b0zm8dkpzj81w033v99rbxiykk3v697yr4dfqwjbqbr1a0r"))
+            (patches (search-patches "glibc-ldd-powerpc.patch"
                                      "glibc-2.38-ldd-x86_64.patch"
                                      "glibc-dl-cache.patch"
                                      "glibc-2.37-versioned-locpath.patch"
@@ -1154,7 +1160,7 @@ with the Linux kernel.")
                                        "glibc-2.35-CVE-2023-4911.patch"
                                        "glibc-ldd-powerpc.patch"
                                        "glibc-ldd-x86_64.patch"
-                                       "glibc-dl-cache.patch"
+                                       "glibc-2.35-dl-cache.patch"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-allow-kernel-2.6.32.patch"
                                        "glibc-reinstate-prlimit64-fallback.patch"
