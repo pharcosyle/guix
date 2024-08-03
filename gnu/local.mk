@@ -1385,7 +1385,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glib-skip-failing-test.patch		\
   %D%/packages/patches/glib-skip-uninstalled-libs-tests.patch	\
   %D%/packages/patches/glibc-2.33-riscv64-miscompilation.patch	\
-  %D%/packages/patches/glibc-2.39-git-updates.patch	\
   %D%/packages/patches/glibc-CVE-2019-7309.patch		\
   %D%/packages/patches/glibc-CVE-2019-9169.patch		\
   %D%/packages/patches/glibc-CVE-2019-19126.patch		\
@@ -1438,6 +1437,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnulib-bootstrap.patch			\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnupg-1-build-with-gcc10.patch		\
+  %D%/packages/patches/gnutls-no-dlopen-compression.patch	\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
@@ -2299,6 +2299,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/zig-use-baseline-cpu-by-default.patch	\
   %D%/packages/patches/zig-use-system-paths.patch		\
   %D%/packages/patches/zsh-egrep-failing-test.patch		\
+  %D%/packages/patches/zsh-texinfo-7-compat.patch		\
   %D%/packages/patches/zuo-bin-sh.patch
 
 MISC_DISTRO_FILES =				\

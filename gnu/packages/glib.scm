@@ -289,7 +289,7 @@ features provided by recent linux kernel releases.")
 (define glib
   (package
     (name "glib")
-    (version "2.80.3")
+    (version "2.80.4")
     (source
      (origin
        (method url-fetch)
@@ -298,7 +298,7 @@ features provided by recent linux kernel releases.")
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "05yl6sicpqxjn72ga8lhq5163r391inj9frh08yn3wyhvpma0irr"))
+        (base32 "0kq3xaj6y2drnc250m9qi722g64a0wrxyyk9fd2lxd69vz2jkq14"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"

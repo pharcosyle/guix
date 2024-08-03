@@ -3379,7 +3379,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "6.9.0")
+    (version "6.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3387,7 +3387,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1l0kqh7fv5h2fq3fh6i4py624wszkd32nbn98fha590ix84ksr1g"))))
+                "1kld9vav2xfxiw0s98p92kllkma7qilk707s01d90i3vff12z9li"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -6256,7 +6256,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "6.9.2")
+    (version "6.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -6264,7 +6264,7 @@ and copy/paste text in the console and in xterm.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ak582n18v6k1iqbz5q8ixbig8hvv0s58q73bmcb42nwfar5p1j3"))))
+                "1pz04ds8dpym912z7w9mz8w5srl69qzsnqbsl3ggzqfg7x7ai0ik"))))
     (build-system gnu-build-system)
     (outputs '("out" "static")) ;static versions of the binaries in "out"
     (arguments

@@ -1014,7 +1014,7 @@ command.")
 (define-public googletest
   (package
     (name "googletest")
-    (version "1.14.0")
+    (version "1.15.2")
     (source
      (origin
        (method git-fetch)
@@ -1023,7 +1023,7 @@ command.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19c7f248rkg302yrbl5x7irfyi6a9whbpf45wn4bn9fk0625qi5p"))))
+        (base32 "0wvivz9hxxs8gdmqx0v4g012lqi43fpzvndwmx6i0wdcwi4pdqnl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
@@ -1502,25 +1502,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "8.2.2")
+    (version "8.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "0xvr25qvmdh6z03jpgg24adhgqkvkal2g2v8vk63j6909q8bhjyy"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://github.com/pytest-dev/pytest/commit"
-                 "/de47b73520fd9b7e41272701d7fd4663357af046.patch"))
-           (file-name (string-append name "-test-reruns-fix.patch"))
-           (sha256
-            (base32
-             "0iklrswripwzcp7rii6k9kd8l8qjy50bf31w9j84wn609m7mf22a")))))))
+         "1kpxz6aa2ys890p75d6vgk4brxc34j0xwsbjr1114mff29fk8cn1"))))
     (build-system pyproject-build-system)
     (arguments
      (list

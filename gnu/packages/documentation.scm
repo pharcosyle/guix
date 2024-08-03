@@ -186,7 +186,7 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.9.8")
+    (version "1.11.0")
     (home-page "https://www.doxygen.nl/")
     (source (origin
               (method url-fetch)
@@ -197,7 +197,7 @@ markup) can be customized and extended by the user.")
                                         ".src.tar.gz")))
               (sha256
                (base32
-                "0qjgw7bnx668hpi4r8m366vsq118s9365zf8z4x5yjrqx0ld5qq5"))))
+                "01rnmwzxdrj422qzhzzfhfc0j9xdmq68ary9qkhbxs7kqpwgvvf9"))))
     (build-system cmake-build-system)
     (native-inputs
      (list bison

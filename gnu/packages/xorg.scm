@@ -1151,14 +1151,14 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfs
   (package
     (name "libfs")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
               "mirror://xorg/individual/lib/libFS-" version ".tar.xz"))
         (sha256
-          (base32 "12i0zh1v5zlba617nam8sjhfqi68qqnl7z5hsz3wqhijid1pjwsr"))))
+          (base32 "0xrv9x5v6km7ib3d5k9xr704xkhfvigh8i507mb9i706hqybvawv"))))
     (build-system gnu-build-system)
     (inputs
       (list xtrans xorgproto))
@@ -4627,7 +4627,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxtst
   (package
     (name "libxtst")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
       (origin
         (method url-fetch)
@@ -4637,7 +4637,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.xz"))
         (sha256
           (base32
-            "1j1kr90b7vmpqniqd0pd786kn5924q799c5m2kpgzd2lj85z7xc4"))))
+            "0hljblisw72fk60y7zf9214ydn7lk32kj43cf12af2bhp4jlq3dm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")
@@ -4909,14 +4909,14 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxfont2
   (package
     (inherit libxfont)
-    (version "2.0.6")
+    (version "2.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/lib/libXfont2-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1x5f4w6f94dq9hfcd11xzzjqbz30yn2hdrnmv1b3zyxhgq0j1jkl"))))))
+                "1ywfwpirvi7fmd3my3cb6szzd9c4p7xy7s1kjjv6k1x4xgyq4ywb"))))))
 
 (define-public libxi
   (package
@@ -5432,7 +5432,7 @@ Wayland.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.8.9")
+    (version "1.8.10")
     (source
      (origin
        (method url-fetch)
@@ -5440,7 +5440,7 @@ Wayland.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0qijpp9l6hhwwx22hncrzjpmb5ffcakj6pxa5lzgjkhl3l8qz7bp"))))
+         "0lywvwsz92j7isglvw2227g3na4ghyspvsvblpf43ns7jfnksfrb"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ;8 MiB of man pages + XML

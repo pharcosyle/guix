@@ -93,7 +93,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.49")
+    (version "1.50")
     (source
      (origin
       (method url-fetch)
@@ -101,7 +101,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1ab33h9nglvxp17h5pciq3ga4sg66wpzn1jlig0apx6v753daycb"))))
+        "02p2jgz95688ib28sl4aa624cj0liz73anwcl92f8cx6w14m6h39"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -165,14 +165,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.10.3")
+    (version "1.11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1akj68mdrsm9y85dc3zbdf5gm74n8pgzmp38spg6gb65ga4p024b"))))
+               "172vd1c1zn27mqd7cdb14hpjz35rhr9pg8dass0j0zyfcyc0q4h9"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -222,7 +222,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.7")
+    (version "3.0.1")
     (source
      (origin
       (method url-fetch)
@@ -230,7 +230,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0xpvd9z4rjg9h8r5kafqclykv1sy235574a7a0p8m0r7zhghh0q1"))))
+        "1ccly6aqyxv3hgshhls6qw177salcrawp0x4lsqs9ph3c4pg9w68"))))
     (build-system gnu-build-system)
     (arguments (if (%current-target-system)
                    (list #:configure-flags
@@ -255,7 +255,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.6.6")
+    (version "1.6.7")
     (source
      (origin
       (method url-fetch)
@@ -264,7 +264,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "1976ik89q334g5i7v5vkdzl3xp6zfdy9bi6072436n8m44yh7v2x"))))
+        "0qxpmadxggx5808326i9g4ya0xrnv14mfxpg7rlvckmviq5m2wng"))))
     (build-system gnu-build-system)
     (propagated-inputs
      (list libgpg-error))

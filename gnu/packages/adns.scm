@@ -68,15 +68,15 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.26.0")
+    (version "1.33.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://c-ares.haxx.se/download/" name "-" version
-                    ".tar.gz"))
+                    "https://github.com/c-ares/" name "/releases/download"
+                    "/v" version "/c-ares-" version ".tar.gz"))
               (sha256
                (base32
-                "0l2f373di0saqiylkx5vmv32lwk9lixldhm6pl70h2dh097qrmdy"))))
+                "0ii37cx5vi6s81m1v2qw59mh9ifc2564cjkmrd7fnh902wpxyh9y"))))
     (build-system gnu-build-system)
     (arguments
      (list
