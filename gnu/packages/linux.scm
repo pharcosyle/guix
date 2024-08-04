@@ -4331,7 +4331,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "31")
+    (version "32")
     (source (origin
               (method url-fetch)
               (uri
@@ -4339,21 +4339,21 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "100dy3y1i567g15n2x9xqgrianlwc0cc5n18nw0w0wnc8f8999pm"))
+                "14nl1d4gh3v8wkr1q19fy3ddl7wi1rqgas5zlywqra3m4bcx03k3"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
-     (list #:configure-flags #~(list "--with-xz" "--with-zlib" "--with-zstd"
-                                     "--disable-test-modules")
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'install 'install-modprobe&co
-                 (lambda _
-                   (for-each (lambda (tool)
-                               (symlink "kmod"
-                                        (string-append #$output "/bin/" tool)))
-                             '("insmod" "rmmod" "lsmod" "modprobe"
-                               "modinfo" "depmod")))))))
+     (list
+      #:configure-flags
+      #~(list
+         "--with-xz"
+         "--with-zlib"
+         "--with-zstd"
+         "--disable-test-modules"
+         ;; New in version 32, this flag could be a convenient if less
+         ;; flexible alternative to LINUX_MODULE_DIRECTORY.
+         ;; "--with-module-directory=/run/booted-system/kernel/lib/modules"
+         )))
     (native-inputs (list pkg-config zstd)) ;zstd needed for tests
     (inputs (list xz zlib `(,zstd "lib")))
     (supported-systems (delete "i586-gnu" %supported-systems))
