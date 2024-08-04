@@ -1356,6 +1356,49 @@ other values of screen objects, by setting their values as the tween starting
 point and then, after each tween step, plugging back the result.")
     (license license:expat)))
 
+(define-public abseil-cpp
+  (package
+    (name "abseil-cpp")
+    (version "20240722.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/abseil/abseil-cpp")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pmrigimzic2k3ix3l81j2jpfgjgbajz0qbc5s57zljr2w7fjn77"))
+              (patches
+               (search-patches "abseil-cpp-20220623.1-no-kepsilon-i686.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DBUILD_SHARED_LIBS=ON"
+              "-DABSL_BUILD_TESTING=ON"
+              "-DABSL_BUILD_TEST_HELPERS=ON"
+              "-DABSL_USE_EXTERNAL_GOOGLETEST=ON"
+              #$@(if (target-riscv64?)
+                     '("-DCMAKE_SHARED_LINKER_FLAGS=-latomic")
+                     '()))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'set-env-vars
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; absl_time_test requires this environment variable.
+              (setenv "TZDIR" (search-input-directory inputs
+                                                      "share/zoneinfo")))))))
+    (native-inputs
+     (list googletest
+           tzdata-for-tests))
+    (home-page "https://abseil.io")
+    (synopsis "Augmented C++ standard library")
+    (description "Abseil is a collection of C++ library code designed to
+augment the C++ standard library.  The Abseil library code is collected from
+Google's C++ code base.")
+    (license license:asl2.0)))
+
 ;;; This older LTS release is kept for tensorflow.
 (define-public abseil-cpp-20200923.3
   (package
@@ -1457,7 +1500,7 @@ Google's C++ code base.")
           `(cons* "-DABSL_BUILD_TESTING=ON"
                   (delete "-DABSL_RUN_TESTS=ON" ,flags))))))))
 
-(define-public abseil-cpp
+(define-public abseil-cpp-20230802.1
   (let ((base abseil-cpp-20220623.1))
     (package
       (inherit base)

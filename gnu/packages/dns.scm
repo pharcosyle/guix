@@ -647,12 +647,13 @@ BIND and djbdns---whilst using relatively little memory.")
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
-     (list flex swig))
+     (list pkg-config
+           protobuf-c
+           swig))
     (inputs
      (list expat
            libevent
            `(,nghttp2 "lib")
-           protobuf
            python-wrapper
            openssl))
     (arguments
@@ -666,7 +667,8 @@ BIND and djbdns---whilst using relatively little memory.")
               "--with-libevent=" (assoc-ref %build-inputs "libevent"))
              (string-append
               "--with-libexpat=" (assoc-ref %build-inputs "expat"))
-             "--with-pythonmodule" "--with-pyunbound")
+             "--with-pythonmodule" "--with-pyunbound"
+             "--enable-dnstap")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'fix-python-site-package-path
@@ -678,108 +680,7 @@ BIND and djbdns---whilst using relatively little memory.")
                  (("^PYTHON_SITE_PKG=.*$")
                   (string-append
                    "PYTHON_SITE_PKG="
-                   pyout "/lib/python-" ver "/site-packages\n"))))))
-         (add-before 'check 'fix-missing-nss-for-tests
-           ;; Unfortunately, the package's unittests involve some checks
-           ;; looking up protocols and services which are not provided
-           ;; by the minimalistic build environment, in particular,
-           ;; /etc/protocols and /etc/services are missing.
-           ;; Also, after plain substitution of protocol and service names
-           ;; in the test data, the tests still fail because the
-           ;; corresponding Resource Records have been signed by
-           ;; RRSIG records.
-           ;; The following LD_PRELOAD library overwrites the glibc
-           ;; functions ‘get{proto,serv}byname’, ‘getprotobynumber’ and
-           ;; ‘getservbyport’ providing the few records required for the
-           ;; unit tests to pass.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((source (assoc-ref %build-inputs "source"))
-                    (gcc (assoc-ref %build-inputs "gcc")))
-               (call-with-output-file "/tmp/nss_preload.c"
-                 (lambda (port)
-                   (display "#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-
-#include <netdb.h>
-
-struct protoent *getprotobyname(const char *name) {
-  struct protoent *p = malloc(sizeof(struct protoent));
-  p->p_aliases = malloc(sizeof(char*));
-  if (strcasecmp(name, \"tcp\") == 0) {
-    p->p_name = \"tcp\";
-    p->p_proto = 6;
-    p->p_aliases[0] = \"TCP\";
-  } else if (strcasecmp(name, \"udp\") == 0) {
-    p->p_name = \"udp\";
-    p->p_proto = 17;
-    p->p_aliases[0] = \"UDP\";
-  } else 
-    p = NULL;
-  return p;
-}
-
-struct protoent *getprotobynumber(int proto) {
-  struct protoent *p = malloc(sizeof(struct protoent));
-  p->p_aliases = malloc(sizeof(char*));
-  switch(proto) {
-  case 6:
-    p->p_name = \"tcp\";
-    p->p_proto = 6;
-    p->p_aliases[0] = \"TCP\";
-    break;
-  case 17:
-    p->p_name = \"udp\";
-    p->p_proto = 17;
-    p->p_aliases[0] = \"UDP\";
-    break;
-  default:
-    p = NULL;
-    break;
-  }
-  return p;
-}
-
-struct servent *getservbyname(const char *name, const char *proto) {
-  struct servent *s = malloc(sizeof(struct servent));
-  char* buf = malloc((strlen(proto)+1)*sizeof(char));
-  strcpy(buf, proto);
-  s->s_aliases = malloc(sizeof(char*));
-  s->s_aliases[0] = NULL;
-  if (strcasecmp(name, \"domain\") == 0) {
-    s->s_name = \"domain\";
-    s->s_port = htons(53);
-    s->s_proto = buf;
-  } else 
-    s = NULL;
-  return s;
-}
-
-struct servent *getservbyport(int port, const char *proto) {
-  char buf[32];
-  struct servent *s = malloc(sizeof(struct servent));
-  strcpy(buf, proto);
-  s->s_aliases = malloc(sizeof(char*));
-  s->s_aliases[0] = NULL;
-  switch(port) {
-  case 53:
-    s->s_name = \"domain\";
-    s->s_port = 53;
-    s->s_proto = \"udp\";
-    break;
-  default:
-    s = NULL;
-    break;
-  }
-  return s;
-}" port)))
-               (invoke (string-append gcc "/bin/gcc")
-                       "-shared" "-fPIC" "-o" "/tmp/nss_preload.so"
-                       "/tmp/nss_preload.c")
-               ;; The preload library only affects the unittests.
-               (substitute* "Makefile"
-                 (("./unittest")
-                  "LD_PRELOAD=/tmp/nss_preload.so ./unittest"))))))))
+                   pyout "/lib/python-" ver "/site-packages\n")))))))))
     (home-page "https://www.unbound.net")
     (synopsis "Validating, recursive, and caching DNS resolver")
     (description
