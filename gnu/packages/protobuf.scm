@@ -39,9 +39,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages pkg-config)
@@ -52,6 +54,7 @@
   #:use-module (gnu packages rpc)
   #:use-module (gnu packages rails)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages serialization)
   #:use-module (srfi srfi-1))
 
 (define-public fstrm
@@ -93,6 +96,58 @@ data in motion, or as a file format for data at rest.")
                    license:hpnd))))     ; libmy/argv*
 
 (define-public protobuf
+  (package
+    (name "protobuf")
+    (version "25.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/protocolbuffers/protobuf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (snippet
+        ;; Don't get rid of everything, keep e.g. utf8_range which
+        ;; isn't packaged in Guix (and it might not make sense for
+        ;; it to be, seems like it's not really a thing outside of
+        ;; protobuf).
+        #~(begin
+            (use-modules (guix build utils))
+            (with-directory-excursion "third_party"
+              (for-each delete-file-recursively
+                        (list "abseil-cpp"
+                              "googletest"
+                              "jsoncpp")))))
+       (sha256
+        (base32
+         "1fgvviv2zfnq4ap4qkndgryf8mkcbznzwdqnqc32vj4dmvsqxy9p"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DBUILD_SHARED_LIBS=ON"
+              "-Dprotobuf_USE_EXTERNAL_GTEST=ON"
+              "-Dprotobuf_ABSL_PROVIDER=package"
+              "-Dprotobuf_JSONCPP_PROVIDER=package")))
+    (native-inputs
+     (append (if (%current-target-system)
+                 (list this-package)
+                 '())))
+    (inputs
+     (list googletest
+           zlib))
+    (propagated-inputs
+     (list abseil-cpp
+           jsoncpp))
+    (home-page "https://github.com/protocolbuffers/protobuf")
+    (synopsis "Data encoding for remote procedure calls (RPCs)")
+    (description
+     "Protocol Buffers are a way of encoding structured data in an efficient
+yet extensible format.  Google uses Protocol Buffers for almost all of its
+internal RPC protocols and file formats.")
+    (license license:bsd-3)))
+
+(define-public protobuf-3.21
   (package
     (name "protobuf")
     (version "3.21.9")
@@ -251,18 +306,25 @@ internal RPC protocols and file formats.")
 (define-public protobuf-c
   (package
     (name "protobuf-c")
-    (version "1.4.1")
+    (version "1.5.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/protobuf-c/protobuf-c/"
-                                  "releases/download/v" version
-                                  "/protobuf-c-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/protobuf-c/protobuf-c")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "17rk42r3gcc46c2svd1mxs542wnl4mi77a6klkhg6wl1a36zmi2c"))))
+                "0hpk58blq2p6hmdhqvcl85qla95shwcasvfxccah5g2znrrmqjhf"))))
     (build-system gnu-build-system)
-    (inputs (list protobuf))
-    (native-inputs (list pkg-config))
+    (inputs
+     (list protobuf
+           zlib))
+    (native-inputs
+     (list autoconf
+           automake
+           libtool
+           pkg-config))
     (home-page "https://github.com/protobuf-c/protobuf-c")
     (synopsis "Protocol Buffers implementation in C")
     (description
