@@ -21413,26 +21413,42 @@ Protocol) 0-9-1 protocol that tries to stay fairly independent of the underlying
 network support library.")
     (license license:bsd-3)))
 
+;; The project readme says there will be no further releases and to just clone
+;; the repo.
 (define-public python-ply
-  (package
-    (name "python-ply")
-    (version "3.11")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "ply" version))
-        (sha256
-          (base32
-            "18qx113g9bi1ac4indd5phma82zcdq601lxncp3vjn43m2mc3iq0"))))
-    (build-system python-build-system)
-    (native-inputs
-     (list python-setuptools
-           python-wheel))
-    (home-page "http://www.dabeaz.com/ply/")
-    (synopsis "Python Lex & Yacc")
-    (description "PLY is a @code{lex}/@code{yacc} implemented purely in Python.
-It uses LR parsing and does extensive error checking.")
-    (license license:bsd-3)))
+  (let ((commit "5c4dc94d4c6d059ec127ee1493c735963a5d2645")
+        (revision "0"))
+    (package
+      (name "python-ply")
+      (version (git-version "3.11" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dabeaz/ply")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0rz7rrzc28haw45fxl7bc1hp92jmc0ak44xsgil7rnpz424gyr2x"))))
+      (build-system pyproject-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (replace 'check
+              (lambda* (#:key tests? #:allow-other-keys)
+                (when tests?
+                  (with-directory-excursion "tests"
+                    (invoke "python" "testlex.py")
+                    (invoke "python" "testyacc.py"))))))))
+      (native-inputs
+       (list python-setuptools
+             python-wheel))
+      (home-page "http://www.dabeaz.com/ply/")
+      (synopsis "Python Lex & Yacc")
+      (description "PLY is a @code{lex}/@code{yacc} implemented purely in
+Python. It uses LR parsing and does extensive error checking.")
+      (license license:bsd-3))))
 
 (define-public python-tabulate
   (package
