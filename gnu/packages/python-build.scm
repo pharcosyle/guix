@@ -221,13 +221,13 @@ write-only counterpart to Tomli, which is a read-only TOML parser.")
 (define-public python-trove-classifiers
   (package
     (name "python-trove-classifiers")
-    (version "2024.4.10")
+    (version "2024.7.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "trove-classifiers" version))
+              (uri (pypi-uri "trove_classifiers" version))
               (sha256
                (base32
-                "14m44pxvf12gs8zjx03h1zd9q5jjhbp5b3agp8f2mds6lyv0px29"))))
+                "0ddcs14r5diry19d9iv4qnfzi0vsxnh6birppcy7gzg35jng4a43"))))
     (build-system pyproject-build-system)
     (arguments (list #:build-backend "setuptools.build_meta"
                      #:tests? #f))      ;keep dependencies to a minimum
