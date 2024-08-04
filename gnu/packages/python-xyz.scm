@@ -15713,13 +15713,13 @@ number of lines in the contained files easily.")
   (hidden-package
    (package
      (name "python-fonttools-minimal")
-     (version "4.53.0")
+     (version "4.53.1")
      (source (origin
                (method url-fetch)
                (uri (pypi-uri "fonttools" version))
                (sha256
                 (base32
-                 "00j0jkcdvjm5cdkyfn52wk0hlp1daz3ki21lzjv5j5fy69nxcgn9"))))
+                 "1i2j8x72b1q20gzrmmsbyivdiyyfcrkzfislrrci3hcvis57fa71"))))
      (build-system pyproject-build-system)
      (arguments '(#:tests? #f))
      (native-inputs
