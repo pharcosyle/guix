@@ -61,6 +61,14 @@
         (base32
          "04jpkzic8f58z6paq7f3f7fdnlv9l89khv3sqsqk7ax10caxb0m4"))))
     (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python" "-m" "unittest")))))))
     (native-inputs
      (list python-flit-core
            python-setuptools))
@@ -83,6 +91,8 @@ matching of file paths.")
       (base32
        "1w8c3mpliqm9biqw75ci8cfj1x5pb6g5zwblqp27ijgxjj7aizrc"))))
    (build-system pyproject-build-system)
+   (arguments
+    (list #:tests? #f)) ; No tests in the pypi archive.
    (native-inputs (list python-setuptools-scm))
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
@@ -346,14 +356,14 @@ Python Package Index (PyPI).")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "70.1.0")
+    (version "72.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "setuptools" version))
        (sha256
         (base32
-         "1xa7df43wr6fip6h4w8ci5hg29nvl381byjir2mqkgd5za9yg881"))
+         "1v32n59aw1fccwc983rfaj7jfh99wdmdwvkrgy0yb5fhavzkw94d"))
        (modules '((guix build utils)))
        (snippet
         ;; TODO: setuptools now bundles the following libraries:
