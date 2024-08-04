@@ -8703,12 +8703,6 @@ writing C extensions for Python as easy as Python itself.")
               (sha256
                (base32
                 "1rlxscrn4bgdlbhjjikknbz5s2hyvn2rjfparry5wxnmiwyl4cw3"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-cython)
-       ((#:tests? tests? #t)
-        (if (target-x86-32?)
-            #f
-            tests?))))
     (properties '())))
 
 ;; NOTE: when upgrading numpy please make sure that python-numba,

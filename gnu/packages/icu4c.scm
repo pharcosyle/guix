@@ -68,7 +68,6 @@
      (list perl))
     (arguments
      (list
-      #:tests? (not (target-x86-32?))
       #:configure-flags
       #~(list
          "--enable-rpath"
