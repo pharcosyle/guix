@@ -1918,7 +1918,7 @@ XML document to a Python object.")
 (define-public python-xmlschema
   (package
     (name "python-xmlschema")
-    (version "3.3.1")
+    (version "3.3.2")
     (source (origin
               ;; Unit tests are not distributed with the PyPI archive.
               (method git-fetch)
@@ -1928,13 +1928,7 @@ XML document to a Python object.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0brsqmsdh28cjifjzr53b1wps1gr414lqi8lpzy43iya1cwz8bjb"))))
-    (arguments
-     ;; FIXME: 2 failed, 1245 passed, 119 skipped
-     ;; Failing tests:
-     ;; - test_normalize_url_with_base_unc_path
-     ;; - test_normalize_url_slashes
-     (list #:tests? #f))
+                "10pni4mhrmxgx9qpz8l6mxm3pmw94fjzfffzp4zd3xhqin0lv5bi"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list python-setuptools
