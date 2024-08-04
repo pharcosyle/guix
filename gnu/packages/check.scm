@@ -2664,7 +2664,7 @@ instantly.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "6.104.2")
+    (version "6.108.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2673,7 +2673,7 @@ instantly.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1a93csyqbacmlpzfdgc2ayxyq2ky8rnvcrw9c8n61hkqh2mr43xk"))))
+                "1bnf9svfnarwk94i8528cd6ynf2mdqjpgzwf7gn491gq5xz2axyg"))))
     (build-system pyproject-build-system)
     (arguments
      (list #:test-flags
