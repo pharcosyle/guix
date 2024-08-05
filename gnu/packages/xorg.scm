@@ -5533,7 +5533,7 @@ Wayland.")
 (define-public libxaw
   (package
     (name "libxaw")
-    (version "1.0.15")
+    (version "1.0.16")
     (source
       (origin
         (method url-fetch)
@@ -5543,7 +5543,7 @@ Wayland.")
                ".tar.xz"))
         (sha256
           (base32
-            "0jkm2ards3nj08y7185k9jvjhhx78r46abrl3g3jrc4zvq7zfddb"))))
+            "13wwqfwaahm6dh35w0nkvw32x3li2s0glsks34ggh267ahmmf7bk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -5896,7 +5896,7 @@ user-friendly mechanism to start the X server.")
 (define-public libxaw3d
   (package
     (name "libxaw3d")
-    (version "1.6.4")
+    (version "1.6.6")
     (source
       (origin
         (method url-fetch)
@@ -5906,7 +5906,7 @@ user-friendly mechanism to start the X server.")
                ".tar.xz"))
         (sha256
           (base32
-            "0484fn93jqjadc68gnrnjgx0pbgravq2i6ssbbrb13n69d9dy016"))))
+            "0il6vkm357c23wa39prhkaskrgxg080fggcbyaqidmjs2cvkw754"))))
     (build-system gnu-build-system)
     (propagated-inputs
       (list libxext libxmu libxt))
