@@ -2980,7 +2980,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-ucm-conf
   (package
     (name "alsa-ucm-conf")
-    (version "1.2.11")
+    (version "1.2.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2988,7 +2988,7 @@ intercept and print the system calls executed by the program.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "10dfzvrmpp9swflw47nxf35an6gj3ilb4wlggdnng8g2637h2z1q"))))
+                "0df0v1rbgz3p8a7ywhscviwzf7b30fwvz8ig168qkgxp942pr3hn"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -3028,7 +3028,7 @@ configuration files that can be used for specific audio hardware.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.11")
+    (version "1.2.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3036,7 +3036,7 @@ configuration files that can be used for specific audio hardware.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kdvjlknc50fwfdkxj0z12xbz21skb3gnwlh6lvsvycmp5ljygwz"))))
+                "1lnh38wii8mnwp3n4hnqa718rgi52rq6ix1llsjrs9r7hs8css28"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -3075,7 +3075,7 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.11")
+    (version "1.2.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3083,7 +3083,7 @@ MIDI functionality to the Linux-based operating system.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "19r8qi6b7sd2p1mhxfqrp18wrgjw5s6rp5ygimb1w59zi0xcmils"))))
+                "096r1k9q05siigvahn55mrwhiax04hiq4lchcw3401y0s1vndg4q"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -3117,14 +3117,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.2.7.1")
+    (version "1.2.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "04958fiiirja5bna7jzc28gr78j2c42accv78mkw3dsbjla7hcwc"))))
+               "1wk6kgrnmp6vkjap3qijvyl4a0pgn3fdi5aqla32v3jf60ysin3v"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
