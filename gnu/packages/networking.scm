@@ -1524,14 +1524,14 @@ containing both Producer and Consumer support.")
 (define-public libndp
   (package
     (name "libndp")
-    (version "1.8")
+    (version "1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libndp.org/files/"
                                   "libndp-" version ".tar.gz"))
               (sha256
                (base32
-                "0ay0n0d85254zdmv8znmn399gfiqpk6ga0jwdwa7ylpbw9pbdzw8"))))
+                "1m1dvn1102xz1hgnaxsdr2c14fbzcfam743na9hrnfnw05723ax8"))))
     (build-system gnu-build-system)
     (native-inputs
      (if (%current-target-system)
