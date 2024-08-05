@@ -174,14 +174,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "8.2.2")
+    (version "8.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.qemu.org/qemu-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1wy45fbf4816l4ylsz8b8cbypva9apcdnvlgqfr586icp30lcww4"))
+        (base32 "18hzz7w8kk0m1djc54mwk75v8f07yfjw6z2a5mklx59rn3kb3bcc"))
        (patches (search-patches "qemu-build-info-manual.patch"
                                 "qemu-disable-bios-tables-test.patch"
                                 "qemu-fix-agent-paths.patch"))
