@@ -264,7 +264,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.4.9")
+    (version "2.4.10")
     (replacement cups-minimal/fixed)
     (source
      (origin
@@ -275,7 +275,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
        ;; Avoid NAME confusion: these are the complete CUPS sources.
        (file-name (git-file-name "cups" version))
        (sha256
-        (base32 "08wjd1flyaslhnwvxl39403qi3g675rk532ysiyk6cda4r8ks1g1"))))
+        (base32 "0mqx302mnk728h9sq5lknfv3ip7mfv44x3cqrjpndcdffd0ppnsw"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags
