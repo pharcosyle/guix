@@ -59,14 +59,14 @@ line syntax.")
 (define-public popt
   (package
     (name "popt")
-    (version "1.18")
+    (version "1.19")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://ftp.rpm.org/popt/releases"
                                  "/popt-1.x/popt-" version ".tar.gz"))
              (sha256
               (base32
-               "1lf5zlj5rbg6s4bww7hbhpca97prgprnarx978vcwa0bl81vqnai"))))
+               "1ya06b35h9yasgd7z67q7gba711hvc765gdqmj51qk4fzhw4hnn2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
