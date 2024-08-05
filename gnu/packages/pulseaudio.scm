@@ -77,7 +77,7 @@
 (define-public libsndfile
   (package
     (name "libsndfile")
-    (version "1.2.0")
+    (version "1.2.2")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -86,7 +86,7 @@
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "10lm5mn171ynykkvq5ad8m1zriv01w25s6hx0l3wphdd4p6f7c92"))
+               "1n3qq18kqwwhgd7blihvfhafrl4ni0n455zfv1n6a5f0mwsic5iz"))
              (modules '((guix build utils)))
              (snippet
               '(begin
