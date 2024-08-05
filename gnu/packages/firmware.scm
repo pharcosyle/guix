@@ -432,8 +432,8 @@ utilites used to process FCODE, OpenFirmware's byte code, consisting of:
                   "i686-linux-gnu")
                  (else (string-append arch "-linux-gnu"))))
         ;; 1.1 was released in May 2013.
-        (commit "af97fd7af5e7c18f591a7b987291d3db4ffb28b5")
-        (revision "1"))
+        (commit "62262791948a7880a3b4a40794de79d8a7a767e1")
+        (revision "2"))
   (package
     (name name)
     (version (git-version "1.1" revision commit))
@@ -445,7 +445,7 @@ utilites used to process FCODE, OpenFirmware's byte code, consisting of:
               (file-name (git-file-name "openbios" version))
               (sha256
                (base32
-                "1xp1b6xgx40i0j3a5y3id0d1p8vdvapai8szganxg3zrvj53fh0n"))
+                "0p4sslzdg4847h8cpzdgwvf9mr29g345lva4vsbzvi1fgf25k5aj"))
               (patches (search-patches "openbios-aarch64-riscv64-support.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -475,8 +475,8 @@ utilites used to process FCODE, OpenFirmware's byte code, consisting of:
                                            "\\.elf$"))))))))
     (native-inputs
      (append (if (string-prefix? (%current-system) target)
-                 (list gcc-10)
-                 (list (cross-gcc target #:xgcc gcc-10) (cross-binutils target)))
+                 (list gcc)
+                 (list (cross-gcc target #:xgcc gcc) (cross-binutils target)))
              (list fcode-utils libxslt which)))
     (home-page "https://openfirmware.info/Welcome_to_OpenBIOS")
     (synopsis "Open Firmware implementation")
