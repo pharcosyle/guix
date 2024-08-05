@@ -586,10 +586,10 @@ The SUBDIR argument defaults to \"efi/Guix\", as it is also the case for
     (license (package-license grub-efi))))
 
 (define-public syslinux
-  (let ((commit "bb41e935cc83c6242de24d2271e067d76af3585c"))
+  (let ((commit "5e426532210bb830d2d7426eb8d8c154d9dfcba6"))
     (package
       (name "syslinux")
-      (version (git-version "6.04-pre" "1" commit))
+      (version (git-version "6.04-pre" "2" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -598,7 +598,7 @@ The SUBDIR argument defaults to \"efi/Guix\", as it is also the case for
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0k8dvafd6410kqxf3kyr4y8jzmpmrih6wbjqg6gklak7945yflrc"))
+                  "1wqmiv6pk4f4ya6kypaly0ajqb67cmc4sk064ayd2bqcrb2m0a87"))
                 (patches
                  (search-patches "syslinux-gcc10.patch"
                                  "syslinux-strip-gnu-property.patch"))))
