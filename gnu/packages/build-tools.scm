@@ -1014,9 +1014,9 @@ maintenance-related files, for convenience.")
 
 (define-public gnulib
   (gnulib-checkout
-   #:version "2024-05-30"
-   #:commit "ac4b301ae15223c98b51cd5a0eda2e2cf57c817b"
-   #:hash (base32 "0f4w56fc97clg13mmdghx84dh9xqmaqr3j672ppfh3h66gmmmvzs")))
+   #:version "202407-stable"
+   #:commit "bdf69b19ec779959e7d00d54069b0fbfd2bace4f"
+   #:hash (base32 "1cag0hdwlzp20jll0qqwmla13nd84yvzvg6b2c8jgk3acxih02kz")))
 
 (define-public pdpmake
   (package
