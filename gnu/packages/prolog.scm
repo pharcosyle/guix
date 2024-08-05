@@ -93,7 +93,7 @@ manner.  It also features an interactive interpreter.")
 (define-public swi-prolog
   (package
     (name "swi-prolog")
-    (version "8.5.20")
+    (version "9.3.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -103,7 +103,7 @@ manner.  It also features an interactive interpreter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vwxk5fy2mxj6538knkqvqhwy1674xh2zkdqdmbzkxf6mj969d7m"))))
+                "1q2dg7n3vf0qc9nxppbcqgbzj4rcjw8sv2vbg9s6i4ixxlsxr5y3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:parallel-build? #t
@@ -182,7 +182,7 @@ it.")
 (define-public trealla
   (package
     (name "trealla")
-    (version "2.55.10")
+    (version "2.55.15")
     (source
      (origin
        (method git-fetch)
@@ -191,7 +191,7 @@ it.")
          (url "https://github.com/trealla-prolog/trealla")
          (commit (string-append "v" version))))
        (sha256
-        (base32 "1yhs21yqs4xq1dffhzi07wly4qrh3h75n6vy38rzq164gsi21crm"))
+        (base32 "1n8dbr7d5xw2nq8pjvnp3hk1rdycn633qiib35ccirxppq635mcx"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
