@@ -829,7 +829,7 @@ after an operating system boots.")
 (define-public edk2-tools
   (package
     (name "edk2-tools")
-    (version "202402")
+    (version "202405")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -840,7 +840,7 @@ after an operating system boots.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0y7jfpijgi099znhzjklnsczn0k0vm1d1qznq9x2a2sa0glydsin"))))
+                "18ww0b1f78h622ridkl5k32scq25l20h560fnvy88wzipl14m67s"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
