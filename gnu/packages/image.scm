@@ -2588,7 +2588,7 @@ Format) file format decoder and encoder.")
 (define-public libjxl
   (package
     (name "libjxl")
-    (version "0.8.2")
+    (version "0.10.3")
     (source
      (origin
        (method git-fetch)
@@ -2598,7 +2598,7 @@ Format) file format decoder and encoder.")
              (recursive? #t)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1alhnnxkwy5bdwahfsdh87xk9rg1s2fm3r9y2w11ka8p3n1ccwr3"))
+        (base32 "03mjin43ikhqa6b0kqwiz3sd78rjp8s7y0fl1dbaxs5na0ixykyf"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete the bundles that will not be used.
