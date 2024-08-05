@@ -30533,7 +30533,10 @@ for YAML and JSON.")
         (base32 "1y28h90v2ib8zqhs3r2yr7ycg8ccwvw3gqkvadlm12v1129q2rxd"))))
     (build-system pyproject-build-system)
     (arguments
-     (list #:phases #~(modify-phases %standard-phases
+     (list #:tests? #f ; Not clear how to run the tests reliably unless
+                       ; we also build the project with the meson build
+                       ; system rather than python/pyproject.
+           #:phases #~(modify-phases %standard-phases
                         (add-after 'unpack 'patch-requirements
                           (lambda _
                             (substitute* (list "pyproject.toml" "setup.py")
