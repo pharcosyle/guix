@@ -507,7 +507,7 @@ provide OpenFirmware functionality on top of an already running system.")
 (define* (make-opensbi-package platform name #:optional (arch "riscv64"))
   (package
     (name name)
-    (version "1.3.1")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -516,7 +516,7 @@ provide OpenFirmware functionality on top of an already running system.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "opensbi" version))
        (sha256
-        (base32 "01pr7fyg3gcb5pj6d48w2an3m4mfjs9b398x31drqxwqcaz0zn94"))))
+        (base32 "0mfjb9jzrmc6chsr16bjrfann67qjxiigz8q42ndf9lrp6nyigd9"))))
     (build-system gnu-build-system)
     (native-inputs
      (append
