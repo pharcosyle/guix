@@ -3580,7 +3580,7 @@ transparently through a bridge.")
 (define-public libnl
   (package
     (name "libnl")
-    (version "3.9.0")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3589,7 +3589,7 @@ transparently through a bridge.")
                     "/libnl-" version ".tar.gz"))
               (sha256
                (base32
-                "1fz9iq0jbvfzsfwkjfg38i28gqg6z55wlj5b3vqmr2kj9l00gmdf"))))
+                "1x84y9qj8v7b082m8w854by1zds3h7gd0gmv1f8zan6vbwiy5cs9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -3604,7 +3604,7 @@ transparently through a bridge.")
                  (string-join (string-split version #\.) "_")
                  "/libnl-doc-" version ".tar.gz"))
            (sha256
-            (base32 "1d8dx1m45ywvlbqnyn68sxi2dss3sgmx4w3374mbjr1lzvxjv697"))))))
+            (base32 "0vw29va840ffp1x35509r7f656nbiq1z23pqg5mgisxzq3x8phvx"))))))
     (outputs `("out" "doc"))
     (arguments
      `(#:phases
