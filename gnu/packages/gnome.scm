@@ -8381,7 +8381,7 @@ users.")
     (name "network-manager")
     ;; Note: NetworkManager still follows the odd/even major version number
     ;; for development/stable releases scheme; be sure to use a stable one.
-    (version "1.48.4")
+    (version "1.48.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -8390,7 +8390,7 @@ users.")
               (patches (search-patches "network-manager-plugin-path.patch"))
               (sha256
                (base32
-                "00vbym0rjm68lfkz7r3gj82rgp2ailncgk44s7vp79515vz3apzj"))))
+                "15c9k762l1y39vspqpb3wm0c6fccb54g5h4mqxvlj6k30rp4jp76"))))
     (build-system meson-build-system)
     (outputs '("out"
                "doc"))                  ; 8 MiB of gtk-doc HTML
