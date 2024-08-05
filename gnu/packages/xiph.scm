@@ -50,6 +50,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix gexp))
 
 (define-public libogg
@@ -351,17 +352,17 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define-public opus
   (package
     (name "opus")
-    (version "1.3.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.mozilla.org/pub/opus/opus-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://downloads.xiph.org/releases/opus"
+                                  "/opus-" version ".tar.gz"))
               (sha256
                (base32
-                "17gz8kxs4i7icsc1gj713gadiapyklynlwqlf0ai98dj4lg8xdb5"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--disable-static")))
+                "1qbwk9zyhbk185ly8xjq6hwmibair53vx363h80b4bwzigvx5hb5"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list python-minimal))
     (synopsis "Versatile audio codec")
     (description
      "Opus is a totally open, royalty-free, highly versatile audio codec.  Opus
