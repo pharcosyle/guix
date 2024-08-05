@@ -2571,7 +2571,7 @@ sockets in Perl.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06pq3qmsla65l1lmn0qc2awz73rx2bccv5sd9jyv85skpvykgkcq"))))
+                "16pq3qmsla65l1lmn0qc2awz73rx2bccv5sd9jyv85skpvykgkcq"))))
     (build-system meson-build-system)
     (arguments
      (list
