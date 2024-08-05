@@ -2747,7 +2747,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "44.0")
+    (version "46.1")
     (source
      (origin
        (method url-fetch)
@@ -2756,7 +2756,7 @@ on the GNOME Desktop with a single simple application.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "03pc3wlfmf07586x89h63fr42pdpvqx64ak4ks298nchmmff8bgb"))))
+         "0qca8rqfhiyqb5al27h1cz39rl7ipd4jx0dxdfz8x5d66wa1124v"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -5116,7 +5116,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "3.5.1")
+    (version "3.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5124,7 +5124,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fpp650ax5l9qmx4mbgsx45ac7z2rzr49m9p3wkmrlrjk2wczmy1"))))
+                "1clafjmp7bi187hixmdcxa10zlk8pclaywhw7gnbiy0v91jwjvaj"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -10020,7 +10020,7 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "44.0")
+    (version "46.0")
     (source
      (origin
        (method url-fetch)
@@ -10029,7 +10029,7 @@ is complete it provides a graphical representation of each selected folder.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0kp09gh537wj7j9a0dc25fv441sfr4x0q6ja89m2lpqkhyrr70sa"))))
+         "0biw8hl8kpnxdlkprm0qla2qng2dbyvip4h5d23ng8547723mpad"))))
     (build-system meson-build-system)
     (native-inputs (list gettext-minimal))
     (home-page "https://gitlab.gnome.org/GNOME/gnome-backgrounds")

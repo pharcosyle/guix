@@ -140,6 +140,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libevent)
@@ -2561,27 +2562,34 @@ sockets in Perl.")
 (define-public libproxy
   (package
     (name "libproxy")
-    (version "0.4.18")
+    (version "0.5.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/libproxy/libproxy/"
-                                  "releases/download/" version "/libproxy-"
-                                  version ".tar.xz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libproxy/libproxy")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cd48xncryc5xxxyfx7g3ws1v9w6zhpwkf76fyn3hb54krp8bdb9"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     (list pkg-config))
-    (inputs
-     (list dbus zlib))
+                "06pq3qmsla65l1lmn0qc2awz73rx2bccv5sd9jyv85skpvykgkcq"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "ctest" "-E" "url-test")))))))
+     (list
+      #:configure-flags
+      #~(list
+         ;; Prevent installation of git hooks, see
+         ;; https://github.com/libproxy/libproxy/issues/262.
+         "-Drelease=true")))
+    (native-inputs
+     (list gi-docgen
+           gobject-introspection
+           pkg-config
+           vala))
+    (inputs
+     (list curl
+           duktape
+           glib
+           gsettings-desktop-schemas))
     (synopsis "Library providing automatic proxy configuration management")
     (description "Libproxy handles the details of HTTP/HTTPS proxy
 configuration for applications across all scenarios.  Applications using
