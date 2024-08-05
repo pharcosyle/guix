@@ -4784,7 +4784,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.8.0")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4792,7 +4792,7 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0m4l665msybhf6z0g4vqj93ydapi6dkg0r8asnd064d85jwmxvwp"))))
+                "15f520nynb5plf9770ab04lzw036g5syakj6znpq5njv0kh097wg"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4827,7 +4827,8 @@ configuration storage systems.")
     (native-inputs
      (append (list gettext-minimal
                    `(,glib "bin")       ;for glib-mkenums and glib-genmarshal
-                   pkg-config)
+                   pkg-config
+                   python-docutils)
              (if (%current-target-system)
                  '()
                  (list gi-docgen
