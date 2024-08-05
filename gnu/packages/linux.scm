@@ -5780,7 +5780,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "4.2")
+    (version "4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5788,7 +5788,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "07ghmibmbnkdy91ng87zdllzicm299l20dhs9m5bfjw6f1b22726"))))
+                "17vg369blmv5ffmkc7hmd71nz0kns1ns7klh61pfm00h3yp2frs1"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags
