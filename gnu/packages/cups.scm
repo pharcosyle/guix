@@ -263,7 +263,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.4.7")
+    (version "2.4.10")
     (source
      (origin
        (method git-fetch)
@@ -273,7 +273,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
        ;; Avoid NAME confusion: these are the complete CUPS sources.
        (file-name (git-file-name "cups" version))
        (sha256
-        (base32 "0cj3gs7ki9v0drj19l326s8f1kxrpq7jkzrdfdk7ykrlk7sj645f"))))
+        (base32 "0mqx302mnk728h9sq5lknfv3ip7mfv44x3cqrjpndcdffd0ppnsw"))))
     (build-system gnu-build-system)
     (arguments
      (list #:configure-flags
@@ -520,14 +520,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.23.12")
+    (version "3.24.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "1vb9irqsm3d4c2qdr4h6ia940x65bb99h4x31mgxn7dkvv42lv57"))
+                "1yzil1fn9ib2hxmqh9in0apmmznvln0xahlxvyny59ck321l6xjx"))
               (patches (search-patches "hplip-usb-timeout.patch"))
               (modules '((guix build utils)))
               (snippet
