@@ -9929,26 +9929,14 @@ platforms, it is not limited to resource-constrained systems.")
 (define-public kexec-tools
   (package
     (name "kexec-tools")
-    (version "2.0.28")
+    (version "2.0.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kernel"
                                   "/kexec/kexec-tools-" version ".tar.xz"))
               (sha256
                (base32
-                "0lyhc50md5caz50q17wv4c3k4f0100mvdzh13d5zxqir5y3yzw6j"))
-              (patches
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://git.kernel.org/pub/scm/utils/kernel/kexec"
-                        "/kexec-tools.git/patch"
-                        "/?id=328de8e00e298f00d7ba6b25dc3950147e9642e6"))
-                  (file-name (string-append name "-binutils-2.42-fix.patch"))
-                  (sha256
-                   (base32
-                    "028zfvndwwkjzr2yy3lzs79rl6jl4qhdvg672pl5kfxc8vdzp76h")))))))
+                "1v59lj0plgpz5j9ywg7qskaka2l3m0l95iqbvda5mr5d798arcb7"))))
     (build-system gnu-build-system)
     (arguments
      ;; There are no automated tests.
