@@ -1055,7 +1055,7 @@ write native speed custom Git applications in any language with bindings.")
 (define-public libgit2-1.8
   (package
     (inherit libgit2-1.7)
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (inherit (package-source libgit2-1.7))
               (uri (git-reference
@@ -1064,7 +1064,17 @@ write native speed custom Git applications in any language with bindings.")
               (file-name (git-file-name "libgit2" version))
               (sha256
                (base32
-                "0f0vqml6fp94z07xkpim2sdj2xvpxnsrwbm1q1dibx4vqjd7mh3q"))))))
+                "1mh55804cvxl2cyl4clinajzgfn3zmlhacnv1pdvdj4w6z2w4si7"))
+              ;; We need to use the bundled xdiff until an option is given
+              ;; to use the one from git.
+              (snippet
+               '(begin
+                  (for-each delete-file-recursively
+                            '("deps/chromium-zlib"
+                              "deps/ntlmclient"
+                              "deps/pcre"
+                              "deps/winhttp"
+                              "deps/zlib"))))))))
 
 (define-public libgit2-1.6
   (package
