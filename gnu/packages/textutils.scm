@@ -168,7 +168,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "2.5.0")
+    (version "2.9.0")
     (source
      (origin
        (method git-fetch)
@@ -177,18 +177,19 @@ libenca and several charset conversion libraries and tools.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xlkazhdnja4lksn5c9nf4bln5gjqa35a8gwlam5r0728w0h83qq"))))
+        (base32 "0s6sllgyrf2fbs0g6bxxbzq35mdl9xplfpanjiz4b5fw6sypq22a"))))
     (build-system gnu-build-system)
     (native-inputs
-     (let ((UNICODE_VERSION "13.0.0"))  ; defined in data/Makefile
+     (let ((UNICODE_VERSION "15.1.0"))  ; defined in data/Makefile
        ;; Test data that is otherwise downloaded with curl.
        `(("NormalizationTest.txt"
           ,(origin
              (method url-fetch)
              (uri (string-append "https://www.unicode.org/Public/"
-                                 UNICODE_VERSION "/ucd/NormalizationTest.txt"))
+                                 UNICODE_VERSION
+                                 "/ucd/NormalizationTest.txt"))
              (sha256
-              (base32 "07g0ya4f6zfzvpp24ccxkb2yq568kh83gls85rjl950nv5fya3nn"))))
+              (base32 "0gi29dr3hm2sl3nqai58l4nha6q4k88r225xq9p6kq1vgvikh4l7"))))
          ("GraphemeBreakTest.txt"
           ,(origin
              (method url-fetch)
@@ -196,10 +197,18 @@ libenca and several charset conversion libraries and tools.")
                                  UNICODE_VERSION
                                  "/ucd/auxiliary/GraphemeBreakTest.txt"))
              (sha256
-              (base32 "07f8rrvcsq4pibdz6zxggxy8w7zjjqyw2ggclqlhalyv45yv7prj"))))
-
+              (base32 "13w4vn11b6dx7a2cw4hizxra57jikjqprjb3xfzcq489zn95x77d"))))
+         ("DerivedCoreProperties.txt"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append "https://www.unicode.org/Public/"
+                                 UNICODE_VERSION
+                                 "/ucd/DerivedCoreProperties.txt"))
+             (sha256
+              (base32 "12qhxvwxkxphswdnsxax4rmsn7mzzjqjb1w62xrilhr3j6v0spgm"))))
          ;; For tests.
-         ("perl" ,perl))))
+         ("perl" ,perl)
+         ("ruby" ,ruby))))
     (arguments
      `(#:make-flags (list ,(string-append "CC=" (cc-for-target))
                           (string-append "prefix=" (assoc-ref %outputs "out")))
@@ -207,66 +216,18 @@ libenca and several charset conversion libraries and tools.")
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'check 'check-data
-           (lambda* (#:key ,@(if (%current-target-system)
-                                 '(native-inputs)
-                                 '())
-                     inputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (for-each (lambda (i)
-                         (copy-file (assoc-ref ,@(if (%current-target-system)
-                                                     '((or native-inputs inputs))
-                                                     '(inputs)) i)
+                         (copy-file (assoc-ref (or native-inputs inputs) i)
                                     (string-append "data/" i)))
-                       '("NormalizationTest.txt" "GraphemeBreakTest.txt"))
-             (substitute* "data/GraphemeBreakTest.txt"
-               (("÷") "/")
-               (("×") "+"))
-             #t)))))
+                       '("NormalizationTest.txt" "GraphemeBreakTest.txt"
+                         "DerivedCoreProperties.txt")))))))
     (home-page "https://juliastrings.github.io/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
 normalization, case-folding, and other operations for data in the UTF-8
 encoding, supporting Unicode version 9.0.0.")
     (license license:expat)))
-
-(define-public utf8proc-2.7.0
-  (package
-    (inherit utf8proc)
-    (name "utf8proc")
-    (version "2.7.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/JuliaStrings/utf8proc")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1wrsmnaigal94gc3xbzdrrm080zjhihjfdla5admllq2w5dladjj"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments utf8proc)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'check-data
-             (lambda* (#:key inputs native-inputs #:allow-other-keys)
-               (display native-inputs)
-               (for-each (lambda (i)
-                           (copy-file (assoc-ref (or native-inputs inputs) i)
-                                      (string-append "data/" i)))
-                         '("NormalizationTest.txt" "GraphemeBreakTest.txt"
-                           "DerivedCoreProperties.txt"))))))))
-    (native-inputs
-     (append
-      (package-native-inputs utf8proc)
-      (let ((UNICODE_VERSION "14.0.0"))
-        `(("DerivedCoreProperties.txt"
-           ,(origin
-              (method url-fetch)
-              (uri (string-append "https://www.unicode.org/Public/"
-                                  UNICODE_VERSION "/ucd/DerivedCoreProperties.txt"))
-              (sha256
-               (base32 "1g77s8g9443dd92f82pbkim7rk51s7xdwa3mxpzb1lcw8ryxvvg3"))))
-          ;; For tests
-          ("ruby" ,ruby-2.7)))))))
 
 (define-public libconfuse
   (package
