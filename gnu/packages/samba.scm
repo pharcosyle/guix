@@ -239,7 +239,6 @@ external dependencies.")
             avahi
             cmocka
             cups
-            gamin
             dbus
             gpgme
             gnutls
