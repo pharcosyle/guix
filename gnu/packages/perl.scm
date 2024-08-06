@@ -4539,7 +4539,7 @@ maniread, maniskip, manicopy, maniadd.")
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
-    (version "0.012")
+    (version "0.013")
     (source
      (origin
        (method url-fetch)
@@ -4547,7 +4547,7 @@ maniread, maniskip, manicopy, maniadd.")
                            "ExtUtils-InstallPaths-" version ".tar.gz"))
        (sha256
         (base32
-         "1v9lshfhm9ck4p0v77arj5f7haj1mmkqal62lgzzvcds6wq5www4"))))
+         "182ad1dvvxi8a79plbyibfxn2ff8qbakw8dlyn7fm8m3v0x9v5k5"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-extutils-config))
