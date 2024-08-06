@@ -668,7 +668,7 @@ spreadsheets and outputs it in comma-separated-value format, and
 (define-public utfcpp
   (package
     (name "utfcpp")
-    (version "3.2.5")
+    (version "4.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -676,18 +676,23 @@ spreadsheets and outputs it in comma-separated-value format, and
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (modules '((guix build utils)))
-              ;; Unbundle ftest
-              (snippet
-               '(begin
-                  (delete-file-recursively "extern")
-                  (substitute* (find-files "tests" "\\.cpp")
-                    (("\"../extern/ftest/ftest.h\"")
-                     "<ftest/ftest.h>"))))
+              ;; ;; Unbundle ftest
+              ;; (snippet
+              ;;  '(begin
+              ;;     (delete-file-recursively "extern")
+              ;;     (substitute* (find-files "tests" "\\.cpp")
+              ;;       (("\"../extern/ftest/ftest.h\"")
+              ;;        "<ftest/ftest.h>"))))
               (sha256
                (base32
-                "195n47dblx765xas54vkgyin3xsvfnvcdc614njzqmcxybfpvix2"))))
+                "0a7l00hcgardv6a8arc08q2hibvvjk3gfppni7m7i45g6194b9d0"))))
     (build-system cmake-build-system)
-    (native-inputs (list ftest))
+    (arguments
+     ;; As of version 4.0.0 tests are no longer part of the build. If we still
+     ;; want to run them, uncomment the unbunle snippet (above) and ftest
+     ;; native input (below) and then I guess build and run them manually.
+     (list #:tests? #f))
+    ;; (native-inputs (list ftest))
     (home-page "https://github.com/nemtrif/utfcpp")
     (synopsis "Portable C++ library for handling UTF-8")
     (description "UTF8-CPP is a C++ library for handling UTF-8 encoded text
