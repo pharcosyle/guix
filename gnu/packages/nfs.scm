@@ -47,7 +47,7 @@
 (define-public nfs-utils
   (package
     (name "nfs-utils")
-    (version "2.6.2")
+    (version "2.6.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -55,7 +55,7 @@
                    "/nfs-utils-" version ".tar.xz"))
              (sha256
               (base32
-               "04ah9pk9l5fdmjarz5xpg2z2spqk33z65hig8vi11mn4h4z8f02j"))))
+               "178il6qfj0a2fhs9gzf2irw8qx1h41a3diqla6zvl2vxkkxv1cq1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
