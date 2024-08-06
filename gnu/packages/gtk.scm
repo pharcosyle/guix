@@ -807,7 +807,7 @@ ever use this library.")
 (define-public at-spi2-core
   (package
     (name "at-spi2-core")
-    (version "2.50.2")
+    (version "2.52.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -815,7 +815,7 @@ ever use this library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "137p9xjlnr6r5biy31pzwnd2y4dpyngglxm2s6z8zpb2393b30av"))))
+                "1azmbzik0gl2s03c9lq3dff3h1iql1zvlwn28yhizl68421zrhqa"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
