@@ -3948,21 +3948,20 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.24.1")
+    (version "1.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
-                                  "/v4l-utils-" version ".tar.bz2"))
+                                  "/v4l-utils-" version ".tar.xz"))
               (sha256
                (base32
-                "0nszh1fvflzb0z8bdfas743bmhwkpdqfvk85799wxx87cf5gxdyb"))))
-    (build-system gnu-build-system)
+                "10la69d7kvfz3mc081fy8jmcqram2nv938bfmx3qhqdnb777b80g"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       (list "--disable-static"
-             (string-append "--with-udevdir="
-                            (assoc-ref %outputs "out")
-                            "/lib/udev"))))
+     (list #:configure-flags
+           #~(list (string-append "-Dudevdir="
+                                  (assoc-ref %outputs "out")
+                                  "/lib/udev"))))
     (native-inputs
      (list perl pkg-config))
     (inputs
