@@ -305,7 +305,7 @@ a fast alternative to @code{IOStreams}.")
     ;; The ctags that comes with emacs does not support the --excmd options,
     ;; so can't be used
     (inputs
-     (list boost-for-source-highlight))
+     (list boost))
     (native-inputs
      (list bison flex))
     (arguments
