@@ -35932,6 +35932,11 @@ It implements advanced Python dictionaries with dot notation access.")
         (sha256
           (base32 "09sppvhhkhkv9zc9g994m53z15v92csxwcf42ggkaknlv01smm1i"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      ;; Tests depend on deprecated/broken features. Try to re-enable them on
+      ;; any future pakage update.
+      #:tests? #f))
     (native-inputs
      (list python-setuptools
            python-wheel))
