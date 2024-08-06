@@ -1462,7 +1462,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "2.12.1")
+    (version "2.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1470,7 +1470,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.xz"))
               (sha256
                (base32
-                "0wjmv0rnxbd143cb5a73drflpdaxpb0mck0r9rsds08bs8l7l12v"))))
+                "003p245w1iqy1jyikn7hs46ckg93ki23y3cwhg8hbp8fqx09qcf8"))))
     (build-system meson-build-system)
     (arguments
      (list
