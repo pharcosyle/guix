@@ -233,7 +233,7 @@ promoting the market for advanced audio.")
 (define-public wildmidi
   (package
     (name "wildmidi")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
      (origin
        (method git-fetch)
@@ -243,7 +243,7 @@ promoting the market for advanced audio.")
          (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dfizqvgsnsd681rxv7bsnzxzq8p8hbac9gysgb3m0j079l7qjg4"))))
+        (base32 "0cc8vg2alyzakmm132vljx228arisqcnfqh8xyjnnczr5vryqa5k"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; No target
@@ -423,7 +423,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
 (define-public libopenmpt
   (package
     (name "libopenmpt")
-    (version "0.7.7")
+    (version "0.7.9")
     (source
      (origin
        (method url-fetch)
@@ -431,7 +431,7 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
         (string-append "https://download.openmpt.org/archive/libopenmpt/src/"
                        "libopenmpt-" version "+release.autotools.tar.gz"))
        (sha256
-        (base32 "137hkrnjmzy78pix02ssnzyqp3xawyp89q2qysk2hs0jfa4s5ijq"))))
+        (base32 "1x7w5mm3a2iccmbyy4cqkqsqnp8n8w4dskmismwpwyaxswcfk1h3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2116,7 +2116,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.3.1")
+    (version "2.3.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2125,7 +2125,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05lr9f0q4x1kvgfa3xrfmagpwvijv9m1s316aa9figqlkcc5vv4k"))))
+                "0vb9y6if7znvrsmla6af9r4dwfg6a0pkl3pvbhfjwc3v91wkhq3f"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -2160,7 +2160,7 @@ also play midifiles using a Soundfont.")
 (define-public faad2
   (package
     (name "faad2")
-    (version "2.10.1")
+    (version "2.11.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2169,13 +2169,10 @@ also play midifiles using a Soundfont.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0k7bgls29fydria83sk1nsb2si7lb3z3lgcn6lj7d7q2xkcbbg4k"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     (list autoconf
-           automake
-           pkg-config
-           libtool))
+                "1prxz2vwm02l2la1qgycl1qaxi6n4hjr6l6clf4m9jyq53pixahk"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f)) ; No tests.
     (home-page "https://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
@@ -3127,14 +3124,14 @@ frequencies.  This data is then formatted to MIDI and written to disk.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.22")
+    (version "0.24.24")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1wwzkz91zv0cj8dkr7aqsryznihhbkhwaplv81ik7j4zwp84kybn"))))
+               "0kxvzap9knvyikdqm9i1av2jv7ibkf0dw4igck87chahi2gvxdkb"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -4089,14 +4086,14 @@ key of digital audio.")
 (define-public wavpack
   (package
     (name "wavpack")
-    (version "5.6.0")
+    (version "5.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/dbry/WavPack/releases/download/"
                            version "/wavpack-" version ".tar.xz"))
        (sha256
-        (base32 "1ad9bmh9n7g3sfr9piw8dhkxx0cvi8i7an49icrkv72hazs3b05g"))))
+        (base32 "1vlbm1ri5fg7pw5pwgbm2dx2cpn9ysd3xs2xipshkwy5kvyi05g8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -4223,16 +4220,16 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/soundtouch/soundtouch.git")
+             (url "https://codeberg.org/soundtouch/soundtouch")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10znckb8mrnmvwj7vq12732al873qhqw27fpb5f8r0bkjdpcj3vr"))))
+        (base32 "05q7wp1yqv95fm4h9lyhr70na2h4zrfzz0iv35l7r0dp7x79wrwa"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake libtool file))
