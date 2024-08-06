@@ -1559,6 +1559,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/igraph-fix-varargs-integer-size.patch	\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/indent-CVE-2024-0911.patch	\
+  %D%/packages/patches/iniparser-no-git-fetchcontent.patch	\
   %D%/packages/patches/instead-use-games-path.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
