@@ -2973,7 +2973,7 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.29")
+    (version "0.9.33")
     (source
      (origin
        (method git-fetch)
@@ -2982,7 +2982,7 @@ database.")
              (commit (string-append "LMDB_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0airps4cd0d91nbgy7hgvifa801snxwxzwxyr6pdv61plsi7h8l3"))))
+        (base32 "0x55rd9sssimls833w1cvs4ldi1kqd16ywrmwyl7cdfsg0kni074"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
