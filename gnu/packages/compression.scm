@@ -2856,7 +2856,7 @@ can append files to the end of such compressed archives.")
 (define-public libcbor
   (package
     (name "libcbor")
-    (version "0.10.2")
+    (version "0.11.0")
     (source
      (origin
        (method git-fetch)
@@ -2864,7 +2864,7 @@ can append files to the end of such compressed archives.")
              (url "https://github.com/PJK/libcbor")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
-       (sha256 (base32 "0hh1myg5a3fllj68jysl31r25q3w33xcf7vzl6gslf7chf2pakbq"))))
+       (sha256 (base32 "00ibddiy62kbs9wl52c35j0hbqanx6pi7lvzkpzmbsizkj8mhp1p"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
