@@ -291,7 +291,7 @@ a focus on simplicity and productivity.")
         (base32
          "1bfxyh2apn987ki7rlcwnm7mx64drs5aczdnp9afzvvbbadfxahw"))))))
 
-(define-public ruby ruby-3.1)
+(define-public ruby ruby-3.3)
 
 (define-public mruby
   (package
