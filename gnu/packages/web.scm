@@ -187,6 +187,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
+  #:use-module (gnu packages prometheus)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
@@ -5542,7 +5543,7 @@ time strings.")
           (base32 "1dqmnxnipi497nx9x10ifack09w41579svryss5q2w5wxy0pg764"))))
     (build-system go-build-system)
     (inputs
-     (list go-github-com-google-go-cmp-cmp
+     (list go-github-com-google-go-cmp
            go-github-com-itchyny-timefmt-go
            go-github-com-mattn-go-isatty
            go-github-com-mattn-go-runewidth
