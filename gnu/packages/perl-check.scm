@@ -690,14 +690,14 @@ contents of a file is equal to a particular string.")
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
-    (version "3.44")
+    (version "3.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
                            "Test-Harness-" version ".tar.gz"))
        (sha256
-        (base32 "15sj7rcmyhhi8m7brk7r6w09yrpf1kk80gpz8mkwx7j9dgm93dby"))))
+        (base32 "1igr1srfxld9glm455xd0d23ilw93f21cs7gmrmkz9f1h6fghgz7"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
