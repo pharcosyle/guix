@@ -2986,9 +2986,20 @@ support for the @code{noload} operations used by @code{zodb}.")
         (base32
          "1kb73swvjszramlxljwlcbvrsnknr7icb8mmw9l406w9v7c41i5s"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (if tests?
+                  (invoke "zope-testrunner" "--test-path=src")
+                  (format #t "test suite not run~%")))))))
     (native-inputs
      (list python-setuptools
-           python-wheel))
+           python-wheel
+           python-zope-interface-bootstrap
+           python-zope-testrunner-bootstrap))
     (home-page "https://pypi.org/project/zope.event/")
     (synopsis "Event publishing system for Python")
     (description "Zope.event provides an event publishing API, intended for
@@ -2997,24 +3008,54 @@ is a simple event-dispatching system on which more sophisticated event
 dispatching systems can be built.")
     (license license:zpl2.1)))
 
+(define (python-zope-bootstrap-package orig)
+  (package
+    (inherit orig)
+    (name (string-append (package-name orig) "-bootstrap"))
+    (arguments
+     (if (null? (package-arguments orig))
+         (list
+          #:tests? #f
+          #:phases #~(modify-phases %standard-phases
+                       (delete 'sanity-check)))
+         (substitute-keyword-arguments (package-arguments orig)
+           ((#:tests? _ #f) #f)
+           ((#:phases phases #~%standard-phases)
+            #~(modify-phases #$phases
+                (delete 'sanity-check))))))
+    (propagated-inputs `())
+    (native-inputs `())
+    (properties `((hidden? . #t)))))
+
 (define-public python-zope-interface
   (package
     (name "python-zope-interface")
-    (version "6.4.post2")
+    (version "7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
-         "0kk56f4lx4lsgr5ghb8dq1784srdc1kdjpssdyi4jmzxdmppw80w"))))
+         "05m9qyqda54a1l8v6qq083y4m5xhdsx7yrs09srmymp9w8hrcsd6"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      ;; 1357 tests run, 16 fail. All of these failures are due to the messages
+      ;; not matching because of the package name stem not being present which
+      ;; seems trivial but I don't know how to fix it. Example:
+      ;; AssertionError: 'tests.test_declarations.Foo' != 'zope.interface.tests.test_declarations.Foo'
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python" "-m" "unittest" "discover" "-s"
+                        "src/zope/interface")))))))
     (native-inputs
      (list python-setuptools
            python-wheel
-           ;; For tests.
-           python-coverage
-           python-zope-event
            python-zope-testing))
     (home-page "https://github.com/zopefoundation/zope.interface")
     (synopsis "Python implementation of the \"design by contract\"
@@ -3024,28 +3065,39 @@ interfaces\" for Python.  Interfaces are a mechanism for labeling objects as
 conforming to a given API or contract.")
     (license license:zpl2.1)))
 
+(define-public python-zope-interface-bootstrap
+  (package
+    (inherit (python-zope-bootstrap-package python-zope-interface))
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
+    (properties `((hidden? . #t)))))
+
 (define-public python-zope-exceptions
   (package
     (name "python-zope-exceptions")
-    (version "4.6")
+    (version "5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.exceptions" version))
        (sha256
         (base32
-         "1kc3hql2i35ys5alkj9csiaz2s9bx0rff585vnrrgvavqsj297b1"))))
+         "0y79n33kpdzr19jiklv7y556hcivc4w4zgbv9gdn00f38r4lq6v1"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (if tests?
-                 (invoke "zope-testrunner" "--test-path=src")
-                 (format #t "test suite not run~%")))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (if tests?
+                  (invoke "zope-testrunner" "--test-path=src")
+                  (format #t "test suite not run~%")))))))
     (native-inputs
-     `(("python-zope-testrunner" ,python-zope-testrunner-bootstrap)))
+     (list python-setuptools
+           python-wheel
+           python-zope-testrunner-bootstrap))
     (propagated-inputs
      (list python-zope-interface))
     (home-page "https://pypi.org/project/zope.exceptions/")
@@ -3054,26 +3106,13 @@ conforming to a given API or contract.")
 that have uses outside of the Zope framework.")
     (license license:zpl2.1)))
 
-(define (python-zope-bootstrap-package orig)
-  (package
-    (inherit orig)
-    (name (string-append (package-name orig) "-bootstrap"))
-    (arguments
-     (if (null? (package-arguments orig))
-         `(#:tests? #f
-           #:phases (modify-phases %standard-phases
-                      (delete 'sanity-check)))
-         (substitute-keyword-arguments (package-arguments orig)
-           ((#:tests? _ #f) #f)
-           ((#:phases phases '%standard-phases)
-            `(modify-phases ,phases
-               (delete 'sanity-check))))))
-    (propagated-inputs `())
-    (native-inputs `())
-    (properties `((hidden? . #t)))))
-
 (define-public python-zope-exceptions-bootstrap
-  (python-zope-bootstrap-package python-zope-exceptions))
+  (package
+    (inherit (python-zope-bootstrap-package python-zope-exceptions))
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
+    (properties `((hidden? . #t)))))
 
 (define-public python-zope-testing
   (package
@@ -3087,9 +3126,20 @@ that have uses outside of the Zope framework.")
         (base32
          "0jfnycp9kzmmkk0rard8chd81v5yp6vnm09ky7d3qmv6svcd0z78"))))
     (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (if tests?
+                  (invoke "zope-testrunner" "--test-path=src")
+                  (format #t "test suite not run~%")))))))
     (native-inputs
      (list python-setuptools
-           python-wheel))
+           python-wheel
+           python-zope-interface-bootstrap
+           python-zope-testrunner-bootstrap))
     (home-page "https://pypi.org/project/zope.testing/")
     (synopsis "Zope testing helpers")
     (description "Zope.testing provides a number of testing utilities for HTML
@@ -3099,25 +3149,25 @@ forms, HTTP servers, regular expressions, and more.")
 (define-public python-zope-testrunner
   (package
     (name "python-zope-testrunner")
-    (version "5.2")
+    (version "6.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.testrunner" version))
        (sha256
         (base32
-         "0jyyf1dcz156q95x2y7yw2v420q2xn3cff0c5aci7hmdmcbn0gc7"))))
+         "1j1828vghdn619bv5jhf54zzf1blxkjdxyddv1fnqavg9p3rz18b"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f                    ;FIXME: Tests can't find zope.interface.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-problematic-test
-           (lambda _
-             ;; This test contains invalid syntax, which breaks bytecode
-             ;; compilation.  For simplicity just remove it.
-             (delete-file
-              "src/zope/testrunner/tests/testrunner-ex/sample2/badsyntax.py"))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'remove-problematic-test
+            (lambda _
+              ;; This test contains invalid syntax, which breaks bytecode
+              ;; compilation.  For simplicity just remove it.
+              (delete-file
+               "src/zope/testrunner/tests/testrunner-ex/sample2/badsyntax.py"))))))
     (native-inputs
      (list python-zope-testing))
     (propagated-inputs
@@ -3131,9 +3181,12 @@ tests.")
 (define-public python-zope-testrunner-bootstrap
   (package
     (inherit (python-zope-bootstrap-package python-zope-testrunner))
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
     (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-zope-exceptions" ,python-zope-exceptions-bootstrap)))
+     (list python-six
+           python-zope-exceptions-bootstrap))
     (properties `((hidden? . #t)))))
 
 (define-public python-zope-i18nmessageid
