@@ -588,7 +588,8 @@ is used by the Requests library to verify HTTPS requests.")
            python-iso8601
            python-pretend
            python-pytest                ;for subtests
-           python-pytest-benchmark
+           ;; Save compute time by not running benchmarks.
+           ;; python-pytest-benchmark
            python-setuptools
            python-wheel))
     (inputs (list python-cryptography-rust))
