@@ -1072,17 +1072,17 @@ of new capabilities and controls for text keyboards.")
 (define-public libdmx
   (package
     (name "libdmx")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/lib/libdmx-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "0hvjfhrcym770cr0zpqajdy3cda30aiwbjzv16iafkqkbl090gr5"))))
+            "0kzprd1ak3m3042m5hra50nsagswciis9p21ckilyaqbidmf591m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -1905,20 +1905,20 @@ used with other display managers such as gdm or kdm.")
 (define-public setxkbmap
   (package
     (name "setxkbmap")
-    (version "1.3.2")
+    (version "1.3.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/app/setxkbmap-"
                version
-               ".tar.bz2"))
+               ".tar.xz"))
         (sha256
           (base32
-            "1xdrxs65v7d0rw1yaz0vsz55w4hxym99216p085ya9978j379wlg"))))
+            "1pps0x66512y3f7v6xgnb6gjbllsgi4q5zxmjcdiv60fsia8b3dy"))))
     (build-system gnu-build-system)
     (inputs
-      (list libxkbfile xkeyboard-config libx11))
+      (list libxkbfile xkeyboard-config libx11 libxrandr))
     (native-inputs
       (list pkg-config))
     (arguments
@@ -2076,14 +2076,14 @@ server.")
 (define-public xauth
   (package
     (name "xauth")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/app/xauth-" version
                            ".tar.xz"))
        (sha256
-        (base32 "0072ivzn4z59ysanz838nh8s4mcmdsx6q9xkvlfysv2k37ynmfkq"))))
+        (base32 "0cwxzq7lv932rcfad3baanr541qcjjdhyrhxy0bzjcp3pac581z7"))))
     (build-system gnu-build-system)
     (inputs
      (list libxmu libxext libxau libx11))
