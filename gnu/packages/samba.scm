@@ -36,6 +36,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
@@ -51,6 +52,7 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -65,6 +67,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -111,66 +114,74 @@ the Linux kernel CIFS client.")
     (license license:gpl3+)))
 
 (define-public iniparser
-  (package
-    (name "iniparser")
-    (version "4.1")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                    (url "https://github.com/ndevilla/iniparser")
+  (let* ((name "iniparser")
+         (version "4.2.4")
+         (source
+          (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/ndevilla/iniparser")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0slz07y67jl0y1fxby9rk6x99d9bxv48imyixmij3356wcpbskj7"))))
+         (unity-with-iniparser-config
+          (let ((version "2.6.0"))
+            (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/throwtheswitch/unity")
                     (commit (string-append "v" version))))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "0dhab6pad6wh816lr7r3jb6z273njlgw2vpw8kcfnmi7ijaqhnr5"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags
-       (list ,(string-append "CC=" (cc-for-target)))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* '("Makefile" "test/Makefile")
-               (("/usr/lib")
-                (string-append (assoc-ref outputs "out") "/lib")))
-             #t))
-         (replace 'build
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "libiniparser.so.1"
-                    make-flags)))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (lib  (string-append out "/lib"))
-                    (inc  (string-append out "/include"))
-                    (doc  (string-append out "/share/doc/" ,name))
-                    (html (string-append doc "/html")))
-               (define (install dir)
-                 (lambda (file)
-                   (install-file file dir)))
-               (for-each (install lib)
-                         (find-files "." "^lib.*\\.so"))
-               (with-directory-excursion lib
-                 (symlink "libiniparser.so.1" "libiniparser.so"))
-               (for-each (install inc)
-                         (find-files "src" "\\.h$"))
-               (for-each (install html)
-                         (find-files "html" ".*"))
-               (for-each (install doc)
-                         '("AUTHORS" "INSTALL" "LICENSE" "README.md"))
-               #t))))))
-    (home-page "https://github.com/ndevilla/iniparser")
-    (synopsis "Simple @file{.ini} configuration file parsing library")
-    (description
-     "The iniParser C library reads and writes Windows-style @file{.ini}
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v78d7l3k3bg82ywkpdjjx2mib20bfgqkj82vip9jl3zscc189s8"))
+              (snippet
+               #~(let ((unity-config-h "unity_config.h"))
+                   (copy-file (string-append #$source "/test/" unity-config-h)
+                              (string-append "src/" unity-config-h))))))))
+    (package
+      (name name)
+      (version version)
+      (source (origin
+                (inherit source)
+                (patches
+                 (search-patches "iniparser-no-git-fetchcontent.patch"))))
+      (build-system cmake-build-system)
+      (arguments
+       (list
+        #:configure-flags #~(list "-DBUILD_TESTING=ON")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'add-unity
+              (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                (substitute* "test/CMakeLists.txt"
+                  (("@unitySrc@") #$unity-with-iniparser-config))))
+            (add-after 'install 'symlink-headers-to-root-of-include
+              (lambda _
+                (let ((include-dir (string-append #$output "/include")))
+                  (for-each (lambda (header)
+                              (symlink header
+                                       (string-append include-dir "/"
+                                                      (basename header))))
+                            (find-files include-dir "\\.h$"))))))))
+      (native-inputs
+       (list doxygen
+             pkg-config
+             ;; For tests.
+             ruby))
+      (home-page "https://github.com/ndevilla/iniparser")
+      (synopsis "Simple @file{.ini} configuration file parsing library")
+      (description
+       "The iniParser C library reads and writes Windows-style @file{.ini}
 configuration files.  These are simple text files with a basic structure
 composed of sections, properties, and values.  While not expressive, they
 are easy to read, write, and modify.
 
 The library is small, thread safe, and written in portable ANSI C with no
 external dependencies.")
-    (license license:x11)))
+      (license license:x11))))
 
 (define-public samba/pinned
   (hidden-package
