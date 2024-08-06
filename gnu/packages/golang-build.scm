@@ -431,7 +431,7 @@ compile does not support generics.")
 (define-public go-golang-org-x-mod
   (package
     (name "go-golang-org-x-mod")
-    (version "0.19.0")
+    (version "0.20.0")
     (source
      (origin
        (method git-fetch)
@@ -440,7 +440,7 @@ compile does not support generics.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02wilb8q2bp6qhqcrbjxq1pjy3y5k8p11pxlg481609zx4rjiszc"))))
+        (base32 "0vrzahgr08idiz9g2ksngwsjhyaa0rryn4vh0lm54kkxgv9pcv7f"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -561,7 +561,7 @@ cancelation for groups of goroutines working on subtasks of a common task
 (define-public go-golang-org-x-sys
   (package
     (name "go-golang-org-x-sys")
-    (version "0.22.0")
+    (version "0.23.0")
     (source
      (origin
        (method git-fetch)
@@ -570,7 +570,7 @@ cancelation for groups of goroutines working on subtasks of a common task
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kpl5hk0zbh5bfschnq64yj1cs7v3l9v6bd1rw5crlfd4hg7xawa"))))
+        (base32 "02bia5sm8x6czbiqv4xdv674g0rrq4rjkkampaim2w5jkawvchl0"))))
     (build-system go-build-system)
     (arguments
      (list
