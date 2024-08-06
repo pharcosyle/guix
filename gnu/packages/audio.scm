@@ -5348,7 +5348,7 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
 (define-public libfdk
   (package
     (name "libfdk")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
       (origin
         (method git-fetch)
@@ -5358,7 +5358,7 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1lp9zw406jljy1f4p9cnr9ahxbwdwxacy4yhp13cxgvyfqk3ggyf"))))
+          "0ff4zxw1cnh8mlc42s6xg1yq1wj10jmkar31036rcmvqf3qsdc3x"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake libtool))
