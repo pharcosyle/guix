@@ -624,7 +624,7 @@ through the Display Data Channel Command Interface (@dfn{DDC/CI}) protocol.")
     (license (list license:gpl2+))))
 
 (define-public edid-decode
-  (let ((commit "6f117a8f8c0e76e85f599a8b05c21c5f51c5c3c1") ; 2024-07-03
+  (let ((commit "303b033f92683fa3f2e73d642bf86ead8fec77b1") ; 2024-07-31
         (revision "2"))
     (package
       (name "edid-decode")
@@ -637,7 +637,7 @@ through the Display Data Channel Command Interface (@dfn{DDC/CI}) protocol.")
                (url "git://linuxtv.org/edid-decode.git")
                (commit commit)))
          (sha256
-          (base32 "19xqf1yxcslvc28m1wy0ynwq1fhd1b671ifdcdng742ayl02gvvc"))))
+          (base32 "0j0lpdpp8qqy9cdypp9jgk54yxnvs4lvzlj1xqa22mcj1blfpgin"))))
       (build-system meson-build-system)
       (home-page "https://git.linuxtv.org/edid-decode.git/")
       (synopsis "Decode @dfn{EDID} data in human-readable format")
