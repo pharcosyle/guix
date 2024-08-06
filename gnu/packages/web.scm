@@ -2271,15 +2271,14 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 (define-public serf
   (package
     (name "serf")
-    (version "1.3.9")
+    (version "1.3.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://apache/serf/serf-"
                            version ".tar.bz2"))
-       (patches (search-patches "serf-python3.patch"))
        (sha256
-        (base32 "1k47gbgpp52049andr28y28nbwh9m36bbb0g8p0aka3pqlhjv72l"))))
+        (base32 "1rk4q0fv9xs57fivjy5mxqkk5g7pvvvssxvalz6nwld2p84fz0dy"))))
     (build-system scons-build-system)
     (propagated-inputs
      (list apr apr-util openssl-1.1))
