@@ -3411,7 +3411,7 @@ players, like VLC or MPlayer.")
 (define-public libdvdread
   (package
     (name "libdvdread")
-    (version "6.0.2")
+    (version "6.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -3419,7 +3419,7 @@ players, like VLC or MPlayer.")
                                   "libdvdread-" version ".tar.bz2"))
               (sha256
                (base32
-                "1c7yqqn67m3y3n7nfrgrnzz034zjaw5caijbwbfrq89v46ph257r"))))
+                "0sakl4c8y2kkp09km0b5353w66pvfc72y8wi1vjwn252jx4ladff"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-libdvdcss=yes")))
@@ -3463,7 +3463,7 @@ MPEG-2 stream containing VOB packets.")
 (define-public libdvdnav
   (package
     (name "libdvdnav")
-    (version "6.0.1")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -3471,7 +3471,7 @@ MPEG-2 stream containing VOB packets.")
                                   "libdvdnav-" version ".tar.bz2"))
               (sha256
                (base32
-                "0cv7j8irsv1n2dadlnhr6i1b8pann2ah6xpxic41f04my6ba6rp5"))))
+                "0j4ds6c4xl34dijkfpw805vj7s0vzg095kw0fvzj7ls7b53sg4f1"))))
     (build-system gnu-build-system)
     (native-inputs (list pkg-config))
     (propagated-inputs (list libdvdread)) ;in 'Requires.private' of dvdnav.pc
@@ -5108,7 +5108,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "2.3.1")
+    (version "2.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5117,7 +5117,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "09mirgg2br9d61xqlnfgarqs0ly9v9z28vbpcjsp2srk9b3b96rg"))))
+                "1hpqh28jdfjk19fvq8c2y48ji07dmi21xc345inalhhhcxqfabka"))))
     (build-system gnu-build-system)
     (native-inputs
      (list nasm python))
