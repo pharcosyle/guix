@@ -110,9 +110,13 @@
                                  (install-file x "aclocal"))
                                (find-files "aclocal_java"))
                      (apply (assq-ref %standard-phases 'bootstrap) arguments)
-                     (let ((automake-files (search-input-directory
-                                            (or native-inputs inputs)
-                                            "share/automake-1.16")))
+                     (let ((automake-files
+                            (search-input-directory
+                             (or native-inputs inputs)
+                             (string-append
+                              "share/automake-"
+                              #$(version-major+minor
+                                 (package-version automake))))))
                        (define (replace file)
                          (symlink (string-append automake-files "/" file) file))
                        (for-each replace '("config.sub" "config.guess"

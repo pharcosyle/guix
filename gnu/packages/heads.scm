@@ -94,10 +94,18 @@
                          (install-file* name "tarballs" ""))
                        '("binutils" "target-gcc-5" "linux-headers" "musl"))
              (copy-file (string-append (assoc-ref inputs "config.sub")
-                                       "/share/automake-1.16/config.sub")
+                                       (string-append
+                                        "/share/automake-"
+                                        ,(version-major+minor
+                                          (package-version automake))
+                                        "/config.sub"))
                         "tarballs/config.sub;hb=3d5db9ebe860")
              (copy-file (string-append (assoc-ref inputs "config.sub")
-                                       "/share/automake-1.16/config.guess")
+                                       (string-append
+                                        "/share/automake-"
+                                        ,(version-major+minor
+                                          (package-version automake))
+                                        "/config.guess"))
                         "tarballs/config.guess;hb=3d5db9ebe860")
              (substitute* "config.sh"
               (("^CC_BASE_PREFIX=.*")
