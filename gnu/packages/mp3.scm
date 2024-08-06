@@ -53,6 +53,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages linux)               ;alsa-lib
@@ -238,7 +239,7 @@ a highly stable and efficient implementation.")
 (define-public taglib
   (package
     (name "taglib")
-    (version "1.13.1")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -247,23 +248,18 @@ a highly stable and efficient implementation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0phliksg5r1n15prcbp391xk2z1fh2c7zlc7h0nabpwkf6j08za1"))))
+                "1dzr94mrgf2yz9wag8brk4a4iwb09dj9978vch2d2qpdajpn51nf"))))
     (build-system cmake-build-system)
     (arguments
-      '(#:tests? #f ; Tests are not ran with BUILD_SHARED_LIBS on.
-        #:configure-flags (list "-DBUILD_SHARED_LIBS=ON")
-        #:phases (modify-phases %standard-phases
-                   (add-before 'configure 'adjust-zlib-ldflags
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       ;; Make sure users of 'taglib-config --libs' get the -L
-                       ;; flag for zlib.
-                       (substitute* "CMakeLists.txt"
-                         (("set\\(ZLIB_LIBRARIES_FLAGS -lz\\)")
-                          (string-append "set(ZLIB_LIBRARIES_FLAGS \"-L"
-                                         (assoc-ref inputs "zlib")
-                                         "/lib -lz\")")))
-                       #t)))))
-    (inputs (list zlib))
+     (list
+      #:configure-flags #~(list "-DBUILD_SHARED_LIBS=ON"
+                                "-DBUILD_TESTING=ON")))
+    (native-inputs
+     (list cppunit
+           utfcpp))
+    (propagated-inputs
+     ;; In taglib.pc libs
+     (list zlib))
     (home-page "https://taglib.org")
     (synopsis "Library to access audio file meta-data")
     (description
