@@ -538,7 +538,7 @@ Latin script and other languages.")
 (define-public direnv
   (package
     (name "direnv")
-    (version "2.33.0")
+    (version "2.34.0")
     (source
      (origin (method git-fetch)
              (uri (git-reference
@@ -547,7 +547,7 @@ Latin script and other languages.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1px092y85spjlpb8jcb8rc4h260ybi81vmvasfwp9yvbfwksl4zz"))))
+               "0g04yxsj78v664dhkfa6fhm0vi2gzx1agr3h47dnm2f55wnymz0j"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/direnv/direnv"
