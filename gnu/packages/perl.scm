@@ -4655,7 +4655,7 @@ XS interface besides the perl one.")
 (define-public perl-extutils-helpers
   (package
     (name "perl-extutils-helpers")
-    (version "0.026")
+    (version "0.027")
     (source
      (origin
        (method url-fetch)
@@ -4663,7 +4663,7 @@ XS interface besides the perl one.")
                            "ExtUtils-Helpers-" version ".tar.gz"))
        (sha256
         (base32
-         "05ilqcj1rg5izr09dsqmy5di4fvq6ph4k0chxks7qmd4j1kip46y"))))
+         "1iffnqj17glmm18dzzh6vdicnwsffqzi9scbq9nshiaqvhqj2ncx"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/ExtUtils-Helpers")
     (synopsis "Various portability utilities for module builders")
