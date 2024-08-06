@@ -555,14 +555,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "42.0.5")
+    (version "43.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1qdz0yk5smi0dnywbxmanccwizilmnzgbbihjpmpgm6zjpn7xq3g"))))
+         "17i9fl1b3js9gvrxg25s3c2708g7c2gjqlw3hbqsj6nmlanpb05q"))))
     (build-system pyproject-build-system)
     (arguments
      (list
