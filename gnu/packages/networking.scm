@@ -594,7 +594,7 @@ networking.")
   ;; There are no tags in the repository, and the project is unlikely to
   ;; make new releases.  Take a recent commit for multiple security fixes
   ;; as well as GnuTLS compatibility.
-  (let ((commit "f1b83c10d8beb43fcc70a6e88cf4325499f25857")
+  (let ((commit "6f6bb1353fc84f4cc37138baa99f586750028a01")
         (revision "1")
         (version "2.4"))                ;as mentioned in README and man pages
     (package
@@ -608,7 +608,7 @@ networking.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0vchr0f0d5fi0zaa16jywva5db3x9dyws7clqaq32gwh5drbkvs0"))))
+          (base32 "16hk3g8yzd6n4dmdzmc2c2vq20r3v6mpp7vglkjak01fxbsh00xg"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                    ; no tests
