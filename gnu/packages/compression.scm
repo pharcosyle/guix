@@ -970,14 +970,14 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.9.4")
+    (version "1.10.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference (url "https://github.com/lz4/lz4")
                            (commit (string-append "v" version))))
        (sha256
-        (base32 "14l616ja261x5cdb2rh6y00qpzcqq8m8a80mqjl6zb7ggc7h48v2"))
+        (base32 "12sfwid95zhk2r2ijpwwknc5a2xlll2s9xhf0s21ca2jkygvblgx"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (outputs (list "out" "static"))
@@ -2214,14 +2214,14 @@ Clzip is intended to be fully compatible with the regular lzip package.")
 (define-public lzlib
   (package
     (name "lzlib")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/lzlib/"
                            "lzlib-" version ".tar.gz"))
        (sha256
-        (base32 "107vkzfgvb21cqq4gmxyfn97l4s2c0b3i14k9rkv594b2krmiax1"))))
+        (base32 "0vyg9nzyd7ys6y86fqsqg655yvkhrvfhsrmf1c10dwyl9rqwijjs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2795,7 +2795,7 @@ to their original, binary CD format.")
 (define-public libdeflate
   (package
     (name "libdeflate")
-    (version "1.19")
+    (version "1.21")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2804,7 +2804,7 @@ to their original, binary CD format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "033d8jcaissiy3mk07wx6dap17c1xl768xy75righ22ggmm7c1hy"))))
+                "0n8wqvrk0sya7c494pikfrvbnsppxf5alpakhvkdmxb5v9zfzhr6"))))
     (build-system cmake-build-system)
     (arguments
      (list #:configure-flags
