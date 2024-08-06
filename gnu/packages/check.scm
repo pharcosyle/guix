@@ -226,8 +226,8 @@ modify some aspects of this style through the use of regular expressions.")
     (license license:gpl3+)))
 
 (define-public mutest
-  (let ((commit "f0dcb2a48a4a8ef3dc1f7327bb0d4056a798c1a7")
-        (revision "1"))
+  (let ((commit "18a20071773f7c4b75e82a931ef9b916b273b3e5")
+        (revision "0"))
     (package
       (name "mutest")
       (version (git-version "0.0.0" revision commit))
@@ -240,7 +240,7 @@ modify some aspects of this style through the use of regular expressions.")
            (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "18mjf2274qy8p1hd0f3h66rmldrxjiczn89n20z0xlgy07bri513"))))
+          (base32 "0ziymp8llpz82igni8jn4wgcdj70nrdnwq8c2qy8xz5lsx500jfg"))))
       (build-system meson-build-system)
       (synopsis "Small C testing library")
       (description "Mutest aims to be a small unit testing library for C projects,
