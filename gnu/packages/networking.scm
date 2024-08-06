@@ -463,7 +463,7 @@ Android, and ChromeOS.")
 (define-public libnice
   (package
     (name "libnice")
-    (version "0.1.21")
+    (version "0.1.22")
     (source
      (origin
        (method git-fetch)
@@ -473,7 +473,7 @@ Android, and ChromeOS.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zxh1mdrl4p2vih8f4yqzm3pp4jsmc8aq7l43dlndaz4sj4c8j44"))))
+         "0ik45q1qlr04llr2ssm6zb73840dmn31q303k3qrcpgj0jp578hg"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -564,7 +564,7 @@ networking.")
   ;; There are no tags in the repository, and the project is unlikely to
   ;; make new releases.  Take a recent commit for multiple security fixes
   ;; as well as GnuTLS compatibility.
-  (let ((commit "f1b83c10d8beb43fcc70a6e88cf4325499f25857")
+  (let ((commit "6f6bb1353fc84f4cc37138baa99f586750028a01")
         (revision "1")
         (version "2.4"))                ;as mentioned in README and man pages
     (package
@@ -578,7 +578,7 @@ networking.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0vchr0f0d5fi0zaa16jywva5db3x9dyws7clqaq32gwh5drbkvs0"))))
+          (base32 "16hk3g8yzd6n4dmdzmc2c2vq20r3v6mpp7vglkjak01fxbsh00xg"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                    ; no tests
