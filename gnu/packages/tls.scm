@@ -329,9 +329,18 @@ required structures.")
               (string-append "--with-guile-extension-dir="
                              "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions"))
 
-      ;; The 'gnutls' package currently lacks support for SRP, making this
-      ;; test fail.
-      #:make-flags #~'("XFAIL_TESTS=tests/srp-base64.scm")))
+      #:make-flags
+      #~(list (string-append
+               "XFAIL_TESTS="
+               (string-join
+                (list
+                 ;; The 'gnutls' package currently lacks support for SRP, making
+                 ;; this test fail.
+                 "tests/srp-base64.scm"
+                 ;; Broken on newer gnutls, see
+                 ;; https://gitlab.com/gnutls/guile/-/issues/25.
+                 "tests/list-pk-algorithms.scm")
+                " ")))))
     (native-inputs
      (list libtool
            pkg-config
