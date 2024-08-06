@@ -2557,13 +2557,13 @@ access the technical and tag data for video and audio files.")
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.9.8")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
-        (base32 "0k0rci797b7mlmg4ffy5qzs56lka4h39myx8hvrdz1jl4bijdqbb"))))
+        (base32 "1whqm3x84m2ajf6llz6v2mmkrxr1icrla1fa4vx6kndn23ry9alg"))))
     (build-system pyproject-build-system)
     (arguments
      ;; FIXME: some tests do not return and time out.  Some tests fail because
