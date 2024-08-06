@@ -6967,7 +6967,7 @@ multiple, by now, standard libraries in a Perl program.")
 (define-public perl-module-build-tiny
   (package
     (name "perl-module-build-tiny")
-    (version "0.043")
+    (version "0.047")
     (source
      (origin
        (method url-fetch)
@@ -6975,14 +6975,14 @@ multiple, by now, standard libraries in a Perl program.")
                            "Module-Build-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "01kj5pzl5ckgimc28a81cy8hn5m55f6y9pnsw9614xca1rif9x38"))))
+         "17cciw7yffzcg4189yjkqykhr73mbzqhqz9y3gfk6g5r46a0w9ki"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-extutils-installpaths perl-extutils-config
-           perl-extutils-helpers perl-test-harness))
+           perl-extutils-helpers))
     (propagated-inputs
      (list perl-extutils-installpaths perl-extutils-config
-           perl-extutils-helpers perl-test-harness))
+           perl-extutils-helpers))
     (home-page "https://metacpan.org/release/Module-Build-Tiny")
     (synopsis "Tiny replacement for Module::Build")
     (description "Many Perl distributions use a Build.PL file instead of a
