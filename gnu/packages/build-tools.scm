@@ -468,7 +468,7 @@ other lower-level build files.")))
 (define-public scons
   (package
     (name "scons")
-    (version "4.7.0")
+    (version "4.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -477,29 +477,10 @@ other lower-level build files.")))
               (file-name (git-file-name name version))
               (patches
                (append
-                (search-patches "scons-test-environment.patch")
-                ;; Building docs has very burdensome requirements: rst2pdf,
-                ;; fop, ghostscript, sphinx. If you really want 'em:
-                ;; - maybe the prebuilt tarball has some
-                ;; - fiddle with this patch and see how much you can
-                ;;   selectively enable
-                ;; - create a seperate package e.g. 'scons-with-documentation'
-                ;;   with the heavy dependencies
-                (list
-                 (origin
-                   (method url-fetch)
-                   (uri (string-append
-                         "https://gitlab.archlinux.org/archlinux/packaging"
-                         "/packages/scons/-/raw"
-                         "/a09b03a9f09ab4c1f9a2a85ff522fd8f0a82f9c7"
-                         "/scons-4.4.0-dont_install_manpages.patch"))
-                   (file-name (string-append name "-no-docs.patch"))
-                   (sha256
-                    (base32
-                     "0w7b8hm9pdk5rc74qji7cfbnxbldcp2j9rw2bwvbnvpa4wjgf88z"))))))
+                (search-patches "scons-test-environment.patch")))
               (sha256
                (base32
-                "1gcj5y3l46790sccy8bzbw7ijnflfczad10h65x420a27yxwcp7d"))))
+                "1jwr24py5n4dcpmvlli40wpsijzkrbchg9v031lhh6rgz7sdvwmp"))))
     (build-system pyproject-build-system)
     (arguments
      (list
