@@ -4560,7 +4560,7 @@ possible.")
 (define-public perl-extutils-config
   (package
     (name "perl-extutils-config")
-    (version "0.008")
+    (version "0.009")
     (source
      (origin
        (method url-fetch)
@@ -4568,7 +4568,7 @@ possible.")
                            "ExtUtils-Config-" version ".tar.gz"))
        (sha256
         (base32
-         "130s5zk4krrymbynqxx62g13jynnb7xi7vdpg65cw3b56kv08ldf"))))
+         "1kpk757kn4ks5644xlmsw2qv3jpk28xjlpc86bikn2nmm9rlxy2f"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/ExtUtils-Config")
     (synopsis "Wrapper for perl's configuration")
