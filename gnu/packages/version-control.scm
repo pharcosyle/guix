@@ -2401,14 +2401,14 @@ can be used for signing.")
 (define-public neon
   (package
     (name "neon")
-    (version "0.32.5")
+    (version "0.33.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://notroj.github.io/neon/neon-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "12m5a5mq5azdirqazgbx3wadbchlb0371y029gfxwwi5h0py2wj8"))))
+               "1f7lgi2aj5lc39slvw2jnjxbvfvslw9iwkq9ciw6wpm0rv4mr6k5"))))
     (build-system gnu-build-system)
     (native-inputs
      (list perl pkg-config))
