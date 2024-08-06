@@ -24431,6 +24431,8 @@ creating a tag.")
         (base32
          "1l0b9k158n04cmcccdq9phdy20h08lpis922dy71iq7pw2sywbwi"))))
     (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f)) ; Circular dependency with twisted.
     (native-inputs
      (list python-setuptools
            python-wheel))
