@@ -2757,14 +2757,14 @@ library.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.8")
+    (version "0.2.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nb7swbliw9vx1ivhgd2m0r0p7nlkszw6s41zcgfwb5v1kp05sb4"))
+                "1ca95g15a88l7rpqcnzmhj1kyxc7gyfbvnni1hckv8z677cc4x0k"))
               (patches (search-patches "guile-lib-fix-tests-for-guile2.2.patch"))))
     (build-system gnu-build-system)
     (arguments
