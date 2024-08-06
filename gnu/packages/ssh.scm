@@ -172,7 +172,7 @@ applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.10.0")
+   (version "1.11.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -180,14 +180,17 @@ applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "0l8xwhhscvss7q007vpbkbv7jh9s43579rx2sf8lnfgd7l7yjr1d"))))
-   (build-system gnu-build-system)
-   ;; The installed libssh2.pc file does not include paths to libgcrypt and
-   ;; zlib libraries, so we need to propagate the inputs.
-   (propagated-inputs (list libgcrypt zlib))
+              "0qflb9mgzv0wvdc45filsq4n5ziyvk7jd35kvqj36sg284g1cdip"))))
+   (build-system cmake-build-system)
    (arguments
-    (list #:configure-flags #~'("--with-libgcrypt"
-                                "--disable-static")))
+     (list #:configure-flags
+           #~(list "-DBUILD_STATIC_LIBS=OFF"
+                   "-DENABLE_ZLIB_COMPRESSION=ON"
+                   "-DRUN_DOCKER_TESTS=OFF")))
+   (native-inputs
+    (list pkg-config))
+   ;; In .pc file Requires.private and libs
+   (propagated-inputs (list libgcrypt zlib))
    (synopsis "Client-side C library implementing the SSH2 protocol")
    (description
     "libssh2 is a library intended to allow software developers access to
