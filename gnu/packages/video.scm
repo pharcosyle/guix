@@ -931,7 +931,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "3.8.1")
+    (version "3.8.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -940,7 +940,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19w32pjb1pljx50hl8m0sydswa61mh57xwvk7vm53vz68ry3sy5a"))))
+                "0p9s5jvjk3hdbpaczf811j2g695z18vvkbdql3dfp9hmfqgv27sb"))))
     (build-system cmake-build-system)
     (native-inputs
      (list perl pkg-config python))     ; to detect the version
@@ -991,7 +991,7 @@ shared library and encoder and decoder command-line executables.")
   ;; There are no tags in the repository, so we take the version number from
   ;; the X264_BUILD variable defined in x264.h.
   (let ((version "164")
-        (commit "a8b68ebfaa68621b5ac8907610d3335971839d52")
+        (commit "4613ac3c15fd75cebc4b9f65b7fb95e70a3acce1")
         (revision "1"))
     (package
       (name "libx264")
@@ -1004,7 +1004,7 @@ shared library and encoder and decoder command-line executables.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1mjh41ndq8sfcfzliccp1gg1zcwy7f08jnk3iaipp73zac3qk7yb"))))
+                  "0dddpva4zw8xfw3vxjj5kifl1iiclj9jcgm93sba0bq4sp21hibx"))))
       (build-system gnu-build-system)
       (native-inputs
        (list pkg-config nasm))
@@ -1309,7 +1309,7 @@ on the Invidious instances only as a fallback method.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.5")
+    (version "3.6")
     (outputs '("out" "static"))
     (source
       (origin
@@ -1317,7 +1317,7 @@ on the Invidious instances only as a fallback method.")
         (uri (string-append "https://bitbucket.org/multicoreware/x265_git"
                             "/downloads/x265_" version ".tar.gz"))
         (sha256
-         (base32 "1s6afxj61jdwfjnn70dwiql34fbqsvn6zv10785vmjyar8sk62p7"))
+         (base32 "01r85vzcayw6jfb11jm2ii1a7k2g1bhn43kk1m39yf6587rk2db6"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -1421,7 +1421,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
 (define-public libass
   (package
     (name "libass")
-    (version "0.17.1")
+    (version "0.17.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1429,7 +1429,7 @@ designed to encode video or images into an H.265 / HEVC encoded bitstream.")
                     version "/libass-" version ".tar.xz"))
               (sha256
                (base32
-                "1117359ycbp6djqs3fks3y8ia2fkaqi8dz8w7sp1cv27pazhpnph"))))
+                "0n89qp9zwqhljgi257j6mwc043wi58kcgadkywhmq0gha3d2br7a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
@@ -2965,7 +2965,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.13.0")
+    (version "1.14.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2974,9 +2974,8 @@ To load this plugin, specify the following option when starting mpv:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rh1vmnbxp2j0bqibn2y5cacax0s9pkpp668dmglx5aln1crjzr0"))
-              (patches (search-patches "libvpx-CVE-2016-2818.patch"
-                                       "libvpx-CVE-2023-5217.patch"))))
+                "0r6qvc84mflpy1zxz7p8aj7i552cwx957l50akvajxmzij1kpy1x"))
+              (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-shared"
@@ -3365,7 +3364,7 @@ Both command-line and GTK2 interface are available.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "1.0.2")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -3373,24 +3372,13 @@ Both command-line and GTK2 interface are available.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1zxfnw1xbghcj7b3zz5djndv6gwssxda19cz1lrlqrkg8577r7kd"))))
+                "0aszpsz3pc7p7z6yahlib4na585m6pqbg2d9dkpyipgml1lgv3s7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bdjava-jar"
                            "--disable-static")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'refer-to-libxml2-in-.pc-file
-           ;; Avoid the need to propagate libxml2 by referring to it
-           ;; directly, as is already done for fontconfig & freetype.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libxml2 (assoc-ref inputs "libxml2")))
-               (substitute* "configure"
-                 ((" libxml-2.0") ""))
-               (substitute* "src/libbluray.pc.in"
-                 (("^Libs.private:" field)
-                  (string-append field " -L" libxml2 "/lib -lxml2")))
-               #t)))
          (add-before 'build 'fix-dlopen-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libaacs (assoc-ref inputs "libaacs"))
@@ -3404,11 +3392,15 @@ Both command-line and GTK2 interface are available.")
                #t))))))
     (native-inputs (list pkg-config))
     (inputs
-     `(("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("libaacs" ,libaacs)
-       ("libbdplus" ,libbdplus)
-       ("libxml2" ,libxml2)))
+     `(("libaacs" ,libaacs)
+       ("libbdplus" ,libbdplus)))
+    (propagated-inputs
+     (list
+      ;; In Requires.private
+      freetype
+      fontconfig
+      ;; In Libs.private
+      libxml2))
     (home-page "https://www.videolan.org/developers/libbluray.html")
     (synopsis "Blu-Ray Disc playback library")
     (description
@@ -5625,7 +5617,7 @@ alpha blending etc).")
 (define-public frei0r-plugins
   (package
     (name "frei0r-plugins")
-    (version "2.2.0")
+    (version "2.3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5633,7 +5625,7 @@ alpha blending etc).")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1cvgzjv2bhgxzhhrwjcg07swv5qbwmzzlfnxyi4cnsrvl0by4aaz"))
+                "1ijsjk909p3qhshny5fy0gap9nxlkql0iwrr9p4plkiw7wj059mq"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
@@ -6038,7 +6030,7 @@ and audio capture, network stream playback, and many more.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "1.3.0")
+    (version "1.4.3")
     (source
       (origin
         (method git-fetch)
@@ -6047,7 +6039,7 @@ and audio capture, network stream playback, and many more.")
                (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "17r6qdijdnqfciqa0ia2y4gyhaav6y5gc4d9xj4dg9h7xnpyxc3k"))))
+         (base32 "0n675klxjnwhxb27gf87cq8zn88pn2ycvhi7sxq8l639sq1nvrxs"))))
     (build-system meson-build-system)
     (native-inputs
      (if (target-x86?)
@@ -6214,7 +6206,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "1.8.0")
+    (version "2.1.2")
     (source
      (origin
        (method git-fetch)
@@ -6223,7 +6215,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k4s1ksh371fjqm9xqc9pacijj78qhcqiby11v01l90gw5bbjpi5"))))
+        (base32 "1i6d1ig0f0dq6fhh0fb9v2fydqkrxsg0yd3bq7vvfvnkq18ygdwf"))))
     (build-system cmake-build-system)
     (arguments
       ;; The test suite tries to download test data and git clone a 3rd-party
