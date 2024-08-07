@@ -726,14 +726,14 @@ whose behaviour is inconsistent across *NIX flavours.")
 (define-public libhx
   (package
     (name "libhx")
-    (version "4.12")
+    (version "4.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://inai.de/files/libhx/"
                            "libHX-" version ".tar.xz"))
        (sha256
-        (base32 "1dsix65jkvv8vkii6g2i64vbyp7mdwz68bimlm9qvl46dp7hcbpp"))))
+        (base32 "185n1ncz3bymhg3vzqr9r929s4qi74m5xnxc2vs2v06xba8ih03n"))))
     (build-system gnu-build-system)
     (home-page "https://inai.de/projects/libhx/")
     (synopsis "C library with common data structures and functions")
