@@ -581,7 +581,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
 (define-public catch2
   (package
     (name "catch2")
-    (version "2.13.8")
+    (version "2.13.10")
     (home-page "https://github.com/catchorg/Catch2")
     (source (origin
               (method git-fetch)
@@ -591,7 +591,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18a6d7rcb6ilhxd5dff32jkfdf2ik58pbywrv04ras70217kdq4c"))))
+                "1dcwp41963vga22hm32hj609wxgfn0a6p9impcw8dxqj477gcx2y"))))
     (build-system cmake-build-system)
     (inputs
      (list python-wrapper))
@@ -660,7 +660,7 @@ pattern.")
 (define-public catch2-3
   (package
     (name "catch2")
-    (version "3.5.3")
+    (version "3.6.0")
     (home-page "https://github.com/catchorg/Catch2")
     (source (origin
               (method git-fetch)
@@ -670,7 +670,7 @@ pattern.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11yla93vm2896fzhm3fz8lk3y3iz5iy7vd6wa7wnwvhsfd2dbfq3"))))
+                "1609g6qbnp727yqhvxbphqvsxyhikqli9yd9ndj8psm2mc0qzx0w"))))
     (build-system cmake-build-system)
     (arguments
      (list
