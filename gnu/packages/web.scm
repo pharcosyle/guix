@@ -3964,7 +3964,7 @@ processing of request data as it arrives.")
 (define-public perl-http-message
   (package
     (name "perl-http-message")
-    (version "6.44")
+    (version "6.46")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3972,7 +3972,7 @@ processing of request data as it arrives.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "18dwmi7anr0zs896cg3pzhrblhkpc7v120gc6bs75aasyixn92rr"))))
+               "19g26r4rk084149mfjz31admaqcz89jckrdikcjx3ljh851l6x72"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-test-needs perl-try-tiny))
@@ -3983,7 +3983,7 @@ processing of request data as it arrives.")
     (synopsis "Perl HTTP style message")
     (description
      "An HTTP::Message object contains some headers and a content body.")
-    (home-page "https://metacpan.org/release/ETHER/HTTP-Message-6.11")))
+    (home-page "https://metacpan.org/release/HTTP-Message")))
 
 (define-public perl-http-negotiate
   (package
