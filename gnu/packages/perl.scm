@@ -10795,7 +10795,7 @@ Now in pure Perl, with the exception of a C probe run at build time.")
 (define-public perl-term-table
   (package
     (name "perl-term-table")
-    (version "0.016")
+    (version "0.022")
     (source
       (origin
         (method url-fetch)
@@ -10803,7 +10803,7 @@ Now in pure Perl, with the exception of a C probe run at build time.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "1gwp5nkqgy4sn45flz5z3k5rncb6gvyqrss9958nqbbax6wgpd4g"))))
+          "1f70893c8s98v7wqx0jnfd5sg7fv68c0h051qkilca1nlz7xmnxr"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-importer))
