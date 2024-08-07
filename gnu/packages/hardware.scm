@@ -1440,7 +1440,7 @@ management, attestation, encryption, and signing.")
   ;; See https://github.com/anrieff/libcpuid/pull/159.
   (package
     (name "libcpuid")
-    (version "0.6.3")
+    (version "0.6.5")
     (source
      (origin
        (method git-fetch)
@@ -1448,7 +1448,7 @@ management, attestation, encryption, and signing.")
              (url "https://github.com/anrieff/libcpuid")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0h5xyaisfix2wj9zi0n0d1b66i1x7qc3jbk8xfw4gdmrsjlhf6ln"))
+        (base32 "0a2xn7f7iicc4z7amqc16sr8kzphm9r1inwyagfiwl88gr87mb86"))
        (modules '((guix build utils)))
        (snippet
         ;; Now remove blobs.
