@@ -12167,15 +12167,15 @@ methods for interrogating that data.")
 (define-public perl-cpan-meta-requirements
   (package
     (name "perl-cpan-meta-requirements")
-    (version "2.140")
+    (version "2.143")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "CPAN-Meta-Requirements-" version ".tar.gz"))
        (sha256
         (base32
-         "1a8zflgaayycmn3zvd3n64yypa4jyl1va0h51wpr5w46irg69608"))))
+         "12yzdwskfk3sds6pg140i8b8dq0cnbadb2rwxshcxa5mgdly9ivf"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/CPAN-Meta-Requirements")
     (synopsis "Set of version requirements for a CPAN dist")
