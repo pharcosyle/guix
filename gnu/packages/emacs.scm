@@ -676,7 +676,7 @@ editor (with wide ints)" )
 (define-public m17n-db
   (package
     (name "m17n-db")
-    (version "1.8.5")
+    (version "1.8.7")
     (source
      (origin
        (method url-fetch)
@@ -684,7 +684,7 @@ editor (with wide ints)" )
                            version ".tar.gz"))
        (sha256
         (base32
-         "0dm7q2qxhp498wzvafdsnhdrhfqkh9rm3i72avp68a0a5i1gz3xn"))))
+         "024vkflbrm33iq1spzn9xvngqfxpgf19q3mg5v2j7yzrgbib16z1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
