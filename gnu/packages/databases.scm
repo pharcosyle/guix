@@ -3296,38 +3296,42 @@ programmatically or as a standalone CLI application.")
 (define-public sqlcipher
   (package
     (name "sqlcipher")
-    (version "3.4.2")
+    (version "4.6.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/sqlcipher/sqlcipher")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "168wb6fvyap7y8j86fb3xl5rd4wmhiq0dxvx9wxwi5kwm1j4vn1a"))
-       (file-name (git-file-name name version))))
+        (base32 "0d13l3pflpa3f3f0j6lxjr53412v0by7y5xy686jj7i28irb9kvn"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libcrypto" ,openssl)
-       ("libtcl8.6" ,tcl))) ; required for running the tests
+     (list openssl
+           tcl
+           zlib))
     (native-inputs
      (list tcl))
     (arguments
-     '(#:configure-flags
-       '("--enable-tempstore=yes"
-         "CFLAGS=-DSQLITE_HAS_CODEC -DSQLITE_ENABLE_FTS3"
-         "LDFLAGS=-lcrypto -ltcl8.6"
-         "--disable-tcl")
-       ;; tests cannot be run from the Makefile
-       ;; see: <https://github.com/sqlcipher/sqlcipher/issues/172>
-       #:test-target "testfixture"
+     (list
+       #:configure-flags
+       #~(list "--enable-tempstore=yes"
+               "--enable-fts5"
+               "CFLAGS=-DSQLITE_HAS_CODEC -DSQLCIPHER_TEST"
+               "LDFLAGS=-lcrypto"
+               (string-append "TCLLIBDIR="
+                              #$output "/lib/tcl"
+                              #$(version-major+minor
+                                 (package-version
+                                  (this-package-input "tcl")))))
        #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'build-test-runner
-           (assoc-ref %standard-phases 'check))
-         (replace 'check
-           (lambda _
-             (invoke "./testfixture" "test/crypto.test"))))))
+       #~(modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "make" "testfixture")
+                 (invoke "./testfixture" "test/sqlcipher.test")))))))
     (home-page "https://www.zetetic.net/sqlcipher/")
     (synopsis
      "Library providing transparent encryption of SQLite database files")
