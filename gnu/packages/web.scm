@@ -4203,25 +4203,14 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
 (define-public perl-io-socket-ssl
   (package
     (name "perl-io-socket-ssl")
-    (version "2.084")
+    (version "2.088")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SU/SULLR/"
                                   "IO-Socket-SSL-" version ".tar.gz"))
               (sha256
                (base32
-                "1q8wqx2y9dkzsa9f1nlm882c64ilpn54jq4m69ak2dljw421w3d6"))
-              (patches
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://github.com/noxxi/p5-io-socket-ssl/commit/"
-                        "7c0798d6de3467603dff42253448e36aded7f5ac.patch"))
-                  (file-name (string-append name "-openssl-3.2-test-fix.patch"))
-                  (sha256
-                   (base32
-                    "1kl8xvdb0mqjs28npw0jv1582pwv29ry69dqa7jik5vizk4alvdf")))))))
+                "0dj5nzd8fah70hadxblc7cgzaxpb9dk4a70x18c24w311cgs69wx"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-net-ssleay
