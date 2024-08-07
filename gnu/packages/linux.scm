@@ -180,6 +180,7 @@
   #:use-module (gnu packages regex)
   #:use-module (gnu packages rpc)
   #:use-module (gnu packages rrdtool)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
@@ -10473,7 +10474,7 @@ older system-wide @file{/sys} interface.")
 (define-public libtraceevent
   (package
     (name "libtraceevent")
-    (version "1.7.3")
+    (version "1.8.3")
     (source
      (origin
        (method git-fetch)
@@ -10482,23 +10483,19 @@ older system-wide @file{/sys} interface.")
              (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06mw2f0xnk6dy9w2z0n4dz7lnm02qfsmnmj2h24453qxlw57x0d6"))
-       (modules '((guix build utils)))
-       (snippet
-        #~(begin
-            (substitute* (list "Makefile" "scripts/utils.mk")
-              (("/bin/(pwd)" _ command) command))))))
-    (build-system gnu-build-system)
+        (base32 "0855bqfnqnf41yz478mdnwrsmxbvxl7zapa3g2mz6476kmll5yy9"))))
+    (build-system meson-build-system)
     (arguments
-     (list
-      #:tests? #f                       ; no test suite
-      #:make-flags
-      #~(list
-         (string-append "pkgconfig_dir=" #$output "/lib/pkgconfig")
-         (string-append "prefix=" #$output))
-      #:phases
-      #~(modify-phases %standard-phases
-          (delete 'configure))))        ; no configure script
+     (list #:configure-flags
+           (if (supported-package? ruby-asciidoctor)
+               #~(list "-Ddoc=true"
+                       "-Dasciidoctor=true")
+               #~(list "-Ddoc=false"))))
+    (native-inputs
+     (append (list pkg-config)
+             (if (supported-package? ruby-asciidoctor)
+                 (list ruby-asciidoctor)
+                 '())))
     (home-page "https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/")
     (synopsis "Linux kernel trace event library")
     (description
@@ -10509,7 +10506,7 @@ older system-wide @file{/sys} interface.")
 (define-public libtracefs
   (package
     (name "libtracefs")
-    (version "1.7.0")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
@@ -10518,26 +10515,25 @@ older system-wide @file{/sys} interface.")
              (commit (string-append name "-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0v896n3q0df0nxx5drbwyaqhrqiyxl06rvrdw3gp2r37awa9g1zb"))
-       (modules '((guix build utils)))
-       (snippet
-        #~(begin
-            (substitute* (list "Makefile" "scripts/utils.mk")
-              (("/bin/(pwd)" _ command) command))))))
-    (build-system gnu-build-system)
+        (base32 "0m201f0y3bq3wqr11kcj2ih98a1ybysxlzm8b7li4h96is0q8j6r"))))
+    (build-system meson-build-system)
     (arguments
-     (list
-      #:tests? #f                       ; no test suite
-      #:make-flags
-      #~(list
-         (string-append "CC=" #$(cc-for-target))
-         (string-append "pkgconfig_dir=" #$output "/lib/pkgconfig")
-         (string-append "prefix=" #$output))
-      #:phases
-      #~(modify-phases %standard-phases
-          (delete 'configure))))        ; no configure script
-    (native-inputs (list pkg-config))
-    (inputs (list libtraceevent))
+     (list #:configure-flags
+           (if (supported-package? ruby-asciidoctor)
+               #~(list "-Ddoc=true"
+                       "-Dasciidoctor=true")
+               #~(list "-Ddoc=false"))))
+    (native-inputs
+     (append (list bison
+                   cunit
+                   flex
+                   pkg-config)
+             (if (supported-package? ruby-asciidoctor)
+                 (list ruby-asciidoctor)
+                 '())))
+    (propagated-inputs
+     ;; In .pc file Requires
+     (list libtraceevent))
     (home-page "https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/")
     (synopsis "Linux kernel trace file system library")
     (description
