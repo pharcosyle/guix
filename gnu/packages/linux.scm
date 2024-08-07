@@ -5783,7 +5783,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
                    ;; We cannot build with -Werror on i686 due to a
                    ;; 'sign-compare' warning in util.c.
                    (substitute* "Makefile"
-                     (("-Werror") ""))))
+                     (("-Werror\\ ") ""))))
                (delete 'configure))
            ;; Tests must be run as root.
            #:tests? #f))
