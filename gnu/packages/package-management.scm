@@ -1999,7 +1999,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2024.6")
+    (version "2024.7")
     (source
      (origin
        (method url-fetch)
@@ -2007,7 +2007,7 @@ for packaging and deployment of cross-compiled Windows applications.")
              "https://github.com/ostreedev/ostree/releases/download/v"
              (version-major+minor version) "/libostree-" version ".tar.xz"))
        (sha256
-        (base32 "13w69xcpmajgb4n3wy77z4dppp8bljnj4hvjy7r1593sd5bchqcb"))))
+        (base32 "0m9kp5zfgv3fcpy16h8ym1hrxylpvd4vhvnxrysaq42szvziwibj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--enable-gtk-doc"
