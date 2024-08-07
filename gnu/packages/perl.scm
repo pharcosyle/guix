@@ -13064,7 +13064,7 @@ converting Perl data structures to YAML strings, and the other way around.")
 (define-public perl-module-build
   (package
     (name "perl-module-build")
-    (version "0.4232")
+    (version "0.4234")
     (source
      (origin
        (method url-fetch)
@@ -13072,7 +13072,7 @@ converting Perl data structures to YAML strings, and the other way around.")
                            "Module-Build-" version ".tar.gz"))
        (sha256
         (base32
-         "06vp850canzlv24l4289j1md5p2znwm5f9gsxins0jyr8pi2xj37"))))
+         "13var0mmyrsjcsvca998900vsrn791379lzaf7jfb2s14xhsrbk6"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-cpan-meta))
