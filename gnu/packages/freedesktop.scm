@@ -2795,7 +2795,7 @@ applications define in those files.")
 (define-public perl-file-mimeinfo
   (package
     (name "perl-file-mimeinfo")
-    (version "0.33")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
@@ -2803,7 +2803,7 @@ applications define in those files.")
                            "File-MimeInfo-" version ".tar.gz"))
        (sha256
         (base32
-         "1i5iw6ri0w9clwpqf40xmsh4isc8xvx2lyf2r5g34886i6rsdgpn"))))
+         "1hgwh74id67mhbjdrcbzldmqmlrh8dcs21al1l8411lrqincn5wp"))))
     (build-system perl-build-system)
     (inputs (list bash-minimal))        ;for wrap-program
     ;; If the tests are fixed, add perl-test-pod, perl-test-pod-coverage, and
