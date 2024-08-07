@@ -3915,7 +3915,7 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
 (define-public perl-http-date
   (package
     (name "perl-http-date")
-    (version "6.05")
+    (version "6.06")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3923,7 +3923,7 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0awjdbz7x0jd5pna55dwxhs3k6xp3sw6b2zg3p2yndxxvya64p9n"))))
+               "0lib5p4iq64cwzspacbqfx7ykyprw5gcj0pws5ryghxcqs8m2s3v"))))
     (build-system perl-build-system)
     (license license:perl-license)
     (synopsis "Perl date conversion routines")
