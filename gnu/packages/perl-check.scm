@@ -72,7 +72,7 @@ lexically, just dynamically.")
 (define-public perl-test2-suite
   (package
     (name "perl-test2-suite")
-    (version "0.000150")
+    (version "0.000163")
     (source
       (origin
         (method url-fetch)
@@ -80,7 +80,7 @@ lexically, just dynamically.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0fn36jjw6xg6nhp4mmrjdfi7kqiw1ka11wf86jb1p05wblr2wa6l"))))
+          "1af008b6mfq0hc1dj6qy8y1an8v7slcp1mm0i83g1i235pcw4dp3"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
