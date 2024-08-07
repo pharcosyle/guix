@@ -743,7 +743,7 @@ inspired by @code{Test::More}.")
 (define-public perl-test-leaktrace
   (package
     (name "perl-test-leaktrace")
-    (version "0.16")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
@@ -751,7 +751,7 @@ inspired by @code{Test::More}.")
                            "Test-LeakTrace-" version ".tar.gz"))
        (sha256
         (base32
-         "00z4hcjra5nk700f3fgpy8fs036d7ry7glpn8g3wh7jzj7nrw22z"))))
+         "0w3r8q8k7swi20xrqg45q7a47jza0gprgvqf623aaplgjg968zbp"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Test-LeakTrace")
     (synopsis "Traces memory leaks in Perl")
