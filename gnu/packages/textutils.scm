@@ -556,7 +556,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 (define-public oniguruma
   (package
     (name "oniguruma")
-    (version "6.9.8")
+    (version "6.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/kkos/"
@@ -568,7 +568,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
                                   "/onig-" version ".tar.gz"))
               (sha256
                (base32
-                "0gi16msv8wqzx13ddg0jigzb4101mb51ryv50n8wf8s68v0n5k98"))))
+                "1kx633c9rz8v966cwpgm69vicx6kzwjpk867sj34hvzwp79jn5k0"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-static")))
     (home-page "https://github.com/kkos/oniguruma")
