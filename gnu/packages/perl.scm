@@ -8879,14 +8879,14 @@ file names.")
 (define-public perl-path-tiny
   (package
     (name "perl-path-tiny")
-    (version "0.144")
+    (version "0.146")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                                   "Path-Tiny-" version ".tar.gz"))
               (sha256
                (base32
-                "0za80q929ga5f2dpyw0a866xwm4kawr96y6208m9ap44rr70kspn"))))
+                "0hb7y1823v3bxqkqmmp9jakr71fmr5pbnds3nad4w9b8radz07l6"))))
     (build-system perl-build-system)
     ;; Additional unpackaged modules recommended for tests.
     ;; (native-inputs
