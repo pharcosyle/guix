@@ -1266,9 +1266,8 @@ write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
     (license license:gpl2)))
 
-(define-public libgit2
-  ;; Default version of libgit2.
-  libgit2-1.5)
+;; Avoid having reording/renaming any vars for the moment.
+(define libgit2 libgit2-1.5)
 
 (define-public libgit2-1.7
   (package
@@ -1328,6 +1327,10 @@ write native speed custom Git applications in any language with bindings.")
                                "-DUSE_HTTP_PARSER=http-parser"
                                arg))
                          #$flags))))))
+
+(define-public libgit2
+  ;; Default version of libgit2.
+  libgit2-1.8)
 
 (define-public libgit2-1.6
   (package
