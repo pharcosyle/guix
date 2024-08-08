@@ -1196,7 +1196,20 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "1ny2glwmb5dcdv2x0giinbyma9fhk59z8117k1kr15pm7yjk7jx5"))))
+                "1ny2glwmb5dcdv2x0giinbyma9fhk59z8117k1kr15pm7yjk7jx5"))
+              ;; When removing this also get rid of the autoreconf step and
+              ;; related native inputs.
+              (patches
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://github.com/storaged-project/libblockdev/commit"
+                        "/b7517843882b9bf2ea5665f3706c0e6b52a3fdde.patch"))
+                  (file-name (string-append name "-fix-fs-plugin-comp.patch"))
+                  (sha256
+                   (base32
+                    "00vvr8k4wpklmq2lirxfwn9g308af5f56jzmaaic711yigjmmnyc")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1205,9 +1218,15 @@ to create devices with respective mappings for the ATARAID sets discovered.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
               (substitute* "src/lib/blockdev.c"
-               (("/etc/libblockdev/.*/conf.d/" path) (string-append out path)))))))))
+               (("/etc/libblockdev/.*/conf.d/" path) (string-append out path))))))
+         (replace 'bootstrap
+           (lambda _
+             (invoke "autoreconf" "-vif"))))))
     (native-inputs
-     (list gobject-introspection
+     (list autoconf
+           automake
+           libtool
+           gobject-introspection
            pkg-config
            python-wrapper
            util-linux))
