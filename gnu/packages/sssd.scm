@@ -187,7 +187,7 @@ fundamental object types for C.")
                   (guix build utils)
                   ((guix build python-build-system)
                    #:select (ensure-no-mtimes-pre-1980)))
-      #:imported-modules (append %gnu-build-system-modules
+      #:imported-modules (append %default-gnu-imported-modules
                                  %python-build-system-modules)
       #:phases
       #~(modify-phases %standard-phases
