@@ -1015,14 +1015,14 @@ code.")
 (define-public perl-test-nowarnings
   (package
     (name "perl-test-nowarnings")
-    (version "1.04")
+    (version "1.06")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+              (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                                   "Test-NoWarnings-" version ".tar.gz"))
               (sha256
                (base32
-                "0v385ch0hzz9naqwdw2az3zdqi15gka76pmiwlgsy6diiijmg2k3"))))
+                "0dzpcbnhb8mpr1z58cx3w1r3fff8s8hdy9qf44qk5dky7ca53p62"))))
     (build-system perl-build-system)
     (synopsis "Ensure no warnings are produced while testing")
     (description
