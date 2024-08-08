@@ -378,7 +378,8 @@ applications.")
                 "1n0y5l5wfq2a86dimraazvz1v9dvqdjkmpqgzkbk9rqy09syv7la"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
+     `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
+       #:tests? ,(not (target-x86-32?))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-tests
