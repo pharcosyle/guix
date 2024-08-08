@@ -819,7 +819,7 @@ high-performance computing} clusters.")
 (define-public nix
   (package
     (name "nix")
-    (version "2.24.1")
+    (version "2.16.1")
     (source
      (origin
        (method git-fetch)
@@ -828,7 +828,9 @@ high-performance computing} clusters.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pnqsj2rqd8dkzjivwppwiacqxgqanaj6gf212jv21yg82yl88fz"))))
+        (base32 "1rca8ljd33dmvh9bqk6sy1zxk97aawcr6k1f7hlm4d1cd9mrcw7x"))
+       (patches
+        (search-patches "nix-dont-build-html-doc.diff"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -874,15 +876,13 @@ high-performance computing} clusters.")
                    curl
                    editline
                    libarchive
-                   libgc-for-nix
-                   libgit2
+                   libgc
                    libseccomp
                    libsodium
                    lowdown
                    nlohmann-json
                    openssl
                    sqlite
-                   toml11
                    xz
                    zlib)
              (if (or (target-x86-64?)
