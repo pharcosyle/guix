@@ -888,7 +888,7 @@ high-performance computing} clusters.")
      (append (list boost
                    brotli
                    bzip2
-                   curl
+                   curl-no-pkgconfig-reqs
                    editline
                    libarchive
                    libgc-for-nix
@@ -2037,7 +2037,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                              ; trivial-httpd for tests."
     (inputs
      (list avahi
-           curl
+           curl-no-pkgconfig-reqs
            docbook-xml-4.2
            docbook-xml-4.3
            docbook-xsl
@@ -2141,7 +2141,7 @@ cp -r /tmp/locale/*/en_US.*")))
     (inputs
      (list appstream
            bubblewrap
-           curl
+           curl-no-pkgconfig-reqs
            dconf
            fuse
            gdk-pixbuf

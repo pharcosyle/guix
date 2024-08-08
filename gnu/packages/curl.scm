@@ -176,6 +176,18 @@ tunneling, and so on.")
                                    "See COPYING in the distribution."))
     (home-page "https://curl.haxx.se/")))
 
+(define-public curl-no-pkgconfig-reqs
+  (package
+    (inherit curl)
+    (version "8.8.0")
+    (source (origin
+              (inherit (package-source curl))
+              (uri (string-append "https://curl.se/download/curl-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "00243mai47br136x2ay4zjdrs36rn00mgpxkxr38l31kzjavnn0g"))))))
+
 (define-public gnurl (deprecated-package "gnurl" curl))
 
 (define-public curl-ssh
