@@ -1147,7 +1147,7 @@ with the Linux kernel.")
                                        "glibc-2.35-CVE-2023-4911.patch"
                                        "glibc-ldd-powerpc.patch"
                                        "glibc-ldd-x86_64.patch"
-                                       "glibc-dl-cache.patch"
+                                       "glibc-2.35-dl-cache.patch"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-allow-kernel-2.6.32.patch"
                                        "glibc-reinstate-prlimit64-fallback.patch"
