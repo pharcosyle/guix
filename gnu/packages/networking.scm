@@ -2597,7 +2597,7 @@ sockets in Perl.")
            pkg-config
            vala))
     (inputs
-     (list curl
+     (list curl-no-pkgconfig-reqs
            duktape
            glib
            gsettings-desktop-schemas))

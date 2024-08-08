@@ -1347,7 +1347,7 @@ exec -a \"$0\" \"~a\" \"$@\""
                     (chmod (string-append bin "/rust-analyzer") #o755))))))))
       (inputs
        (modify-inputs (package-inputs base-rust)
-                      (prepend curl libffi `(,nghttp2 "lib") zlib)))
+                      (prepend curl-no-pkgconfig-reqs libffi `(,nghttp2 "lib") zlib)))
       (native-inputs (cons*
                       ;; Keep in sync with the llvm used to build rust.
                       `("clang-source" ,(package-source clang-runtime-15))
