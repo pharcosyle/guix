@@ -5946,7 +5946,7 @@ edited, converted, compressed and saved.")
 (define-public lsp-dsp-lib
   (package
     (name "lsp-dsp-lib")
-    (version "1.0.20")
+    (version "1.0.25")
     (source
       (origin
         (method url-fetch)
@@ -5954,7 +5954,7 @@ edited, converted, compressed and saved.")
                             "releases/download/" version
                             "/lsp-dsp-lib-src-" version ".tar.gz"))
         (sha256
-         (base32 "1951d7c08d1g808jgq4r1iacyxb9qr3bpb13r4ybs7bcm8qys02h"))))
+         (base32 "1h84rm1klxs3jcmkx7s8xydcmv0jyqs8bbhy2qi54hbvbb6hsxdr"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f                  ; no tests
