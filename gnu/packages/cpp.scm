@@ -858,6 +858,26 @@ intuitive syntax and trivial integration.")
 (define-public json-modern-cxx
   (deprecated-package "json-modern-cxx" nlohmann-json))
 
+(define-public toml11
+  (package
+   (name "toml11")
+   (version "4.1.0")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/ToruNiina/toml11")
+                  (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "1r3qr4xxzqyyl8xrrl3q51pr8ac7w2wvr6y5x420625dk846blrq"))))
+   (build-system cmake-build-system)
+   (home-page "https://github.com/ToruNiina/toml11")
+   (synopsis "TOML for Modern C++")
+   (description
+    "toml11 is a feature-rich TOML language library for C++11/14/17/20.")
+   (license license:expat)))
+
 (define-public tomlplusplus
   (package
    (name "tomlplusplus")
