@@ -190,7 +190,7 @@
            python-wrapper
            gi-docgen))
     (inputs
-     (list curl libstemmer libxmlb libxml2 libyaml))
+     (list curl-no-pkgconfig-reqs libstemmer libxmlb libxml2 libyaml))
     (propagated-inputs
      (list glib))
     (synopsis "Tools and libraries to work with AppStream metadata")
