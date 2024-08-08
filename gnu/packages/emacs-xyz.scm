@@ -39960,7 +39960,7 @@ hacker.")
       (license license:expat))))
 
 (define-public doom-emacs
-  (let ((commit "ff3fd15b0249954f3a859e533f6c09a8b1988a72")
+  (let ((commit "511c8af36537992fd60ff970e19e5638207546ed")
         (revision "1"))
     (package
       (name "doom-emacs")
@@ -39973,7 +39973,7 @@ hacker.")
                (commit commit)))
          (sha256
           (base32
-           "00138r26clcs6473qh1hvhclhv4cwnydx1p0cczgnb8pw5sy9kgl"))
+           "1dnnmhz8q7flvgrw6q137qahi2d48k95786mvay8c03dsl4vad9b"))
          (file-name (git-file-name name version))
          (patches
           (list
@@ -39988,11 +39988,13 @@ hacker.")
                "105krfkxv39kslamvsal8jllmqslzx1lgpm0rzrlwm720s28cn5k")))
            (origin
              (method url-fetch)
-             (uri "https://github.com/doomemacs/doomemacs/pull/7683.patch")
+             (uri (string-append
+                   "https://github.com/doomemacs/doomemacs/compare"
+                   "/master...pharcosyle:doomemacs:factorize-executables.patch"))
              (file-name (string-append name "-factorize-executables.patch"))
              (sha256
               (base32
-               "0hz59z079ji9aa1l19snq3qcw9dgwd0hv0w3c6059h01346818vl")))))))
+               "1k21z1wybv75frq5a8dz7s83xz2z9mj75hss3cqnc20n8n7lkddw")))))))
       (build-system copy-build-system)
       (arguments
        (list
