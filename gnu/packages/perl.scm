@@ -10268,7 +10268,7 @@ via string eval.")
 (define-public perl-sub-uplevel
   (package
     (name "perl-sub-uplevel")
-    (version "0.24")
+    (version "0.2800")
     (source
      (origin
        (method url-fetch)
@@ -10276,7 +10276,7 @@ via string eval.")
                            "Sub-Uplevel-" version ".tar.gz"))
        (sha256
         (base32
-         "1yzxqsim8vpavzqm2wfksh8dpmy6qbr9s3hdqqicp38br3lzd4qg"))))
+         "14z2xjiw931wizcx3mblmby753jspvfm321d6chs907nh0xzdwxl"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Sub-Uplevel")
     (synopsis "Apparently run a function in a higher stack frame")
