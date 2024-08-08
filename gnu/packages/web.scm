@@ -3231,14 +3231,14 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.55")
+    (version "4.59")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/L/LE/LEEJO/"
                            "CGI-" version ".tar.gz"))
        (sha256
-        (base32 "1ck4ik5i0v394qgg9qah4p6x9hyls311g6iwi6ildprzn6a5x2b7"))))
+        (base32 "077rcb12hzddi9hmshksn4rzibl6nlcqvh7kjryff44bp24lpvkd"))))
     (build-system perl-build-system)
     (native-inputs
      (list perl-test-nowarnings perl-test-warn))
