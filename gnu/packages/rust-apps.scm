@@ -2678,7 +2678,7 @@ the library crate of Cargo.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list curl libgit2-1.7 libssh2 openssl zlib))
+     (list curl-no-pkgconfig-reqs libgit2-1.7 libssh2 openssl zlib))
     (home-page "https://github.com/lu-zero/cargo-c")
     (synopsis "Build and install C-compatible libraries")
     (description
