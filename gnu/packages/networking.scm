@@ -2582,7 +2582,7 @@ sockets in Perl.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16pq3qmsla65l1lmn0qc2awz73rx2bccv5sd9jyv85skpvykgkcq"))))
+                "06pq3qmsla65l1lmn0qc2awz73rx2bccv5sd9jyv85skpvykgkcq"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -2599,8 +2599,9 @@ sockets in Perl.")
     (inputs
      (list curl
            duktape
-           glib
            gsettings-desktop-schemas))
+    (propagated-inputs
+     (list glib))
     (synopsis "Library providing automatic proxy configuration management")
     (description "Libproxy handles the details of HTTP/HTTPS proxy
 configuration for applications across all scenarios.  Applications using
