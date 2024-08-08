@@ -1498,7 +1498,7 @@ defined, and that the version is valid.")
 (define-public perl-test-warn
   (package
     (name "perl-test-warn")
-    (version "0.36")
+    (version "0.37")
     (source
      (origin
        (method url-fetch)
@@ -1506,7 +1506,7 @@ defined, and that the version is valid.")
                            "Test-Warn-" version ".tar.gz"))
        (sha256
         (base32
-         "1nkc7jzxff0w4x9axbpsgxrksqdjnf70rb74q39zikkrsd3a7g7c"))))
+         "0mvbl3qm9fbc282igrg28bi57lgkfycn185rpyw8kspmybkk5jlq"))))
     (build-system perl-build-system)
     (propagated-inputs
      (list perl-sub-uplevel))
