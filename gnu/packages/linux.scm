@@ -4949,6 +4949,16 @@ compliance. This is only necessary for linux kernels before 4.16.")
             (lambda _
               (substitute* "Makefile"
                 (("gzip") "gzip --no-name"))))
+          (add-after 'unpack 'omit-signature
+            (lambda _
+              (substitute* "Makefile"
+                ;; Signing requires a REGDB_PUBCERT and REGDB_PRIVKEY which we
+                ;; don't provide (see below).  Disable it.
+                ((" regulatory\\.db\\.p7s") "")
+                ;; regulatory.db is built as a dependency of regulatory.db.p7s,
+                ;; but ‘make install’ depends only on the latter while
+                ;; installing both (and failing).  Depend on it explicitly.
+                (("^install: " all) (string-append all "regulatory.db ")))))
           (delete 'configure))  ; no configure script
 
       ;; The 'all' target of the makefile depends on $(REGDB_CHANGED), which
