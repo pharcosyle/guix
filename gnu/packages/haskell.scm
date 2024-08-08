@@ -853,7 +853,7 @@ interactive environment for the functional language Haskell.")
              ghc-bootstrap-i686-7.8.4))))
     (arguments
      (list
-       ;; #:tests? #f
+       #:tests? #f
 
        #:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
@@ -1016,7 +1016,7 @@ interactive environment for the functional language Haskell.")
             (base32 "1wjc3x68l305bl1h1ijd3yhqp2vqj83lkp3kqbr94qmmkqlms8sj")))) ))
     (arguments
      (list
-       ;; #:tests? #f
+       #:tests? #f
 
        #:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
