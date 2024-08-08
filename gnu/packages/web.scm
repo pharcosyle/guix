@@ -3755,7 +3755,7 @@ are invoked.")
 (define-public perl-html-tagset
   (package
     (name "perl-html-tagset")
-    (version "3.20")
+    (version "3.24")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3763,7 +3763,7 @@ are invoked.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1qh8249wgr4v9vgghq77zh1d2zs176bir223a8gh3k9nksn7vcdd"))))
+               "02r35dgl9fqxicpcsba359cng7pnwlp4fmqs2j7izv88lr2y32gb"))))
     (build-system perl-build-system)
     (license license:perl-license)
     (synopsis "Perl data tables useful in parsing HTML")
