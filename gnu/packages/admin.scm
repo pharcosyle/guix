@@ -3383,7 +3383,15 @@ platform-specific methods.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--with-python=no"
-                               "--disable-static")))
+                               "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test
+           (lambda _
+             ;; GDM user 42 doesn't exist in the sandbox I guess?
+             (substitute* "auparse/test/auparse_test.ref"
+               (("auid=42 \\(gdm\\)")
+                "auid=42 (unknown(42))")))))))
     (inputs
      (list openldap gnutls cyrus-sasl))
     (synopsis "User-space component to the Linux auditing system")
