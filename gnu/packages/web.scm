@@ -2473,15 +2473,15 @@ to perl-code, for faster generation of access_log lines.")
 (define-public perl-authen-sasl
   (package
     (name "perl-authen-sasl")
-    (version "2.16")
+    (version "2.1700")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/G/GB/GBARR/"
+       (uri (string-append "mirror://cpan/authors/id/E/EH/EHUELS/"
                            "Authen-SASL-" version ".tar.gz"))
        (sha256
         (base32
-         "02afhlrdq5hh5g8b32fa79fqq5i76qzwfqqvfi9zi57h31szl536"))))
+         "1klf7bh1s7q0cm8dn0whn1kbn57x9ajlg7zk4kp7lf4dddbmlvdq"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
