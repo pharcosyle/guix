@@ -873,7 +873,7 @@ high-performance computing} clusters.")
      (append (list boost
                    brotli
                    bzip2
-                   curl
+                   curl-no-pkgconfig-reqs
                    editline
                    libarchive
                    libgc
@@ -2124,7 +2124,7 @@ cp -r /tmp/locale/*/en_US.*")))
     (inputs
      (list appstream
            bubblewrap
-           curl
+           curl-no-pkgconfig-reqs
            dconf
            fuse
            gdk-pixbuf
