@@ -41647,8 +41647,8 @@ hacker.")
       (license license:expat))))
 
 (define-public doom-emacs
-  (let ((commit "ff3fd15b0249954f3a859e533f6c09a8b1988a72")
-        (revision "1"))
+  (let ((commit "9c8cfaadde1ccc96a780d713d2a096f0440b9483")
+        (revision "0"))
     (package
       (name "doom-emacs")
       (version (git-version "3.0.0-pre" revision commit))
@@ -41660,26 +41660,19 @@ hacker.")
                (commit commit)))
          (sha256
           (base32
-           "00138r26clcs6473qh1hvhclhv4cwnydx1p0cczgnb8pw5sy9kgl"))
+           "1bwd3b1myadarqksmg5ld1f19k2nvi0bsm4l869vjxprbri5vswi"))
          (file-name (git-file-name name version))
          (patches
           (list
            (origin
              (method url-fetch)
              (uri (string-append
-                   "https://github.com/pharcosyle/doomemacs/commit"
-                   "/3089bd055d5cc9195247c92d714095742f3d56f6.patch"))
-             (file-name (string-append name "-dirvish.patch"))
+                   "https://github.com/doomemacs/doomemacs/compare"
+                   "/master...pharcosyle:doomemacs:generalize-rg-and-fd.patch"))
+             (file-name (string-append name "-generalize-rg-and-fd.patch"))
              (sha256
               (base32
-               "105krfkxv39kslamvsal8jllmqslzx1lgpm0rzrlwm720s28cn5k")))
-           (origin
-             (method url-fetch)
-             (uri "https://github.com/doomemacs/doomemacs/pull/7683.patch")
-             (file-name (string-append name "-factorize-executables.patch"))
-             (sha256
-              (base32
-               "0hz59z079ji9aa1l19snq3qcw9dgwd0hv0w3c6059h01346818vl")))))))
+               "04l8l28p6in5v5y4py7s06ijgg28ld7aqi3p2jcqqab0rkwp285k")))))))
       (build-system copy-build-system)
       (arguments
        (list
@@ -41698,8 +41691,9 @@ hacker.")
               (lambda* (#:key inputs #:allow-other-keys)
                 (parameterize ((%emacs (search-input-file inputs "/bin/emacs")))
                   (emacs-substitute-variables "lisp/doom-projects.el"
-                    ("doom-rg-binary" (search-input-file inputs "/bin/rg"))
-                    ("doom-projectile-fd-binary" (search-input-file inputs "/bin/fd"))))))
+                    ("doom-ripgrep-executable" (search-input-file inputs "/bin/rg"))
+                    ("doom-fd-executable" (search-input-file inputs "/bin/fd"))))))
+            ;; Instead of symlinking these I could move them and patch the value of `doom-bin-dir' in the source to the package bin output. This would avoid having the executables in two places but otherwise I donno if there's really an advantage.
             (add-after 'install 'symlink-bin
               (lambda _
                 (mkdir #$output:bin)
@@ -41716,8 +41710,8 @@ hacker.")
         (with-git-commit
          font-symbols-nerd-mono
          #:upstream-version "0.1.0"
-         #:commit "4322290303f2e12efd5685a0d22d76ed76ec7349"
-         #:hash "0z360gr820a1xig9samxzgzmc99hjx17hkfrmpqwb8bzix37n84j")))
+         #:commit "cc6c46830305df123de20b18510b15838e1608d6"
+         #:hash "0b6wjr6d6yy2kkrkr65lg83mwjwq1nk23dfkv3991asm0cl74s0k")))
       (outputs '("out" "bin"))
       (synopsis "An Emacs framework for the stubborn martian hacker")
       (description "Doom is a configuration framework for GNU Emacs tailored for
