@@ -6586,10 +6586,19 @@ output.")
     (home-page "https://tracker.debian.org/pkg/bdfresize")
     (license license:gpl2+)) )
 
+(define unifont
+  (origin
+    (method url-fetch)
+    (uri
+     "https://unifoundry.com/pub/unifont/unifont-15.1.05/font-builds/unifont-15.1.05.bdf.gz")
+    (sha256
+     (base32
+      "07fr3zhnx4jm8qlxivaw50gav66ii1fkydza3wykbqvi9nhvb9cf"))))
+
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.230")
+    (version "1.226")
     (source
      (origin
        (method git-fetch)
@@ -6597,7 +6606,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "0n8mj35z6xqa0f65n4rxal3357vlrv96cwcfqr1hvzd0virpqjq2"))
+        (base32 "0xkxlarpzqakvas4g489f7ysbcpbwaav7hzxsd5f219aw4pm8al2"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -6609,6 +6618,11 @@ output.")
            #:phases
            #~(modify-phases %standard-phases
                (delete 'configure)
+               (add-after 'unpack 'add-unifont
+                 (lambda _
+                   (with-directory-excursion "Fonts/bdf"
+                     (copy-file #+unifont "unifont.bdf.gz")
+                     (system* "gunzip" "unifont.bdf.gz"))))
                (add-after 'unpack 'patch-file-names
                  (lambda* (#:key inputs #:allow-other-keys)
                    ;; 'ckbcomp' calls out to 'cat' (!).  Give it the right file
