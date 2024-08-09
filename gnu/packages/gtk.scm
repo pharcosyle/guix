@@ -168,12 +168,14 @@ such as mate-panel and xfce4-panel.")
     (version "1.18.0")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://cairographics.org/releases/cairo-"
-                       version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/cairo/cairo.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0r0by563s75xyzz0d0j1nmjqmdrk2x9agk7r57p3v8vqp4v0ffi4"))))
+        (base32
+         "0d7zjvk8n8x5yag81gams9jcbk0a6gj27lwmf1ip9zk3gmdm7phh"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
