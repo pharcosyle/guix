@@ -817,7 +817,7 @@ other applications that need to directly deal with input devices.")
 (define-public libei
   (package
     (name "libei")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -825,7 +825,7 @@ other applications that need to directly deal with input devices.")
                     (commit version)))
               (sha256
                (base32
-                "1dbgc2my0r7bzb8ilbcv0d4k1j8fmm7w2r5c94y1djk5n39c4zzj"))
+                "0idbl20ax060s7m435rszfv7c0bvpinjvq45qbqwvcvp0hg8r9y8"))
               (snippet
                #~(begin
                    (use-modules (guix build utils))
@@ -834,18 +834,7 @@ other applications that need to directly deal with input devices.")
                       "# subproject('munit'")
                      ((", fallback: \\['munit', 'munit_dep'\\]")
                       ""))
-                   (delete-file-recursively "subprojects")))
-              (patches
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://gitlab.freedesktop.org/libinput/libei/-/commit"
-                        "/33b4a6199535868dba8446e5191223e83ea3fe0f.patch"))
-                  (file-name (string-append name "-test-fix.patch"))
-                  (sha256
-                   (base32
-                    "17lizqkc7aax96shcsv6wh8n8fv2vpbfa7mwpa9hj2z5i68arlws")))))))
+                   (delete-file-recursively "subprojects")))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
