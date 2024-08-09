@@ -978,8 +978,8 @@ safety and thread safety guarantees.")
                              (replace "llvm" llvm-17))))))
 
 (define-public rust-1.77
-  (let ((base-rust (rust-bootstrapped-package rust-1.76 "1.77.1"
-                    "18d4ncdzp0nfimmw029xdf7vv1hgh82v30mjnnixnllzar66w47f")))
+  (let ((base-rust (rust-bootstrapped-package rust-1.76 "1.77.2"
+                    "1hrq2r9brhwl77qv18qk4pqrzfgnn9w6fwf7vgykhrjrizpmf566")))
     (package
       (inherit base-rust)
       (arguments
