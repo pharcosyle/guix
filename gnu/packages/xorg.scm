@@ -5360,7 +5360,7 @@ EGLStream families of extensions.")
 (define-public xorg-server-xwayland
   (package
     (name "xorg-server-xwayland")
-    (version "24.1.1")
+    (version "24.1.2")
     (source
      (origin
        (method url-fetch)
@@ -5368,7 +5368,7 @@ EGLStream families of extensions.")
                            "/xserver/xwayland-" version ".tar.xz"))
        (sha256
         (base32
-         "0chqlm0jfdkvv7qj91d6y458b9srlgx7v9avgxfq0d83n7hbw9bi"))))
+         "1lpp7r3dv5qddr808b04am3hhc89wh5wg0l7q1hkcaj2grpbf7hl"))))
     (inputs (list font-dejavu
                   dbus
                   eudev
