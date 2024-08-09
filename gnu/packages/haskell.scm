@@ -1203,6 +1203,9 @@ interactive environment for the functional language Haskell.")
                 #$make-flags))
        ((#:phases phases '%standard-phases)
         #~(modify-phases #$phases
+             ;; (add-before 'unpack 'throw
+             ;;   (lambda _
+             ;;     (throw 'nope)))
            (add-after 'install 'remove-unnecessary-references
              (lambda* (#:key outputs #:allow-other-keys)
                (substitute* (find-files (string-append (assoc-ref outputs "out") "/lib/")

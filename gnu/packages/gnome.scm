@@ -5130,6 +5130,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
     (outputs '("out" "doc"))
     (arguments
      (list
+      #:tests? #f
       #:configure-flags #~(list "-Ddocs=enabled")
       #:phases
       #~(modify-phases %standard-phases

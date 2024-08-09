@@ -3364,7 +3364,7 @@ Both command-line and GTK2 interface are available.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -3372,24 +3372,13 @@ Both command-line and GTK2 interface are available.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1254jf8ip0dnsbj7hycj3favs6mlkz1s2xy7qgf5ak76rv6m5zsq"))))
+                "0aszpsz3pc7p7z6yahlib4na585m6pqbg2d9dkpyipgml1lgv3s7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-bdjava-jar"
                            "--disable-static")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'refer-to-libxml2-in-.pc-file
-           ;; Avoid the need to propagate libxml2 by referring to it
-           ;; directly, as is already done for fontconfig & freetype.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libxml2 (assoc-ref inputs "libxml2")))
-               (substitute* "configure"
-                 ((" libxml-2.0") ""))
-               (substitute* "src/libbluray.pc.in"
-                 (("^Libs.private:" field)
-                  (string-append field " -L" libxml2 "/lib -lxml2")))
-               #t)))
          (add-before 'build 'fix-dlopen-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libaacs (assoc-ref inputs "libaacs"))
@@ -3403,11 +3392,15 @@ Both command-line and GTK2 interface are available.")
                #t))))))
     (native-inputs (list pkg-config))
     (inputs
-     `(("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("libaacs" ,libaacs)
-       ("libbdplus" ,libbdplus)
-       ("libxml2" ,libxml2)))
+     `(("libaacs" ,libaacs)
+       ("libbdplus" ,libbdplus)))
+    (propagated-inputs
+     (list
+      ;; In Requires.private
+      freetype
+      fontconfig
+      ;; In Libs.private
+      libxml2))
     (home-page "https://www.videolan.org/developers/libbluray.html")
     (synopsis "Blu-Ray Disc playback library")
     (description
