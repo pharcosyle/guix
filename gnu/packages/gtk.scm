@@ -162,20 +162,23 @@ such as mate-panel and xfce4-panel.")
     (home-page "https://gitlab.com/vala-panel-project/vala-panel-appmenu")
     (license (list license:lgpl3))))
 
+(define %cairo-commit "43e08aed8b70655d7e5834e81fa87fd353e27e1c")
 (define-public cairo
   (package
     (name "cairo")
-    (version "1.18.0")
+    ;; (version "1.18.0")
+    (version (git-version "1.18.0" "0" %cairo-commit))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/cairo/cairo.git")
-             (commit version)))
+             ;; (commit version)
+             (commit %cairo-commit)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0d7zjvk8n8x5yag81gams9jcbk0a6gj27lwmf1ip9zk3gmdm7phh"))))
+         "11sygv1lkkigbmmnyrpjqpig1bwvrl4d9bniwjv9npmsvvhcgkma"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
