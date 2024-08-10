@@ -2562,6 +2562,46 @@ by AOM, including with alpha.")
     (home-page "https://github.com/AOMediaCodec/libavif")
     (license (list license:bsd-2))))
 
+(define-public libyuv
+  (package
+    (name "libyuv")
+    (version "1894")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://chromium.googlesource.com/libyuv/libyuv")
+                    (commit "e23bc72e8e65f1a528af07a60113962c3d3e5dcd")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00g358fwd132wvv944r77lfq7bzz613z1p7mrhkhg63d5s6j2mnj"))
+              (patches
+               (search-patches "libyuv-add-pc-file.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'add-pc-file
+                 (lambda _
+                   (let ((pc-file (string-append #$output
+                                                 "/lib/pkgconfig/libyuv.pc")))
+                     (substitute* (basename pc-file)
+                       (("@PREFIX@") #$output)
+                       (("@VERSION@") #$version))
+                     (mkdir-p (dirname pc-file))
+                     (copy-file (basename pc-file) pc-file)))))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list libjpeg-turbo))
+    (home-page "https://chromium.googlesource.com/libyuv/libyuv")
+    (synopsis "YUV scaling and conversion functionality")
+    (description
+     "Open source project that includes YUV scaling and conversion
+functionality.")
+    (license license:bsd-3)))
+
 (define-public libheif
   (package
     (name "libheif")
