@@ -73,6 +73,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -533,14 +534,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "42.0.5")
+    (version "42.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1lcflcvv0xjz5cyvf33iav1vd91qzjvl4w7h4qaxlcnbn3ixap2h"))))
+         "0sm437w29xx0749phn54j6p3rid21482djq98cvhraf0gcv5fmnz"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #f))  ; No tests included.
     (native-inputs
@@ -555,14 +556,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "42.0.5")
+    (version "42.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1qdz0yk5smi0dnywbxmanccwizilmnzgbbihjpmpgm6zjpn7xq3g"))))
+         "1wj2x2yb6r2zyaggdq5pvr4gb1n8nv2pxc4mks7alyyf75ad02cd"))))
     (build-system pyproject-build-system)
     (arguments
      (list
