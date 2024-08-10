@@ -1725,10 +1725,38 @@ customizable status bars for their desktop environment.  It has built-in
 functionality to display information about the most commonly used services.")
     (license license:expat)))
 
-(define-public wlroots
+;; ;; FIXME: Copy of lcms to avoid truly bizarre guile module import cycle (I
+;; ;; think?) that causes the guix build command to hang.
+;; (define lcms/guile-modules-workaround
+;;   (package
+;;     (name "lcms")
+;;     (version "2.16")
+;;     (source (origin
+;;               (method url-fetch)
+;;               (uri (string-append "mirror://sourceforge/lcms/lcms/"
+;;                                   (version-major+minor version)
+;;                                   "/lcms2-" version ".tar.gz"))
+;;               (sha256
+;;                (base32
+;;                 "0lasskcj7k0sp0z7cpnwwisp826j51i1l7v322hcxd5rv15d6wyq"))))
+;;     (build-system gnu-build-system)
+;;     (arguments
+;;      '(#:configure-flags '("--disable-static")))
+;;     (inputs
+;;      (list libjpeg-turbo libtiff zlib))
+;;     (synopsis "Little CMS, a small-footprint colour management engine")
+;;     (description
+;;      "Little CMS is a small-footprint colour management engine, with special
+;; focus on accuracy and performance.  It uses the International Color
+;; Consortium standard (ICC), approved as ISO 15076-1.")
+;;     (license license:x11)
+;;     (home-page "https://www.littlecms.com/")
+;;     (properties '((cpe-name . "little_cms_color_engine")))))
+
+(define-public wlroots-0.18
   (package
     (name "wlroots")
-    (version "0.17.4")
+    (version "0.18.0")
     (source
      (origin
        (method git-fetch)
@@ -1737,7 +1765,7 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0niigjpy8xxrnw3v9b3bsksw2q3yy3qsa2xx0aazwpycw5zrff83"))))
+        (base32 "13avi2805wrfkghgc7ar273p61svmm85k3g3hg9bf2gaxsz6f91f"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1754,7 +1782,8 @@ functionality to display information about the most commonly used services.")
                   "\"" (search-input-file inputs "bin/Xwayland") "\""))))))))
     (propagated-inputs
      ;; As required by wlroots.pc.
-     (list libxkbcommon
+     (list ;; lcms/guile-modules-workaround
+           libxkbcommon
            mesa
            pixman
            wayland
@@ -1792,6 +1821,24 @@ Wayland compositor")
     (description "wlroots is a set of pluggable, composable, unopinionated
 modules for building a Wayland compositor.")
     (license license:expat)))  ; MIT license
+
+(define-public wlroots
+  (package
+    (inherit wlroots-0.18)
+    (name "wlroots-0.17")
+    (version "0.17.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/wlroots/wlroots")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0niigjpy8xxrnw3v9b3bsksw2q3yy3qsa2xx0aazwpycw5zrff83"))))
+    ;; (propagated-inputs (modify-inputs (package-propagated-inputs wlroots)
+    ;;                      (delete "lcms")))
+    ))
 
 (define-public wlroots-0.16
   (package
