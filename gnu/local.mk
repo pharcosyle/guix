@@ -1768,6 +1768,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwpd-gcc-compat.patch			\
   %D%/packages/patches/libxkbcommon-disable-x11comp-test.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
+  %D%/packages/patches/libyuv-add-pc-file.patch	        \
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
   %D%/packages/patches/lierolibre-is-free-software.patch	\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
