@@ -530,14 +530,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "42.0.5")
+    (version "43.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1lcflcvv0xjz5cyvf33iav1vd91qzjvl4w7h4qaxlcnbn3ixap2h"))))
+         "00p7p36g7wfd9d0ffzh4mwif300aszn9cajlw7nkqhym6akhk7aw"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #f))  ; No tests included.
     (native-inputs
@@ -552,14 +552,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "42.0.5")
+    (version "43.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1qdz0yk5smi0dnywbxmanccwizilmnzgbbihjpmpgm6zjpn7xq3g"))))
+         "17i9fl1b3js9gvrxg25s3c2708g7c2gjqlw3hbqsj6nmlanpb05q"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -639,16 +639,14 @@ ciphers, message digests and key derivation functions.")
               (install-file "target/release/libcryptography_rust.so"
                             (string-append #$output "/lib")))))
       #:cargo-inputs
-      `(("rust-asn1" ,rust-asn1-0.15)
-        ("rust-cc" ,rust-cc-1)
+      `(("rust-asn1" ,rust-asn1-0.16)
         ("rust-cfg-if" ,rust-cfg-if-1)
-        ("rust-foreign-types" ,rust-foreign-types-0.3)
         ("rust-foreign-types-shared" ,rust-foreign-types-shared-0.1)
         ("rust-once-cell" ,rust-once-cell-1)
         ("rust-openssl" ,rust-openssl-0.10)
         ("rust-openssl-sys" ,rust-openssl-sys-0.9)
         ("rust-pem" ,rust-pem-3)
-        ("rust-pyo3" ,rust-pyo3-0.20)
+        ("rust-pyo3" ,rust-pyo3-0.22)
         ("rust-self-cell" ,rust-self-cell-1))))
     (native-inputs
      (list pkg-config

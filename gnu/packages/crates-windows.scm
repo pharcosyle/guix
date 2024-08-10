@@ -1616,8 +1616,33 @@ crate.")
                (base32
                 "1hpk0n2z0jzzvwlvs98b75sa4q920953nqfc119rv19nwm0mlsaj"))))))
 
+(define-public rust-windows-bindgen-0.56
+  (package
+    (name "rust-windows-bindgen")
+    (version "0.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "windows-bindgen" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0inv2w78qv6375ndrgm9vilkgscwak80igz8vkf7zw8c6fk3x3m2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-1)
+                       ("rust-rayon" ,rust-rayon-1)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-json" ,rust-serde-json-1)
+                       ("rust-syn" ,rust-syn-2)
+                       ("rust-windows-metadata" ,rust-windows-metadata-0.56))))
+    (home-page "https://github.com/microsoft/windows-rs")
+    (synopsis "Windows metadata compiler")
+    (description "This package provides Windows metadata compiler.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-windows-bindgen-0.52
   (package
+    (inherit rust-windows-bindgen-0.56)
     (name "rust-windows-bindgen")
     (version "0.52.0")
     (source
@@ -1627,16 +1652,11 @@ crate.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "071lrbhbvh0l8m1wf5000xxmcry1gjpqdxcqm23qmss9d05zn3lp"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-1)
                        ("rust-rayon" ,rust-rayon-1)
                        ("rust-syn" ,rust-syn-2)
-                       ("rust-windows-metadata" ,rust-windows-metadata-0.52))))
-    (home-page "https://github.com/microsoft/windows-rs")
-    (synopsis "Windows metadata compiler")
-    (description "Windows metadata compiler.")
-    (license (list license:expat license:asl2.0))))
+                       ("rust-windows-metadata" ,rust-windows-metadata-0.52))))))
 
 (define-public rust-windows-bindgen-0.51
   (package
@@ -2097,8 +2117,26 @@ crate.")
        (sha256
         (base32 "00h56znmak3p8bh28y3s48m5zv6q7dn40vnvf3dzf0sz5rszrym2"))))))
 
+(define-public rust-windows-metadata-0.56
+  (package
+    (name "rust-windows-metadata")
+    (version "0.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "windows-metadata" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0d1vizbp6b1wjh3qnjrh120w1iwqal3lfj52wdac847zgy1gg4rr"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/microsoft/windows-rs")
+    (synopsis "Windows metadata reader")
+    (description "This package provides Windows metadata reader.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-windows-metadata-0.52
   (package
+    (inherit rust-windows-metadata-0.56)
     (name "rust-windows-metadata")
     (version "0.52.0")
     (source
@@ -2107,12 +2145,7 @@ crate.")
        (uri (crate-uri "windows-metadata" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1vz49s2mm74fmjabh3kxxhzbz16ys41b78jgi6xwssp2069db3r1"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/microsoft/windows-rs")
-    (synopsis "Windows metadata reader")
-    (description "Windows metadata reader.")
-    (license (list license:expat license:asl2.0))))
+        (base32 "1vz49s2mm74fmjabh3kxxhzbz16ys41b78jgi6xwssp2069db3r1"))))))
 
 (define-public rust-windows-metadata-0.51
   (package
@@ -2127,8 +2160,29 @@ crate.")
        (sha256
         (base32 "03h0c6qs1yyl0z69p4k1hdq636j868qdxnri1dy47nprjvckacbm"))))))
 
+(define-public rust-windows-sys-0.59
+  (package
+    (name "rust-windows-sys")
+    (version "0.59.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "windows-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fw5672ziw8b3zpmnbp9pdv1famk74f1l9fcbc3zsrzdg56vqf0y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-windows-targets" ,rust-windows-targets-0.52))))
+    (home-page "https://github.com/microsoft/windows-rs")
+    (synopsis "Rust for Windows")
+    (description "This package provides Rust for Windows.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-windows-sys-0.52
   (package
+    (inherit rust-windows-sys-0.59)
     (name "rust-windows-sys")
     (version "0.52.0")
     (source (origin
@@ -2138,17 +2192,9 @@ crate.")
               (sha256
                (base32
                 "0gd3v4ji88490zgb6b5mq5zgbvwv7zx1ibn8v3x83rwcdbryaar8"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-windows-targets" ,rust-windows-targets-0.52))))
-    (home-page "https://github.com/microsoft/windows-rs")
-    (synopsis "Rust for Windows")
-    (description "The windows crate lets you call any Windows API past,
-present, and future using code generated on the fly directly from the metadata
-describing the API and right into your Rust package where you can call them as
-if they were just another Rust module.")
-    (license (list license:expat license:asl2.0))))
+       #:cargo-inputs (("rust-windows-targets" ,rust-windows-targets-0.52))))))
 
 (define-public rust-windows-sys-0.48
   (package
