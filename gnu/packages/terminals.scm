@@ -1529,7 +1529,7 @@ basic input/output.")
 (define-public alacritty
   (package
     (name "alacritty")
-    (version "0.13.1")
+    (version "0.13.2")
     (source
      (origin
        ;; XXX: The crate at "crates.io" contains only the alacritty subproject
@@ -1541,7 +1541,7 @@ basic input/output.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y5xc9ryn9r0adygq53vrbpb8lazkmcqw38q978pbf0i57nwczrn"))))
+        (base32 "1l1k1q615qp6bpqkj0m0vkpfzfjrwgkn6w9pl44gr0cbjl0p7f9j"))))
     (build-system cargo-build-system)
     (arguments
      `(#:install-source? #f
@@ -1551,7 +1551,9 @@ basic input/output.")
          "--skip=cli::tests::completions")
        #:cargo-inputs
        (("rust-ahash" ,rust-ahash-0.8)
-        ("rust-base64" ,rust-base64-0.21)
+        ("rust-alacritty-config" ,rust-alacritty-config-0.2)
+        ("rust-alacritty-config-derive" ,rust-alacritty-config-derive-0.2)
+        ("rust-alacritty-terminal" ,rust-alacritty-terminal-0.23)
         ("rust-bitflags" ,rust-bitflags-2)
         ("rust-clap" ,rust-clap-4)
         ("rust-cocoa" ,rust-cocoa-0.25)
@@ -1564,35 +1566,21 @@ basic input/output.")
         ("rust-home" ,rust-home-0.5)
         ("rust-libc" ,rust-libc-0.2)
         ("rust-log" ,rust-log-0.4)
-        ("rust-miow" ,rust-miow-0.6)
         ("rust-notify" ,rust-notify-6)
         ("rust-objc" ,rust-objc-0.2)
         ("rust-parking-lot" ,rust-parking-lot-0.12)
-        ("rust-piper" ,rust-piper-0.2)
-        ("rust-polling" ,rust-polling-3)
         ("rust-png" ,rust-png-0.17)
-        ("rust-proc-macro2" ,rust-proc-macro2-1)
-        ("rust-quote" ,rust-quote-1)
         ("rust-raw-window-handle" ,rust-raw-window-handle-0.5)
-        ("rust-regex-automata" ,rust-regex-automata-0.4)
-        ("rust-rustix-openpty" ,rust-rustix-openpty-0.1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-serde-yaml" ,rust-serde-yaml-0.9)
-        ("rust-signal-hook" ,rust-signal-hook-0.3)
-        ("rust-syn" ,rust-syn-2)
         ("rust-toml" ,rust-toml-0.8)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
-        ("rust-vte" ,rust-vte-0.13)
         ("rust-windows-sys" ,rust-windows-sys-0.48)
         ("rust-winit" ,rust-winit-0.29)
         ("rust-xdg" ,rust-xdg-2))
        #:cargo-development-inputs
-       (("rust-clap-complete" ,rust-clap-complete-4)
-        ("rust-log" ,rust-log-0.4)
-        ("rust-serde" ,rust-serde-1)
-        ("rust-serde-json" ,rust-serde-json-1)
-        ("rust-toml" ,rust-toml-0.8))
+       (("rust-clap-complete" ,rust-clap-complete-4))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-xdg-open
@@ -1718,6 +1706,90 @@ features are carefully considered and you can always expect Alacritty to be
 blazingly fast.  By making sane choices for defaults, Alacritty requires no
 additional setup.  However, it does allow configuration of many aspects of the
 terminal.  Note that you need support for OpenGL 3.2 or higher.")
+    (license license:asl2.0)))
+
+(define-public rust-alacritty-config-0.2
+  (package
+    (name "rust-alacritty-config")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "alacritty_config" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1d5n32aqcdjbkczmjg0z3hg6xkh9rx4s4kz5nzwmb5fjrgmnabjy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-log" ,rust-log-0.4)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-toml" ,rust-toml-0.8))
+       #:cargo-development-inputs (("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/alacritty/alacritty")
+    (synopsis "Alacritty configuration abstractions")
+    (description "This package provides Alacritty configuration abstractions.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-alacritty-config-derive-0.2
+  (package
+    (name "rust-alacritty-config-derive")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "alacritty_config_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0p34wv494xvrailmi5vk2skn54apb9n72paqcqhgclcq592ksyak"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-1)
+                       ("rust-quote" ,rust-quote-1)
+                       ("rust-syn" ,rust-syn-2))
+       #:cargo-development-inputs (("rust-alacritty-config" ,rust-alacritty-config-0.2)
+                                   ("rust-log" ,rust-log-0.4)
+                                   ("rust-serde" ,rust-serde-1)
+                                   ("rust-toml" ,rust-toml-0.8))))
+    (home-page "https://github.com/alacritty/alacritty")
+    (synopsis "Failure resistant deserialization derive")
+    (description
+     "This package provides Failure resistant deserialization derive.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-alacritty-terminal-0.23
+  (package
+    (name "rust-alacritty-terminal")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "alacritty_terminal" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0bq2y6vh999h130wgn6vl66sqw4c8wnqk907aclnyry8hi2fmlgn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-base64" ,rust-base64-0.22)
+                       ("rust-bitflags" ,rust-bitflags-2)
+                       ("rust-home" ,rust-home-0.5)
+                       ("rust-libc" ,rust-libc-0.2)
+                       ("rust-log" ,rust-log-0.4)
+                       ("rust-miow" ,rust-miow-0.6)
+                       ("rust-parking-lot" ,rust-parking-lot-0.12)
+                       ("rust-piper" ,rust-piper-0.2)
+                       ("rust-polling" ,rust-polling-3)
+                       ("rust-regex-automata" ,rust-regex-automata-0.4)
+                       ("rust-rustix-openpty" ,rust-rustix-openpty-0.1)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-signal-hook" ,rust-signal-hook-0.3)
+                       ("rust-unicode-width" ,rust-unicode-width-0.1)
+                       ("rust-vte" ,rust-vte-0.13)
+                       ("rust-windows-sys" ,rust-windows-sys-0.48))
+       #:cargo-development-inputs (("rust-serde-json" ,rust-serde-json-1))))
+    (home-page "https://alacritty.org")
+    (synopsis "Library for writing terminal emulators")
+    (description
+     "This package provides Library for writing terminal emulators.")
     (license license:asl2.0)))
 
 (define-public bootterm
