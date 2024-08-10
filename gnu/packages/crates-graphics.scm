@@ -380,6 +380,30 @@ Mac, and Unix.")
     (description "Interop library between ash and raw-window-handle.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-av-data-0.4
+  (package
+    (name "rust-av-data")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "av-data" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lk5pq6jfmfp5ihvnzqdqxympk5rk7648bcsvwhgj02xaairhnyp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-byte-slice-cast" ,rust-byte-slice-cast-1)
+                       ("rust-bytes" ,rust-bytes-1)
+                       ("rust-num-derive" ,rust-num-derive-0.4)
+                       ("rust-num-rational" ,rust-num-rational-0.4)
+                       ("rust-num-traits" ,rust-num-traits-0.2)
+                       ("rust-thiserror" ,rust-thiserror-1))))
+    (home-page "https://github.com/rust-av/rust-av")
+    (synopsis "Multimedia data structures")
+    (description "This package provides Multimedia data structures.")
+    (license license:expat)))
+
 (define-public rust-avif-parse-1
   (package
     (name "rust-avif-parse")
@@ -890,8 +914,35 @@ and iOS.")
     (description "Low level D3D12 API wrapper.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-dav1d-0.10
+  (package
+    (name "rust-dav1d")
+    (version "0.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dav1d" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1qd13sm1bfbc5chjgrzk4syffkky994lkyzhqrqklqxg1fj58jqd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-av-data" ,rust-av-data-0.4)
+                       ("rust-bitflags" ,rust-bitflags-2)
+                       ("rust-dav1d-sys" ,rust-dav1d-sys-0.8)
+                       ("rust-static-assertions" ,rust-static-assertions-1))))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list dav1d clang llvm))
+    (home-page "https://github.com/rust-av/dav1d-rs")
+    (synopsis "libdav1d bindings")
+    (description "This package provides libdav1d bindings.")
+    (license license:expat)))
+
 (define-public rust-dav1d-0.6
   (package
+    (inherit rust-dav1d-0.10)
     (name "rust-dav1d")
     (version "0.6.1")
     (source (origin
@@ -901,35 +952,26 @@ and iOS.")
               (sha256
                (base32
                 "0qz2lx37pmx798lysgh6k5lk5y20ckr7pp8c1p6v2z0p721i913j"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-dav1d-sys" ,rust-dav1d-sys-0.3))))
-    (native-inputs
-     (list pkg-config))
-    (inputs
-     (list dav1d clang llvm))
-    (home-page "https://github.com/rust-av/dav1d-rs")
-    (synopsis "Libdav1d bindings")
-    (description "This package provides libdav1d bindings in rust.")
-    (license license:expat)))
+       (("rust-dav1d-sys" ,rust-dav1d-sys-0.3))))))
 
-(define-public rust-dav1d-sys-0.7
+(define-public rust-dav1d-sys-0.8
   (package
     (name "rust-dav1d-sys")
-    (version "0.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "dav1d-sys" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32 "13z5qvf35lkda67l6l1bkdp1gmqg75cqfblldxh4n8rbmn4zsj9s"))))
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dav1d-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "158fqp97ny3206sydnimc2jy1c1gcxa4llqvvkp3ii2dixg1rjvf"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t     ; Expects 1.0.0 <= dav1d < 1.3.0
-       #:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2)
-        ("rust-system-deps" ,rust-system-deps-6))))
+     `(#:skip-build? #t
+       #:cargo-inputs (("rust-libc" ,rust-libc-0.2)
+                       ("rust-system-deps" ,rust-system-deps-6))))
     (native-inputs
      (list pkg-config))
     (inputs
@@ -938,6 +980,23 @@ and iOS.")
     (synopsis "FFI bindings to dav1d")
     (description "This package provides FFI bindings to dav1d.")
     (license license:expat)))
+
+(define-public rust-dav1d-sys-0.7
+  (package
+    (inherit rust-dav1d-sys-0.8)
+    (name "rust-dav1d-sys")
+    (version "0.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "dav1d-sys" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "13z5qvf35lkda67l6l1bkdp1gmqg75cqfblldxh4n8rbmn4zsj9s"))))
+    (arguments
+     `(#:skip-build? #t     ; Expects 1.0.0 <= dav1d < 1.3.0
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-system-deps" ,rust-system-deps-6))))))
 
 (define-public rust-dav1d-sys-0.3
   (package
@@ -961,8 +1020,36 @@ and iOS.")
     (inputs
      (list dav1d clang llvm))))
 
+(define-public rust-dcv-color-primitives-0.6
+  (package
+    (name "rust-dcv-color-primitives")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "dcv-color-primitives" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0k3384cfwhc8z9pxj0gb6dz8sjcwsamnpbrkbc570sfhzvnn5b87"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-paste" ,rust-paste-1)
+                       ("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))
+       #:cargo-development-inputs (("rust-criterion" ,rust-criterion-0.3)
+                                   ("rust-getrandom" ,rust-getrandom-0.2)
+                                   ("rust-itertools" ,rust-itertools-0.10)
+                                   ("rust-perf-event" ,rust-perf-event-0.4)
+                                   ("rust-rand" ,rust-rand-0.8)
+                                   ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
+    (home-page "https://github.com/aws/dcv-color-primitives")
+    (synopsis "a library to perform image color model conversion")
+    (description
+     "This package provides a library to perform image color model conversion.")
+    (license license:expat-0)))
+
 (define-public rust-dcv-color-primitives-0.4
   (package
+    (inherit rust-dcv-color-primitives-0.6)
     (name "rust-dcv-color-primitives")
     (version "0.4.1")
     (source (origin
@@ -971,7 +1058,6 @@ and iOS.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32 "01c0ag8dwzz00hyq9qam9d5j6yzdh8xpidcn37vgkzlmhgfz8mql"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-paste" ,rust-paste-1)
@@ -981,12 +1067,7 @@ and iOS.")
         ("rust-getrandom" ,rust-getrandom-0.2)
         ("rust-itertools" ,rust-itertools-0.10)
         ("rust-rand" ,rust-rand-0.8)
-        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))
-    (home-page "https://github.com/aws/dcv-color-primitives")
-    (synopsis "Library to perform image color model conversion")
-    (description
-     "This package provides a library to perform image color model conversion.")
-    (license license:expat-0)))
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.3))))))
 
 (define-public rust-deltae-0.3
   (package
@@ -1369,8 +1450,34 @@ EUI-64, also known as MAC-48 media access control addresses.")
     (description "This package is a core library of Gfx-rs.")
     (license license:asl2.0)))
 
+(define-public rust-gif-0.13
+  (package
+    (name "rust-gif")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "gif" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1whrkvdg26gp1r7f95c6800y6ijqw5y0z8rgj6xihpi136dxdciz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Not all files included.
+       #:cargo-inputs (("rust-color-quant" ,rust-color-quant-1)
+                       ("rust-weezl" ,rust-weezl-0.1))
+       #:cargo-development-inputs (("rust-criterion" ,rust-criterion-0.5)
+                                   ("rust-glob" ,rust-glob-0.3)
+                                   ("rust-png" ,rust-png-0.17)
+                                   ("rust-rayon" ,rust-rayon-1))))
+    (home-page "https://github.com/image-rs/image-gif")
+    (synopsis "GIF de- and encoder")
+    (description "This package provides GIF de- and encoder.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-gif-0.12
   (package
+    (inherit rust-gif-0.13)
     (name "rust-gif")
     (version "0.12.0")
     (source
@@ -1380,18 +1487,12 @@ EUI-64, also known as MAC-48 media access control addresses.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0ibhjyrslfv9qm400gp4hd50v9ibva01j4ab9bwiq1aycy9jayc0"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f      ; Not all files included.
-       #:cargo-inputs (("rust-color-quant" ,rust-color-quant-1)
+     `(#:cargo-inputs (("rust-color-quant" ,rust-color-quant-1)
                        ("rust-weezl" ,rust-weezl-0.1))
        #:cargo-development-inputs (("rust-criterion" ,rust-criterion-0.3)
                                    ("rust-glob" ,rust-glob-0.3)
-                                   ("rust-png" ,rust-png-0.17))))
-    (home-page "https://github.com/image-rs/image-gif")
-    (synopsis "GIF decoder and encoder")
-    (description "This package provides a GIF decoder and encoder in Rust.")
-    (license (list license:expat license:asl2.0))))
+                                   ("rust-png" ,rust-png-0.17))))))
 
 (define-public rust-gif-0.11
   (package
@@ -2065,8 +2166,54 @@ EUI-64, also known as MAC-48 media access control addresses.")
 similar formats like VCard.")
     (license license:asl2.0)))
 
+(define-public rust-image-0.25
+  (package
+    (name "rust-image")
+    (version "0.25.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "image" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "041sjvahq6zz5zhjhixmid65x31dafpcs97r26rdvf2j4654qccr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f              ; Not all files included.
+       #:cargo-inputs (("rust-bytemuck" ,rust-bytemuck-1)
+                       ("rust-byteorder-lite" ,rust-byteorder-lite-0.1)
+                       ("rust-color-quant" ,rust-color-quant-1)
+                       ("rust-dav1d" ,rust-dav1d-0.10)
+                       ("rust-dcv-color-primitives" ,rust-dcv-color-primitives-0.6)
+                       ("rust-exr" ,rust-exr-1)
+                       ("rust-gif" ,rust-gif-0.13)
+                       ("rust-image-webp" ,rust-image-webp-0.1)
+                       ("rust-mp4parse" ,rust-mp4parse-0.17)
+                       ("rust-num-traits" ,rust-num-traits-0.2)
+                       ("rust-png" ,rust-png-0.17)
+                       ("rust-qoi" ,rust-qoi-0.4)
+                       ("rust-ravif" ,rust-ravif-0.11)
+                       ("rust-rayon" ,rust-rayon-1)
+                       ("rust-rgb" ,rust-rgb-0.8)
+                       ("rust-tiff" ,rust-tiff-0.9)
+                       ("rust-zune-core" ,rust-zune-core-0.4)
+                       ("rust-zune-jpeg" ,rust-zune-jpeg-0.4))
+       #:cargo-development-inputs (("rust-crc32fast" ,rust-crc32fast-1)
+                                   ("rust-criterion" ,rust-criterion-0.5)
+                                   ("rust-glob" ,rust-glob-0.3)
+                                   ("rust-num-complex" ,rust-num-complex-0.4)
+                                   ("rust-quickcheck" ,rust-quickcheck-1))))
+    (home-page "https://github.com/image-rs/image")
+    (synopsis
+     "Imaging library. Provides basic image processing and encoders/decoders for common image formats")
+    (description
+     "This package provides Imaging library.  Provides basic image processing and encoders/decoders for
+common image formats.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-image-0.24
   (package
+    (inherit rust-image-0.25)
     (name "rust-image")
     (version "0.24.7")
     (source (origin
@@ -2075,10 +2222,8 @@ similar formats like VCard.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32 "04d7f25b8nlszfv9a474n4a0al4m2sv9gqj3yiphhqr0syyzsgbg"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:tests? #f              ; Not all files included.
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bytemuck" ,rust-bytemuck-1)
         ("rust-byteorder" ,rust-byteorder-1)
         ("rust-color-quant" ,rust-color-quant-1)
@@ -2102,13 +2247,7 @@ similar formats like VCard.")
         ("rust-glob" ,rust-glob-0.3)
         ("rust-jpeg-decoder" ,rust-jpeg-decoder-0.3)
         ("rust-num-complex" ,rust-num-complex-0.4)
-        ("rust-quickcheck" ,rust-quickcheck-1))))
-    (home-page "https://github.com/image-rs/image")
-    (synopsis "Imaging library written in Rust")
-    (description
-     "This package is an imaging library written in Rust.  It provides basic
-filters and decoders for the most common image formats.")
-    (license license:expat)))
+        ("rust-quickcheck" ,rust-quickcheck-1))))))
 
 (define-public rust-image-0.23
   (package
@@ -2402,8 +2541,33 @@ It's features include:
      "This package builds and links to the dav1d AV1 decoder.")
     (license license:bsd-2)))
 
+(define-public rust-libwebp-sys-0.9
+  (package
+    (name "rust-libwebp-sys")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libwebp-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0f582b0fipsa5jxb2kkyv3dr7pl80zz43j5srhmnvv9i9xh6p6w2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-test-flags
+       '("--release" "--"
+         "--skip=tests::poke")
+       #:cargo-inputs (("rust-cc" ,rust-cc-1)
+                       ("rust-glob" ,rust-glob-0.3))))
+    (home-page "https://github.com/NoXF/libwebp-sys")
+    (synopsis "Bindings to libwebp (bindgen, static linking)")
+    (description
+     "This package provides Bindings to libwebp (bindgen, static linking).")
+    (license license:expat)))
+
 (define-public rust-libwebp-sys-0.4
   (package
+    (inherit rust-libwebp-sys-0.9)
     (name "rust-libwebp-sys")
     (version "0.4.2")
     (source (origin
@@ -2412,17 +2576,9 @@ It's features include:
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32 "1gvjaqhjpzdskx8x4q1lfgw24jnbjgkx4s6dxpkkg2d2ba4d37s3"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:cargo-test-flags
-       '("--release" "--"
-         "--skip=tests::poke")
-       #:cargo-inputs
-       (("rust-cc" ,rust-cc-1))))
-    (home-page "https://github.com/NoXF/libwebp-sys")
-    (synopsis "Bindings to libwebp (bindgen, static linking)")
-    (description "Bindings to libwebp (bindgen, static linking)")
-    (license license:expat)))
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc-1))))))
 
 (define-public rust-line-drawing-0.7
   (package
@@ -5119,8 +5275,30 @@ with wayrs-client.")
 from xml files.")
     (license license:expat)))
 
+(define-public rust-webp-0.3
+  (package
+    (name "rust-webp")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "169dihaimcr3ih3fqg8z3n47aqd9rhb3vhw4hk0g0npva4pialwg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-image" ,rust-image-0.25)
+                       ("rust-libwebp-sys" ,rust-libwebp-sys-0.9))
+       #:cargo-development-inputs (("rust-image" ,rust-image-0.25))))
+    (home-page "https://github.com/jaredforth/webp")
+    (synopsis "WebP conversion library")
+    (description "This package provides @code{WebP} conversion library.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-webp-0.2
   (package
+    (inherit rust-webp-0.3)
     (name "rust-webp")
     (version "0.2.2")
     (source (origin
@@ -5129,29 +5307,49 @@ from xml files.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32 "1bhw6xp7vg4rx7flxgzvdzk21q2dx1bsn06h0yj7jq0n3y12y0ng"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-image" ,rust-image-0.24)
         ("rust-libwebp-sys" ,rust-libwebp-sys-0.4))
        #:cargo-development-inputs
-       (("rust-image" ,rust-image-0.24))))
-    (home-page "https://github.com/jaredforth/webp")
-    (synopsis "WebP conversion library")
-    (description "This package procides a WebP conversion library.")
+       (("rust-image" ,rust-image-0.24))))))
+
+(define-public rust-image-webp-0.1
+  (package
+    (name "rust-image-webp")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "image-webp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0179iqgvh6ybbq0r5d3ms11kka8jihhpliydkksj1vz2ps6gp6pp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-byteorder-lite" ,rust-byteorder-lite-0.1)
+                       ("rust-quick-error" ,rust-quick-error-2))
+       #:cargo-development-inputs (("rust-paste" ,rust-paste-1)
+                                   ("rust-png" ,rust-png-0.17)
+                                   ("rust-rand" ,rust-rand-0.8)
+                                   ("rust-webp" ,rust-webp-0.3))))
+    (home-page "https://github.com/image-rs/image-webp")
+    (synopsis "WebP encoding and decoding in pure Rust")
+    (description
+     "This package provides @code{WebP} encoding and decoding in pure Rust.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-winit-0.29
   (package
     (name "rust-winit")
-    (version "0.29.10")
+    (version "0.29.15")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "winit" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kzzl8m68sq6njdr6n1b90ppfg1pfhkcq48iqxpfdshyjh8lz0jc"))))
+        (base32 "1jp5j96hcr6xif7asgck522791fqmlmhd3wwy3x5fmk3babasn8d"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -5178,8 +5376,8 @@ from xml files.")
         ("rust-orbclient" ,rust-orbclient-0.3)
         ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-raw-window-handle" ,rust-raw-window-handle-0.6)
-        ("rust-raw-window-handle" ,rust-raw-window-handle-0.4)
         ("rust-raw-window-handle" ,rust-raw-window-handle-0.5)
+        ("rust-raw-window-handle" ,rust-raw-window-handle-0.4)
         ("rust-redox-syscall" ,rust-redox-syscall-0.3)
         ("rust-rustix" ,rust-rustix-0.38)
         ("rust-sctk-adwaita" ,rust-sctk-adwaita-0.8)
@@ -5525,14 +5723,14 @@ the platform-specific getters provided by winit, or another library.")
 (define-public rust-x11rb-0.13
   (package
     (name "rust-x11rb")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11rb" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "06lzpmb67sfw37m0i9zz786hx6fklmykd9j3689blk3yijnmxwpq"))))
+        (base32 "04jyfm0xmc538v09pzsyr2w801yadsgvyl2p0p76hzzffg5gz4ax"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-as-raw-xcb-connection" ,rust-as-raw-xcb-connection-1)
@@ -5650,14 +5848,14 @@ the platform-specific getters provided by winit, or another library.")
 (define-public rust-x11rb-protocol-0.13
   (package
     (name "rust-x11rb-protocol")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11rb-protocol" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0d3cc2dr5fcx8asgrm31d7lrxpnbqi6kl5v3r71gx7xxp3272gp6"))))
+        (base32 "0gfbxf2k7kbk577j3rjhfx7hm70kmwln6da7xyc4l2za0d2pq47c"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-serde" ,rust-serde-1))
@@ -5720,20 +5918,21 @@ the platform-specific getters provided by winit, or another library.")
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3))))))
 
-(define-public rust-x11-clipboard-0.8
+(define-public rust-x11-clipboard-0.9
   (package
     (name "rust-x11-clipboard")
-    (version "0.8.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11-clipboard" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ps0fk1912vzy382fc8l926q8w1l8bxmw72l3kr9bwdi2l8wl6ml"))))
+        (base32 "11l27l15y8hadnq2rcyzsc6rl1g1rb906cm151p49mr2jfh8b1xr"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-x11rb" ,rust-x11rb-0.12))
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2)
+                       ("rust-x11rb" ,rust-x11rb-0.13))
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
@@ -5749,6 +5948,31 @@ the platform-specific getters provided by winit, or another library.")
     (synopsis "x11 clipboard support for Rust")
     (description "This package provides x11 clipboard support for Rust.")
     (license license:expat)))
+
+(define-public rust-x11-clipboard-0.8
+  (package
+    (inherit rust-x11-clipboard-0.9)
+    (name "rust-x11-clipboard")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x11-clipboard" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ps0fk1912vzy382fc8l926q8w1l8bxmw72l3kr9bwdi2l8wl6ml"))))
+    (arguments
+     `(#:cargo-inputs (("rust-x11rb" ,rust-x11rb-0.12))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             ;; Most tests require an X server.
+             (let ((xvfb (search-input-file (or native-inputs inputs)
+                                            "bin/Xvfb"))
+                   (display ":1"))
+               (setenv "DISPLAY" display)
+               (system (string-append xvfb " " display " &"))))))))))
 
 (define-public rust-x11-clipboard-0.7
   (package
@@ -5835,14 +6059,14 @@ for @code{libxkbcommon}.")
 (define-public rust-xkbcommon-dl-0.4
   (package
     (name "rust-xkbcommon-dl")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "xkbcommon-dl" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "16c6kmgqbffdsnw5w9q97p55d824ss3fqzif2lrh33648j2nc939"))))
+        (base32 "1iai0r3b5skd9vbr8z5b0qixiz8jblzfm778ddm8ba596a0dwffh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-bitflags" ,rust-bitflags-2)
@@ -5870,20 +6094,20 @@ for @code{libxkbcommon}.")
 (define-public rust-xkeysym-0.2
   (package
     (name "rust-xkeysym")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "xkeysym" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0886dn1rlkiazcp5n6ayqfg0ibpiny62dlbiyr9v4l32nxl8wjh5"))))
+        (base32 "0mksx670cszyd7jln6s7dhkw11hdfv7blwwr3isq98k22ljh1k5r"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-bytemuck" ,rust-bytemuck-1)
                        ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs (("rust-bytemuck" ,rust-bytemuck-1)
-                                   ("rust-x11rb" ,rust-x11rb-0.11))))
+                                   ("rust-x11rb" ,rust-x11rb-0.12))))
     (home-page "https://github.com/notgull/xkeysym")
     (synopsis "Rust library for working with X11 keysyms")
     (description
@@ -5922,6 +6146,49 @@ for @code{libxkbcommon}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1bhdgb7hgx7j92nm6ij5n8wisp50j8ff66ks14jzwdw2mwhrjam7"))))))
+
+(define-public rust-zune-core-0.4
+  (package
+    (name "rust-zune-core")
+    (version "0.4.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zune-core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jj1ra86klzlcj9aha9als9d1dzs7pqv3azs1j3n96822wn3lhiz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-log" ,rust-log-0.4)
+                       ("rust-serde" ,rust-serde-1))))
+    (home-page "https://github.com/etemesi254/zune-image")
+    (synopsis
+     "Core utilities for image processing in the zune family of crates")
+    (description
+     "This package provides Core utilities for image processing in the zune family of crates.")
+    (license (list license:expat license:asl2.0 license:zlib))))
+
+(define-public rust-zune-jpeg-0.4
+  (package
+    (name "rust-zune-jpeg")
+    (version "0.4.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zune-jpeg" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0s07igp839yy66hs5f8g6gzvvanywgv3zxr2hq18yk8bc0c9828n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-zune-core" ,rust-zune-core-0.4))))
+    (home-page
+     "https://github.com/etemesi254/zune-image/tree/dev/crates/zune-jpeg")
+    (synopsis "fast, correct and safe jpeg decoder")
+    (description
+     "This package provides a fast, correct and safe jpeg decoder.")
+    (license (list license:expat license:asl2.0 license:zlib))))
 
 ;;;
 ;;; Avoid adding new packages to the end of this file. To reduce the chances
