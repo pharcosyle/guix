@@ -3710,10 +3710,46 @@ Type=Application~%"
     (sha256
      (base32 hash))))
 
+;; Gamescope really wants/needs you to use specific versions.
+
+(define reshade-src-for-gamescope
+  (reshade-src
+   "696b14cd6006ae9ca174e6164450619ace043283"
+   "1zvhf3pgd8bhn8bynrsh725xn1dszsf05j8c9g6zabgv7vnz04a5"))
+
+(define wlroots-for-gamescope
+  (package
+    (inherit wlroots-0.18)
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Joshua-Ashton/wlroots")
+             (commit "4bc5333a2cbba0b0b88559f281dbde04b849e6ef")))
+       (sha256
+        (base32 "14m9j9qkaphzm3g36im43b6h92rh3xyjh7j46vw9w2qm602ndwcf"))))))
+
+;; Having a gamescope-specific version for this seems less important
+;; (it's not included in gamescope's "force_fallback_for" list) but let's be
+;; safe.
+(define spirv-headers-for-gamescope
+  (package
+    (inherit spirv-headers)
+    (version "1.3.268.0-d790ced7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/SPIRV-Headers")
+             (commit "d790ced752b5bfc06b6988baadef6eb2d16bdf96")))
+       (sha256
+        (base32
+         "1zzkqbqysiv52dk92i35gsyppnasln3d27b4rqv590zknk5g38is"))))))
+
 (define-public gamescope
   (package
     (name "gamescope")
-    (version "3.14.24")
+    (version "3.14.29")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3721,7 +3757,7 @@ Type=Application~%"
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "17vk34ybqpn4hh02ilhdk2kcjggblc3b9g4hm0wvzn94mmm2nnwd"))))
+               (base32 "1isq0bb7b70rnlqg2hwy1nd3jnml7r6w4sdmx8kkksljq2z5238d"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -3744,17 +3780,14 @@ Type=Application~%"
                                         "stb-image-resize"
                                         "stb-image-write"))
                           "','")))
-                (("< 0.2.0")
-                 (string-append
-                  "<= " #$(package-version
-                           (this-package-input "libdisplay-info"))))
                 (("reshade/") (string-append #$reshade-src-for-gamescope "/"))
                 (("../thirdparty/SPIRV-Headers")
                  #$(this-package-native-input "spirv-headers"))
                 ;; HACK: Add pixman to gamescope executable dependencies to
                 ;; work around an error: "DSO missing from command line".
-                (("libdecor_dep, eis_dep,")
-                 "libdecor_dep, eis_dep, dependency('pixman-1')"))
+                ;; (("libdecor_dep, eis_dep,")
+                ;;  "libdecor_dep, eis_dep, dependency('pixman-1')")
+                )
               (substitute* "src/reshade_effect_manager.cpp"
                 (("/usr") #$output))
               (substitute* "src/Utils/Process.cpp"
@@ -3800,7 +3833,7 @@ Type=Application~%"
             stb-image
             stb-image-resize
             stb-image-write
-            spirv-headers
+            spirv-headers-for-gamescope
             vkroots
             vulkan-headers        ; WSI layer.
             wayland-protocols)))
@@ -3816,43 +3849,6 @@ many gaming-centric features such as:
 @item Limiting framerates.
 @end itemize")
     (license license:bsd-2)))
-
-;; Gamescope really wants/needs you to use specific versions.
-
-(define reshade-src-for-gamescope
-  (reshade-src
-   "696b14cd6006ae9ca174e6164450619ace043283"
-   "1zvhf3pgd8bhn8bynrsh725xn1dszsf05j8c9g6zabgv7vnz04a5"))
-
-(define wlroots-for-gamescope
-  (package
-    (inherit wlroots)
-    (version "0.18.0-dev")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Joshua-Ashton/wlroots")
-             (commit "a5c9826e6d7d8b504b07d1c02425e6f62b020791")))
-       (file-name (git-file-name (package-name wlroots) version))
-       (sha256
-        (base32 "13my6xmym079j5b9s8zimvvzgzcidy37x8bmjald1j3b4jqszc0v"))))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs wlroots)
-       (replace "libliftoff"
-         (package
-           (inherit libliftoff)
-           (version "0.4.1")
-           (source
-            (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://gitlab.freedesktop.org/emersion/libliftoff")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name (package-name libliftoff) version))
-              (sha256
-               (base32
-                "1ikjp638d655ycaqkdnzhb12d29kkbb3a46lqhbhsfc8vsqj3z1l"))))))))))
 
 (define-public avizo
   (package
