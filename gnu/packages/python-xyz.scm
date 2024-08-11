@@ -3473,15 +3473,26 @@ inter-process communication.")
 (define-public python-semantic-version
   (package
     (name "python-semantic-version")
-    (version "2.8.5")
+    (version "2.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "semantic_version" version))
        (sha256
         (base32
-         "0m4avx8zdkzc7qglv5zlr54g8yna5vl098drg5396ql7aph2vjyj"))))
+         "0704smz9k6hdd6i5xh0xf0sk47kannjb77abilvvp34r6v9vdaxx"))))
     (build-system python-build-system)
+    (arguments
+     (list
+      #:phases #~(modify-phases %standard-phases
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests?
+                         (invoke "pytest" "-vv")))))))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (home-page "https://github.com/rbarrois/python-semanticversion")
     (synopsis "Semantic versioning module for Python")
     (description
