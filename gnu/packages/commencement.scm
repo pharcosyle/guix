@@ -2451,6 +2451,66 @@ exec " gcc "/bin/" program
                                                      (_ (%current-system))))))))
         ((#:phases phases)
          #~(modify-phases #$phases
+             ;; TODO: Do this better or ideally figure out what the uderlying
+             ;; cause(s) are. Some of the values are probably specific to me
+             ;; (x86_64 build machine and target) and *must* be fixed.
+             (add-after 'unpack 'gc-14-fix
+               ;; Work around baffling errors. Note that these only became
+               ;; necessary going from GCC 13 -> 14.
+               (lambda _
+                 ;; Remove three problematic system.h macros
+                 (substitute* "gcc/system.h"
+                   (("#define INTTYPE_SIGNED.*") "")
+                   (("#define INTTYPE_MINIMUM.*")
+                    ;; Experiment, didn't work.
+                    ;; "#define INTTYPE_MINIMUM(t) (-(1 << (sizeof(t) * CHAR_BIT - 1)))\n"
+                    "")
+                   ((".*\\? \\(t\\).*") "") ; INTTYPE_MINIMUM is multi-line.
+                   (("#define INTTYPE_MAXIMUM.*")
+                    ;; Experiment, didn't work.
+                    ;; "#define INTTYPE_MAXIMUM(t) ((1 << (sizeof(t) * CHAR_BIT - 1)) - 1)\n"
+                    ""))
+                 ;; Patch all usages of those macros.
+                 (substitute* "gcc/system.h"
+                   (("INTTYPE_MAXIMUM \\(unsigned char\\)")
+                    "255")
+                   (("INTTYPE_MAXIMUM \\(size_t\\)")
+                    "9223372036854775807"))
+                 (substitute* "gcc/memmodel.h"
+                   (("INTTYPE_MAXIMUM \\(int\\)")
+                    "INT_MAX"))
+                 (substitute* '("gcc/dce.cc"
+                                "gcc/dwarf2out.cc"
+                                "gcc/tree-ssa-sccvn.cc"
+                                "gcc/cp/constexpr.cc")
+                   (("INTTYPE_MINIMUM \\(HOST_WIDE_INT\\)")
+                    "-9223372036854775808")
+                   (("INTTYPE_MAXIMUM \\(HOST_WIDE_INT\\)")
+                    "9223372036854775807"))
+                 (substitute* "gcc/dwarf2out.cc"
+                   (("INTTYPE_MAXIMUM \\(unsigned HOST_WIDE_INT\\)")
+                    "18446744073709551616"))
+                 (substitute* '("gcc/mcf.cc"
+                                "gcc/sreal.cc"
+                                "gcc/gcov.cc")
+                   (("INTTYPE_MAXIMUM \\(int64_t\\)")
+                    "9223372036854775807"))
+                 (substitute* "gcc/pretty-print.cc"
+                   (("INTTYPE_MAXIMUM \\(ptrdiff_t\\)")
+                    "9223372036854775807"))
+                 ;; Another problematic macro, patch it.
+                 (substitute* "gcc/gengtype-lex.cc"
+                   (("\\(\\~\\(size_t\\)0)")
+                    "__SIZE_MAX__"))
+                 ;; I had thse for a while when I was working but then they
+                 ;; suddenly stopped being needed. Leaving them here in case
+                 ;; the problems "come back".
+                 ;; (substitute* "gcc/system.h"
+                 ;;  (("extern char \\*strstr.*") ""))
+                 ;; (substitute* "include/ansidecl.h"
+                 ;;   (("#  define ATTRIBUTE_NONNULL.*")
+                 ;;    "#  define ATTRIBUTE_NONNULL(m)\n"))
+                 ))
              (add-after 'unpack 'unpack-gmp&co
                (lambda* (#:key inputs #:allow-other-keys)
                  (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
@@ -3726,7 +3786,7 @@ is the GNU Compiler Collection.")
 
 ;; The default GCC
 (define-public gcc-toolchain
-  gcc-toolchain-13)
+  gcc-toolchain-14)
 
 (define-public gcc-toolchain-aka-gcc
   ;; It's natural for users to try "guix install gcc".  This package
