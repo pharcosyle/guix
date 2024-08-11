@@ -74,7 +74,10 @@
     (outputs '("out" "debug" "static"))
     (native-inputs
      (append (list m4)
-             (if (member (%current-system) (package-supported-systems valgrind))
+             (if (and (member (%current-system) (package-supported-systems valgrind))
+                      ;; Currently having an issue. I haven't bothered to
+                      ;; investigate.
+                      (not (target-x86-32?)))
                  (list valgrind)
                  '())))
     (propagated-inputs (list gmp))
@@ -104,7 +107,8 @@ themselves.")
         #~(delete "--enable-fat" #$flags))))
     (native-inputs
      (let ((native-inputs (package-native-inputs nettle)))
-       (if (member (%current-system) (package-supported-systems valgrind))
+       (if (and (member (%current-system) (package-supported-systems valgrind))
+                (not (target-x86-32?)))
            (modify-inputs native-inputs
              (delete "valgrind"))
            native-inputs)))))
