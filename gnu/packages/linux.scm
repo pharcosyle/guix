@@ -837,11 +837,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The following package is used in the early bootstrap, and thus must be kept
 ;; stable and with minimal build requirements.
-(define-public linux-libre-headers-6.6.32
-  (make-linux-libre-headers "6.6.32" "gnu"
-                            "15fcsx7y99i0m4wx0n9h5bas8lwzf8p8fk56d44b4qmkzddx0nry"))
+(define-public linux-libre-headers-6.10.2
+  (make-linux-libre-headers "6.10.2" "gnu"
+                            "0w90swbi4ssbndw9s2fsig6rmw7ljjyikq8zxa6rs8al4sa40xc9"))
 
-(define-public linux-libre-headers linux-libre-headers-6.6.32)
+(define-public linux-libre-headers linux-libre-headers-6.10.2)
 
 
 ;;;
@@ -10074,7 +10074,7 @@ persistent over reboots.")
                                 "linux/posix_types.h"
                                 "linux/stddef.h"
                                 "linux/types.h"))))))))
-    (native-inputs (list linux-libre-headers-6.10 pkg-config))
+    (native-inputs (list linux-libre-headers pkg-config))
     (propagated-inputs (list elfutils zlib)) ;in Requires.private of libbpf.pc
     (home-page "https://github.com/libbpf/libbpf")
     (synopsis "BPF CO-RE (Compile Once – Run Everywhere)")
