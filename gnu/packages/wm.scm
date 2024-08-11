@@ -3744,14 +3744,16 @@ Type=Application~%"
 ;; safe.
 (define spirv-headers-for-gamescope
   (package
-    (inherit spirv-headers)
+    (inherit wlroots
+             ;spirv-headers
+             )
     (version "1.3.268.0-d790ced7")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/SPIRV-Headers")
-             (commit "d790ced752b5bfc06b6988baadef6eb2d16bdf96")))
+             (commit "1790ced752b5bfc06b6988baadef6eb2d16bdf96")))
        (sha256
         (base32
          "1zzkqbqysiv52dk92i35gsyppnasln3d27b4rqv590zknk5g38is"))))))
