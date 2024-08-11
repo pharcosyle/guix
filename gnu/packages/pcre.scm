@@ -122,6 +122,21 @@ POSIX regular expression API.")
                  (lambda _
                    (substitute* "RunGrepTest"
                      (("/bin/echo") (which "echo")))))
+               #$@(if (target-x86-32?)
+                      #~((add-after 'unpack 'fix-32-bit
+                           (lambda _
+                             (let ((patch-file
+                                    #$(origin
+                                        (method url-fetch)
+                                        (uri (string-append
+                                              "https://github.com/PCRE2Project/pcre2/commit"
+                                              "/57906628d7babd27c01eb1c085d3e0cdd512189a.patch"))
+                                        (file-name (string-append name "-compiled-length-fix.patch"))
+                                        (sha256
+                                         (base32
+                                          "15vyn2hcx0l5jhm9zvxjks0qllbaqll1fp7glc60nm2a41kk26qc")))))
+                               (invoke "patch" "--force" "-p1" "-i" patch-file)))))
+                      #~())
                (add-after 'install 'move-static-libs
                  (lambda _
                    (let ((source (string-append #$output "/lib"))

@@ -649,6 +649,7 @@ BIND and djbdns---whilst using relatively little memory.")
     (native-inputs
      (list pkg-config
            protobuf-c
+           python-wrapper
            swig))
     (inputs
      (list expat
