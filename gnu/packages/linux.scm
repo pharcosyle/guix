@@ -809,11 +809,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The following package is used in the early bootstrap, and thus must be kept
 ;; stable and with minimal build requirements.
-(define-public linux-libre-headers-6.6.32
-  (make-linux-libre-headers "6.6.32" "gnu"
-                            "15fcsx7y99i0m4wx0n9h5bas8lwzf8p8fk56d44b4qmkzddx0nry"))
+(define-public linux-libre-headers-6.10.2
+  (make-linux-libre-headers "6.10.2" "gnu"
+                            "0w90swbi4ssbndw9s2fsig6rmw7ljjyikq8zxa6rs8al4sa40xc9"))
 
-(define-public linux-libre-headers linux-libre-headers-6.6.32)
+(define-public linux-libre-headers linux-libre-headers-6.10.2)
 ;; linux-libre-headers-latest points to the latest headers package
 ;; and should be used as a dependency for packages that depend on
 ;; the headers.
