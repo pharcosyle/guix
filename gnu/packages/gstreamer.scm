@@ -871,7 +871,7 @@ model to base your own plug-in on, here it is.")
             bzip2
             cairo
             ;; ccextractor
-            chromaprint
+            ;; chromaprint
             curl
             ;; dssim
             faad2
@@ -905,7 +905,7 @@ model to base your own plug-in on, here it is.")
             libmpcdec
             libnice
             libofa
-            libopenmpt
+            ;; libopenmpt
             (librsvg-for-system)
             libsndfile
             libsrtp

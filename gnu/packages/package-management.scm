@@ -2020,7 +2020,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                              ; trivial-httpd for tests."
     (inputs
      (list avahi
-           curl
+           curl-no-pkgconfig-reqs
            docbook-xml-4.2
            docbook-xml-4.3
            docbook-xsl

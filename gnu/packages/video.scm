@@ -1708,7 +1708,7 @@ operate properly.")
      (append
       ;; XXX: rav1e depends on rust, which currently only works on x86_64.
       ;; See also the related configure flag when changing this.
-      (if (target-x86-64?) (list rav1e) '())
+      ;; (if (target-x86-64?) (list rav1e) '())
       (list dav1d
             fontconfig
             freetype
@@ -1821,9 +1821,9 @@ operate properly.")
          "--enable-libmp3lame"
          "--enable-libopus"
          "--enable-libpulse"
-         #$@(if (target-x86-64?)
-                '("--enable-librav1e")
-                '())
+         ;; #$@(if (target-x86-64?)
+         ;;        '("--enable-librav1e")
+         ;;        '())
          "--enable-libsoxr"
          "--enable-libspeex"
          "--enable-libsrt"
@@ -6300,6 +6300,9 @@ result in several formats:
         ("rust-semver" ,rust-semver-1))
        #:phases
        (modify-phases %standard-phases
+                    (add-before 'unpack 'throw
+                      (lambda _
+                        (throw 'nope)))
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -6311,7 +6314,9 @@ result in several formats:
      (append (if (target-x86?)
                  (list nasm)
                  '())
-             (list pkg-config rust-cargo-c)))
+             (list pkg-config
+                   ;; rust-cargo-c
+                   )))
     (inputs
      (list libgit2-1.7 zlib))
     (home-page "https://github.com/xiph/rav1e/")

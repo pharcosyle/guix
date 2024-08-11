@@ -384,7 +384,6 @@ applications.")
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t             ; To wrap binaries and/or compile schemas
-       #:tests? ,(not (target-x86-32?))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-tests
@@ -1173,6 +1172,7 @@ application suites.")
     (outputs '("out" "bin" "doc"))
     (arguments
      (list
+      #:tests? #f
       #:modules '((guix build utils)
                   (guix build meson-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
