@@ -1478,7 +1478,8 @@ on the terminal in a visually appealing way.")
      (list python-tomli))
     (inputs (list bzip2))
     (native-inputs
-     (list python-wheel
+     (list python-setuptools
+           python-wheel
            python-wrapper
            python-setuptools-rust))
     (home-page "https://github.com/pyo3/maturin")
