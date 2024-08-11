@@ -5723,14 +5723,14 @@ the platform-specific getters provided by winit, or another library.")
 (define-public rust-x11rb-0.13
   (package
     (name "rust-x11rb")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11rb" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "06lzpmb67sfw37m0i9zz786hx6fklmykd9j3689blk3yijnmxwpq"))))
+        (base32 "04jyfm0xmc538v09pzsyr2w801yadsgvyl2p0p76hzzffg5gz4ax"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-as-raw-xcb-connection" ,rust-as-raw-xcb-connection-1)
@@ -5918,20 +5918,21 @@ the platform-specific getters provided by winit, or another library.")
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3))))))
 
-(define-public rust-x11-clipboard-0.8
+(define-public rust-x11-clipboard-0.9
   (package
     (name "rust-x11-clipboard")
-    (version "0.8.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11-clipboard" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1ps0fk1912vzy382fc8l926q8w1l8bxmw72l3kr9bwdi2l8wl6ml"))))
+        (base32 "11l27l15y8hadnq2rcyzsc6rl1g1rb906cm151p49mr2jfh8b1xr"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-x11rb" ,rust-x11rb-0.12))
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2)
+                       ("rust-x11rb" ,rust-x11rb-0.13))
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
@@ -5947,6 +5948,31 @@ the platform-specific getters provided by winit, or another library.")
     (synopsis "x11 clipboard support for Rust")
     (description "This package provides x11 clipboard support for Rust.")
     (license license:expat)))
+
+(define-public rust-x11-clipboard-0.8
+  (package
+    (inherit rust-x11-clipboard-0.9)
+    (name "rust-x11-clipboard")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "x11-clipboard" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ps0fk1912vzy382fc8l926q8w1l8bxmw72l3kr9bwdi2l8wl6ml"))))
+    (arguments
+     `(#:cargo-inputs (("rust-x11rb" ,rust-x11rb-0.12))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             ;; Most tests require an X server.
+             (let ((xvfb (search-input-file (or native-inputs inputs)
+                                            "bin/Xvfb"))
+                   (display ":1"))
+               (setenv "DISPLAY" display)
+               (system (string-append xvfb " " display " &"))))))))))
 
 (define-public rust-x11-clipboard-0.7
   (package

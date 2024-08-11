@@ -1543,7 +1543,7 @@ basic input/output.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1r55lsafd1zbqaaaxh5mkd4v8l4zxvmkmpywpgpnnlaw26g4pfnm"))))
+        (base32 "1l1k1q615qp6bpqkj0m0vkpfzfjrwgkn6w9pl44gr0cbjl0p7f9j"))))
     (build-system cargo-build-system)
     (arguments
      `(#:install-source? #f

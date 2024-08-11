@@ -16172,14 +16172,14 @@ the standard library.")
 (define-public rust-copypasta-0.10
   (package
     (name "rust-copypasta")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "copypasta" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1bk5dby9jyn20d628l0cqjij738q1nqdqp8378f9x7mz951kcdbd"))))
+        (base32 "0n58sfbahs49ar0qivz1sqz1ixhh1ifgp5bzifjkvabwhqi59f6y"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-clipboard-win" ,rust-clipboard-win-3)
@@ -16187,12 +16187,13 @@ the standard library.")
                        ("rust-objc-foundation" ,rust-objc-foundation-0.1)
                        ("rust-objc-id" ,rust-objc-id-0.1)
                        ("rust-smithay-clipboard" ,rust-smithay-clipboard-0.7)
-                       ("rust-x11-clipboard" ,rust-x11-clipboard-0.8))))
+                       ("rust-x11-clipboard" ,rust-x11-clipboard-0.9))))
     (home-page "https://github.com/alacritty/copypasta")
-    (synopsis "Get and set the contents of the OS-level clipboard")
+    (synopsis
+     "copypasta is a cross-platform library for getting and setting the contents of the OS-level clipboard")
     (description
-     "Copypasta is a cross-platform library for getting and setting the
-contents of the OS-level clipboard.")
+     "This package provides copypasta is a cross-platform library for getting and setting the contents of
+the OS-level clipboard.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-copypasta-0.8
@@ -36801,29 +36802,23 @@ the jni-bindgen code generator for binding to JVM APIs from Rust.")
 (define-public rust-jobserver-0.1
   (package
     (name "rust-jobserver")
-    (version "0.1.28")
+    (version "0.1.32")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "jobserver" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1mji1wis4w76v3issgpah2x3j1k0ybq0cz3qgypg7pkdablscimb"))))
+        (base32 "1l2k50qmj84x9mn39ivjz76alqmx72jhm12rw33zx9xnpv5xpla8"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
-       (("rust-libc" ,rust-libc-0.2))
-       #:cargo-development-inputs
-       (("rust-futures" ,rust-futures-0.1)
-        ("rust-num-cpus" ,rust-num-cpus-1)
-        ("rust-tempfile" ,rust-tempfile-3)
-        ("rust-tokio-core" ,rust-tokio-core-0.1)
-        ("rust-tokio-process" ,rust-tokio-process-0.2))))
-    (home-page "https://github.com/alexcrichton/jobserver-rs")
-    (synopsis "GNU make jobserver for Rust")
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs (("rust-nix" ,rust-nix-0.28)
+                                   ("rust-tempfile" ,rust-tempfile-3))))
+    (home-page "https://github.com/rust-lang/jobserver-rs")
+    (synopsis "An implementation of the GNU Make jobserver for Rust.")
     (description
-     "An implementation of the GNU make jobserver for Rust.")
+     "This package provides An implementation of the GNU Make jobserver for Rust.")
     (license (list license:expat license:asl2.0))))
 
 (define-public rust-joinery-2
@@ -38229,31 +38224,22 @@ parser in Rust.")
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
-    (version "0.2.153")
+    (version "0.2.155")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "libc" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1gg7m1ils5dms5miq9fyllrcp0jxnbpgkx71chd2i0lafa8qy6cw"))))
+        (base32 "0z44c53z54znna8n322k5iwg80arxxpdzjj5260pxxzc9a58icwp"))))
     (build-system cargo-build-system)
     (arguments
-     (list #:cargo-inputs
-           `(("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
+     `(#:cargo-inputs (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1))))
     (home-page "https://github.com/rust-lang/libc")
-    (synopsis "Raw FFI bindings to platform libraries like libc")
+    (synopsis "Raw FFI bindings to platform libraries like libc.")
     (description
-     "The rust libc crate provides all of the definitions necessary to easily
-interoperate with C code (or \"C-like\" code) on each of the platforms that Rust
-supports.  This includes type definitions (e.g., c_int), constants (e.g., EINVAL)
-as well as function headers (e.g., malloc).
-
-This crate exports all underlying platform types, functions, and constants under
-the crate root, so all items are accessible as @samp{libc::foo}.  The types and
-values of all the exported APIs match the platform that libc is compiled for.")
-    (license (list license:expat
-                   license:asl2.0))))
+     "This package provides Raw FFI bindings to platform libraries like libc.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-libc-print-0.1
   (package
@@ -81557,14 +81543,14 @@ introspection APIs.")
 (define-public rust-time-0.3
   (package
     (name "rust-time")
-    (version "0.3.34")
+    (version "0.3.36")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "time" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0jc7wgprzqjhzd0nqkbmdlnjwyddnswmjw86ni2vq55v45jqn968"))))
+        (base32 "11g8hdpahgrf1wwl2rpsg5nxq3aj7ri6xr672v4qcij6cgjqizax"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; Not all files included
@@ -81716,14 +81702,14 @@ should not be relied upon directly.")
 (define-public rust-time-macros-0.2
   (package
     (name "rust-time-macros")
-    (version "0.2.17")
+    (version "0.2.18")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "time-macros" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0x3pahhk2751c6kqqq9dk6lz0gydbnxr44q01wpjlrz687ps78vv"))))
+        (base32 "1kqwxvfh2jkpg38fy673d6danh1bhcmmbsmffww3mphgail2l99z"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-num-conv" ,rust-num-conv-0.1)
