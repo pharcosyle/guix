@@ -3653,11 +3653,6 @@ for dealing with different structured file formats.")
               ;; Increase reftest tolerance a bit to account for different
               ;; harfbuzz, pango, etc.
               (setenv "RSVG_TEST_TOLERANCE" "20")))
-          (add-after 'unpack 'remove-tests
-            (lambda _
-              (substitute* "tests/src/reference.rs"
-                ;; Donno why this fails now.
-                ((".*rtl_tspan_svg.*") ""))))
           (add-before 'configure 'pre-configure
             (lambda* (#:key outputs #:allow-other-keys)
               (substitute* "gdk-pixbuf-loader/Makefile.in"
