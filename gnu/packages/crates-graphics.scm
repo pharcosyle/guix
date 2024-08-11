@@ -5342,14 +5342,14 @@ from xml files.")
 (define-public rust-winit-0.29
   (package
     (name "rust-winit")
-    (version "0.29.10")
+    (version "0.29.15")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "winit" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kzzl8m68sq6njdr6n1b90ppfg1pfhkcq48iqxpfdshyjh8lz0jc"))))
+        (base32 "1jp5j96hcr6xif7asgck522791fqmlmhd3wwy3x5fmk3babasn8d"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -5376,8 +5376,8 @@ from xml files.")
         ("rust-orbclient" ,rust-orbclient-0.3)
         ("rust-percent-encoding" ,rust-percent-encoding-2)
         ("rust-raw-window-handle" ,rust-raw-window-handle-0.6)
-        ("rust-raw-window-handle" ,rust-raw-window-handle-0.4)
         ("rust-raw-window-handle" ,rust-raw-window-handle-0.5)
+        ("rust-raw-window-handle" ,rust-raw-window-handle-0.4)
         ("rust-redox-syscall" ,rust-redox-syscall-0.3)
         ("rust-rustix" ,rust-rustix-0.38)
         ("rust-sctk-adwaita" ,rust-sctk-adwaita-0.8)
@@ -5848,14 +5848,14 @@ the platform-specific getters provided by winit, or another library.")
 (define-public rust-x11rb-protocol-0.13
   (package
     (name "rust-x11rb-protocol")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11rb-protocol" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0d3cc2dr5fcx8asgrm31d7lrxpnbqi6kl5v3r71gx7xxp3272gp6"))))
+        (base32 "0gfbxf2k7kbk577j3rjhfx7hm70kmwln6da7xyc4l2za0d2pq47c"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-serde" ,rust-serde-1))
@@ -6059,14 +6059,14 @@ for @code{libxkbcommon}.")
 (define-public rust-xkbcommon-dl-0.4
   (package
     (name "rust-xkbcommon-dl")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "xkbcommon-dl" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "16c6kmgqbffdsnw5w9q97p55d824ss3fqzif2lrh33648j2nc939"))))
+        (base32 "1iai0r3b5skd9vbr8z5b0qixiz8jblzfm778ddm8ba596a0dwffh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-bitflags" ,rust-bitflags-2)
@@ -6094,20 +6094,20 @@ for @code{libxkbcommon}.")
 (define-public rust-xkeysym-0.2
   (package
     (name "rust-xkeysym")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "xkeysym" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0886dn1rlkiazcp5n6ayqfg0ibpiny62dlbiyr9v4l32nxl8wjh5"))))
+        (base32 "0mksx670cszyd7jln6s7dhkw11hdfv7blwwr3isq98k22ljh1k5r"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-bytemuck" ,rust-bytemuck-1)
                        ("rust-serde" ,rust-serde-1))
        #:cargo-development-inputs (("rust-bytemuck" ,rust-bytemuck-1)
-                                   ("rust-x11rb" ,rust-x11rb-0.11))))
+                                   ("rust-x11rb" ,rust-x11rb-0.12))))
     (home-page "https://github.com/notgull/xkeysym")
     (synopsis "Rust library for working with X11 keysyms")
     (description
