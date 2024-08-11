@@ -132,7 +132,6 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
@@ -1726,6 +1725,34 @@ customizable status bars for their desktop environment.  It has built-in
 functionality to display information about the most commonly used services.")
     (license license:expat)))
 
+;; ;; FIXME: Copy of lcms to avoid truly bizarre guile module import cycle (I
+;; ;; think?) that causes the guix build command to hang.
+;; (define lcms/guile-modules-workaround
+;;   (package
+;;     (name "lcms")
+;;     (version "2.16")
+;;     (source (origin
+;;               (method url-fetch)
+;;               (uri (string-append "mirror://sourceforge/lcms/lcms/"
+;;                                   (version-major+minor version)
+;;                                   "/lcms2-" version ".tar.gz"))
+;;               (sha256
+;;                (base32
+;;                 "0lasskcj7k0sp0z7cpnwwisp826j51i1l7v322hcxd5rv15d6wyq"))))
+;;     (build-system gnu-build-system)
+;;     (arguments
+;;      '(#:configure-flags '("--disable-static")))
+;;     (inputs
+;;      (list libjpeg-turbo libtiff zlib))
+;;     (synopsis "Little CMS, a small-footprint colour management engine")
+;;     (description
+;;      "Little CMS is a small-footprint colour management engine, with special
+;; focus on accuracy and performance.  It uses the International Color
+;; Consortium standard (ICC), approved as ISO 15076-1.")
+;;     (license license:x11)
+;;     (home-page "https://www.littlecms.com/")
+;;     (properties '((cpe-name . "little_cms_color_engine")))))
+
 (define-public wlroots-0.18
   (package
     (name "wlroots")
@@ -1755,7 +1782,7 @@ functionality to display information about the most commonly used services.")
                   "\"" (search-input-file inputs "bin/Xwayland") "\""))))))))
     (propagated-inputs
      ;; As required by wlroots.pc.
-     (list lcms
+     (list ;; lcms/guile-modules-workaround
            libxkbcommon
            mesa
            pixman
@@ -1809,8 +1836,9 @@ modules for building a Wayland compositor.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "0niigjpy8xxrnw3v9b3bsksw2q3yy3qsa2xx0aazwpycw5zrff83"))))
-    (propagated-inputs (modify-inputs (package-propagated-inputs wlroots)
-                         (delete lcms)))))
+    ;; (propagated-inputs (modify-inputs (package-propagated-inputs wlroots)
+    ;;                      (delete lcms/guile-modules-workaround)))
+    ))
 
 (define-public wlroots-0.16
   (package
