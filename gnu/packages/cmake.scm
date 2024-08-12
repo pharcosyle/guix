@@ -174,18 +174,7 @@ using the CMake build system.")
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1wy1758xw4y3rvfma0qda56ayf7z09nw2mipjadjwlaxqcpipv9d"))
-              (patches
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://github.com/Kitware/CMake/commit"
-                        "/7bfe120c07f9fb571ed3e6e30db99d01da52bf60.patch"))
-                  (file-name (string-append name "-curl-8.9-test-fix.patch"))
-                  (sha256
-                   (base32
-                    "0qvybfh72maz4jb68hvmhykwbn4ys2daxm47imv9gpgrdjlc21ij")))))))
+                "1wy1758xw4y3rvfma0qda56ayf7z09nw2mipjadjwlaxqcpipv9d"))))
     (build-system gnu-build-system)
     (arguments
      (list
