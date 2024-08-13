@@ -121,7 +121,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/ext/Errno/Errno_pm.PL perl-5.20.0/e
  	# Some Linuxes have weird errno.hs which generate
  	# no #file or #line directives
  	($linux_errno_h) = grep { -e $_ } map { "$_/errno.h" }
-@@ -135,13 +135,6 @@ sub get_files {
+@@ -134,13 +134,6 @@ sub get_files {
  	if ($dep =~ /(\S+errno\.h)/) {
  	     push(@file, $1);
  	}
@@ -189,7 +189,7 @@ diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/linux.sh perl-5.20.0/hints/li
 -if [ -x /usr/bin/gcc ] ; then
 -    gcc=/usr/bin/gcc
 -# clang also provides -print-search-dirs
--elif ${cc:-cc} --version 2>/dev/null | grep -q '^clang ' ; then
+-elif ${cc:-cc} --version 2>/dev/null | grep -q -e '^clang version' -e ' clang version'; then
 -    gcc=${cc:-cc}
 -else
 -    gcc=gcc
