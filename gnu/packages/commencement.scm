@@ -2455,17 +2455,17 @@ exec " gcc "/bin/" program
                ;; Work around baffling errors. Note that these only became
                ;; necessary going from GCC 13 -> 14.
                (lambda _
-                 ;; Remove three problematic system.h macros
                  (substitute* "gcc/system.h"
-                   (("#define INTTYPE_SIGNED.*\n") "#define INTTYPE_SIGNED(t) (!(t >= 0 && ~t >= 0))")
-                   (("#define INTTYPE_MINIMUM.*")
-                    "#define INTTYPE_MAXIMUM(t) (((1 << (static_assert(sizeof(t))*CHAR_BIT - 2) - 1) * 2) + 1)")
+                   (("#define INTTYPE_SIGNED.*\n")
+                    "#define INTTYPE_SIGNED(t) (_Static_assert (! ((t) 0 < (t) -1))) ")
+                   (("#define INTTYPE_MINIMUM.*\n")
+                    "#define INTTYPE_MINIMUM(t) (_Static_assert ((t) (INTTYPE_SIGNED (t) ? (t) 1 << (sizeof (t) * CHAR_BIT - 1) : (t) 0)))")
                    ((".*\\? \\(t\\).*") "") ; INTTYPE_MINIMUM definition is split across two lines, kill the second.
-                   (("#define INTTYPE_MAXIMUM.*")
-                    "#define INTTYPE_MINIMUM(t) (INTTYPE_SIGNED (t) ? ((- INTTYPE_MAXIMUM (t)) - 1)  : 0)"))
+                   (("#define INTTYPE_MAXIMUM.*\n")
+                    "#define INTTYPE_MAXIMUM(t) (_Static_assert ((t) (~ (t) 0 - INTTYPE_MINIMUM (t))))"))
                  (substitute* "gcc/gengtype-lex.cc"
                    (("\\(\\~\\(size_t\\)0)")
-                    "INTTYPE_MAXIMUM (size_t)"))))
+                    "(_Static_assert(~(size_t)0))"))))
              (add-after 'unpack 'unpack-gmp&co
                (lambda* (#:key inputs #:allow-other-keys)
                  (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
