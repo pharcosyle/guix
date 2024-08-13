@@ -138,6 +138,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
          (configure-flags
           ``("--without-bash-malloc"
              "--with-installed-readline"
+             "CFLAGS=-Wno-implicit-function-declaration" ; GCC 14
              ,,(string-append "CPPFLAGS=" cppflags)
              ,(string-append
                "LDFLAGS=-Wl,-rpath -Wl,"
@@ -272,6 +273,8 @@ without modification.")
                "--disable-progcomp"
                "--disable-net-redirections"
                "--disable-nls"
+
+               "CFLAGS=-Wno-implicit-function-declaration" ; GCC 14
 
                ;; Pretend 'dlopen' is missing so we don't build loadable
                ;; modules and related code.
