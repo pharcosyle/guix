@@ -1243,74 +1243,78 @@ Font Format (WOFF).")
   (package
     (name "fontconfig")
     (version "2.15.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.freedesktop.org/software/"
-                    "fontconfig/release/fontconfig-" version ".tar.xz"))
-              (sha256 (base32
-                       "03kwblrx7q4xqfa2m81f41c1zwh4xxc2ni86c64gmq061s6nb833"))
-              (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://www.freedesktop.org/software/"
+             "fontconfig/release/fontconfig-" version ".tar.xz"))
+       (sha256
+        (base32
+         "03kwblrx7q4xqfa2m81f41c1zwh4xxc2ni86c64gmq061s6nb833"))
+       (patches
+        (search-patches "fontconfig-cache-ignore-mtime.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     ;; In Requires or Requires.private of fontconfig.pc.
-    (propagated-inputs `(("expat" ,expat)
-                         ("freetype" ,freetype)))
+    (propagated-inputs
+     (list expat        ; or libxml2
+           freetype))
     (inputs
      ;; We use to use 'font-ghostscript' but they are not recognized by newer
      ;; versions of Pango, causing many applications to fail to find fonts
      ;; otherwise.
      (list font-dejavu))
     (native-inputs
-     `(("docbook-utils" ,docbook-utils)
-       ("gperf" ,gperf)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-minimal)))    ;to avoid a cycle through tk
+     (list docbook-utils
+           gperf
+           pkg-config
+           python-minimal))
     (arguments
-     `(#:configure-flags
-       (list "--with-cache-dir=/var/cache/fontconfig"
-             ;; register the default fonts
-             (string-append "--with-default-fonts="
-                            (assoc-ref %build-inputs "font-dejavu")
-                            "/share/fonts"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'no-pdf-doc
-           (lambda _
-             ;; Don't build documentation as PDF.
-             (substitute* "doc/Makefile.in"
-               (("^PDF_FILES = .*")
-                "PDF_FILES =\n"))))
-         (add-before 'check 'skip-problematic-tests
-           (lambda _
-             ;; SOURCE_DATE_EPOCH doesn't make sense when ignoring mtime
-             (unsetenv "SOURCE_DATE_EPOCH")
+     (list
+      #:configure-flags
+      #~(list "--with-cache-dir=/var/cache/fontconfig"
+              (string-append "--with-default-fonts="
+                             (assoc-ref %build-inputs "font-dejavu")
+                             "/share/fonts"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'no-pdf-doc
+            (lambda _
+              ;; Don't build documentation as PDF.
+              (substitute* "doc/Makefile.in"
+                (("^PDF_FILES = .*")
+                 "PDF_FILES =\n"))))
+          (add-before 'check 'skip-problematic-tests
+            (lambda _
+              ;; SOURCE_DATE_EPOCH doesn't make sense when ignoring mtime
+              (unsetenv "SOURCE_DATE_EPOCH")
 
-             (substitute* "test/run-test.sh"
-               ;; The crbug1004254 test attempts to fetch fonts from the
-               ;; network.
-               (("\\[ -x \"\\$BUILDTESTDIR\"/test-crbug1004254 \\]")
-                "false"))))
-         (replace 'install
-           (lambda _
-             ;; Don't try to create /var/cache/fontconfig.
-             (invoke "make" "install"
-                     "fc_cachedir=$(TMPDIR)"
-                     "RUN_FC_CACHE_TEST=false")))
-         (add-after 'install 'move-man-sections
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
-             ;; "out" for convenience.
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               (for-each (lambda (section)
-                           (let ((source (string-append out "/share/man/"
-                                                        section))
-                                 (target (string-append doc "/share/man/"
-                                                        section)))
-                             (copy-recursively source target)
-                             (delete-file-recursively source)))
-                         '("man3" "man5"))))))))
+              (substitute* "test/run-test.sh"
+                ;; The crbug1004254 test attempts to fetch fonts from the
+                ;; network.
+                (("\\[ -x \"\\$BUILDTESTDIR\"/test-crbug1004254 \\]")
+                 "false"))))
+          (replace 'install
+            (lambda _
+              ;; Don't try to create /var/cache/fontconfig.
+              (invoke "make" "install"
+                      "fc_cachedir=$(TMPDIR)"
+                      "RUN_FC_CACHE_TEST=false")))
+          (add-after 'install 'move-man-sections
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Move share/man/man{3,5} to the "doc" output.  Leave "man1" in
+              ;; "out" for convenience.
+              (let ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc")))
+                (for-each (lambda (section)
+                            (let ((source (string-append out "/share/man/"
+                                                         section))
+                                  (target (string-append doc "/share/man/"
+                                                         section)))
+                              (copy-recursively source target)
+                              (delete-file-recursively source)))
+                          '("man3" "man5"))))))))
     (synopsis "Library for configuring and customizing font access")
     (description
      "Fontconfig can discover new fonts when installed automatically;
