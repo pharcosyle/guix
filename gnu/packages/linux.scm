@@ -812,6 +812,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             "13zqdcm4664vh7g57sxbfrlpsxm7zrma72mxdfdz7d9yndy2gfv8"))
 
 (define-public linux-libre-headers linux-libre-headers-5.15.49)
+;; linux-libre-headers-latest points to the latest headers package
+;; and should be used as a dependency for packages that depend on
+;; the headers.
+(define-public linux-libre-headers-latest linux-libre-headers-6.10)
 
 
 ;;;
