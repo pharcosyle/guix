@@ -1245,15 +1245,15 @@ Font Format (WOFF).")
     (version "2.15.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://www.freedesktop.org/software/"
-             "fontconfig/release/fontconfig-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/fontconfig/fontconfig.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "03kwblrx7q4xqfa2m81f41c1zwh4xxc2ni86c64gmq061s6nb833"))
-       (patches
-        (search-patches "fontconfig-cache-ignore-mtime.patch"))))
+         "0psdvzdh9mhinvb0m1z72qps589rlhi4h08la446za9swzkiyr2x"))
+       (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     ;; In Requires or Requires.private of fontconfig.pc.
