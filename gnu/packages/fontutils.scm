@@ -1240,20 +1240,23 @@ Font Format (WOFF).")
     (home-page "https://w3c.github.io/woff/woff2/")
     (license license:expat)))
 
+(define %fontconfig-commit "bd83c04aa6f3cb864ba60dc5eaf2b41c4c269c63")
 (define-public fontconfig
   (package
     (name "fontconfig")
-    (version "2.15.0")
+    ;; (version "2.15.0")
+    (version (git-version "2.15.0" "0" %fontconfig-commit))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/fontconfig/fontconfig.git")
-             (commit version)))
+             ;; (commit version)
+             (commit %fontconfig-commit)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0psdvzdh9mhinvb0m1z72qps589rlhi4h08la446za9swzkiyr2x"))
+         "03434m1adzz6a483k2kkh2lqr052ca2yghkiqr5f64ddhn9k7iqm"))
        (patches (search-patches "fontconfig-cache-ignore-mtime.patch"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
