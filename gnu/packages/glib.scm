@@ -112,13 +112,14 @@
     (name "dbus")
     (version "1.15.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://dbus.freedesktop.org/releases/dbus/dbus-"
-                    version ".tar.xz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.freedesktop.org/dbus/dbus.git")
+                    (commit (string-append "dbus-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "016j3rqc8m62bg0h7z4rpvbvm5bg0hbjrld733f0aby8drz5kz44"))
+                "0sjkma05sqa7rx3mag8dhradifjjm3qxim0ai9lwvss82yf1jix0"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
