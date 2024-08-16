@@ -2117,7 +2117,7 @@ these interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.30.0")
+    (version "1.31.5-dev")
     (source
      (origin
        (method git-fetch)
@@ -2127,7 +2127,7 @@ these interfaces, based on the useradd, usermod and userdel commands.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "00kbjvpka51zrfjigzd3rk6r4x8hkg1xfj7d9zl9lccysnxyjx5h"))))
+         "1703x8jqgfhd2diy4r3b0avwgv3aaf1s705i9nmww08vzb8avfq6"))))
     (build-system meson-build-system)
     (native-inputs
      (list `(,glib "bin")               ;for glib-mkenums
@@ -2187,7 +2187,7 @@ IPC Router) bus.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.34.0")
+    (version "1.35.5-dev")
     (source
      (origin
        (method git-fetch)
@@ -2197,7 +2197,7 @@ IPC Router) bus.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1m5y2sf14qd2i9mvbb68wxqlfwvpiprgz8zmcx6wb2cnjgsszmwp"))))
+         "0vqsa2njkhsacycx6jpwvbvpj8543l4988j1xl9z17ha11c0flzk"))))
     (build-system meson-build-system)
     (inputs
      (list
@@ -2227,7 +2227,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
 (define-public modem-manager
   (package
     (name "modem-manager")
-    (version "1.22.0")
+    (version "1.23.9-dev")
     (source
      (origin
        (method git-fetch)
@@ -2239,7 +2239,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fj4ibjfsxal3xfk3hrj4l9vg7zbj42k9lj7151illl2n3d5ngzw"))))
+         "1dmaz6l49cpbk17v8zy3401dzvpns99hh61z79kxq9z84mczizy5"))))
     (build-system meson-build-system)
     (arguments
      (list

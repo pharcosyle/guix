@@ -2780,7 +2780,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "46.1")
+    (version "47.beta")
     (source
      (origin
        (method url-fetch)
@@ -2789,7 +2789,7 @@ on the GNOME Desktop with a single simple application.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0qca8rqfhiyqb5al27h1cz39rl7ipd4jx0dxdfz8x5d66wa1124v"))))
+         "0dkil9mp1k189g82ykbqphl6mfmg9c6rbhlq42zj7ds0y3xyghr7"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -8528,7 +8528,7 @@ users.")
     (name "network-manager")
     ;; Note: NetworkManager still follows the odd/even major version number
     ;; for development/stable releases scheme; be sure to use a stable one.
-    (version "1.48.8")
+    (version "1.49.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -8537,7 +8537,7 @@ users.")
               (patches (search-patches "network-manager-plugin-path.patch"))
               (sha256
                (base32
-                "0y28lnsm3c5hjx771kbl3vwvkcwm7j5ibi7jl4z6mznky74fl032"))))
+                "0jlwcyhzjiv4przwxcdrqlsax423643pjw467n7bfv129bsdn594"))))
     (build-system meson-build-system)
     (outputs '("out"
                "doc"))                  ; 8 MiB of gtk-doc HTML

@@ -830,7 +830,7 @@ ever use this library.")
 (define-public at-spi2-core
   (package
     (name "at-spi2-core")
-    (version "2.52.0")
+    (version "2.53.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -838,7 +838,7 @@ ever use this library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1azmbzik0gl2s03c9lq3dff3h1iql1zvlwn28yhizl68421zrhqa"))))
+                "1x3w62qhnfjbz5ly9wpd86ajprdjrz72nb2cfp6yygdfip4f5zra"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -1180,18 +1180,7 @@ application suites.")
        (sha256
         (base32 "0p11k5afy3g9d6p402zrn9izkypwzlb51y9qanibzyc1sjmiwslj"))
        (patches
-        (append
-         (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch")
-         (list
-          (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://gitlab.gnome.org/GNOME/gtk/-/commit"
-                  "/441b704afdf1dca214e7f71d49dcc164832773a9.patch"))
-            (file-name (string-append name "-gdk-pixbuf-xpm-test-fix.patch"))
-            (sha256
-             (base32
-              "0s3pgg098mb8dw8nws70y2yp81xc2xfrbwbkbn06c47nqq5rff3x"))))))
+        (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))
        (modules '((guix build utils)))))
     (build-system meson-build-system)
     (outputs '("out" "bin" "doc"))
