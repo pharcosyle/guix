@@ -2747,7 +2747,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "46.1")
+    (version "47.beta")
     (source
      (origin
        (method url-fetch)
@@ -2756,7 +2756,7 @@ on the GNOME Desktop with a single simple application.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0qca8rqfhiyqb5al27h1cz39rl7ipd4jx0dxdfz8x5d66wa1124v"))))
+         "0dkil9mp1k189g82ykbqphl6mfmg9c6rbhlq42zj7ds0y3xyghr7"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -4771,7 +4771,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.8.0")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4779,7 +4779,7 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0m4l665msybhf6z0g4vqj93ydapi6dkg0r8asnd064d85jwmxvwp"))))
+                "15f520nynb5plf9770ab04lzw036g5syakj6znpq5njv0kh097wg"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4814,7 +4814,8 @@ configuration storage systems.")
     (native-inputs
      (append (list gettext-minimal
                    `(,glib "bin")       ;for glib-mkenums and glib-genmarshal
-                   pkg-config)
+                   pkg-config
+                   python-docutils)
              (if (%current-target-system)
                  '()
                  (list gi-docgen
@@ -5103,7 +5104,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "3.4.4")
+    (version "3.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5111,7 +5112,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))
+                "1clafjmp7bi187hixmdcxa10zlk8pclaywhw7gnbiy0v91jwjvaj"))
               ;; Since https://gitlab.gnome.org/GNOME/glib-networking/-/commit/16e48f1674
               ;; some tests fail because GIO complains loudly that there are
               ;; no certificates in the build container. Skip them.
@@ -8385,7 +8386,7 @@ users.")
     (name "network-manager")
     ;; Note: NetworkManager still follows the odd/even major version number
     ;; for development/stable releases scheme; be sure to use a stable one.
-    (version "1.48.8")
+    (version "1.49.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -8394,7 +8395,7 @@ users.")
               (patches (search-patches "network-manager-plugin-path.patch"))
               (sha256
                (base32
-                "0y28lnsm3c5hjx771kbl3vwvkcwm7j5ibi7jl4z6mznky74fl032"))))
+                "0jlwcyhzjiv4przwxcdrqlsax423643pjw467n7bfv129bsdn594"))))
     (build-system meson-build-system)
     (outputs '("out"
                "doc"))                  ; 8 MiB of gtk-doc HTML
