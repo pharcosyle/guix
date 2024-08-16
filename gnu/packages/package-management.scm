@@ -2059,37 +2059,39 @@ the boot loader configuration.")
 (define-public flatpak
   (package
     (name "flatpak")
-    (version "1.14.10")
+    (version "1.15.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
                            version "/flatpak-" version ".tar.xz"))
        (sha256
-        (base32 "1k91v0csghiis8gjpcvpx534qbyaj81dfisabbc0ld97h68cggbb"))
+        (base32 "0bzlrgp8fl02qm8llchcckzgrj8n1dqld148ai3afkagkfi7r9ka"))
        (patches
         (search-patches "flatpak-fix-fonts-icons.patch"
                         "flatpak-fix-path.patch"
                         "flatpak-unset-gdk-pixbuf-for-sandbox.patch"))))
-
-    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
-    ;; find the TLS backend in glib-networking.
-    (build-system glib-or-gtk-build-system)
-
+    (build-system meson-build-system)
     (arguments
      (list
+      ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO
+      ;; to find the TLS backend in glib-networking.
+      #:glib-or-gtk? #t
       #:configure-flags
       #~(list
-         "--with-curl"
-         "--enable-documentation=no" ;; FIXME
-         "--enable-system-helper=no"
+         "-Dhttp_backend=curl"
+         "-Dsystem_helper=disabled"
          "--localstatedir=/var"
-         (string-append "--with-system-bubblewrap="
+         (string-append "-Dsystem_bubblewrap="
                         (assoc-ref %build-inputs "bubblewrap")
                         "/bin/bwrap")
-         (string-append "--with-system-dbus-proxy="
+         (string-append "-Dsystem_dbus_proxy="
                         (assoc-ref %build-inputs "xdg-dbus-proxy")
-                        "/bin/xdg-dbus-proxy"))
+                        "/bin/xdg-dbus-proxy")
+         ;; FIXME: Add docs.
+         ;; "-Dgtkdoc=enabled"
+         ;; "-Ddocbook_docs=enabled"
+         )
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'fix-tests
@@ -2106,6 +2108,11 @@ cp -r /tmp/locale/*/en_US.*")))
               (substitute* "tests/libtest.sh"
                 (("/bin/kill") (which "kill"))
                 (("/usr/bin/python3") (which "python3")))
+              ;; Omit two tests that throw errors (I think because they try
+              ;; and fail to use fusermount in the build container.)
+              (substitute* "tests/test-matrix/meson.build"
+                ((".*test-summaries@system.wrap.*") "")
+                ((".*test-http-utils.sh.*") ""))
               #t))
           (add-after 'unpack 'p11-kit-fix
             (lambda* (#:key inputs #:allow-other-keys)
@@ -2116,17 +2123,12 @@ cp -r /tmp/locale/*/en_US.*")))
                   (("if \\(g_find_program_in_path \\(\"p11-kit\"\\)\\)")
                    (string-append "if (g_find_program_in_path (\""
                                   p11-path "\"))"))))))
-          ;; Many tests fail for unknown reasons, so we just run a few basic
-          ;; tests.
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (setenv "HOME" "/tmp")
-                (invoke "make" "check"
-                        "TESTS=tests/test-basic.sh tests/test-config.sh
-                        testcommon")))))))
+          (add-before 'check 'test-setup
+            (lambda _
+              (setenv "HOME" "/tmp"))))))
     (native-inputs
-     (list bison
+     (list bash ; for compgen in tests.
+           bison
            dbus ; for dbus-daemon
            gettext-minimal
            `(,glib "bin") ; for glib-mkenums + gdbus-codegen
