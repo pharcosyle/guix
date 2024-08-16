@@ -107,19 +107,22 @@
             perl-net-dbus
             perl-net-dbus-glib))
 
+(define %dbus-commit "a7312bfbd8499b00d0d1e8108b0f66c16b95962b")
 (define dbus
   (package
     (name "dbus")
-    (version "1.15.8")
+    ;; (version "1.15.8")
+    (version (git-version "1.15.8" "0" %dbus-commit))
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://gitlab.freedesktop.org/dbus/dbus.git")
-                    (commit (string-append "dbus-" version))))
+                    ;; (commit (string-append "dbus-" version))
+                    (commit %dbus-commit)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0sjkma05sqa7rx3mag8dhradifjjm3qxim0ai9lwvss82yf1jix0"))
+                "1wwlqx82zxfsi90c7y8496c4rsw5dwqaadpw7xy1rcvv0w09i8ml"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system meson-build-system)
     (arguments
