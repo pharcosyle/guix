@@ -55,7 +55,7 @@ some reason. If anyone has any ideas, go nuts (add to phases):
      'repository-search-paths' : {
        'c_args': '-DGOBJECT_INTROSPECTION_LIBDIR="@0@"'.format(glib_libdir),
        'depends': glib_gir_testing_dep,
-@@ -64,22 +56,10 @@
+@@ -64,23 +56,11 @@
      'struct-info' : {
        'depends': gobject_gir_testing_dep,
      },
@@ -66,10 +66,11 @@ some reason. If anyone has any ideas, go nuts (add to phases):
        'depends': glib_gir_testing_dep,
      },
    }
--
+ 
 -  if cc.get_id() != 'msvc'
 -    girepository_tests += {
 -      'autoptr-girepository' : {
+-        'dependencies': [libffi_dep],
 -        'source' : 'autoptr.c',
 -        'depends': gio_gir_testing_dep,
 -      },
