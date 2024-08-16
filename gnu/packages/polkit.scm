@@ -59,54 +59,28 @@
 (define-public polkit
   (package
     (name "polkit")
-    (version "125-pre")
+    (version "125")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/polkit-org/polkit")
-                    (commit "042897ed0efd5d622367c2ff4ac224d0b05cccee")))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1by1jn3pgzn9vgwbkrqrlixypqrgmlppb3qdnzvbyxsx2as9cg4y"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; This is so that the default example rules files can be
-                  ;; installed along the package; otherwise it would fail
-                  ;; attempting to write to /etc.  Unlike with GNU Autotools,
-                  ;; Meson can't override the pkgsysconfdir value at install
-                  ;; time; instead, we rewrite the pkgsysconfdir references
-                  ;; in the build system to point to #$output/etc.
-                  ;; Look up actions and rules from /etc/polkit ...
-                  (substitute* "src/polkitbackend/meson.build"
-                    (("'-DPACKAGE_SYSCONF_DIR=.*,")
-                     "'-DPACKAGE_SYSCONF_DIR=\"/etc\"',")
-                    (("pk_pkgdatadir / 'rules.d'")
-                     "pk_pkgsysconfdir / 'rules.d'"))
-                  (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
-                    (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")
-                     "PACKAGE_SYSCONF_DIR \"/polkit-1/actions\""))
-                  ;; ... but install package files below the prefix.
-                  (substitute* "meson.build"
-                    (("pk_sysconfdir = get_option\\('sysconfdir'\\)")
-                     "pk_sysconfdir = get_option('prefix') + '/etc'"))
-                  ;; Set the setuid helper's real location.
-                  (substitute* "src/polkitagent/polkitagentsession.c"
-                    (("PACKAGE_PREFIX \"/lib/polkit-1/polkit-agent-helper-1\"")
-                     "\"/run/setuid-programs/polkit-agent-helper-1\""))))))
+                "1rl0wkfn6mmqpgnzyf0vcscv07kf0hcyz4k85dsww36bi248v9x8"))))
     (build-system meson-build-system)
     (arguments
      (list
-      #:modules '((guix build meson-build-system)
-                  (guix build utils)
-                  (ice-9 match))
+      ;; Uses a combination of mount and user namespaces to execute tests. I
+      ;; don't know but doubt it's possible/practical to get working in the
+      ;; build container.
+      #:tests? #f
       #:configure-flags
       #~(list "--sysconfdir=/etc"
               "-Dsession_tracking=elogind"
               (string-append "-Dpam_prefix=" #$output "/etc/pam.d")
               "-Dman=true"
-              "-Dtests=true"
               ;; Work around cross-compilation failure.  The build system
               ;; probes for the _target_ gobject-introspection, but if we
               ;; change it to native, Meson fails with:
@@ -118,50 +92,60 @@
                      '()))
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-paths
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "test/data/etc/polkit-1/rules.d/10-testing.rules"
-                (("/bin/(false|true)" _ command)
-                 (search-input-file inputs (string-append "bin/" command))))))
-          (add-after 'configure 'patch-mocklibc-shebang
-            ;; Can't do this earlier, we have to wait for meson to unpack an
-            ;; archive.
+          (add-after 'unpack 'patch-pkgsysconfdir
+            ;; This is so that the default example rules files can be
+            ;; installed along the package; otherwise it would fail
+            ;; attempting to write to /etc.  Unlike with GNU Autotools,
+            ;; Meson can't override the pkgsysconfdir value at install
+            ;; time; instead, we rewrite the pkgsysconfdir references
+            ;; in the build system to point to #$output/etc.
             (lambda _
-              (patch-shebang "subprojects/mocklibc-1.0/bin/mocklibc")))
-          (replace 'check
-            (lambda* (#:key tests? test-options #:allow-other-keys)
-              (when tests?
-                (match (primitive-fork)
-                  (0                    ;child process
-                   (apply execlp "meson" "meson"
-                          "test" "-t" "0" "--print-errorlogs"
-                          test-options))
-                  (meson-pid
-                   ;; Reap child processes; otherwise, python-dbusmock would
-                   ;; waste time polling for the dbus processes it spawns to
-                   ;; be reaped, in vain.
-                   (let loop ()
-                     (match (waitpid WAIT_ANY)
-                       ((pid . status)
-                        (if (= pid meson-pid)
-                            (unless (zero? status)
-                              (error "`meson test' exited with status"
-                                     status))
-                            (loop)))))))))))))
+              ;; Look up actions and rules from /etc/polkit...
+              (substitute* "src/polkitbackend/meson.build"
+                (("'-DPACKAGE_SYSCONF_DIR=.*,")
+                 "'-DPACKAGE_SYSCONF_DIR=\"/etc\"',")
+                (("pk_pkgdatadir / 'rules.d'")
+                 "pk_pkgsysconfdir / 'rules.d'"))
+              (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
+                (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")
+                 "PACKAGE_SYSCONF_DIR \"/polkit-1/actions\""))
+              ;; ...but install package files below the prefix.
+              (substitute* "meson.build"
+                (("pk_sysconfdir = get_option\\('sysconfdir'\\)")
+                 "pk_sysconfdir = get_option('prefix') + '/etc'"))))
+          (add-after 'unpack 'set-path-to-setuid-helper
+            (lambda _
+              (substitute* "src/polkitagent/polkitagentsession.c"
+                (("PACKAGE_PREFIX \"/lib/polkit-1/polkit-agent-helper-1\"")
+                 "\"/run/setuid-programs/polkit-agent-helper-1\""))))
+          (add-after 'unpack 'dont-install-systemd-units/sysusers/tmpfiles
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; /usr/lib doesn't exist and we don't need this systemd stuff
+              ;; anyway.
+              (substitute* "meson.build"
+                (("/usr/lib/systemd/system") "/tmp")
+                (("/usr/lib/sysusers.d")     "/tmp")
+                (("/usr/lib/tmpfiles.d")     "/tmp")))))))
     (inputs
-     (list duktape expat elogind linux-pam nspr))
+     (list duktape                      ; Or mozjs.
+           expat
+           elogind
+           linux-pam
+           nspr))
     (propagated-inputs
      (list glib))                       ;required by polkit-gobject-1.pc
     (native-inputs
      (list gettext-minimal
            `(,glib "bin")               ;for glib-mkenums
-           docbook-xsl                  ;for man page generation
            gobject-introspection
-           libxslt                      ;for man page generation
            perl
            pkg-config
            python
-           python-dbusmock-minimal))
+           python-dbusmock-minimal
+           ;; For man pages.
+           docbook-xml-4.1.2
+           docbook-xsl
+           libxslt))
     (home-page "https://www.freedesktop.org/wiki/Software/polkit/")
     (synopsis "Authorization API for privilege management")
     (description "Polkit is an application-level toolkit for defining and
