@@ -90,7 +90,7 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "1vjybn3xq5sz616fdy21f5c4b4ajrj4wmfnbjqz6584xw887yiaa"))))
+                "0vjybn3xq5sz616fdy21f5c4b4ajrj4wmfnbjqz6584xw887yiaa"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments

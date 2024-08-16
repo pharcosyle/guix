@@ -159,7 +159,7 @@
            eudev                             ;for discovering input devices
            glib
            glu
-           ;; ibus-minimal
+           ibus-minimal
            libdecor
            libdrm
            libxkbcommon
