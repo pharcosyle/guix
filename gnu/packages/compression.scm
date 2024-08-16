@@ -2938,7 +2938,7 @@ compression and decompression speed compared to Deflate using Zlib.")
 (define-public unrar-free
   (package
     (name "unrar-free")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method git-fetch)
@@ -2947,7 +2947,7 @@ compression and decompression speed compared to Deflate using Zlib.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jlr1avasmhx4996jga2r08fid48f2l565snsqi61iwmasz08mc5"))))
+        (base32 "1qf2fdr4bl10kys2fsb6090r9xj0ascrk7pn0iklsv1ajwcql3qf"))))
     (build-system gnu-build-system)
     (inputs
      `(("libarchive" ,libarchive)))
