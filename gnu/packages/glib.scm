@@ -121,19 +121,16 @@
                (base32
                 "0sjkma05sqa7rx3mag8dhradifjjm3qxim0ai9lwvss82yf1jix0"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
      (list
       #:configure-flags
       #~(list
          ;; Install the system bus socket under /var.
-         "--localstatedir=/var"
+         "-Dlocalstatedir=/var"
 
          ;; Install the session bus socket under /tmp.
-         "--with-session-socket-dir=/tmp"
-
-         ;; Build shared libraries only.
-         "--disable-static"
+         "-Dsession_socket_dir=/tmp"
 
          ;; Use /etc/dbus-1 for system-wide config.
          ;; Look for configuration file under
@@ -143,32 +140,31 @@
          ;; regardless of what '--config-file' was
          ;; passed to 'dbus-daemon' on the command line;
          ;; see <https://bugs.freedesktop.org/show_bug.cgi?id=92458>.
-         "--sysconfdir=/etc")
+         "-Dsysconfdir=/etc")
       #:phases
       #~(modify-phases %standard-phases
-          (replace 'install
+          (add-after 'unpack 'dont-create-/var+/etc-or-config
+           (lambda _
+             (substitute* "meson.build"
+               (("install_emptydir\\(dir\\)") ""))
+             (substitute* "bus/meson.build"
+               (("subdir\\('legacy-config'\\)") ""))))
+          (add-after 'install 'move-doc
             (lambda _
-              ;; Don't try to create /var and /etc.
-              (invoke "make"
-                      "localstatedir=/tmp/dummy"
-                      "sysconfdir=/tmp/dummy"
-                      "install"))))))
+              (mkdir-p (string-append #$output:doc "/share"))
+              (rename-file
+               (string-append #$output "/share/doc")
+               (string-append #$output:doc "/share/doc")))))))
     (native-inputs
-     ;; Some dependencies are required to generate the documentation.  Also,
-     ;; quoting NEWS for 1.15.8: “Autotools-generated files are no longer
-     ;; included in the tarball release.”
-     (list autoconf
-           autoconf-archive
-           automake
-           docbook-xml-4.4
+     (list docbook-xml-4.4
            docbook-xsl
            doxygen
-           libtool
            libxslt
+           pkg-config
+           python-minimal
            which
            xmlto
-           yelp-tools
-           pkg-config))
+           yelp-tools))
     (inputs
      (list expat
            ;; Add a dependency on libx11 so that 'dbus-launch' has support for
