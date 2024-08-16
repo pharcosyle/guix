@@ -819,7 +819,7 @@ ever use this library.")
 (define-public at-spi2-core
   (package
     (name "at-spi2-core")
-    (version "2.52.0")
+    (version "2.53.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -827,7 +827,7 @@ ever use this library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1azmbzik0gl2s03c9lq3dff3h1iql1zvlwn28yhizl68421zrhqa"))))
+                "1x3w62qhnfjbz5ly9wpd86ajprdjrz72nb2cfp6yygdfip4f5zra"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -1155,7 +1155,7 @@ application suites.")
 (define-public gtk
   (package
     (name "gtk")
-    (version "4.14.4")
+    (version "4.15.5")
     (source
      (origin
        (method url-fetch)
@@ -1163,20 +1163,9 @@ application suites.")
                            (version-major+minor version)  "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "0cz6rqh3hknjsmy6mp7l0x96r6hg06qkbi0a8gvgjj43gswihda4"))
+        (base32 "0643dpy0n94gn68p76z2n60ym3x0i9r833fr7cs01406ahqy1nfn"))
        (patches
-        (append
-         (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch")
-         (list
-          (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://gitlab.gnome.org/GNOME/gtk/-/commit"
-                  "/441b704afdf1dca214e7f71d49dcc164832773a9.patch"))
-            (file-name (string-append name "-gdk-pixbuf-xpm-test-fix.patch"))
-            (sha256
-             (base32
-              "0s3pgg098mb8dw8nws70y2yp81xc2xfrbwbkbn06c47nqq5rff3x"))))))
+        (search-patches "gtk4-respect-GUIX_GTK4_PATH.patch"))
        (modules '((guix build utils)))))
     (build-system meson-build-system)
     (outputs '("out" "bin" "doc"))
@@ -1194,8 +1183,8 @@ application suites.")
          #$@(if (%current-target-system)
                 ;; If true, gtkdoc-scangobj will try to execute a
                 ;; cross-compiled binary.
-                '("-Dgtk_doc=false")
-                '("-Dgtk_doc=true"))
+                '("-Ddocumentation=false")
+                '("-Ddocumentation=true"))
          "-Dman-pages=true")
       #:test-options #~(list "--setup=x11" ;defaults to wayland
                              ;; Use the same test options as upstream uses for
