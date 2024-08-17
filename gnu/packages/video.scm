@@ -1473,7 +1473,6 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
     (native-inputs (list pkg-config automake autoconf libtool))
     (inputs
      (list freeglut
-           ftgl
            imlib2
            libx11
            mesa
