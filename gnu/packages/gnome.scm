@@ -5111,7 +5111,12 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))))
+                "1an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))
+              ;; Since https://gitlab.gnome.org/GNOME/glib-networking/-/commit/16e48f1674
+              ;; some tests fail because GIO complains loudly that there are
+              ;; no certificates in the build container. Skip them.
+              (patches
+               (search-patches "libsoup-skip-tests.patch"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
