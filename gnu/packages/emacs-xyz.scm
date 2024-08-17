@@ -39960,8 +39960,8 @@ hacker.")
       (license license:expat))))
 
 (define-public doom-emacs
-  (let ((commit "511c8af36537992fd60ff970e19e5638207546ed")
-        (revision "1"))
+  (let ((commit "74999956438ae0461f89569b7abb00205635ce93")
+        (revision "0"))
     (package
       (name "doom-emacs")
       (version (git-version "3.0.0-pre" revision commit))
@@ -39973,28 +39973,28 @@ hacker.")
                (commit commit)))
          (sha256
           (base32
-           "1dnnmhz8q7flvgrw6q137qahi2d48k95786mvay8c03dsl4vad9b"))
+           "10jymp8zyy57iil1gzjzbdj702fpjdk563wass7w2nwfiv73ykn3"))
          (file-name (git-file-name name version))
          (patches
           (list
            (origin
              (method url-fetch)
              (uri (string-append
-                   "https://github.com/pharcosyle/doomemacs/commit"
-                   "/3089bd055d5cc9195247c92d714095742f3d56f6.patch"))
+                   "https://github.com/doomemacs/doomemacs/compare"
+                   "/master...pharcosyle:doomemacs:dirvish.patch"))
              (file-name (string-append name "-dirvish.patch"))
              (sha256
               (base32
-               "105krfkxv39kslamvsal8jllmqslzx1lgpm0rzrlwm720s28cn5k")))
+               "03qzgx78irmyq8qa5q6aaz3kzydfzwp8rs56iqyyfnl670y5llp1")))
            (origin
              (method url-fetch)
              (uri (string-append
                    "https://github.com/doomemacs/doomemacs/compare"
-                   "/master...pharcosyle:doomemacs:factorize-executables.patch"))
-             (file-name (string-append name "-factorize-executables.patch"))
+                   "/master...pharcosyle:doomemacs:generalize-rg-and-fd.patch"))
+             (file-name (string-append name "-generalize-rg-and-fd.patch"))
              (sha256
               (base32
-               "1k21z1wybv75frq5a8dz7s83xz2z9mj75hss3cqnc20n8n7lkddw")))))))
+               "1vc3nhxg0zx2wldbzr8am4jjl4bgkf8r607sg134ilw06vfv83j2")))))))
       (build-system copy-build-system)
       (arguments
        (list
@@ -40013,8 +40013,8 @@ hacker.")
               (lambda* (#:key inputs #:allow-other-keys)
                 (parameterize ((%emacs (search-input-file inputs "/bin/emacs")))
                   (emacs-substitute-variables "lisp/doom-projects.el"
-                    ("doom-rg-binary" (search-input-file inputs "/bin/rg"))
-                    ("doom-projectile-fd-binary" (search-input-file inputs "/bin/fd"))))))
+                    ("doom-ripgrep-executable" (search-input-file inputs "/bin/rg"))
+                    ("doom-fd-executable" (search-input-file inputs "/bin/fd"))))))
             (add-after 'install 'symlink-bin
               (lambda _
                 (mkdir #$output:bin)
