@@ -82,7 +82,7 @@
 (define-public ibus-minimal
   (package
     (name "ibus")
-    (version "1.5.29")
+    (version "1.5.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -90,12 +90,13 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "0vjybn3xq5sz616fdy21f5c4b4ajrj4wmfnbjqz6584xw887yiaa"))))
+                "15jv1wcicrd63n399wgnz9faapbcivg5lvjrc7hsr7qk8m54vf05"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out" "doc"))
     (arguments
      (list
       #:configure-flags #~(list "--disable-gtk2"
+                                "--disable-gtk4"
                                 "--enable-gtk-doc"
                                 "--enable-memconf"
                                 (string-append
@@ -239,9 +240,8 @@ may also simplify input method development.")
     (arguments
      (substitute-keyword-arguments (package-arguments ibus-minimal)
        ((#:configure-flags flags)
-        #~(cons* "--enable-gtk4"
-                 "--enable-python-library"
-                 #$flags))
+        #~(cons* "--enable-python-library"
+                 (delete "--disable-gtk4" #$flags)))
        ((#:phases phases '%standard-phases)
         #~(modify-phases #$phases
             (add-after 'unpack 'disable-registry-cache
