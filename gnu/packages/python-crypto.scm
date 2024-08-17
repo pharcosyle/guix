@@ -555,14 +555,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "43.0.0")
+    (version "42.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "17i9fl1b3js9gvrxg25s3c2708g7c2gjqlw3hbqsj6nmlanpb05q"))))
+         "1qdz0yk5smi0dnywbxmanccwizilmnzgbbihjpmpgm6zjpn7xq3g"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -588,8 +588,7 @@ is used by the Requests library to verify HTTPS requests.")
            python-iso8601
            python-pretend
            python-pytest                ;for subtests
-           ;; Save compute time by not running benchmarks.
-           ;; python-pytest-benchmark
+           python-pytest-benchmark
            python-setuptools
            python-wheel))
     (inputs (list python-cryptography-rust))
