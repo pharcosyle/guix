@@ -1709,7 +1709,7 @@ operate properly.")
     (build-system gnu-build-system)
     (inputs
      (append
-      (if (supported-package? rav1e) (list rav1e) '())
+      ;; (if (supported-package? rav1e) (list rav1e) '())
       (list dav1d
             fontconfig
             freetype
