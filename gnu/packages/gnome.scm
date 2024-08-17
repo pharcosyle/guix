@@ -5103,7 +5103,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "3.5.2")
+    (version "3.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5111,7 +5111,7 @@ as OpenStreetMap, OpenCycleMap, OpenAerialMap and Maps.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1clafjmp7bi187hixmdcxa10zlk8pclaywhw7gnbiy0v91jwjvaj"))))
+                "1an5n2sa70f40my4g20lk38s5ib99c32bzzg8gm91v9nbxr6f719"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
