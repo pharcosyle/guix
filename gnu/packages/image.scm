@@ -2549,8 +2549,8 @@ This package can be used to create @code{favicon.ico} files for web sites.")
      (list zlib libpng libjpeg-turbo gdk-pixbuf))
     (propagated-inputs
      (append
-      (if (member (%current-system) (package-transitive-supported-systems rav1e))
-        (list rav1e) '())
+      ;; (if (member (%current-system) (package-transitive-supported-systems rav1e))
+      ;;   (list rav1e) '())
       (list dav1d libaom)))
     (outputs (list "out"
                    "tools"  ; avifenc & avifdec
