@@ -444,7 +444,7 @@ them in order to efficiently transfer a minimal amount of data.")
            libyaml
            openssl
            python-jinja2
-           python-ply))
+           python-ply/compat))
     (synopsis "Camera stack and framework")
     (description "LibCamera is a complex camera support library for GNU+Linux,
 Android, and ChromeOS.")
