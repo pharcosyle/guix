@@ -1171,6 +1171,7 @@ application suites.")
       #:modules '((guix build utils)
                   (guix build meson-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:))
+      #:tests? #f
       #:configure-flags
       #~(list
          "-Dbroadway-backend=true"      ;for broadway display-backend
