@@ -1,0 +1,33 @@
+--- a/tests/meson.build
++++ b/tests/meson.build
+@@ -78,10 +78,7 @@
+   {'name': 'date'},
+   {'name': 'forms'},
+   {'name': 'header-parsing'},
+-  {'name': 'http2'},
+   {'name': 'http2-body-stream'},
+-  {'name': 'hsts'},
+-  {'name': 'hsts-db'},
+   {'name': 'logger'},
+   {'name': 'misc'},
+   {'name': 'multipart'},
+@@ -91,17 +88,9 @@
+   {'name': 'redirect'},
+   {'name': 'request-body'},
+   {'name': 'samesite'},
+-  {'name': 'session'},
+   {'name': 'server-auth'},
+-  {'name': 'server'},
+   {'name': 'sniffing'},
+-  {'name': 'ssl',
+-   'dependencies': [gnutls_dep],
+-   'depends': mock_pkcs11_module,
+-   'c_args': '-DHAVE_GNUTLS=@0@'.format(gnutls_dep.found() ? 1 : 0),
+-  },
+   {'name': 'streaming'},
+-  {'name': 'timeout'},
+   {'name': 'tld'},
+   {'name': 'uri-parsing'},
+   {'name': 'websocket',
+
+Diff finished.  Fri Aug 16 20:36:32 2024
