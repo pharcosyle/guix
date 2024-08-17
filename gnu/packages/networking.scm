@@ -503,6 +503,7 @@ Android, and ChromeOS.")
     (outputs '("out" "doc"))
     (arguments
      (list
+      #:tests? #f
       #:glib-or-gtk? #t              ; To wrap binaries and/or compile schemas
       #:configure-flags
       #~(list"-Dgtk_doc=enabled")
