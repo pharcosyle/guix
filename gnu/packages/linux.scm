@@ -6063,7 +6063,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.76")
+    (version "5.77")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6071,7 +6071,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0qxx1cjdvb1znzmb2h890zq0wkj343n8bkj27j1jvn4sj12wdqjm"))))
+                "04h82lfhxh4vd1pyavk1nfrcxc0z5qg5jmsgal9mh22a3pf2y0sx"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -6088,11 +6088,17 @@ Bluetooth audio output devices like headphones or loudspeakers.")
               (string-append "--with-udevdir=" #$output "/lib/udev"))
       #:make-flags
       #~(list
-         ;; Don't try to create /var and /etc.
-         "sysconfdir=/tmp/dummy"
-         "localstatedir=/tmp/dummy")
+         ;; Don't try to install conf files to the system, put them in the
+         ;; package output as examples. Alternatively change this to
+         ;; "sysconfdir=/tmp" and ditch them entirely.
+         (string-append "sysconfdir=" #$output "/etc"))
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'dont-create-/var+/etc
+            (lambda _
+              (substitute* "Makefile.in"
+                (("install-data-hook: bluetoothd-fix-permissions")
+                 "install-data-hook:"))))
           ;; Test unit/test-gatt fails unpredictably. Seems to be a timing
           ;; issue (discussion on upstream mailing list:
           ;; https://marc.info/?t=149578476300002&r=1&w=2)
@@ -6122,7 +6128,8 @@ Bluetooth audio output devices like headphones or loudspeakers.")
      (list gettext-minimal
            pkg-config
            python
-           python-docutils))
+           python-docutils
+           python-pygments))
     (inputs
      (list glib dbus eudev libical readline))
     (home-page "https://www.bluez.org/")
