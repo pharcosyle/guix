@@ -21457,6 +21457,23 @@ network support library.")
 Python. It uses LR parsing and does extensive error checking.")
       (license license:bsd-3))))
 
+;; The last official release, older than dinosaur dirt, that some packages
+;; still expect.
+(define-public python-ply/compat
+  (package
+    (inherit python-ply)
+    (version "3.11")
+    (source (origin
+              (inherit (package-source python-ply))
+              (uri (git-reference
+                    (inherit (origin-uri (package-source python-ply)))
+                    (commit version)))
+              (sha256
+               (base32
+                "0ai11bw549r4h7hfsrghdmsjn9xf4i6738akx3r0239vcf10hk1w"))))
+    (arguments
+     (list #:tests? #f))))
+
 (define-public python-tabulate
   (package
     (name "python-tabulate")
