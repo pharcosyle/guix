@@ -875,7 +875,6 @@ high-performance computing} clusters.")
                    curl
                    editline
                    libarchive
-                   libgc-for-nix
                    libgit2
                    libseccomp
                    libsodium
