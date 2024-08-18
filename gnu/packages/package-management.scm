@@ -819,7 +819,7 @@ high-performance computing} clusters.")
 (define-public nix
   (package
     (name "nix")
-    (version "2.16.1")
+    (version "2.24.2")
     (source
      (origin
        (method git-fetch)
@@ -828,7 +828,7 @@ high-performance computing} clusters.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rca8ljd33dmvh9bqk6sy1zxk97aawcr6k1f7hlm4d1cd9mrcw7x"))
+        (base32 "063yg69fx8s27q1zjihss0zci4744scj0cnf460yg11nn7kkzvlx"))
        (patches
         (search-patches "nix-dont-build-html-doc.diff"))))
     (build-system gnu-build-system)
@@ -837,6 +837,11 @@ high-performance computing} clusters.")
       #:configure-flags #~(list "--sysconfdir=/etc" "--enable-gc")
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "tests/unit/libexpr/nix_api_expr.cc"
+                (("/bin/sh")
+                 (search-input-file inputs "bin/sh")))))
           (replace 'install
             ;; Don't try & fail to create subdirectories in /etc, but keep them
             ;; in the output as examples.
@@ -848,6 +853,10 @@ high-performance computing} clusters.")
                        make-flags))))
           (replace 'check
             (lambda args
+              ;; At least one test issues a warning when it can't access HOME.
+              ;; Warings aren't errors and we might be able to get away
+              ;; without this but let's be safe.
+              (setenv "HOME" "/tmp")
               ;; A few tests expect the environment variable NIX_STORE to be
               ;; "/nix/store"
               (let ((original-NIX_STORE (getenv "NIX_STORE")))
@@ -876,13 +885,15 @@ high-performance computing} clusters.")
                    curl
                    editline
                    libarchive
-                   libgc
+                   libgc-for-nix
+                   libgit2
                    libseccomp
                    libsodium
                    lowdown
                    nlohmann-json
                    openssl
                    sqlite
+                   toml11
                    xz
                    zlib)
              (if (or (target-x86-64?)
