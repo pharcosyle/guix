@@ -1826,8 +1826,8 @@ modules for building a Wayland compositor.")
        (sha256
         (base32 "1m12nv6avgnz626h3giqp6gcx44w1wq6z0jy780mx8z255ic7q15"))))
     (propagated-inputs (modify-inputs (package-propagated-inputs wlroots)
-                         (delete libdisplay-info
-                                 libliftoff)))))
+                         (delete "libdisplay-info"
+                                 "libliftoff")))))
 
 (define-public wlroots-0.15
   (package
