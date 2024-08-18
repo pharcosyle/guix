@@ -132,6 +132,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
@@ -1743,10 +1744,10 @@ customizable status bars for their desktop environment.  It has built-in
 functionality to display information about the most commonly used services.")
     (license license:expat)))
 
-(define-public wlroots-0.17
+(define-public wlroots-0.18
   (package
-    (name "wlroots-0.17")
-    (version "0.17.4")
+    (name "wlroots-0.18")
+    (version "0.18.0")
     (source
      (origin
        (method git-fetch)
@@ -1755,7 +1756,7 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0niigjpy8xxrnw3v9b3bsksw2q3yy3qsa2xx0aazwpycw5zrff83"))))
+        (base32 "13avi2805wrfkghgc7ar273p61svmm85k3g3hg9bf2gaxsz6f91f"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1772,7 +1773,8 @@ functionality to display information about the most commonly used services.")
                   "\"" (search-input-file inputs "bin/Xwayland") "\""))))))))
     (propagated-inputs
      ;; As required by wlroots.pc.
-     (list libxkbcommon
+     (list lcms
+           libxkbcommon
            mesa
            pixman
            wayland
@@ -1810,6 +1812,21 @@ Wayland compositor")
     (description "wlroots is a set of pluggable, composable, unopinionated
 modules for building a Wayland compositor.")
     (license license:expat)))  ; MIT license
+
+(define-public wlroots-0.17
+  (package
+    (inherit wlroots-0.18)
+    (name "wlroots-0.17")
+    (version "0.17.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/wlroots/wlroots")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0niigjpy8xxrnw3v9b3bsksw2q3yy3qsa2xx0aazwpycw5zrff83"))))))
 
 (define-public wlroots wlroots-0.17)
 
