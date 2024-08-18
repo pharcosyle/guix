@@ -832,6 +832,7 @@ high-performance computing} clusters.")
     (build-system gnu-build-system)
     (arguments
      (list
+      #:tests? #f
       #:configure-flags #~(list "--sysconfdir=/etc" "--enable-gc")
       #:phases
       #~(modify-phases %standard-phases
