@@ -107,6 +107,22 @@ C or C++ programs, though that is not its primary goal.")
 
    (license (x11-style (string-append home-page "license.txt")))))
 
+;; TODO Temporary
+(define-public libgc-for-nix
+  (package
+    (inherit libgc)
+    (version "8.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://github.com/ivmai/bdwgc/releases"
+                                        "/download/v" version
+                                        "/gc-" version ".tar.gz")
+                         (string-append "https://www.hboehm.info/gc/gc_source"
+                                        "/gc-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1z5735vzzp69n7nl7wj0w56v3n51xbw2dxljg4rcfi2ckpj3y65r"))))))
+
 ;; TODO: Add a static output in libgc in the next rebuild cycle.
 (define-public libgc/static-libs
   (package/inherit
