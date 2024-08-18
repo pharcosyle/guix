@@ -1743,9 +1743,9 @@ customizable status bars for their desktop environment.  It has built-in
 functionality to display information about the most commonly used services.")
     (license license:expat)))
 
-(define-public wlroots
+(define-public wlroots-0.17
   (package
-    (name "wlroots")
+    (name "wlroots-0.17")
     (version "0.17.4")
     (source
      (origin
@@ -1811,9 +1811,11 @@ Wayland compositor")
 modules for building a Wayland compositor.")
     (license license:expat)))  ; MIT license
 
+(define-public wlroots wlroots-0.17)
+
 (define-public wlroots-0.16
   (package
-    (inherit wlroots)
+    (inherit wlroots-0.17)
     (name "wlroots-0.16")
     (version "0.16.2")
     (source
@@ -1825,7 +1827,7 @@ modules for building a Wayland compositor.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "1m12nv6avgnz626h3giqp6gcx44w1wq6z0jy780mx8z255ic7q15"))))
-    (propagated-inputs (modify-inputs (package-propagated-inputs wlroots)
+    (propagated-inputs (modify-inputs (package-propagated-inputs wlroots-0.17)
                          (delete "libdisplay-info"
                                  "libliftoff")))))
 
