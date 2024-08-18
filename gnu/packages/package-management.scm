@@ -885,7 +885,7 @@ high-performance computing} clusters.")
                    curl-no-pkgconfig-reqs
                    editline
                    libarchive
-                   libgc-for-nix
+                   libgc
                    libgit2
                    libseccomp
                    libsodium
