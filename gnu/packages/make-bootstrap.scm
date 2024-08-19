@@ -87,12 +87,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                   "--enable-static-nss"
                   ,flags))))
 
-      ;; Make sure to build glibc with the same compiler version as the rest
-      ;; of the bootstrap.  Otherwise it fails to statically link on aarch64.
-      (native-inputs
-       `(("gcc" ,gcc-7)
-         ,@(package-native-inputs base)))
-
       ;; Remove the 'debug' output to allow bit-reproducible builds (when the
       ;; 'debug' output is used, ELF files end up with a .gnu_debuglink, which
       ;; includes a CRC of the corresponding debugging symbols; those symbols
@@ -103,13 +97,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (mlambdaq (glibc)
     "Return a variant of GCC that uses the bootstrap variant of GLIBC."
     (package
-      (inherit gcc-7)
+      (inherit gcc)
       (outputs '("out")) ;all in one so libgcc_s is easily found
       (inputs
        `( ;; Distinguish the name so we can refer to it below.
          ("bootstrap-libc" ,(glibc-for-bootstrap glibc))
          ("libc:static" ,(glibc-for-bootstrap glibc) "static")
-         ,@(package-inputs gcc-7))))))
+         ,@(package-inputs gcc))))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
@@ -148,7 +142,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                              (cons (search-path-specification
                                     (variable "CROSS_CPLUS_INCLUDE_PATH")
                                     (files '("include")))
-                                   (package-search-paths gcc-7)))))
+                                   (package-search-paths gcc)))))
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap glibc))
@@ -273,9 +267,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                 (inputs '())                   ;remove PCRE, which is optional
                 (arguments
                  (substitute-keyword-arguments (package-arguments grep)
+                   ((#:configure-flags flags #~'())
+                    #~(cons "--disable-perl-regexp"
+                            (delete "--enable-perl-regexp" #$flags)))
                    ((#:phases phases)
-                    `(modify-phases ,phases
-                       (delete 'fix-egrep-and-fgrep)))))))
+                    #~(modify-phases #$phases
+                        (delete 'fix-egrep-and-fgrep)))))))
         (finalize (compose static-package
                            package-with-relocatable-glibc)))
     (append (map finalize
@@ -451,19 +448,20 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            (make-stripped-libc (assoc-ref %outputs "out")
                                (assoc-ref %build-inputs "libc")
                                (assoc-ref %build-inputs "kernel-headers")))))
-      (inputs `(("kernel-headers"
-                 ,(if (or (and (%current-target-system)
-                               (target-hurd? (%current-target-system)))
-                          (string-suffix? "-hurd" (%current-system)))
-                      gnumach-headers
-                      linux-libre-headers))
-                ("libc" ,(let ((target (%current-target-system)))
-                           (if target
-                               (glibc-for-bootstrap
-                                (parameterize ((%current-target-system #f))
-                                  (cross-libc target)))
-                               glibc)))))
-      (native-inputs '())
+      (native-inputs
+       `(("libc" ,(let ((target (%current-target-system)))
+                    (if target
+                        (glibc-for-bootstrap
+                         (parameterize ((%current-target-system #f))
+                           (cross-libc target)))
+                        glibc)))))
+      (inputs
+       `(("kernel-headers"
+          ,(if (or (and (%current-target-system)
+                        (target-hurd? (%current-target-system)))
+                   (string-suffix? "-hurd" (%current-system)))
+               gnumach-headers
+               linux-libre-headers))))
       (propagated-inputs '())
 
       ;; Only one output.
@@ -472,11 +470,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
   (package-with-relocatable-glibc
-   (package (inherit gcc-7)
+   (package (inherit gcc)
      (name "gcc-static")
      (outputs '("out"))                           ; all in one
      (arguments
-      (substitute-keyword-arguments (package-arguments gcc-7)
+      (substitute-keyword-arguments (package-arguments gcc)
         ((#:modules modules %default-gnu-modules)
          `((srfi srfi-1)
            (srfi srfi-26)
@@ -527,7 +525,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
      (inputs
       `(("zlib:static" ,zlib "static")
         ("isl:static" ,isl "static")
-        ,@(package-inputs gcc-7)))
+        ,@(package-inputs gcc)))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
@@ -540,13 +538,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("gmp-native" ,gmp)
             ("mpfr-native" ,mpfr)
             ("mpc-native" ,mpc)
-            ,@(package-native-inputs gcc-7))
-          (package-native-inputs gcc-7))))))
+            ,@(package-native-inputs gcc))
+          (package-native-inputs gcc))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
   (package
-    (inherit gcc-7)
+    (inherit gcc)
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)

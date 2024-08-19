@@ -2464,27 +2464,34 @@ exec " gcc "/bin/" program
     (source (bootstrap-origin (package-source perl)))
     (inputs (%boot0-inputs))
     (arguments
-     `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile
-       #:validate-runpath? #f
+     (append (list #:implicit-inputs? #f
+                   #:guile %bootstrap-guile
+                   #:validate-runpath? #f
 
-       ;; At the very least, this must not depend on GCC & co.
-       #:disallowed-references ,(list %bootstrap-binutils)
+                   ;; At the very least, this must not depend on GCC & co.
+                   #:disallowed-references (list %bootstrap-binutils))
+             (substitute-keyword-arguments (package-arguments perl)
+               ((#:phases phases)
+                #~(modify-phases #$phases
+                    ;; Pthread support is missing in the bootstrap compiler
+                    ;; (broken spec file), so disable it.
+                    (add-before 'configure 'disable-pthreads
+                      (lambda _
+                        (substitute* "Configure"
+                          (("^libswanted=(.*)pthread" _ before)
+                           (string-append "libswanted=" before)))))))
+               ;; Do not configure with '-Dusethreads' since pthread
+               ;; support is missing.
+               ((#:configure-flags configure-flags)
+                #~(delete "-Dusethreads"
 
-       ,@(substitute-keyword-arguments (package-arguments perl)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               ;; Pthread support is missing in the bootstrap compiler
-               ;; (broken spec file), so disable it.
-               (add-before 'configure 'disable-pthreads
-                 (lambda _
-                   (substitute* "Configure"
-                     (("^libswanted=(.*)pthread" _ before)
-                      (string-append "libswanted=" before)))))))
-           ;; Do not configure with '-Dusethreads' since pthread
-           ;; support is missing.
-           ((#:configure-flags configure-flags)
-            `(delete "-Dusethreads" ,configure-flags)))))))
+                          ;; On i586-gnu, linking fails with "undefined
+                          ;; reference to `__stack_chk_guard'" so avoid
+                          ;; '-fstack-protector'.
+                          #$(if (target-hurd?)
+                                #~(cons* "-A" "ccflags=-fno-stack-protector"
+                                         #$configure-flags)
+                                configure-flags))))))))
 
 (define m4-boot0
   (package
@@ -3415,12 +3422,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; built before gzip.
   (let ((grep (with-boot5 (package-with-bootstrap-guile grep))))
     (package/inherit grep
-                     (arguments (substitute-keyword-arguments
-                                  (strip-keyword-arguments
-                                    '(#:configure-flags)
-                                    (package-arguments grep))))
-                     (inputs (alist-delete "pcre2" (package-inputs grep)))
-                     (native-inputs `(("perl" ,perl-boot0))))))
+      (arguments (strip-keyword-arguments '(#:configure-flags)
+                                          (package-arguments grep)))
+      (inputs (alist-delete "pcre2" (package-inputs grep)))
+      (native-inputs `(("perl" ,perl-boot0))))))
 
 (define xz-final
   ;; The final xz.  We need to replace the bootstrap xz with a newer one

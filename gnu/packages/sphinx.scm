@@ -119,6 +119,8 @@
            texlive-amsfonts             ;amsmath, amssymb, amstext
            texlive-amsmath
            texlive-booktabs
+           texlive-scheme-basic         ;for a valid TeX Live tree
+           texlive-anyfontsize
            texlive-capt-of
            texlive-cm-super
            texlive-cmap

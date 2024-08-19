@@ -1330,10 +1330,13 @@ exec -a \"$0\" \"~a\" \"$@\""
       (inputs
        (modify-inputs (package-inputs base-rust)
                       (prepend curl libffi `(,nghttp2 "lib") zlib)))
-      ;; Add test inputs.
-      (native-inputs (cons* `("gdb" ,gdb/pinned)
-                            `("procps" ,procps)
-                            (package-native-inputs base-rust))))))
+      (native-inputs (cons*
+                      ;; Keep in sync with the llvm used to build rust.
+                      `("clang-source" ,(package-source clang-runtime-15))
+                      ;; Add test inputs.
+                      `("gdb" ,gdb/pinned)
+                      `("procps" ,procps)
+                      (package-native-inputs base-rust))))))
 
 (define*-public (make-rust-sysroot target)
   (make-rust-sysroot/implementation target rust))
