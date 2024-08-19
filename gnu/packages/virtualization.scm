@@ -35,6 +35,7 @@
 ;;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
 ;;; Copyright © 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2024 Raven Hallsby <karl@hallsby.com>
+;;; Copyright © 2024 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -846,7 +847,7 @@ firmware blobs.  You can
              ;; hard coded PATH.  Patch so it works on Guix System.
              (substitute* "src/Ganeti/Constants.hs"
                (("/sbin:/bin:/usr/sbin:/usr/bin")
-                "/run/setuid-programs:/run/current-system/profile/sbin:\
+                "/run/privileged/bin:/run/current-system/profile/sbin:\
 /run/current-system/profile/bin"))))
          (add-after 'bootstrap 'patch-sphinx-version-detection
            (lambda _
@@ -1663,15 +1664,15 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "8.6.0")
+    (version "10.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/python/libvirt-python-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0wa86jliq71x60dd4vyzsj4lcrb82i5qsgxz9azvwgsgi9j9mx41"))))
-    (build-system python-build-system)
+        (base32 "1r3rvkgnc6j813mcdr7fdfnxx58imzl16azjkg54yy2gfayrq9g4"))))
+    (build-system pyproject-build-system)
     (inputs
      (list libvirt))
     (propagated-inputs

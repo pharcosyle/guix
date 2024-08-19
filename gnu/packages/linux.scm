@@ -5377,7 +5377,7 @@ thanks to the use of namespaces.")
                   (substitute* (find-files "libexec/cli" "\\.exec$")
                     (("\\$SINGULARITY_libexecdir/singularity/bin/([a-z]+)-suid"
                       _ program)
-                     (string-append "/run/setuid-programs/singularity-"
+                     (string-append "/run/privileged/bin/singularity-"
                                     program "-helper")))
 
                   ;; These squashfs mount options are apparently no longer
@@ -8920,7 +8920,7 @@ comparing system environments.")
 (define-public libfabric
   (package
     (name "libfabric")
-    (version "1.19.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -8928,7 +8928,7 @@ comparing system environments.")
         (string-append "https://github.com/ofiwg/libfabric/releases/download/v"
                        version "/libfabric-" version ".tar.bz2"))
        (sha256
-        (base32 "17pg0fb4fa77r1bmp0xk535m8n8fadpfdg93cb280ghhx55pck7i"))))
+        (base32 "1znmw83rmippv0fwz0x7lgylfk17dr9ckll8lrm4z7kclspnqpj8"))))
     (build-system gnu-build-system)
     (inputs `(("rdma-core" ,rdma-core)
               ,@(match (%current-system)

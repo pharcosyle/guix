@@ -452,15 +452,15 @@ using NumPy-like idioms.")
 (define-public python-xmldiff
   (package
     (name "python-xmldiff")
-    (version "2.4")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xmldiff" version))
        (sha256
-        (base32 "0qygxi3z1jwb0471k7bh5gcqf7wqm4xhrkmwhf36gjgjw46a5gh5"))))
+        (base32 "18k8kiml9wpl4wf9lmi0j6ys21lbdv8fa8r9qrzdsrh3h0ghp4f0"))))
     (build-system python-build-system)
-    (propagated-inputs (list python-lxml python-six))
+    (propagated-inputs (list python-lxml))
     (home-page "https://github.com/Shoobx/xmldiff")
     (synopsis "Creates diffs of XML files")
     (description "This Python tool figures out the differences between two
@@ -901,14 +901,14 @@ that they are acceptable to modern bowsers")
 (define-public python-fire
   (package
     (name "python-fire")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "fire" version))
        (sha256
         (base32
-         "1imc9ais15dz3gmphawql86l9av5dykbp4hz0883k5n8k2gd9c56"))))
+         "0rmaw26xjndr7makpiqv4h9aav9xf2h280w0khqc1lyddscmpv2l"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -2136,7 +2136,7 @@ task of adding retry behavior to just about anything.")
 (define-public python-pytelegrambotapi
   (package
     (name "python-pytelegrambotapi")
-    (version "4.21.0")
+    (version "4.22.0")
     (source
      (origin
        (method git-fetch)
@@ -2145,7 +2145,7 @@ task of adding retry behavior to just about anything.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14df0mll9q8x4fka4lihmz4vdlgrvc4i13bspxnig2qz1b3k4ivv"))))
+        (base32 "0mic9wk6xg7p2ca7b03fc19l86yc9bkciq7kp8l9xvzzzmg4rzw4"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -7206,24 +7206,24 @@ via commands such as @command{rst2man}, as well as supporting Python code.")
 (define-public python-docx
   (package
     (name "python-docx")
-    (version "0.8.11")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "python-docx" version))
+              (uri (pypi-uri "python_docx" version))
               (sha256
                (base32
-                "1i7bxghb7knlyjain101qg1jmmz2b6qj03bi3vfxhvcml0rx418i"))))
+                "1z9ffsvksaaxr90ijzq4k3adzb6p5ipy2j3rrbfjl05rjlpg5w8c"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list behave
-           python-flake8
-           python-mock
            python-pyparsing
            python-pytest
+           python-pytest-cov
+           python-pytest-xdist
            python-setuptools
            python-wheel))
     (propagated-inputs
-     (list python-lxml))
+     (list python-lxml python-typing-extensions))
     (home-page "https://github.com/python-openxml/python-docx/")
     (synopsis "Python library to create and modify Microsoft Word documents")
     (description "This Python library can be used to create and update
@@ -16526,13 +16526,13 @@ your package is installed, via @code{pkg_resources} (part of
 (define-public python-filetype
   (package
     (name "python-filetype")
-    (version "1.0.8")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "filetype" version))
        (sha256
-        (base32 "05mkinkcn36v1cnb5hzay3zxmv7jmmflckxxp08rgzbkkf3i9pvp"))))
+        (base32 "1nxa91szfbhhbhvdwj06jz8zghzwgb9lf0v6aj61vx2b8zb6rdb6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -17437,7 +17437,7 @@ JSON Reference and JSON Pointer.")
 (define-public python-fastbencode
   (package
     (name "python-fastbencode")
-    (version "0.0.7")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
@@ -17446,7 +17446,7 @@ JSON Reference and JSON Pointer.")
        ;; Delete pre-generated Cython C files.
        (snippet '(for-each delete-file (find-files "." "\\.c$")))
        (sha256
-        (base32 "1r66w3vpmvfmssshjpgqaj2m14c8p94nymr96mwn61idajz9mg5n"))))
+        (base32 "15x1in22gwam7wwga5lbj1pd8hc9jk741pia3pv1m29n2xywpq2z"))))
     (build-system python-build-system)
     (native-inputs (list python-cython))
     (home-page "https://github.com/breezy-team/fastbencode")

@@ -367,14 +367,14 @@ Conferencing} and @acronym{ICB, Internet Citizen's Band}.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "4.3.5")
+    (version "4.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1qsbdg3c0787xs0vwbxsyylf5fvz4cazrzlnwj2mnp6s6b4c9nz6"))))
+                "16bwch9k6sp7hkgy9pzaw8jrkhzb2yi64m299c7w9p9j2lwhd2w7"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -1096,21 +1096,21 @@ what.")
 (define-public soju
   (package
     (name "soju")
-    (version "0.7.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://git.sr.ht/~emersion/soju")
+             (url "https://codeberg.org/emersion/soju")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a0mp8f5i1ajh67y6fasmzgca3w1ccaiz19sx87rflbyi1mrhdlz"))))
+        (base32 "10qc0g78yhsg6fnnb046jr0s592isw0r0mvydy6frgnx9rxac6k6"))))
     (build-system go-build-system)
     (arguments
      (list
       #:install-source? #f
-      #:import-path "git.sr.ht/~emersion/soju"
+      #:import-path "codeberg.org/emersion/soju"
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'adjust-makefile
@@ -1126,9 +1126,7 @@ what.")
           (replace 'build
             (lambda* (#:key import-path #:allow-other-keys)
               (with-directory-excursion (string-append "src/" import-path)
-                ;; To use an alternative SQLite library that does not require
-                ;; CGO and build with PAM.
-                (setenv "GOFLAGS" "-v -x -trimpath -tags=moderncsqlite -tags=pam")
+                (setenv "GOFLAGS" "-v -x -trimpath -tags=pam")
                 (setenv "SYSCONFDIR" (string-append #$output "/etc"))
                 (invoke "make"))))
           (replace 'install
@@ -1143,7 +1141,7 @@ what.")
            go-github-com-emersion-go-sasl
            go-github-com-lib-pq
            go-github-com-mattn-go-sqlite3
-           go-github-com-msteinert-pam
+           go-github-com-msteinert-pam-v2
            go-github-com-pires-go-proxyproto
            go-github-com-prometheus-client-golang
            go-github-com-sherclockholmes-webpush-go

@@ -231,7 +231,7 @@ a human-readable byte format.")
 (define-public go-git-sr-ht-emersion-go-scfg
   (package
     (name "go-git-sr-ht-emersion-go-scfg")
-    (version "0.0.0-20211215104734-c2c7a15d6c99")
+    (version "0.0.0-20240128091534-2ae16e782082")
     (source
      (origin
        (method git-fetch)
@@ -240,7 +240,7 @@ a human-readable byte format.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02gn8hz8zfv8y0krysx2wv951gw8hmhdfqf1ysidwm7i293365w4"))))
+        (base32 "1gxhg40q4md3lj1wrrnms0jhyqsxhx2hcv6sm5yjbbqana5x26mx"))))
     (build-system go-build-system)
     (arguments
      (list #:import-path "git.sr.ht/~emersion/go-scfg"))
@@ -1359,7 +1359,7 @@ reflection.")
   (package
     (inherit go-github-com-cheggaaa-pb)
     (name "go-github-com-cheggaaa-pb-v3")
-    (version "3.0.8")
+    (version "3.1.5")
     (source
      (origin
        (method git-fetch)
@@ -1368,7 +1368,7 @@ reflection.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0d701s2niy39r650d1phjw19h4l27b1yfc2ih6s31f56b3zzqspx"))))
+        (base32 "1mf86iav69qpyg0nd54g0f50yigjkfzdhaqzkbn4yfb3fnb75n2z"))))
     (arguments
      (list
       #:import-path "github.com/cheggaaa/pb/v3"

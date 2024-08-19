@@ -771,6 +771,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/mapped-devices.scm			\
   %D%/system/nss.scm				\
   %D%/system/pam.scm				\
+  %D%/system/privilege.scm			\
   %D%/system/setuid.scm				\
   %D%/system/shadow.scm				\
   %D%/system/uuid.scm				\
@@ -1514,6 +1515,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
+  %D%/packages/patches/heatshrink-add-cmake.patch		\
   %D%/packages/patches/heimdal-CVE-2022-45142.patch		\
   %D%/packages/patches/helm-fix-gcc-9-build.patch		\
   %D%/packages/patches/highlight-gui-data-dir.patch		\
@@ -1534,6 +1536,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-use-system-wide-dir.patch		\
   %D%/packages/patches/icedtea-7-hotspot-aarch64-use-c++98.patch	\
   %D%/packages/patches/icedtea-7-hotspot-pointer-comparison.patch	\
+  %D%/packages/patches/icu4c-icu-22132-fix-vtimezone.patch	\
   %D%/packages/patches/icu4c-fix-TestHebrewCalendarInTemporalLeapYear.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/id3lib-UTF16-writing-bug.patch			\
@@ -1667,7 +1670,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-length-check.patch		\
   %D%/packages/patches/libmad-md_size.patch			\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
-  %D%/packages/patches/libmateweather-use-TZDIR.patch		\
   %D%/packages/patches/libmp4v2-c++11.patch			\
   %D%/packages/patches/libmpeg2-arm-private-symbols.patch	\
   %D%/packages/patches/libmpeg2-global-symbol-test.patch	\
@@ -1879,9 +1881,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/pokerth-boost.patch			\
   %D%/packages/patches/ppsspp-disable-upgrade-and-gold.patch		\
   %D%/packages/patches/procps-strtod-test.patch                 \
-  %D%/packages/patches/prusa-slicer-boost-fixes.patch		\
   %D%/packages/patches/prusa-slicer-fix-tests.patch		\
-  %D%/packages/patches/prusa-slicer-with-cereal-1.3.1.patch	\
+  %D%/packages/patches/prusa-wxwidgets-makefile-fix.patch	\
   %D%/packages/patches/pthreadpool-system-libraries.patch	\
   %D%/packages/patches/python-3.12-fix-tests.patch		\
   %D%/packages/patches/python-accupy-use-matplotx.patch		\
@@ -2305,7 +2306,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xplanet-1.3.1-libimage_gif.c.patch	\
   %D%/packages/patches/xplanet-1.3.1-xpUtil-Add2017LeapSecond.cpp.patch	\
   %D%/packages/patches/xpra-6.0-systemd-run.patch		\
-  %D%/packages/patches/xpra-6.0-install_libs.patch		\
+  %D%/packages/patches/xpra-6.1-install_libs.patch		\
   %D%/packages/patches/xsane-fix-memory-leak.patch		\
   %D%/packages/patches/xsane-fix-pdf-floats.patch		\
   %D%/packages/patches/xsane-fix-snprintf-buffer-length.patch	\

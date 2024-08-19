@@ -5204,8 +5204,8 @@ Cloud.")
     (license license:expat)))
 
 (define-public guix-data-service
-  (let ((commit "b5fbde5ac832e34987a05b1445c1c465c19d5340")
-        (revision "52"))
+  (let ((commit "eeda1bf33b42a81a8a295c9e498f3bb44e95d6f1")
+        (revision "53"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -5217,7 +5217,7 @@ Cloud.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1dp26bj14jaac9f5332pd6hasm3wr1hg9wrbjm9m8wb7cdll9h2p"))))
+                  "1dvlzm359iq6dghr7q1prqlkngxcy1198nb0xbv5rpwjp69j2vg9"))))
       (build-system gnu-build-system)
       (arguments
        (list
@@ -5760,7 +5760,7 @@ NetSurf project.")
 (define-public ikiwiki
   (package
     (name "ikiwiki")
-    (version "3.20200202.3")
+    (version "3.20200202.4")
     (source
      (origin
        (method git-fetch)
@@ -5770,7 +5770,7 @@ NetSurf project.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fphyqzlk9y8v9s89ypsmrnbhyymzrpc2w0liy0n4knc7kk2pabq"))
+         "04ijislp7png18bg1carb71xk3sij9x5xpizfkxp6jbip6wdxsml"))
        (snippet
         '(begin
            ;; The POT file requires write permission during the build
