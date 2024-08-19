@@ -8498,7 +8498,7 @@ users.")
            vala))
     (inputs
      (list audit
-           curl-no-pkgconfig-reqs
+           curl
            cyrus-sasl
            dbus-glib
            dnsmasq
