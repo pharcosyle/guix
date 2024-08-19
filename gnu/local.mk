@@ -294,6 +294,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/fvwm.scm				\
   %D%/packages/game-development.scm		\
   %D%/packages/games.scm			\
+  %D%/packages/gamescope.scm			\
   %D%/packages/gawk.scm				\
   %D%/packages/gcal.scm				\
   %D%/packages/gcc.scm				\
