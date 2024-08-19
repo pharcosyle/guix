@@ -1250,16 +1250,15 @@ safety and thread safety guarantees.")
                                       "                "
                                       "rustflags.arg(\"-Clink-args=-Wl,-rpath="
                                       out "/lib\");\n"))))))
-              (add-after 'unpack 'copy-compiler-rt-source
-                ;; Note: Keep the clang-runtime version in sync with the LLVM
-                ;; version used to build Rust.
-                (lambda _
-                  (let ((compiler-rt "src/llvm-project/compiler-rt"))
-                    (mkdir-p compiler-rt)
-                    (copy-recursively
-                     (string-append #$(package-source clang-runtime-17)
-                                    "/compiler-rt")
-                     compiler-rt))))
+              (add-after 'unpack 'unpack-profiler-rt
+                ;; Copy compiler-rt sources to where libprofiler_builtins looks
+                ;; for its vendored copy.
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (mkdir-p "src/llvm-project/compiler-rt")
+                  (copy-recursively
+                   (string-append (assoc-ref inputs "clang-source")
+                                  "/compiler-rt")
+                   "src/llvm-project/compiler-rt")))
               (add-after 'configure 'enable-profiler
                 (lambda _
                   (substitute* "config.toml"
