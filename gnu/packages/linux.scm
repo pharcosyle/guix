@@ -511,62 +511,44 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-;; The current "mainline" kernel.
+;; The current "stable" kernels. That is, the most recently released major
+;; versions that are still supported upstream.
 
-(define-public linux-libre-6.10-version "6.10.2")
+(define-public linux-libre-6.10-version "6.10.5")
 (define-public linux-libre-6.10-gnu-revision "gnu")
 (define deblob-scripts-6.10
   (linux-libre-deblob-scripts
    linux-libre-6.10-version
    linux-libre-6.10-gnu-revision
    (base32 "1j43v1z4g1f681wvna2dh9vxaz0pgni0wchbh1xhyhhfcqbm1f47")
-   (base32 "00bx8g1ijswi9zypmwqhxsk9fdkzmarxdbdx5h6gpn7z4d1qly3j")))
+   (base32 "1zmgsgzrcsjzjzhgb12drc0f42ag8xak6z7zzx324f0wrf4i67zf")))
 (define-public linux-libre-6.10-pristine-source
   (let ((version linux-libre-6.10-version)
-        (hash (base32 "0w4vsb0c8bp34j90l89qms50nx6r6mmyf23jbvyar9fbv46m5n3k")))
+        (hash (base32 "02yckkh6sxvcrwzbqgmw4jhqhxmbvz87xn9wm6bwwka3w2r9x41h")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.10)))
-
-;; The current "stable" kernels. That is, the most recently released major
-;; versions that are still supported upstream.
-
-(define-public linux-libre-6.9-version "6.9.12")
-(define-public linux-libre-6.9-gnu-revision "gnu")
-(define deblob-scripts-6.9
-  (linux-libre-deblob-scripts
-   linux-libre-6.9-version
-   linux-libre-6.9-gnu-revision
-   (base32 "1izfwmk0mxikx3bblcwiyrxdd4bg9v0jsph3i8gvrpjb7kw0lhna")
-   (base32 "18vfz1fx4vjssfh1w7aqfjf91y2g34a2qnzbl9pyawa7qnqxq33n")))
-(define-public linux-libre-6.9-pristine-source
-  (let ((version linux-libre-6.9-version)
-        (hash (base32 "08ngskni7d9wi93vlwcmbdg7sb2jl1drhhzn62k9nsrg1r7crrss")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-6.9)))
-
 
 ;; The "longterm" kernels — the older releases with long-term upstream support.
 ;; Here are the support timelines:
 ;; <https://www.kernel.org/category/releases.html>
 
-(define-public linux-libre-6.6-version "6.6.43")
+(define-public linux-libre-6.6-version "6.6.46")
 (define-public linux-libre-6.6-gnu-revision "gnu")
 (define deblob-scripts-6.6
   (linux-libre-deblob-scripts
    linux-libre-6.6-version
    linux-libre-6.6-gnu-revision
    (base32 "1a28pdl645bj4d8gac71dmwmll6a2kgd3k7gkpfvi94yqkzd9r2z")
-   (base32 "15xb4miirfmi1khlq4zhb8zmmh82f41jhsfbsfpv8v98yfka2nmb")))
+   (base32 "0kpkmdmrw9bnypdd0z489smh8bbwgg1ii301g1ynqfdkzd2ca1iq")))
 (define-public linux-libre-6.6-pristine-source
   (let ((version linux-libre-6.6-version)
-        (hash (base32 "0pha226h5011kl5r2iiddxi0rib3xraslmcdjjnil2kq38d3pn0a")))
+        (hash (base32 "1wj5vn8dj0ln85n1xr5xi0hw35zpirm254fsxr6diiyrjqir6bq5")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.6)))
 
-(define-public linux-libre-6.1-version "6.1.102")
+(define-public linux-libre-6.1-version "6.1.105")
 (define-public linux-libre-6.1-gnu-revision "gnu")
 (define deblob-scripts-6.1
   (linux-libre-deblob-scripts
@@ -576,7 +558,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
    (base32 "11jbnj0d3262grf9vkn0668kvfxifxw98ccvn81wkaykll01k5nx")))
 (define-public linux-libre-6.1-pristine-source
   (let ((version linux-libre-6.1-version)
-        (hash (base32 "1v4p4i8pfg4i6v90dr7m65npkxjnqv3fxcj8zs3pbb8y84xzk98v")))
+        (hash (base32 "162yz32jqd2xkswsd1jxmjq4yhzmhzn17snicad35x51k3vaigr3")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-6.1)))
@@ -671,11 +653,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-6.10-source
   (source-with-patches linux-libre-6.10-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-6.9-source
-  (source-with-patches linux-libre-6.9-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
@@ -799,11 +776,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              linux-libre-6.10-gnu-revision
                              linux-libre-6.10-source))
 
-(define-public linux-libre-headers-6.9
-  (make-linux-libre-headers* linux-libre-6.9-version
-                             linux-libre-6.9-gnu-revision
-                             linux-libre-6.9-source))
-
 (define-public linux-libre-headers-6.6
   (make-linux-libre-headers* linux-libre-6.6-version
                              linux-libre-6.6-gnu-revision
@@ -841,6 +813,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             "13zqdcm4664vh7g57sxbfrlpsxm7zrma72mxdfdz7d9yndy2gfv8"))
 
 (define-public linux-libre-headers linux-libre-headers-5.15.49)
+;; linux-libre-headers-latest points to the latest headers package
+;; and should be used as a dependency for packages that depend on
+;; the headers.
+(define-public linux-libre-headers-latest linux-libre-headers-6.10)
 
 
 ;;;
@@ -1161,20 +1137,6 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
-(define-public linux-libre-6.9
-  (make-linux-libre* linux-libre-6.9-version
-                     linux-libre-6.9-gnu-revision
-                     linux-libre-6.9-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux"
-                       "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
-                     #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-6.9-version)
-(define-public linux-libre-gnu-revision    linux-libre-6.9-gnu-revision)
-(define-public linux-libre-pristine-source linux-libre-6.9-pristine-source)
-(define-public linux-libre-source          linux-libre-6.9-source)
-(define-public linux-libre                 linux-libre-6.9)
-
 (define-public linux-libre-6.10
   (make-linux-libre* linux-libre-6.10-version
                      linux-libre-6.10-gnu-revision
@@ -1182,6 +1144,12 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
                      '("x86_64-linux" "i686-linux" "armhf-linux"
                        "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
                      #:configuration-file kernel-config))
+
+(define-public linux-libre-version         linux-libre-6.10-version)
+(define-public linux-libre-gnu-revision    linux-libre-6.10-gnu-revision)
+(define-public linux-libre-pristine-source linux-libre-6.10-pristine-source)
+(define-public linux-libre-source          linux-libre-6.10-source)
+(define-public linux-libre                 linux-libre-6.10)
 
 (define-public linux-libre-6.6
   (make-linux-libre* linux-libre-6.6-version
@@ -10073,7 +10041,7 @@ persistent over reboots.")
                                 "linux/posix_types.h"
                                 "linux/stddef.h"
                                 "linux/types.h"))))))))
-    (native-inputs (list linux-libre-headers-6.9 pkg-config))
+    (native-inputs (list linux-libre-headers-latest pkg-config))
     (propagated-inputs (list elfutils zlib)) ;in Requires.private of libbpf.pc
     (home-page "https://github.com/libbpf/libbpf")
     (synopsis "BPF CO-RE (Compile Once – Run Everywhere)")
