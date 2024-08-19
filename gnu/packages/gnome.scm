@@ -7289,6 +7289,7 @@ almost all of them.")
                             (number->string (parallel-job-count))
                             "1"))
                 (setenv "XDG_CACHE_HOME" (getcwd))
+                (setenv "XDG_RUNTIME_DIR" (getcwd))
                 ;; There are too many directories in XDG_DATA_DIRS, so
                 ;; dbus-daemon fails to start.  We work around this by
                 ;; creating a single union directory of all these directories.
