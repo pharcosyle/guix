@@ -95,6 +95,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
+  #:use-module (gnu packages golang-web)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
@@ -3583,7 +3584,7 @@ a text snippet), using @code{libphonenumber}.")
        (method git-fetch)
        (uri
         (git-reference
-         (url "https://git.sr.ht/~taiite/senpai")
+         (url "https://git.sr.ht/~delthas/senpai")
          (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -3621,7 +3622,7 @@ a text snippet), using @code{libphonenumber}.")
                          go-golang-org-x-time
                          go-mvdan-cc-xurls
                          scdoc))
-    (home-page "https://sr.ht/~taiite/senpai")
+    (home-page "https://sr.ht/~delthas/senpai")
     (synopsis "Modern terminal IRC client")
     (description
      "@code{senpai} is an IRC client that works best with bouncers.")
