@@ -1258,15 +1258,16 @@ safety and thread safety guarantees.")
                                       "                "
                                       "self.rustflags.arg(\"-Clink-args=-Wl,-rpath="
                                       out "/lib\");\n"))))))
-              (add-after 'unpack 'unpack-profiler-rt
-                ;; Copy compiler-rt sources to where libprofiler_builtins looks
-                ;; for its vendored copy.
-                (lambda* (#:key inputs #:allow-other-keys)
-                  (mkdir-p "src/llvm-project/compiler-rt")
-                  (copy-recursively
-                   (string-append (assoc-ref inputs "clang-source")
-                                  "/compiler-rt")
-                   "src/llvm-project/compiler-rt")))
+              (add-after 'unpack 'copy-compiler-rt-source
+                ;; Note: Keep the clang-runtime version in sync with the LLVM
+                ;; version used to build Rust.
+                (lambda _
+                  (let ((compiler-rt "src/llvm-project/compiler-rt"))
+                    (mkdir-p compiler-rt)
+                    (copy-recursively
+                     (string-append #$(package-source clang-runtime-18)
+                                    "/compiler-rt")
+                     compiler-rt))))
               (add-after 'configure 'enable-profiler
                 (lambda _
                   (substitute* "config.toml"
@@ -1356,8 +1357,6 @@ exec -a \"$0\" \"~a\" \"$@\""
        (modify-inputs (package-inputs base-rust)
                       (prepend curl-no-pkgconfig-reqs libffi `(,nghttp2 "lib") zlib)))
       (native-inputs (cons*
-                      ;; Keep in sync with the llvm used to build rust.
-                      `("clang-source" ,(package-source clang-runtime-18))
                       ;; Add test inputs.
                       `("gdb" ,gdb/pinned)
                       `("procps" ,procps)
