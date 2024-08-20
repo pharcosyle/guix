@@ -4389,16 +4389,17 @@ runs in user space and provides a more responsive and configurable alternative
 to the in-kernel OOM killer.")
     (license license:expat)))
 
+(define %eudev-commit "e98a66787deb8751d8d7c8f92257bdb38aaa9050")
 (define-public eudev
   (package
     (name "eudev")
     ;; (version "3.2.14")
-    (version (git-version "3.2.14" "0" "e98a66787deb8751d8d7c8f92257bdb38aaa9050"))
+    (version (git-version "3.2.14" "0" %eudev-commit))
     (source (origin
               (method git-fetch)
               (uri (git-reference (url "https://github.com/gentoo/eudev")
                                   ;; (commit (string-append "v" version))
-                                  (commit "e98a66787deb8751d8d7c8f92257bdb38aaa9050")))
+                                  (commit %eudev-commit)))
               (file-name (git-file-name name version))
               (sha256
                (base32
