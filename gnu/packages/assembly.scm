@@ -324,6 +324,36 @@ assembler, a C compiler and a linker.  The assembler uses Intel syntax
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
 
+(define-public udis86
+  ;; No new releases exist, taking the latest commit.
+  (let ((commit "5336633af70f3917760a6d441ff02d93477b0c86")
+        (revision "0"))
+    (package
+      (name "udis86")
+      (version (git-version "1.7.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/canihavesomecoffee/udis86")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0y5z1169wff578jylpafsww4px4y6gickhcs885a9c660d8xs9qy"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       (list autoconf
+             automake
+             libtool
+             python-minimal-wrapper))
+      (home-page "https://github.com/canihavesomecoffee/udis86")
+      (synopsis "Disassembler Library for x86 and x86-64")
+      (description
+       "Udis86 is a disassembler for the x86 and x86-64 class of instruction
+set architectures.  It consists of a C library called @code{libudis86} and a
+command line tool called @code{udcli} that incorporates the library.")
+      (license license:bsd-2))))
+
 (define-public libjit
   (let ((commit "554c9f5c750daa6e13a6a5cd416873c81c7b8226"))
     (package
