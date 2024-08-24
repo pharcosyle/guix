@@ -779,7 +779,7 @@ categories.")
 (define-public dotconf
   (package
     (name "dotconf")
-    (version "1.3")
+    (version "1.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -788,7 +788,7 @@ categories.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1sc95hw5k2xagpafny0v35filmcn05k1ds5ghkldfpf6xw4hakp7"))))
+                "0g3r0mx7p5sakyjcsc3mmxzj6a7iw8ij5bhf3b5w1lzkazlbcfz8"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))  ; FIXME maketest.sh does not work.
     (native-inputs
