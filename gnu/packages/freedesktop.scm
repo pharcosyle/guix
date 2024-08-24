@@ -2650,7 +2650,7 @@ files.
 (define-public drm-info
   (package
     (name "drm-info")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method git-fetch)
@@ -2660,7 +2660,7 @@ files.
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fc1rd3c16ddzbdpcj473ykszipzblj98lk376slk63v7mqvc1qm"))))
+         "1kvwwsyxikhpdazs5s631axjrxm7qkd4b4r80rqyi1mjv5k221m6"))))
     (build-system meson-build-system)
     (arguments (list #:configure-flags
                      #~(list "-Dman-pages=enabled"
