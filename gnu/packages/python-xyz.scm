@@ -19646,17 +19646,21 @@ in pure Python.")
 (define-public python-xdg
   (package
     (name "python-xdg")
-    (version "6.0.0")
+    (version "6.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "xdg" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/srstevenson/xdg-base-dirs")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "14hwk9j5zjc8rvirw95mrb07zdnpjaxjx2mj3rnq8pnlyaa809r4"))))
+                "0fg0rs3qc7q6fnavjhvfcdp8jz78j8jagd35i1q5ranmv3b4bdwx"))))
     (build-system pyproject-build-system)
-    (arguments (list #:tests? #f)) ; No tests in PyPi tarball.
     (native-inputs
-     (list python-poetry-core))
+     (list python-poetry-core
+           python-pytest
+           python-pytest-cov))
     (home-page "https://github.com/srstevenson/xdg-base-dirs")
     (synopsis "Variables defined by the XDG Base Directory Specification")
     (description "xdg-base-dirs is a Python module that provides functions to

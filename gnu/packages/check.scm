@@ -1603,14 +1603,14 @@ following improvements:
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "4.0.0")
+    (version "5.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
-         (base32 "0w04vnw4pw9llsxwss4bazhpzvdkbyy2v1w802ywscv4vvppjswr"))))
-    (build-system python-build-system)
+         (base32 "0ms8n7z5vx027a407ibdn4aj8rlvwv6fwq401xdk7gbfky7badsq"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1619,7 +1619,9 @@ following improvements:
             (invoke "python" "./setup.py" "check"
                     "--strict" "--metadata" "--restructuredtext"))))))
     (native-inputs
-     (list python-docutils))
+     (list python-docutils
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-coverage python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-cov")
