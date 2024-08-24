@@ -9809,10 +9809,16 @@ types and interfaces and translates so that the X server can use them.")
       #:configure-flags
       #~(list (string-append "-Dudevrulesdir=" #$output "/lib/udev/rules.d")
               "-Dman=enabled"
-              "-Drlimits-install=false"
               "-Dsession-managers=[]"
               "-Dsysconfdir=/etc"
-              "-Dsystemd=disabled")))
+              "-Dsystemd=disabled")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'dont-install-to-/etc
+            (lambda _
+              (substitute* "src/modules/module-rt/meson.build"
+                (("(install_dir: )get_option\\('sysconfdir'\\)" _ pre)
+                 (string-append pre "'" #$output "/etc" "'"))))))))
     (native-inputs
      (list `(,glib "bin")
            pkg-config
