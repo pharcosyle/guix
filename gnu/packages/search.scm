@@ -81,7 +81,7 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.4.19")
+    (version "1.4.26")
     ;; Note: When updating Xapian, remember to update omega and
     ;; python-xapian-bindings below.
     (source (origin
@@ -89,7 +89,7 @@
               (uri (string-append "https://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
               (sha256
-               (base32 "1hx92kbqdl38gsrwzvbqgf2jc4wwzsad2gd99g62cdfclvy4ijhz"))))
+               (base32 "19v3jck4caa4lciwpzzhr1kxdyn8r5vr7d10w9nd2rk9h01pjsly"))))
     (build-system gnu-build-system)
     (inputs (list zlib
                   `(,util-linux "lib")))
