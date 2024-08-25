@@ -53,6 +53,12 @@
             pulseaudio-configuration-system-script-file
             pulseaudio-service-type
 
+            pipewire-configuration
+            pipewire-configuration?
+            pipewire-configuration-pipewire
+            pipewire-configuration-realtime?
+            pipewire-service-type
+
             ladspa-configuration
             ladspa-configuration?
             ladspa-configuration-plugins
@@ -234,6 +240,48 @@ computed-file object~%") file))))
           (service-extension udev-service-type (const (list pulseaudio)))))
    (default-value (pulseaudio-configuration))
    (description "Configure PulseAudio sound support.")))
+
+
+;;;
+;;; PipeWire
+;;;
+
+(define-record-type* <pipewire-configuration>
+  pipewire-configuration make-pipewire-configuration
+  pipewire-configuration?
+  (pipewire pipewire-configuration-pipewire
+            (default pipewire))
+  (realtime? pipewire-configuration-realtime?
+             (default #t)))
+
+(define (pipewire-package config)
+  (list (pipewire-configuration-pipewire config)))
+
+(define (pipewire-accounts config)
+  (if (pipewire-configuration-realtime? config)
+      (list (user-group
+             (name "pipewire")
+             (system? #t)))
+      '()))
+
+(define (pipewire-etc config)
+  (if (pipewire-configuration-realtime? config)
+      (let ((limits-conf "25-pw-rlimits.conf"))
+        `((,(string-append "security/limits.d/" limits-conf)
+           ,(file-append (pipewire-configuration-pipewire config)
+                         "/etc/security/limits.d/"
+                         limits-conf))))
+      '()))
+
+(define pipewire-service-type
+  (service-type
+   (name 'pipewire)
+   (extensions
+    (list (service-extension udev-service-type pipewire-package)
+          (service-extension account-service-type pipewire-accounts)
+          (service-extension etc-service-type pipewire-etc)))
+   (default-value (pipewire-configuration))
+   (description "Configure PipeWire sound support.")))
 
 
 ;;;
