@@ -19,6 +19,7 @@
 
 (define-module (gnu services games)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu packages admin)
@@ -47,6 +48,9 @@
 (define-configuration/no-serialization joycond-configuration
   (package (package joycond) "The joycond package to use"))
 
+(define (joycond-package config)
+  (list (joycond-configuration-package config)))
+
 (define (joycond-shepherd-service config)
   (let ((joycond (joycond-configuration-package config)))
     (list (shepherd-service
@@ -64,7 +68,9 @@
     "Run @command{joycond} for pairing Nintendo joycons via Bluetooth.")
    (extensions
     (list (service-extension shepherd-root-service-type
-                             joycond-shepherd-service)))
+                             joycond-shepherd-service)
+          (service-extension udev-service-type
+                             joycond-package)))
    (default-value (joycond-configuration))))
 
 
