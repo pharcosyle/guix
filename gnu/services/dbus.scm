@@ -26,6 +26,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module ((gnu packages glib) #:select (dbus))
+  #:use-module ((gnu packages linux) #:select (rtkit))
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages admin)
   #:use-module (guix deprecation)
@@ -44,7 +45,9 @@
             polkit-configuration
             polkit-configuration?
             polkit-service-type
-            polkit-service))  ; deprecated
+            polkit-service  ; deprecated
+
+            rtkit-service-type))
 
 ;;;
 ;;; D-Bus.
@@ -439,5 +442,33 @@ capabilities to ordinary users.  For example, an ordinary user can be granted
 the capability to suspend the system if the user is logged in locally."
   (service polkit-service-type
            (polkit-configuration (polkit polkit))))
+
+
+;;;
+;;; RTKit realtime scheduling privileges management service
+;;;
+
+(define %rtkit-accounts
+  (list (user-group (name "rtkit") (system? #t))
+        (user-account
+         (name "rtkit")
+         (group "rtkit")
+         (system? #t)
+         (comment "RealtimeKit daemon user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define rtkit-service-type
+  (service-type
+   (name 'rtkit)
+   (extensions
+    (list (service-extension dbus-root-service-type
+                             list)
+          (service-extension polkit-service-type
+                             list)
+          (service-extension account-service-type
+                             (const %rtkit-accounts))))
+   (default-value rtkit)
+   (description "Realtime Kit scheduling policy daemon.")))
 
 ;;; dbus.scm ends here
