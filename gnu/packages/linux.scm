@@ -10373,6 +10373,79 @@ read-only file system optimized for resource-scarce devices.  This package
 provides user-space tools for creating EROFS file systems.")
     (license license:gpl2+)))
 
+(define-public rtkit
+  (package
+    (name "rtkit")
+    (version "0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/heftig/rtkit")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14z09cxahpwvn229vhg1a7fqp65fdjx6rlis2jlb44i10y9fyjyk"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/heftig/rtkit/commit"
+                 "/98f70edd8f534c371cb4308b9720739c5178918d.patch"))
+           (file-name (string-append name "-find-librt-library-fix.patch"))
+           (sha256
+            (base32
+             "1qxmh0f1hfv43kqv254v3666j1907r5hxvdjym8w0ayyph6w15sm")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/heftig/rtkit/commit"
+                 "/ad649ee491ed1a41537774ad11564a208e598a09.patch"))
+           (file-name (string-append name "-dont-log-debug-messages.patch"))
+           (sha256
+            (base32
+             "0q09m7s04by3wj1giw6286cpx1blhlwib9wqbx3d4078wvg6gk06")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/heftig/rtkit/commit"
+                 "/7d62095b94f8df3891c984a1535026d2658bb177.patch"))
+           (file-name (string-append name "-systemunitdir-fix.patch"))
+           (sha256
+            (base32
+             "0k58l7m18lscrdq7q9chbjxx9a33b2gr6g5r9kva4ilimwplyh80")))))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list (string-append "-Ddbus_interfacedir="
+                             #$output "/share/dbus-1/interfaces")
+              (string-append "-Ddbus_rulesdir="
+                             #$output "/etc/dbus-1/system.d")
+              (string-append "-Dpolkit_actiondir="
+                             #$output "/share/polkit-1/actions")
+              (string-append "-Ddbus_systemservicedir="
+                             #$output "/share/dbus-1/system-services")
+              "-Dinstalled_tests=false")))
+    (native-inputs
+     (list pkg-config
+           xxd))
+    (inputs
+     (list dbus
+           libcap
+           polkit))
+    (home-page "https://github.com/heftig/rtkit")
+    (synopsis "Realtime policy and watchdog daemon")
+    (description
+     "RealtimeKit is a D-Bus system service that changes the
+scheduling policy of user processes/threads to SCHED_RR (i.e. realtime
+scheduling mode) on request.  It is intended to be used as a secure mechanism
+to allow real-time scheduling to be used by normal user processes.")
+    (license (list license:gpl3+
+                   license:bsd-0))))
+
 (define-public rasdaemon
   (package
     (name "rasdaemon")
