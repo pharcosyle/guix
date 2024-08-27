@@ -767,25 +767,14 @@ source files.")
   (package
     (inherit node-bootstrap)
     (name "node")
-    (version "18.19.0")
+    (version "22.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "05qc1dgmrms73073n4l36jrcxf6ygqj959d3cngy5qclrg0isk6x"))
-              (patches
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://github.com/nodejs/node/commit/"
-                        "345d16cc5064a07383c9cd0b9bc3d95741b50a75.patch"))
-                  (file-name (string-append name "-c-ares-test-fixes.patch"))
-                  (sha256
-                   (base32
-                    "0y7smlch47yw1gvvlq7sb80a4qkdbc69i21hqih8x0wxhldjgcri")))))
+                "03j99m7w34332kif5vy3p615gcbcb6cjr89d3fbnv1jr5ll9jz3s"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -938,18 +927,18 @@ source files.")
                            "test/parallel/test-tls-sni-server-client.js"
                            "test/parallel/test-tls-sni-option.js"
                            "test/parallel/test-tls-junk-closes-server.js"))))
-           (add-after 'delete-problematic-tests 'replace-llhttp-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; Replace pre-generated llhttp sources
-               (let ((llhttp (assoc-ref inputs "llhttp")))
-                 (copy-file (string-append llhttp "/src/llhttp.c")
-                            "deps/llhttp/src/llhttp.c")
-                 (copy-file (string-append llhttp "/src/api.c")
-                            "deps/llhttp/src/api.c")
-                 (copy-file (string-append llhttp "/src/http.c")
-                            "deps/llhttp/src/http.c")
-                 (copy-file (string-append llhttp "/include/llhttp.h")
-                            "deps/llhttp/include/llhttp.h"))))
+           ;; (add-after 'delete-problematic-tests 'replace-llhttp-sources
+           ;;   (lambda* (#:key inputs #:allow-other-keys)
+           ;;     ;; Replace pre-generated llhttp sources
+           ;;     (let ((llhttp (assoc-ref inputs "llhttp")))
+           ;;       (copy-file (string-append llhttp "/src/llhttp.c")
+           ;;                  "deps/llhttp/src/llhttp.c")
+           ;;       (copy-file (string-append llhttp "/src/api.c")
+           ;;                  "deps/llhttp/src/api.c")
+           ;;       (copy-file (string-append llhttp "/src/http.c")
+           ;;                  "deps/llhttp/src/http.c")
+           ;;       (copy-file (string-append llhttp "/include/llhttp.h")
+           ;;                  "deps/llhttp/include/llhttp.h"))))
            ;; npm installs dependencies by copying their files over a tar
            ;; stream.  A file with more than one hardlink is marked as a
            ;; "Link".  pacote/lib/fetcher.js calls node-tar's extractor with a
@@ -1000,7 +989,7 @@ fi"
                  (chmod file #o555))))))))
     (native-inputs
      (list ;; Runtime dependencies for binaries used as a bootstrap.
-           c-ares-for-node
+           c-ares
            brotli
            icu4c
            libuv
@@ -1016,10 +1005,10 @@ fi"
     (inputs
      (list bash-minimal
            coreutils
-           c-ares-for-node
+           c-ares
            icu4c
            libuv
-           llhttp-bootstrap
+           llhttp
            brotli
            `(,nghttp2 "lib")
            openssl
