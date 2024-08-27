@@ -6920,7 +6920,7 @@ message stream (in a web server that is per connection).")
 (define-public llhttp
   (package
     (name "llhttp")
-    (version "9.1.3")
+    (version "9.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6929,7 +6929,7 @@ message stream (in a web server that is per connection).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nkv64c5fs8x6n5f9f6g28w5hvg776p55cwa0f82ni548nx279s1"))))
+                "06sxx6j3b3crw9a64dnadmazzsi4xbx5751pvspbmn9p7gn2jwbj"))))
     (build-system cmake-build-system)
     (arguments (list #:tests? #f))      ;FIXME: tests depend on node-mocha
     (home-page "https://github.com/nodejs/llhttp")
