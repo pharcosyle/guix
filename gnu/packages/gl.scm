@@ -56,6 +56,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rust)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vulkan)
@@ -66,6 +68,7 @@
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module (gnu packages cmake)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
@@ -332,6 +335,11 @@ also known as DXTn or DXTC) for Mesa.")
             python-pyyaml
             python-wrapper
             (@ (gnu packages base) which))
+      (if (target-x86-64?)
+          (list rust
+                rust-bindgen
+                rust-cbindgen)
+          '())
       (if #t
           (list libclc)
           '())
@@ -374,7 +382,9 @@ svga,swrast,virgl,zink")))
 
          ;; Explicitly enable Vulkan on some architectures.
          #$@(cond
-             ((or (target-x86-32?) (target-x86-64?))
+             ((target-x86-64?)
+              '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast,nouveau"))
+             ((target-x86-32?)
               '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast"))
              ((or (target-ppc64le?) (target-ppc32?))
               '("-Dvulkan-drivers=amd,swrast"))
@@ -423,6 +433,39 @@ svga,swrast,virgl,zink")))
                              (search-input-file
                               native-inputs "/bin/cmake")))))
               #~())
+         #$@(if (target-x86-64?)
+                #~((add-after 'unpack 'add-rust-src-dependencies
+                     (lambda _
+                       (for-each
+                        (match-lambda
+                          ((name version source)
+                           (begin
+                             (invoke "tar" "xf" source "-C" "subprojects")
+                             (copy-recursively
+                              (string-append "subprojects/packagefiles/" name)
+                              (string-append "subprojects/" name "-" version)))))
+                        '#$(map (match-lambda
+                                  ((name version hash)
+                                   `(,name ,version ,(origin
+                                                       (method url-fetch)
+                                                       (uri (crate-uri name version))
+                                                       (sha256 (base32 hash))))))
+                                '(("syn"
+                                   "2.0.68"
+                                   "1sf1y2hajhjav38ipg63c934xrgkz4v42fz24a0ckmmri06sf7wh")
+                                  ("proc-macro2"
+                                   "1.0.86"
+                                   "0xrv22p8lqlfdf1w0pj4si8n2ws4aw0kilmziwf0vpv5ys6rwway")
+                                  ("unicode-ident"
+                                   "1.0.12"
+                                   "0jzf1znfpb2gx8nr8mvmyqs1crnv79l57nxnbiszc7xf7ynbjm1k")
+                                  ("quote"
+                                   "1.0.33"
+                                   "1biw54hbbr12wdwjac55z1m2x2rylciw83qnjn564a3096jgqrsj")
+                                  ("paste"
+                                   "1.0.14"
+                                   "0k7d54zz8zrz0623l3xhvws61z5q2wd3hkwim6gylk8212placfy")))))))
+                #~())
          (add-after 'unpack 'disable-failing-test
            (lambda _
              ;; Disable the intel vulkan (anv_state_pool) tests, as they may
