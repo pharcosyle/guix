@@ -709,8 +709,8 @@ user-provided Lua scripts.
   ;; due to changes in APIs of its libraries.
   ;; Latest commit on the other hand seems to be fully working on xcb
   ;; and wayland backends.
-  (let ((commit "30d2cd37f0566589d90914501fc7c51a4e51f559")
-        (revision "0"))
+  (let ((commit "ab6e6f34077722d5ae33f6bd40b18ef9c0e99a15")
+        (revision "1"))
     (package
       (name "vkmark")
       (version (git-version "2017.08" revision commit))
@@ -722,7 +722,7 @@ user-provided Lua scripts.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0w0n080sb67s7dbxqi71h0vhm6dccs78rqjnxx9x524jp4jh9b7x"))))
+                  "1xyap16d780xh2wlbhxycldwgxdngfrj8avppymn5jl9ar9kcmjz"))))
       (build-system meson-build-system)
       (native-inputs (list pkg-config))
       ;; The kms backend currently will not compile because of upstream issues.
