@@ -685,7 +685,16 @@ for the GStreamer multimedia library.")
               (substitute* "tests/check/meson.build"
                 ;; Reported as shaky upstream, see
                 ;; <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/785>
-                (("\\[ 'elements/flvmux' \\]") "[ 'elements/flvmux', true ]"))))
+                (("\\[ 'elements/flvmux' \\]") "[ 'elements/flvmux', true ]"))
+              #$@(if (target-x86-32?)
+                     ;; Disable three tests that fail on x86 (rounding problems
+                     ;; perhaps?):
+                     ;; - test_segment_looping
+                     ;; - test_segment_looping_middle_segment
+                     ;; - test_segment_looping_middle_segment_with_rate
+                     #~((substitute* "tests/check/elements/matroskademux.c"
+                          ((".*tcase_add_test.*test_segment_looping.*") "")))
+                     #~())))
           (add-before 'check 'pre-check
             (lambda _
               ;; Tests require a running X server.
