@@ -3347,22 +3347,14 @@ lv2-c++-tools.")
     (arguments
      (list
       #:tests? #f                       ; no check target
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'use-full-library-paths
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "alc/backends/pulseaudio.cpp"
-                (("#define PALIB \"libpulse\\.so\\.0\"")
-                 (string-append "#define PALIB \""
-                                (search-input-file inputs "lib/libpulse.so.0")
-                                "\"")))
-              (substitute* "alc/backends/alsa.cpp"
-                (("LoadLib\\(\"libasound\\.so\\.2\"\\)")
-                 (string-append "LoadLib(\""
-                                (search-input-file inputs "lib/libasound.so.2")
-                                "/lib/libasound.so.2"
-                                "\")"))))))))
-    (inputs (list alsa-lib pulseaudio-minimal))
+      #:configure-flags #~(list "-DALSOFT_DLOPEN=OFF")))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list alsa-lib
+           ;; pipewire ; Adding pipewire currently introduces a dependency
+                       ; cycle with ffmpeg.
+           pulseaudio-minimal))
     (synopsis "3D audio API")
     (description
      "OpenAL provides capabilities for playing audio in a virtual 3D
