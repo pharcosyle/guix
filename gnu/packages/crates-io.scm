@@ -39991,7 +39991,7 @@ C parser and toolkit developed for the GNOME project.")
 (define-public rust-libz-sys-1
   (package
     (name "rust-libz-sys")
-    (version "1.1.8")
+    (version "1.1.20")
     (source
       (origin
         (method url-fetch)
@@ -39999,7 +39999,7 @@ C parser and toolkit developed for the GNOME project.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1gqb8nk7j4ngvlcll8plm2fvjwic40p2g4qp20pwry1m74f7c0lp"))
+           "0wp4i6zl385ilmcqafv61jwsk1mpk6yb8gpws9nwza00x19n9lfj"))
         (modules '((guix build utils)))
         (snippet
          '(begin (delete-file-recursively "src/zlib")
@@ -40020,8 +40020,7 @@ C parser and toolkit developed for the GNOME project.")
     (description
      "This package provides bindings to the system @code{libz} library (also
 known as zlib).")
-    (license (list license:asl2.0
-                   license:expat))))
+    (license (list license:asl2.0 license:expat))))
 
 (define-public rust-libz-ng-sys-1
   ;; TODO: Unbundle zlib-ng.
