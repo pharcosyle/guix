@@ -5644,7 +5644,7 @@ Note that this package has been deprecated in favor of @code{pyfaidx}.")
     (propagated-inputs
      (list python-cachecontrol
            python-importlib-resources
-           python-mistune-next
+           python-mistune
            python-mypy-extensions
            python-rdflib
            python-requests
