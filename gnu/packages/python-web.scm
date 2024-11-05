@@ -1611,6 +1611,7 @@ CSS3 that adds programming capabilities and some other syntactic sugar.")
            python-simplejson
            python-sqlalchemy
            python-ujson
+           python-wheel
            tzdata-for-tests))
     (home-page "https://jsonpickle.github.io/")
     (synopsis "Serialize object graphs into JSON")
