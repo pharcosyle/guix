@@ -2451,6 +2451,38 @@ behavior-driven development (TDD and BDD).")
      "@code{slotscheck} is a tool to validate Python class @code{__slots__}.")
     (license license:expat)))
 
+(define-public python-stdio-mgr
+  (package
+    (name "python-stdio-mgr")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)               ;no tests in PyPI archive
+       (uri (git-reference
+             (url "https://github.com/bskinn/stdio-mgr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xb6779s7j162xhig6vc63f9nn3v406fvjh1zqbqbf8zcl17ific"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; See <https://github.com/bskinn/stdio-mgr/issues/99>.
+      #:test-flags #~(list "-k" "not readme")))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
+    (propagated-inputs
+     (list python-attrs))
+    (home-page "https://github.com/bskinn/stdio-mgr")
+    (synopsis "Context manager for mocking/wrapping stdin/stdout/stderr")
+    (description
+     "Context manager for mocking/wrapping stdin/stdout/stderr for CLI
+applications test automation.")
+    (license license:expat)))
+
 (define-public python-stestr
   (package
     (name "python-stestr")
