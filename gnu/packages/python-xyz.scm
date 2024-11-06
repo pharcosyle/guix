@@ -10145,7 +10145,8 @@ Python code against some of the style conventions in
     (build-system pyproject-build-system)
     (native-inputs
      (list python-pytest
-           python-setuptools))
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-numpy
            python-dateutil))
