@@ -3143,8 +3143,8 @@ continued fractions.")
   (sbcl-package->ecl-package sbcl-cf))
 
 (define-public sbcl-cffi
-  (let ((commit "33970351e71bb5f12ba56fc40270089e948ae112")
-        (revision "1"))
+  (let ((commit "32c90d4a9a01e809f591276c058e5b3c7f39b154")
+        (revision "2"))
     (package
       (name "sbcl-cffi")
       (version (git-version "0.24.1" revision commit))
@@ -3156,7 +3156,7 @@ continued fractions.")
                (commit commit)))
          (file-name (git-file-name "cl-cffi" version))
          (sha256
-          (base32 "1h7cw15f08gm6m4yz8hk7qkfwp7mwwnykjc5py6dhjakv0wh1g37"))))
+          (base32 "1b2j32rapgw8rn7m9sm2k8r8x9jds7vshkm90i5lw9v4xnp8x4m7"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        (list libffi
@@ -3168,7 +3168,11 @@ continued fractions.")
              sbcl-bordeaux-threads
              sbcl-rt))
       (arguments
-       (list #:phases
+       (list ;; Some tests will not work on riscv64 because a function of SBCL
+             ;; is not implemented yet for riscv.
+             ;; See <https://bugs.launchpad.net/sbcl/+bug/2069265>
+             #:tests? (not (target-riscv64?))
+             #:phases
              #~(modify-phases %standard-phases
                  (add-after 'unpack 'fix-paths
                    (lambda* (#:key inputs #:allow-other-keys)
@@ -12578,7 +12582,7 @@ to support this, especially for reasoning on types, are also included.")
 (define-public sbcl-compiler-macro-notes
   (package
     (name "sbcl-compiler-macro-notes")
-    (version "0.2.0")
+    (version "0.3.1")
     (source
      (origin
        (method git-fetch)
@@ -12587,7 +12591,7 @@ to support this, especially for reasoning on types, are also included.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cl-compiler-macro-notes" version))
        (sha256
-        (base32 "1jv8snj2wvim3k9qhl1vsx82n56nzdmwa3ms9c4ml2d58fwpfjzs"))))
+        (base32 "0pchhvk14fx54p7qq92dnf0g4jnapqr6p2a4za6bhzd8im1d9gad"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      (list sbcl-alexandria
@@ -24317,7 +24321,7 @@ that should happen depending on compiler policy.")
 (define-public sbcl-polymorphic-functions
   (package
     (name "sbcl-polymorphic-functions")
-    (version "0.2.1")
+    (version "0.5.2")
     (source
      (origin
        (method git-fetch)
@@ -24326,20 +24330,29 @@ that should happen depending on compiler policy.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "cl-polymorphic-functions" version))
        (sha256
-        (base32 "161ylp3avmkylgfddp7i1kscv3bqx734jk1i97xhsbl7x83nin0h"))))
+        (base32 "1bawhbj5rh1q6qrcjnx48n78841mgri5n63pmicxxyhif2il0zq3"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      (list sbcl-alexandria
+           sbcl-cl-form-types
            sbcl-closer-mop
            sbcl-compiler-macro-notes
            sbcl-ctype
            sbcl-fiveam
-           sbcl-cl-form-types
            sbcl-introspect-environment
            sbcl-slime-swank))
     (arguments
      ;; Tests fail: https://github.com/digikar99/polymorphic-functions/issues/8
-     '(#:tests? #f))
+     (list #:tests? #f
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-build
+                 (lambda _
+                   ;; SBCL 2.4.10 doesn't allow user code to
+                   ;; rebind *IN-COMPILATION-UNIT*.
+                   (substitute* "src/nonlite/dispatch.lisp"
+                     (("#\\+sbcl \\(sb-c::\\*in-compilation-unit\\* nil\\)")
+                      "")))))))
     (home-page "https://github.com/digikar99/polymorphic-functions/")
     (synopsis "Function type to dispatch on types instead of classes")
     (description

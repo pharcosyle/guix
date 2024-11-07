@@ -710,7 +710,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
 (define-public eisl
   (package
     (name "eisl")
-    (version "4.00")
+    (version "5.36")
     (source
      (origin
        (method git-fetch)
@@ -719,7 +719,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bksy893hvhxn308h3vfj4k0pb7ryizn74lmcswxdk7jmyfccdx1"))))
+        (base32 "1i3gnfccds4g1pknns8jqmjy3x48jys3k2hs4lnd7wq4i5k2ihg7"))))
     (build-system gnu-build-system)
     (inputs
      (list bash-minimal freeglut gdbm libiconv ncurses tcl tk))
@@ -1355,14 +1355,14 @@ be built as a stand-alone REPL interpreter.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.4.7")
+    (version "2.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1lhia29g0byj7w3akd99sjb8kxp95adwqk2kbl0wsnk30cjlsm38"))
+        (base32 "1y72ql8dxwjkwkikyk26w4n38p6apvv2l7440kp3x4fjd5mkksyf"))
        (modules '((guix build utils)))
        (snippet
         '(begin
