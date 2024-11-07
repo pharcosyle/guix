@@ -3345,6 +3345,42 @@ secp384r1) elliptic curve as defined in SP 800-186 with support for ECDH, ECDSA
 signing/verification, and general purpose curve arithmetic support.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-p521-0.13
+  (package
+    (name "rust-p521")
+    (version "0.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "p521" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1cl5y2aypa1vxg181a0na3abndz1981pfdp2zkyml88z3wbf5j8g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-base16ct" ,rust-base16ct-0.2)
+                       ("rust-ecdsa" ,rust-ecdsa-0.16)
+                       ("rust-elliptic-curve" ,rust-elliptic-curve-0.13)
+                       ("rust-hex-literal" ,rust-hex-literal-0.4)
+                       ("rust-primeorder" ,rust-primeorder-0.13)
+                       ("rust-rand-core" ,rust-rand-core-0.6)
+                       ("rust-serdect" ,rust-serdect-0.2)
+                       ("rust-sha2" ,rust-sha2-0.10))
+       #:cargo-development-inputs (("rust-blobby" ,rust-blobby-0.3)
+                                   ("rust-ecdsa" ,rust-ecdsa-0.16)
+                                   ("rust-hex-literal" ,rust-hex-literal-0.4)
+                                   ("rust-primeorder" ,rust-primeorder-0.13)
+                                   ("rust-proptest" ,rust-proptest-1)
+                                   ("rust-rand-core" ,rust-rand-core-0.6))))
+    (home-page
+     "https://github.com/RustCrypto/elliptic-curves/tree/master/p521")
+    (synopsis
+     "Pure Rust implementation of the NIST P-521 (a.k.a. secp521r1) elliptic curve")
+    (description
+     "This package provides Pure Rust implementation of the NIST P-521 (a.k.a.
+secp521r1) elliptic curve as defined in SP 800-186.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pbkdf2-0.12
   (package
     (name "rust-pbkdf2")
@@ -4010,7 +4046,7 @@ for constructing a Message Authentication Code (MAC).")
 (define-public rust-ppv-lite86-0.2
   (package
     (name "rust-ppv-lite86")
-    (version "0.2.17")
+    (version "0.2.20")
     (source
       (origin
         (method url-fetch)
@@ -4018,8 +4054,10 @@ for constructing a Message Authentication Code (MAC).")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1pp6g52aw970adv3x2310n7glqnji96z0a9wiamzw89ibf0ayh2v"))))
+          "017ax9ssdnpww7nrl1hvqh2lzncpv04nnsibmnw9nxjnaqlpp5bp"))))
     (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-zerocopy" ,rust-zerocopy-0.7))))
     (home-page "https://github.com/cryptocorrosion/cryptocorrosion")
     (synopsis "Implementation of the crypto-simd API for x86")
     (description "This crate provides an implementation of the crypto-simd API
@@ -4029,14 +4067,14 @@ for x86.")
 (define-public rust-primeorder-0.13
   (package
     (name "rust-primeorder")
-    (version "0.13.1")
+    (version "0.13.6")
     (source (origin
               (method url-fetch)
               (uri (crate-uri "primeorder" version))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ddz0d0fzzcpdlsj6c6989va8ykf702g3zmf7dszfa0y6rski3fg"))))
+                "1rp16710mxksagcjnxqjjq9r9wf5vf72fs8wxffnvhb6i6hiqgim"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs

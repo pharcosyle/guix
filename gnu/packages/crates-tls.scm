@@ -753,6 +753,31 @@ targets")
 implementation.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-oid-0.2
+  (package
+    (name "rust-oid")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "oid" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1hh61lx2kr0ca2rvkhf5j94asxxvb6pfwfxm06hdn4w8b4y906cw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-serde" ,rust-serde-1))
+       #:cargo-development-inputs (("rust-bincode" ,rust-bincode-1)
+                                   ("rust-serde-xml-rs" ,rust-serde-xml-rs-0.4)
+                                   ("rust-serde-derive" ,rust-serde-derive-1))))
+    (home-page "https://labs.unnecessary.engineering/oid")
+    (synopsis
+     "Library for building, parsing, and formating Object Identifiers (OIDs)")
+    (description
+     "This package provides a Rust-native library for building, parsing, and
+formating Object Identifiers (OIDs).")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-oid-registry-0.6
   (package
     (name "rust-oid-registry")
@@ -819,6 +844,92 @@ grammars and BER/DER encodings, for example.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs (("rust-der-parser" ,rust-der-parser-6))))))
+
+(define-public rust-picky-asn1-0.8
+  (package
+    (name "rust-picky-asn1")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "picky-asn1" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04mjb35z1g3dny8hjj6893fh8g6pskyhifcq58gf4sy16c7ylpi9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; use of undeclared crate or module `picky_asn1_der`
+       #:cargo-inputs (("rust-chrono" ,rust-chrono-0.4)
+                       ("rust-oid" ,rust-oid-0.2)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-bytes" ,rust-serde-bytes-0.11)
+                       ("rust-time" ,rust-time-0.3)
+                       ("rust-zeroize" ,rust-zeroize-1))))
+    (home-page "https://github.com/Devolutions/picky-rs")
+    (synopsis "Provide ASN.1 simple types")
+    (description "This package provides ASN.1 simple types.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-picky-asn1-der-0.4
+  (package
+    (name "rust-picky-asn1-der")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "picky-asn1-der" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0gvrhb2nx17cnigsvbvjq69xg0zy27iabglknfnjvm1nkqx8gxsx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-lazy-static" ,rust-lazy-static-1)
+                       ("rust-picky-asn1" ,rust-picky-asn1-0.8)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-bytes" ,rust-serde-bytes-0.11))
+       #:cargo-development-inputs
+       (("rust-base64" ,rust-base64-0.21)
+        ("rust-num-bigint-dig" ,rust-num-bigint-dig-0.8)
+        ("rust-oid" ,rust-oid-0.2)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-1)
+        ("rust-serde-bytes" ,rust-serde-bytes-0.11))))
+    (home-page "https://github.com/Devolutions/picky-rs")
+    (synopsis "ASN.1-DER subset for serde")
+    (description "This package provides an ASN.1-DER subset for serde.")
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-picky-asn1-x509-0.12
+  (package
+    (name "rust-picky-asn1-x509")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "picky-asn1-x509" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0232vn4i6x2w1hzysn983an6x0fqzak1ix0h4grryjb83bvj0prc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Not all files included.
+       #:cargo-inputs (("rust-base64" ,rust-base64-0.21)
+                       ("rust-num-bigint-dig" ,rust-num-bigint-dig-0.8)
+                       ("rust-oid" ,rust-oid-0.2)
+                       ("rust-picky-asn1" ,rust-picky-asn1-0.8)
+                       ("rust-picky-asn1-der" ,rust-picky-asn1-der-0.4)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-widestring" ,rust-widestring-1)
+                       ("rust-zeroize" ,rust-zeroize-1))
+       #:cargo-development-inputs
+       (("rust-expect-test" ,rust-expect-test-1)
+        ("rust-hex" ,rust-hex-0.4)
+        ("rust-num-bigint-dig" ,rust-num-bigint-dig-0.8)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-1))))
+    (home-page "https://github.com/Devolutions/picky-rs")
+    (synopsis "Provides ASN1 types defined by X.509 related RFCs")
+    (description
+     "This package provides ASN1 types defined by X.509 related RFCs.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-rcgen-0.12
   (package

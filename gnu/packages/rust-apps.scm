@@ -31,6 +31,7 @@
 ;;; Copyright © 2024 Herman Rimm <herman@rimm.ee>
 ;;; Copyright © 2024 Tomas Volf <~@wolfsden.cz>
 ;;; Copyright © 2024 Suhail Singh <suhail@bayesians.ca>
+;;; Copyright © 2024 Jordan Moore <lockbox@struct.foo>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,7 @@
   #:use-module (gnu packages crates-vcs)
   #:use-module (gnu packages crates-web)
   #:use-module (gnu packages crates-windows)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
@@ -86,6 +88,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages kde)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages networking)
@@ -108,14 +111,14 @@
 (define-public aardvark-dns
   (package
     (name "aardvark-dns")
-    (version "1.10.0")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "aardvark-dns" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0ldqv9v3v9a1m2kka660d5v15y2zasy5z7m4fh5hif74r089cx6x"))
+        (base32 "1np7n7hiawllrmli4h0m7vvap10pghyr1rzz09gl4fi93janznn6"))
        (modules '((guix build utils)))
        (snippet
         '(begin (substitute* (find-files "." "^Cargo\\.toml$")
@@ -124,20 +127,19 @@
     (build-system cargo-build-system)
     (arguments
      `(#:install-source? #f
-       #:cargo-inputs (("rust-anyhow" ,rust-anyhow-1)
-                       ("rust-async-broadcast" ,rust-async-broadcast-0.6)
+       #:cargo-inputs (("rust-arc-swap" ,rust-arc-swap-1)
                        ("rust-chrono" ,rust-chrono-0.4)
                        ("rust-clap" ,rust-clap-4)
+                       ("rust-flume" ,rust-flume-0.11)
                        ("rust-futures-util" ,rust-futures-util-0.3)
                        ("rust-hickory-client" ,rust-hickory-client-0.24)
                        ("rust-hickory-proto" ,rust-hickory-proto-0.24)
                        ("rust-hickory-server" ,rust-hickory-server-0.24)
                        ("rust-libc" ,rust-libc-0.2)
                        ("rust-log" ,rust-log-0.4)
-                       ("rust-nix" ,rust-nix-0.27)
+                       ("rust-nix" ,rust-nix-0.29)
                        ("rust-resolv-conf" ,rust-resolv-conf-0.7)
-                       ("rust-signal-hook" ,rust-signal-hook-0.3)
-                       ("rust-syslog" ,rust-syslog-6)
+                       ("rust-syslog" ,rust-syslog-7)
                        ("rust-tokio" ,rust-tokio-1))))
     (home-page "https://github.com/containers/aardvark-dns")
     (synopsis "Container-focused DNS A/AAAA record server")
@@ -367,14 +369,14 @@ paging.")
 (define-public cargo-machete
   (package
     (name "cargo-machete")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri name version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1an8d88njnk8hfsnwnx52zlzdmijscv7m20as1ci986rxz3vgpcl"))))
+        (base32 "0n45j6q36zjw149a84wz2yyygfhcjsnvfaiskwph00684fzlbnbm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f ;Error: No such file or directory (os error 2)
@@ -411,6 +413,7 @@ paging.")
     (build-system cargo-build-system)
     (arguments
      (list
+      #:install-source? #f
       #:cargo-inputs `(("rust-anyhow" ,rust-anyhow-1)
                        ("rust-bumpalo" ,rust-bumpalo-3)
                        ("rust-chic" ,rust-chic-1)
@@ -429,7 +432,7 @@ paging.")
                        ("rust-thiserror" ,rust-thiserror-1)
                        ("rust-ustr" ,rust-ustr-0.9))
       #:cargo-development-inputs `(("rust-proptest" ,rust-proptest-1))))
-    (native-inputs (list git))
+    (native-inputs (list git-minimal))
     (home-page "https://github.com/adaszko/complgen")
     (synopsis "Declarative bash/fish/zsh completions without writing shell
 scripts")
@@ -438,6 +441,81 @@ scripts")
 completion scripts for all major shells (@code{bash}, @code{fish}, @code{zsh})
 from a single, concise, @code{EBNF}-like grammar.")
     (license license:asl2.0)))
+
+(define-public cyme
+  (package
+    (name "cyme")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cyme" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qss8cpsdbxlljscd046a14d624k5kcawwlw9n9r60shk9gljqpj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:install-source? #f
+       #:cargo-test-flags '("--release" "--"
+                            ;; Disable tests as they try to access host USB.
+                            "--skip=test_list"
+                            "--skip=test_list_filtering"
+                            "--skip=test_run"
+                            "--skip=test_tree"
+                            "--skip=test_tree_filtering"
+                            "--skip=test_lsusb_device"
+                            "--skip=test_lsusb_list"
+                            "--skip=test_lsusb_show"
+                            "--skip=test_lsusb_tree"
+                            "--skip=test_lsusb_tree_verbose"
+                            "--skip=test_lsusb_vidpid"
+                            ;; unable to find hwdb.bin database file
+                            "--skip=udev::hwdb::get")
+       #:cargo-inputs (("rust-clap" ,rust-clap-4)
+                       ("rust-clap-complete" ,rust-clap-complete-4)
+                       ("rust-clap-mangen" ,rust-clap-mangen-0.2)
+                       ("rust-colored" ,rust-colored-2)
+                       ("rust-dirs" ,rust-dirs-4)
+                       ("rust-heck" ,rust-heck-0.4)
+                       ("rust-itertools" ,rust-itertools-0.10)
+                       ("rust-lazy-static" ,rust-lazy-static-1)
+                       ("rust-log" ,rust-log-0.4)
+                       ("rust-rand" ,rust-rand-0.8)
+                       ("rust-rusb" ,rust-rusb-0.9)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-json" ,rust-serde-json-1)
+                       ("rust-serde-with" ,rust-serde-with-2)
+                       ("rust-simple-logger" ,rust-simple-logger-4)
+                       ("rust-strum" ,rust-strum-0.24)
+                       ("rust-strum-macros" ,rust-strum-macros-0.24)
+                       ("rust-terminal-size" ,rust-terminal-size-0.2)
+                       ("rust-udev" ,rust-udev-0.8)
+                       ("rust-udevrs" ,rust-udevrs-0.3)
+                       ("rust-usb-ids" ,rust-usb-ids-1))
+       #:cargo-development-inputs
+       (("rust-assert-json-diff" ,rust-assert-json-diff-2)
+        ("rust-diff" ,rust-diff-0.1))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-extras
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (install-file "doc/cyme.1" (string-append out "/share/man/man1"))
+                (mkdir-p (string-append out "/etc/bash_completion.d"))
+                (copy-file "doc/cyme.bash"
+                           (string-append out "/etc/bash_completion.d/cyme"))
+                (install-file "doc/cyme.fish"
+                              (string-append out "/share/fish/vendor_completions.d"))
+                (install-file "doc/_cyme"
+                              (string-append out "/share/zsh/site-functions"))))))))
+    (inputs (list libusb))
+    (native-inputs (list pkg-config))
+    (home-page "https://github.com/tuna-f1sh/cyme")
+    (synopsis "List system USB buses and devices")
+    (description
+     "This package provides a CLI tool to list system USB buses and devices
+similar to lsusb.")
+    (license license:gpl3+)))
 
 (define-public diffr
   (package
@@ -638,27 +716,29 @@ console.")
 (define-public eza
   (package
     (name "eza")
-    (version "0.18.7")
+    (version "0.19.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "eza" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1wnkbzaza0bcw5rld3baikpwwvnajz3j6nbpaic5mhv86rshqlcq"))))
+        (base32 "16zc0j1x7clbjlrg1kc1szy0x1lbsfshij0qhdq8vx0zj6b7dlys"))))
     (build-system cargo-build-system)
     (arguments
      (list
       #:install-source? #f
       #:cargo-inputs `(("rust-ansi-width" ,rust-ansi-width-0.1)
-                       ("rust-ansiterm" ,rust-ansiterm-0.12)
                        ("rust-chrono" ,rust-chrono-0.4)
-                       ("rust-git2" ,rust-git2-0.18)
+                       ("rust-chrono" ,rust-chrono-0.4)
+                       ("rust-dirs" ,rust-dirs-5)
+                       ("rust-git2" ,rust-git2-0.19)
                        ("rust-glob" ,rust-glob-0.3)
                        ("rust-libc" ,rust-libc-0.2)
                        ("rust-locale" ,rust-locale-0.2)
                        ("rust-log" ,rust-log-0.4)
                        ("rust-natord" ,rust-natord-1)
+                       ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.50)
                        ("rust-number-prefix" ,rust-number-prefix-0.4)
                        ("rust-once-cell" ,rust-once-cell-1)
                        ("rust-palette" ,rust-palette-0.7)
@@ -668,12 +748,14 @@ console.")
                        ("rust-plist" ,rust-plist-1)
                        ("rust-proc-mounts" ,rust-proc-mounts-0.3)
                        ("rust-rayon" ,rust-rayon-1)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-norway" ,rust-serde-norway-0.9)
                        ("rust-terminal-size" ,rust-terminal-size-0.3)
                        ("rust-timeago" ,rust-timeago-0.4)
                        ("rust-unicode-width" ,rust-unicode-width-0.1)
                        ("rust-uutils-term-grid" ,rust-uutils-term-grid-0.6)
-                       ("rust-uzers" ,rust-uzers-0.11)
-                       ("rust-windows-sys" ,rust-windows-sys-0.52)
+                       ("rust-uzers" ,rust-uzers-0.12)
+                       ("rust-windows-sys" ,rust-windows-sys-0.59)
                        ("rust-zoneinfo-compiled" ,rust-zoneinfo-compiled-0.5))
       #:cargo-development-inputs `(("rust-criterion" ,rust-criterion-0.5)
                                    ("rust-trycmd" ,rust-trycmd-0.15))
@@ -724,7 +806,7 @@ console.")
              (if (supported-package? pandoc)
                  (list pandoc)
                  '())))
-    (inputs (list libgit2-1.7 zlib))
+    (inputs (list libgit2-1.8 zlib))
     (home-page "https://github.com/eza-community/eza")
     (synopsis "Modern replacement for ls")
     (description
@@ -740,16 +822,15 @@ This package is the community maintained fork of @code{exa}.")
 (define-public fd
   (package
     (name "fd")
-    (version "9.0.0")
+    (version "10.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "fd-find" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1is6xrsnbiy4la3lrmxzl3pzzkygnx9mp8h5k8gfrc29bq8m7891"))))
+         "0d5zv6pmxxsblbvk4pzxjbj072d2bg3byhss57699y2s37xdw26y"))))
     (build-system cargo-build-system)
     (arguments
      (list
@@ -774,10 +855,10 @@ This package is the community maintained fork of @code{exa}.")
         ("rust-ignore" ,rust-ignore-0.4)
         ("rust-jemallocator" ,rust-jemallocator-0.5)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-lscolors" ,rust-lscolors-0.16)
-        ("rust-nix" ,rust-nix-0.27)
+        ("rust-lscolors" ,rust-lscolors-0.19)
+        ("rust-nix" ,rust-nix-0.29)
         ("rust-normpath" ,rust-normpath-1)
-        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.49)
+        ("rust-nu-ansi-term" ,rust-nu-ansi-term-0.50)
         ("rust-regex" ,rust-regex-1)
         ("rust-regex-syntax" ,rust-regex-syntax-0.8)
         ("rust-version-check" ,rust-version-check-0.9))
@@ -1247,56 +1328,62 @@ bar.  It is also compatible with sway.")
 (define-public just
   (package
     (name "just")
-    (version "1.23.0")
+    (version "1.35.0")
     (source (origin
               (method url-fetch)
               (uri (crate-uri "just" version))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0wpjv098a2yymsb41h6104cdia4gb6hwwh05pkwj5fx7b7g41a2q"))))
+               (base32 "0q5a94wrkvb01q0rcz59w0qzsdh7wp698nk0crdqn0j1vwwy7r50"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-test-flags
        '("--release" "--"
+         "--skip=backticks::trailing_newlines_are_stripped"
+         "--skip=completions::bash"
+         "--skip=completions::replacements"
          "--skip=functions::env_var_functions"
          "--skip=string::shebang_backtick")
        #:install-source? #f
        #:cargo-inputs
        (("rust-ansi-term" ,rust-ansi-term-0.12)
-        ("rust-atty" ,rust-atty-0.2)
+        ("rust-blake3" ,rust-blake3-1)
         ("rust-camino" ,rust-camino-1)
-        ("rust-clap" ,rust-clap-2)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-clap" ,rust-clap-4)
+        ("rust-clap-complete" ,rust-clap-complete-4)
+        ("rust-clap-mangen" ,rust-clap-mangen-0.2)
         ("rust-ctrlc" ,rust-ctrlc-3)
         ("rust-derivative" ,rust-derivative-2)
         ("rust-dirs" ,rust-dirs-5)
         ("rust-dotenvy" ,rust-dotenvy-0.15)
         ("rust-edit-distance" ,rust-edit-distance-2)
-        ("rust-env-logger" ,rust-env-logger-0.10)
-        ("rust-heck" ,rust-heck-0.4)
+        ("rust-heck" ,rust-heck-0.5)
         ("rust-lexiclean" ,rust-lexiclean-0.0.1)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-log" ,rust-log-0.4)
         ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-once-cell" ,rust-once-cell-1)
+        ("rust-percent-encoding" ,rust-percent-encoding-2)
+        ("rust-rand" ,rust-rand-0.8)
         ("rust-regex" ,rust-regex-1)
         ("rust-semver" ,rust-semver-1)
         ("rust-serde" ,rust-serde-1)
         ("rust-serde-json" ,rust-serde-json-1)
         ("rust-sha2" ,rust-sha2-0.10)
+        ("rust-shellexpand" ,rust-shellexpand-3)
         ("rust-similar" ,rust-similar-2)
         ("rust-snafu" ,rust-snafu-0.8)
-        ("rust-strum" ,rust-strum-0.25)
+        ("rust-strum" ,rust-strum-0.26)
         ("rust-target" ,rust-target-2)
         ("rust-tempfile" ,rust-tempfile-3)
         ("rust-typed-arena" ,rust-typed-arena-2)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
         ("rust-uuid" ,rust-uuid-1))
        #:cargo-development-inputs
-       (("rust-cradle" ,rust-cradle-0.2)
-        ("rust-executable-path" ,rust-executable-path-1)
+       (("rust-executable-path" ,rust-executable-path-1)
         ("rust-pretty-assertions" ,rust-pretty-assertions-1)
         ("rust-temptree" ,rust-temptree-0.2)
-        ("rust-which" ,rust-which-5)
-        ("rust-yaml-rust" ,rust-yaml-rust-0.4))
+        ("rust-which" ,rust-which-6))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'replace-hardcoded-paths
@@ -1317,7 +1404,7 @@ bar.  It is also compatible with sway.")
                     (share (string-append out "/share"))
                     (man1 (string-append share "/man/man1"))
                     (bash-completions-dir
-                     (string-append share "/bash-completion/completions"))
+                     (string-append out "/etc/bash_completion.d/"))
                     (zsh-completions-dir
                      (string-append share "/zsh/site-functions"))
                     (fish-completions-dir
@@ -1327,7 +1414,11 @@ bar.  It is also compatible with sway.")
                     (just (if ,(%current-target-system)
                           (search-input-file native-inputs "/bin/just")
                           (string-append out "/bin/just"))))
+               (mkdir "man")
+               (with-output-to-file "man/just.1"
+                 (lambda _ (invoke just "--man")))
                (install-file "man/just.1" man1)
+
                (mkdir-p bash-completions-dir)
                (with-output-to-file
                  (string-append bash-completions-dir "/just")
@@ -1398,6 +1489,92 @@ bar.  It is also compatible with sway.")
 editor in less than 1024 lines of code with syntax higlighting, search and
 more.")
     (license (list license:expat license:asl2.0))))
+
+(define-public lsd
+  (package
+    (name "lsd")
+    (version "1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lsd" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06l0ynhny43q74dyb8m4r2j1w9xz29m0xrqmnpysm1f09bx3dzrj"))
+       (snippet
+        #~(begin (use-modules (guix build utils))
+                 ;; Don't depend on a specific minor version.
+                 (substitute* "Cargo.toml"
+                   (("([[:digit:]]\\.[[:digit:]]+)\\.\\*" _ version)
+                    version))))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:install-source? #f
+       #:cargo-inputs (("rust-chrono" ,rust-chrono-0.4)
+                       ("rust-chrono-humanize" ,rust-chrono-humanize-0.2)
+                       ("rust-clap" ,rust-clap-4)
+                       ("rust-clap-complete" ,rust-clap-complete-4)
+                       ("rust-crossterm" ,rust-crossterm-0.27)
+                       ("rust-dirs" ,rust-dirs-5)
+                       ("rust-git2" ,rust-git2-0.18)
+                       ("rust-globset" ,rust-globset-0.4)
+                       ("rust-human-sort" ,rust-human-sort-0.2)
+                       ("rust-libc" ,rust-libc-0.2)
+                       ("rust-lscolors" ,rust-lscolors-0.16)
+                       ("rust-once-cell" ,rust-once-cell-1)
+                       ("rust-serde" ,rust-serde-1)
+                       ("rust-serde-yaml" ,rust-serde-yaml-0.9)
+                       ("rust-sys-locale" ,rust-sys-locale-0.3)
+                       ("rust-term-grid" ,rust-term-grid-0.1)
+                       ("rust-terminal-size" ,rust-terminal-size-0.3)
+                       ("rust-thiserror" ,rust-thiserror-1)
+                       ("rust-unicode-width" ,rust-unicode-width-0.1)
+                       ("rust-url" ,rust-url-2)
+                       ("rust-uzers" ,rust-uzers-0.11)
+                       ("rust-version-check" ,rust-version-check-0.9)
+                       ("rust-vsort" ,rust-vsort-0.2)
+                       ("rust-wild" ,rust-wild-2)
+                       ("rust-windows" ,rust-windows-0.43)
+                       ("rust-xattr" ,rust-xattr-1)
+                       ("rust-xdg" ,rust-xdg-2)
+                       ("rust-yaml-rust" ,rust-yaml-rust-0.4))
+       #:cargo-development-inputs (("rust-assert-cmd" ,rust-assert-cmd-2)
+                                   ("rust-assert-fs" ,rust-assert-fs-1)
+                                   ("rust-predicates" ,rust-predicates-3)
+                                   ("rust-serial-test" ,rust-serial-test-2)
+                                   ("rust-tempfile" ,rust-tempfile-3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell-completion-dir
+           (lambda _
+             (setenv "SHELL_COMPLETIONS_DIR" "target/assets")))
+         (add-after 'install 'install-more
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (bash-completions-dir
+                      (string-append out "/etc/bash_completion.d"))
+                    (zsh-completions-dir
+                      (string-append share "/zsh/site-functions"))
+                    (fish-completions-dir
+                      (string-append share "/fish/vendor_completions.d")))
+               ;; The completions are generated in build.rs.
+               (install-file "target/assets/_lsd" zsh-completions-dir)
+               (install-file "target/assets/lsd.fish" fish-completions-dir)
+               (mkdir-p bash-completions-dir)
+               (copy-file "target/assets/lsd.bash"
+                          (string-append bash-completions-dir "/lsd"))))))))
+    (native-inputs (list libgit2-1.7
+                         pkg-config
+                         zlib
+                         ;; for tests
+                         git-minimal))
+    (home-page "https://github.com/lsd-rs/lsd")
+    (synopsis "Mostly ls compatible command with pretty colors")
+    (description
+     "This package provides An ls command with a lot of pretty colors
+and some other stuff.")
+    (license license:asl2.0)))
 
 (define-public macchina
   (package
@@ -1686,14 +1863,14 @@ container management applications.")
 (define-public ripgrep
   (package
     (name "ripgrep")
-    (version "14.1.0")
+    (version "14.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "ripgrep" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1n3zb5jfb8pv65jm4zmrcxlgpppkpd9pmcpg1ifvv13sqhxbrg6p"))))
+        (base32 "1n81lnfzy556f63pgnizay2sgx8fgn4mmailbybjfiaqvhr80yzp"))))
     (build-system cargo-build-system)
     (arguments
      (list
@@ -1718,7 +1895,7 @@ container management applications.")
                        (let* ((out (assoc-ref outputs "out"))
                               (share (string-append out "/share"))
                               (bash-completions-dir
-                                (string-append share "/bash-completion/completions"))
+                                (string-append out "/etc/bash_completion.d/"))
                               (zsh-completions-dir
                                 (string-append share "/zsh/site-functions"))
                               (fish-completions-dir
@@ -2421,7 +2598,8 @@ colorized view to stdout.")
         (base32 "000w549v1bpw7r57xw656p40ywf1gimvxxx5cjnri2js0xg927x4"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     `(#:install-source? #f
+       #:cargo-inputs
        (("rust-aho-corasick" ,rust-aho-corasick-0.7)
         ("rust-clap" ,rust-clap-2)
         ("rust-crossbeam-channel" ,rust-crossbeam-channel-0.5)
@@ -3227,14 +3405,14 @@ It will then write @code{fixup!} commits for each of those changes.")
 (define-public git-delta
   (package
     (name "git-delta")
-    (version "0.16.5")
+    (version "0.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "git-delta" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1pvy5jcpj3xzf2b8k9d5xwwamwlv9pzsx6p2yq61am38igafg9qb"))
+        (base32 "1bmjan13lm1d6vcy8mh0iryl2rnvh39ml5y4alf6s728xdzc2yhj"))
        (modules '((guix build utils)))
        (snippet
         '(begin (substitute* "Cargo.toml"
@@ -3244,26 +3422,40 @@ It will then write @code{fixup!} commits for each of those changes.")
     (arguments
      (list
       #:install-source? #f
+      #:cargo-test-flags
+      '(list "--release" "--"
+             "--skip=ansi::tests::test_measure_text_width"
+             "--skip=features::line_numbers::tests::test_line_numbers_continue_correctly_after_wrapping"
+             "--skip=features::side_by_side::tests::test_two_plus_lines_exact_fit"
+             "--skip=handlers::diff_header::tests::test_diff_header_relative_paths"
+             "--skip=tests::test_example_diffs::tests::test_binary_file_added"
+             "--skip=tests::test_example_diffs::tests::test_binary_file_removed"
+             "--skip=tests::test_example_diffs::tests::test_binary_files_differ"
+             "--skip=tests::test_example_diffs::tests::test_binary_files_differ_after_other"
+             "--skip=wrapping::tests::test_alignment_1_line_vs_3_lines"
+             "--skip=wrapping::tests::test_alignment_2_lines_vs_3_lines"
+             "--skip=wrapping::tests::test_wrap_line_newlines")
       #:cargo-inputs
       `(("rust-ansi-colours" ,rust-ansi-colours-1)
         ("rust-ansi-term" ,rust-ansi-term-0.12)
+        ("rust-anstyle-parse" ,rust-anstyle-parse-0.2)
         ("rust-anyhow" ,rust-anyhow-1)
-        ("rust-atty" ,rust-atty-0.2)
-        ("rust-bat" ,rust-bat-0.22)
+        ("rust-bat" ,rust-bat-0.24)
         ("rust-bitflags" ,rust-bitflags-2)
         ("rust-box-drawing" ,rust-box-drawing-0.1)
         ("rust-bytelines" ,rust-bytelines-2)
         ("rust-chrono" ,rust-chrono-0.4)
         ("rust-chrono-humanize" ,rust-chrono-humanize-0.2)
         ("rust-clap" ,rust-clap-4)
+        ("rust-clap-complete" ,rust-clap-complete-4)
         ("rust-console" ,rust-console-0.15)
         ("rust-ctrlc" ,rust-ctrlc-3)
-        ("rust-dirs" ,rust-dirs-4)
-        ("rust-git2" ,rust-git2-0.16)
+        ("rust-dirs" ,rust-dirs-5)
+        ("rust-git2" ,rust-git2-0.18)
         ("rust-grep-cli" ,rust-grep-cli-0.1)
         ("rust-itertools" ,rust-itertools-0.10)
         ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-palette" ,rust-palette-0.6)
+        ("rust-palette" ,rust-palette-0.7)
         ("rust-pathdiff" ,rust-pathdiff-0.2)
         ("rust-regex" ,rust-regex-1)
         ("rust-serde" ,rust-serde-1)
@@ -3271,11 +3463,13 @@ It will then write @code{fixup!} commits for each of those changes.")
         ("rust-shell-words" ,rust-shell-words-1)
         ("rust-smol-str" ,rust-smol-str-0.1)
         ("rust-syntect" ,rust-syntect-5)
-        ("rust-sysinfo" ,rust-sysinfo-0.28)
+        ("rust-sysinfo" ,rust-sysinfo-0.29)
+        ("rust-terminal-colorsaurus" ,rust-terminal-colorsaurus-0.4)
         ("rust-unicode-segmentation" ,rust-unicode-segmentation-1)
         ("rust-unicode-width" ,rust-unicode-width-0.1)
-        ("rust-vte" ,rust-vte-0.11)
         ("rust-xdg" ,rust-xdg-2))
+      #:cargo-development-inputs `(("rust-insta" ,rust-insta-1)
+                                   ("rust-rstest" ,rust-rstest-0.21))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'install 'install-extras
@@ -3283,7 +3477,7 @@ It will then write @code{fixup!} commits for each of those changes.")
               (let* ((out (assoc-ref outputs "out"))
                      (share (string-append out "/share"))
                      (bash-completions-dir
-                      (string-append share "/bash-completion/completions"))
+                      (string-append out "/etc/bash-completion.d"))
                      (zsh-completions-dir
                       (string-append share "/zsh/site-functions"))
                      (fish-completions-dir
@@ -3298,7 +3492,7 @@ It will then write @code{fixup!} commits for each of those changes.")
                 (copy-file "etc/completion/completion.fish"
                            (string-append fish-completions-dir "/delta.fish"))))))))
     (native-inputs (list git-minimal pkg-config))
-    (inputs (list libgit2 openssl zlib))
+    (inputs (list libgit2-1.7 openssl zlib))
     (home-page "https://github.com/dandavison/delta")
     (synopsis "Syntax-highlighting pager for git")
     (description
@@ -3311,7 +3505,7 @@ advanced keybindings, word-level diff highlighting, syntax highlighting for
 (define-public rust-xremap
   (package
     (name "rust-xremap")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
@@ -3319,7 +3513,7 @@ advanced keybindings, word-level diff highlighting, syntax highlighting for
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "13pvlc40zha7c9ma30s32x65c8qciqcnsznw43crx3wymlaqc9sn"))))
+         "0a89vdldswd5zawln17gfrfqxjn4pacqlkn4hf5kn8r5znr0ap01"))))
     (build-system cargo-build-system)
     (arguments
      `(#:features '()
@@ -3331,7 +3525,7 @@ advanced keybindings, word-level diff highlighting, syntax highlighting for
         ("rust-derive-where" ,rust-derive-where-1)
         ("rust-env-logger" ,rust-env-logger-0.10)
         ("rust-evdev" ,rust-evdev-0.12)
-        ("rust-fork" ,rust-fork-0.1)
+        ("rust-fork" ,rust-fork-0.2)
         ("rust-indoc" ,rust-indoc-2)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
@@ -3355,19 +3549,19 @@ advanced keybindings, word-level diff highlighting, syntax highlighting for
                     (xremap (string-append out "/bin/xremap")))
                (mkdir-p (string-append share "/bash-completion/completions"))
                (with-output-to-file
-                   (string-append share "/bash-completion/completions/xremap")
+                 (string-append share "/bash-completion/completions/xremap")
                  (lambda _ (invoke xremap "--completions" "bash")))
                (mkdir-p (string-append share "/fish/vendor_completions.d"))
                (with-output-to-file
-                   (string-append share "/fish/vendor_completions.d/xremap.fish")
+                 (string-append share "/fish/vendor_completions.d/xremap.fish")
                  (lambda _ (invoke xremap "--completions" "fish")))
                (mkdir-p (string-append share "/zsh/site-functions"))
                (with-output-to-file
-                   (string-append share "/zsh/site-functions/_xremap")
+                 (string-append share "/zsh/site-functions/_xremap")
                  (lambda _ (invoke xremap "--completions" "zsh")))
                (mkdir-p (string-append share "/elvish/lib"))
                (with-output-to-file
-                   (string-append share "/elvish/lib/xremap")
+                 (string-append share "/elvish/lib/xremap")
                  (lambda _ (invoke xremap "--completions" "elvish")))))))))
     (home-page "https://github.com/k0kubun/xremap")
     (synopsis "Dynamic key remapp for X and Wayland")

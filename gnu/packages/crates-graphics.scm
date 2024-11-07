@@ -2628,14 +2628,14 @@ graphics and video games.")
 (define-public rust-palette-0.7
   (package
     (name "rust-palette")
-    (version "0.7.5")
+    (version "0.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "palette" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0ynr6q7629gpw6pg8w1wrsl31sq48nxh1bg4awyrhhk6nyj27z7b"))
+        (base32 "1rmn02mv6cb112504qyg7pyfa83c08hxpk5sw7jc5v659hc73gsc"))
        (modules '((guix build utils)))
        (snippet
         '(begin (substitute* "Cargo.toml"
@@ -2702,17 +2702,18 @@ on correctness, flexibility and ease of use.")
 (define-public rust-palette-derive-0.7
   (package
     (name "rust-palette-derive")
-    (version "0.7.5")
+    (version "0.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "palette_derive" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0vcxjslri6f24zgv3n6ixhzb21a8z23fa6h42s8ss2zcvc10g2g8"))))
+        (base32 "0c0xhpk1nqyq4jr2m8xnka7w47vqzc7m2vq9ih8wxyjv02phs0zm"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-find-crate" ,rust-find-crate-0.6)
+     `(#:cargo-inputs (("rust-by-address" ,rust-by-address-1)
+                       ("rust-find-crate" ,rust-find-crate-0.6)
                        ("rust-proc-macro2" ,rust-proc-macro2-1)
                        ("rust-quote" ,rust-quote-1)
                        ("rust-syn" ,rust-syn-2))))
@@ -3257,17 +3258,19 @@ in AVIF format (powers the @code{cavif} tool).")
 (define-public rust-raw-window-handle-0.6
   (package
     (name "rust-raw-window-handle")
-    (version "0.6.0")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "raw-window-handle" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0i5mxxfcgqmvmzg4f0lcz68g4xfd9jybhrdkxd2v37qv1q587aa2"))))
+        (base32 "0ff5c648hncwx7hm2a8fqgqlbvbl4xawb6v3xxv9wkpjyrr5arr0"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))))
+     `(#:cargo-inputs (("rust-wasm-bindgen" ,rust-wasm-bindgen-0.2))
+       #:cargo-development-inputs
+       (("rust-static-assertions" ,rust-static-assertions-1))))
     (home-page "https://github.com/rust-windowing/raw-window-handle")
     (synopsis "Interoperability library for Rust Windowing applications")
     (description
@@ -3310,18 +3313,18 @@ in AVIF format (powers the @code{cavif} tool).")
   (package
     (inherit rust-raw-window-handle-0.4)
     (name "rust-raw-window-handle")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "raw-window-handle" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "04c2wir7qq3g2b143yav52a1g5ack8ffqx2bpmrn9bc0dix1li0a"))))
+         "0xisj116xpaz1i2hci9jqfnccyixba1xryxl1gbdlj057la5b3z2"))))
     (arguments
-     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))))
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2)
+                       ("rust-raw-window-handle" ,rust-raw-window-handle-0.4))))))
 
 (define-public rust-raw-window-metal-0.3
   (package
@@ -5525,14 +5528,14 @@ the platform-specific getters provided by winit, or another library.")
 (define-public rust-x11rb-0.13
   (package
     (name "rust-x11rb")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11rb" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "06lzpmb67sfw37m0i9zz786hx6fklmykd9j3689blk3yijnmxwpq"))))
+        (base32 "04jyfm0xmc538v09pzsyr2w801yadsgvyl2p0p76hzzffg5gz4ax"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-as-raw-xcb-connection" ,rust-as-raw-xcb-connection-1)
@@ -5650,14 +5653,14 @@ the platform-specific getters provided by winit, or another library.")
 (define-public rust-x11rb-protocol-0.13
   (package
     (name "rust-x11rb-protocol")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "x11rb-protocol" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0d3cc2dr5fcx8asgrm31d7lrxpnbqi6kl5v3r71gx7xxp3272gp6"))))
+        (base32 "0gfbxf2k7kbk577j3rjhfx7hm70kmwln6da7xyc4l2za0d2pq47c"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs (("rust-serde" ,rust-serde-1))
