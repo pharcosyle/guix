@@ -5039,7 +5039,10 @@ packages for HST.")
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
                 (invoke "python" "-m" "unittest" "discover" "-s" "test")))))))
-    (inputs
+    (native-inputs
+     (list python-setuptools
+           python-wheel))
+    (propagated-inputs
      (list python-numpy))
     (home-page "https://github.com/brandon-rhodes/python-jplephem")
     (synopsis "Python version of NASA DE4xx ephemerides")

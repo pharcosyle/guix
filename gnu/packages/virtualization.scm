@@ -32,6 +32,7 @@
 ;;; Copyright © 2023 Ahmad Draidi <a.r.draidi@redscript.org>
 ;;; Copyright © 2023 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2023, 2024 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
 ;;; Copyright © 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2024 Raven Hallsby <karl@hallsby.com>
 ;;; Copyright © 2024 jgart <jgart@dismail.de>
@@ -1988,8 +1989,12 @@ client desktops.
              (string-append "XMLTO="
                             (search-input-file %build-inputs
                                                "/bin/xmlto")))
-       #:modules ((ice-9 ftw)
-                  ,@%default-gnu-modules)
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  ((guix build python-build-system)
+                   #:select (ensure-no-mtimes-pre-1980)))
+       #:imported-modules ,(append %default-gnu-imported-modules
+                                   %python-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -2001,17 +2006,8 @@ client desktops.
              ;; Hard-code the correct PLUGINDIR above.
              (substitute* "criu/include/plugin.h"
                (("/var") (string-append (assoc-ref outputs "out"))))))
-         ;; TODO: use
-         ;; (@@ (guix build python-build-system) ensure-no-mtimes-pre-1980)
-         ;; when it no longer throws due to trying to call UTIME on symlinks.
          (add-after 'unpack 'ensure-no-mtimes-pre-1980
-           (lambda _
-             (let ((early-1980 315619200)) ; 1980-01-02 UTC
-               (ftw "." (lambda (file stat flag)
-                          (unless (or (<= early-1980 (stat:mtime stat))
-                                      (eq? (stat:type stat) 'symlink))
-                            (utime file early-1980 early-1980))
-                          #t)))))
+           ensure-no-mtimes-pre-1980)
          (add-before 'build 'fix-symlink
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The file 'images/google/protobuf/descriptor.proto' points to
@@ -2082,26 +2078,26 @@ mainly implemented in user space.")
        (uri (pypi-uri "qemu.qmp" version))
        (sha256
         (base32 "1rpsbiwvngij6fjcc5cx1azcc4dxmm080crr31wc7jrm7i61p7c2"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
      (list
       #:phases
       #~(modify-phases %standard-phases
           (replace 'check
             (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                ;; The Avocado test runner insists on writing stuff to HOME.
-                (setenv "HOME" "/tmp")
-                ;; The mypy tests fail (see:
-                ;; https://gitlab.com/jsnow/qemu.qmp/-/issues/1).
-                (delete-file "tests/mypy.sh")
-                (invoke "avocado" "--show=all" "run" "tests")))))))
+              (if tests?
+                  (begin  ; avocado insists on writing stuff to HOME.
+                    (setenv "HOME" "/tmp")
+                    (invoke "avocado" "--show=all" "run" "tests/protocol.py"))
+                  (format #t "test suite not run~%")))))))
     (native-inputs
      (list python-avocado-framework
-           python-setuptools-scm
            python-flake8
            python-isort
-           python-pylint))
+           python-pylint
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
     (propagated-inputs
      (list python-pygments
            python-urwid
@@ -2842,9 +2838,8 @@ use with virtualization provisioning tools")
        (method url-fetch)
        (uri (pypi-uri "transient" version))
        (sha256
-        (base32
-         "148yiqrmcscsi6787y0f27i1y9cf0gcw3mqfv5frhpmsmv62mv5z"))))
-    (build-system python-build-system)
+        (base32 "148yiqrmcscsi6787y0f27i1y9cf0gcw3mqfv5frhpmsmv62mv5z"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:tests? #f ; Requires behave
        #:phases (modify-phases %standard-phases
@@ -2852,8 +2847,14 @@ use with virtualization provisioning tools")
                     (lambda _
                       (substitute* "setup.py"
                         (("==")
-                         ">="))
-                      #t)))))
+                         ">=")))))))
+    (native-inputs
+     (list python-black
+           python-mypy
+           python-pyhamcrest
+           python-setuptools
+           python-twine
+           python-wheel))
     (propagated-inputs
      (list python-beautifultable
            python-click
@@ -2863,12 +2864,8 @@ use with virtualization provisioning tools")
            python-progressbar2
            python-requests
            python-toml))
-    (native-inputs
-     (list python-black python-mypy python-pyhamcrest python-twine))
-    (home-page
-     "https://github.com/ALSchwalm/transient")
-    (synopsis
-     "QEMU Wrapper written in Python")
+    (home-page "https://github.com/ALSchwalm/transient")
+    (synopsis "QEMU Wrapper written in Python")
     (description
      "@code{transient} is a wrapper for QEMU allowing the creation of virtual
 machines with shared folder, ssh, and disk creation support.")

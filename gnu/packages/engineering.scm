@@ -2669,9 +2669,14 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
                             (substitute* "pyvisa/shell.py"
                               (("from .thirdparty import prettytable")
                                "import prettytable")))))))
-    (native-inputs (list python-pytest))
-    (propagated-inputs (list python-dataclasses python-prettytable
-                             python-typing-extensions))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
+    (propagated-inputs
+     (list python-dataclasses
+           python-prettytable
+           python-typing-extensions))
     (home-page "https://pyvisa.readthedocs.io/en/latest/")
     (synopsis "Python binding for the VISA library")
     (description "PyVISA is a Python package for support of the
@@ -2752,6 +2757,12 @@ Newton-Raphson power flow solvers in the C++ library lightsim2grid, and the
                 "0idr730zdwlxdqyvh3s24720pxrjhwixih24gbqzipgp8nh0713i"))
               (file-name (git-file-name name version))))
     (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags '(list ;; Missing docscrape dependency.
+                          "--ignore=doc/sphinxext/tests/test_docscrape.py"
+                          ;; these test require network
+                          "--ignore=skrf/tests/test_network.py")))
     (propagated-inputs (list python-matplotlib
                              python-networkx
                              python-numpy
@@ -4713,11 +4724,18 @@ more.")
                 "0bazk3k2dyzlrh7yxs4pc76m5ysm7riia3ncg7as3xr4y9dy29bx"))))
     (build-system pyproject-build-system)
     (native-inputs
-     (list python-pytest-asyncio python-pytest-runner python-asynctest
-           python-pytest-mock))
+     (list python-asynctest
+           python-pytest-asyncio
+           python-pytest-mock
+           python-pytest-runner
+           python-setuptools
+           python-wheel))
     (propagated-inputs
-     (list python-aiofiles python-aiosqlite python-cryptography
-           python-importlib-metadata python-dateutil python-pytz
+     (list python-aiofiles
+           python-aiosqlite
+           python-cryptography
+           python-dateutil python-pytz
+           python-importlib-metadata
            python-sortedcontainers))
     (synopsis "OPC UA / IEC 62541 client and server library")
     (description "This package provides an OPC UA / IEC 62541 client and

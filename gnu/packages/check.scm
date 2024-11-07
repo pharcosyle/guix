@@ -1041,7 +1041,7 @@ report generation engine.")
                  (base32
                   "0gymjcnvjx9snyrzdbmjnk93ibb161q72xam29vnl3yyac4r1330"))))
       (build-system pyproject-build-system)
-      (native-inputs (list python-nose))
+      (native-inputs (list python-nose python-setuptools python-wheel))
       (propagated-inputs
        (list python-cached-property python-configargparse
              python-jinja2 python-six
@@ -1402,7 +1402,10 @@ for every Python test framework.  It supports nose, py.test, and unittest.")
                (substitute* "parameterized/test.py"
                  (("import mock") "from unittest import mock"))
                (invoke "python3" "-m" "unittest")))))))
-    (native-inputs (list python-jinja2))))
+    (native-inputs
+     (list python-jinja2
+           python-setuptools
+           python-wheel))))
 
 (define-public python-minimock
   (package
@@ -1750,8 +1753,11 @@ supports coverage of subprocesses.")
        (sha256
         (base32 "0bdxwaak5clhsd63b9q65nf2amqqv5hfn7dskfakyldxsqnnh0y6"))))
     (build-system pyproject-build-system)
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (propagated-inputs (list python-dotenv))
-    (native-inputs (list python-pytest))
     (home-page "https://github.com/quiqua/pytest-dotenv")
     (synopsis "Automatically detect and load a .env file before running tests")
     (description
@@ -1874,8 +1880,15 @@ contacting the real http server.")
         (base32 "1gw3a33myq9yncjixs3kkcrr1xkjzvvf3xk6x955p3i79wlwkswx"))))
     (build-system pyproject-build-system)
     (arguments (list #:tests? #false)) ;no tests included
-    (propagated-inputs (list python-attrs python-pytest))
-    (native-inputs (list python-pytest python-pytest-cov python-xmlschema))
+    (native-inputs
+     (list python-pytest
+           python-pytest-cov
+           python-setuptools
+           python-wheel
+           python-xmlschema))
+    (propagated-inputs
+     (list python-attrs
+           python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-nunit")
     (synopsis "Pytest plugin for generating NUnit3 test result XML output")
     (description
@@ -1984,10 +1997,10 @@ Python's @code{random.seed}.")
        (sha256
         (base32
          "11dnhxnjmh4nf1j8rnvx944ha3wg8ggrgrwdcx4c7d19xmi57n5l"))))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
     (arguments
      (list
-      ;; FIXME: The test suite requires 'python-flake8' and 'python-black',
+      ;; FIXME: The test suite requires 'python-pytest-virtualenv',
       ;; but that introduces a circular dependency.
       #:tests? #f
       #:phases
@@ -2001,14 +2014,10 @@ Python's @code{random.seed}.")
             (lambda _
               (let ((whl (car (find-files "dist" "\\.whl$"))))
                 (invoke "pip" "--no-cache-dir" "--no-input"
-                        "install" "--no-deps" "--prefix" #$output whl))))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (if tests?
-                  (invoke "pytest" "-vv")
-                  (format #t "test suite not run~%")))))))
+                        "install" "--no-deps" "--prefix" #$output whl)))))))
     (native-inputs
-     (list python-pypa-build python-setuptools-scm python-wheel))
+     (list python-pip python-pypa-build python-pytest
+           python-setuptools python-setuptools-scm python-wheel))
     (home-page "https://github.com/pytest-dev/pytest-runner")
     (synopsis "Invoke py.test as a distutils command")
     (description
@@ -2101,7 +2110,17 @@ same arguments.")
         (base32
          "1psf5dqxvc38qzxvc305mkg5xpdmdkbkkfiyqlmdnkgh7z5dx025"))))
     (build-system pyproject-build-system)
-    (native-inputs (list python-setuptools-scm python-filelock python-pytest))
+    (arguments
+     (list
+      #:test-flags
+      ;; Fails with OSError: cannot send to <Channel id=1 closed>
+      ;; on foreign distribution.
+      '(list "-k" "not test_internal_errors_propagate_to_controller")))
+    (native-inputs (list python-filelock
+                         python-pytest
+                         python-setuptools
+                         python-setuptools-scm
+                         python-wheel))
     (propagated-inputs (list python-execnet python-pytest-forked))
     (home-page "https://github.com/pytest-dev/pytest-xdist")
     (synopsis
@@ -2174,7 +2193,8 @@ timeout has been exceeded.")
      ;; 'hypothesis' plugin is not in the environment (due to
      ;; <http://issues.guix.gnu.org/25235>), which would cause the test suite
      ;; to fail (see: https://github.com/pytest-dev/pytest-forked/issues/54).
-     (list python-pytest-bootstrap python-setuptools-scm))
+     (list python-pytest-bootstrap python-setuptools
+           python-setuptools-scm python-wheel))
     (home-page "https://github.com/pytest-dev/pytest-forked")
     (synopsis "Pytest plugin to run tests in isolated forked subprocesses")
     (description "This package provides a Pytest plugin which enables running
@@ -2499,7 +2519,7 @@ executed.")
                  (lambda _
                    (setenv "SETUPTOOLS_SCM_PRETEND_VERSION"
                            #$(package-version this-package)))))))
-    (native-inputs (list python-setuptools-scm))
+    (native-inputs (list python-setuptools-scm python-setuptools python-wheel))
     (propagated-inputs (list python-pytest))
     (home-page "https://github.com/pytest-dev/pytest-asyncio")
     (synopsis "Pytest support for asyncio")
@@ -2867,60 +2887,36 @@ style test suites, summarizing their results, and providing indication of
 failures.")
     (license license:ncsa)))
 
-;;; This is marked as a bootstrap package because it propagates bootstrapped
-;;; versions of jaraco-context and jaraco-functools.
-(define-public python-pytest-enabler-bootstrap
-  (hidden-package
-   (package
-     (name "python-pytest-enabler-bootstrap")
-     (version "1.2.1")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "pytest-enabler" version))
-        (sha256
-         (base32 "023ymm0r2gpn5q7aikvx567s507j0zk46w41w6gxb69c688zgs73"))))
-     (build-system python-build-system)
-     (arguments (list #:tests? #f))
-     (propagated-inputs
-      (list python-jaraco-context-bootstrap
-            python-jaraco-functools-bootstrap
-            python-toml))
-     (native-inputs (list python-setuptools-scm))
-     (home-page "https://github.com/jaraco/pytest-enabler")
-     (synopsis "Enable installed pytest plugins")
-     (description "Enable installed pytest plugins")
-     (license license:expat))))
-
 (define-public python-pytest-enabler
-  (package/inherit python-pytest-enabler-bootstrap
-    (arguments
-     (substitute-keyword-arguments
-       (strip-keyword-arguments
-         '(#:tests?)
-         (package-arguments python-pytest-enabler-bootstrap))
-       ((#:phases phases #~%standard-phases)
-        #~(modify-phases #$phases
-            (replace 'check
-              (lambda* (#:key tests? #:allow-other-keys)
-                (when tests?
-                  (invoke "python" "-m" "pytest" "-vv" "tests"))))))))
+  (package
+    (name "python-pytest-enabler")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-enabler" version))
+       (sha256
+        (base32 "023ymm0r2gpn5q7aikvx567s507j0zk46w41w6gxb69c688zgs73"))))
+    (build-system pyproject-build-system)
+    (arguments (list #:tests? #f
+                     #:test-flags '(list "tests")))
     (propagated-inputs
-     (modify-inputs (package-propagated-inputs python-pytest-enabler-bootstrap)
-       (replace "python-jaraco-context-bootstrap" python-jaraco-context)
-       (replace "python-jaraco-functools-bootstrap" python-jaraco-functools)))
-    (native-inputs
-     (modify-inputs (package-native-inputs python-pytest-enabler-bootstrap)
-       (append python-pytest
-               python-pytest-black
-               python-pytest-checkdocs
-               python-pytest-cov
-               python-pytest-flake8
-               python-pytest-mypy
-               python-types-toml)))
-    (properties (alist-delete 'hidden?
-                              (package-properties
-                               python-pytest-enabler-bootstrap)))))
+     (list python-jaraco-context
+           python-jaraco-functools
+           python-toml))
+    (native-inputs (list python-pytest
+                         python-pytest-black
+                         python-pytest-checkdocs
+                         python-pytest-cov
+                         python-pytest-flake8
+                         python-pytest-mypy
+                         python-setuptools
+                         python-setuptools-scm
+                         python-types-toml))
+    (home-page "https://github.com/jaraco/pytest-enabler")
+    (synopsis "Enable installed pytest plugins")
+    (description "Enable installed pytest plugins")
+    (license license:expat)))
 
 (define-public python-pytest-freezegun
   (package
@@ -2992,12 +2988,34 @@ a Pytest test execution.")
                              python-mypy
                              python-pytest
                              python-pyyaml
+                             python-setuptools
                              python-regex))
+    (native-inputs (list python-wheel))
     (home-page "https://github.com/TypedDjango/pytest-mypy-plugins")
     (synopsis "Pytest plugin for writing tests for mypy plugins")
     (description "This package provides a pytest plugin for writing tests for
 mypy plugins.")
     (license license:expat)))
+
+(define-public python-pytest-mypy-testing
+  (package
+    (name "python-pytest-mypy-testing")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-mypy-testing" version))
+       (sha256
+        (base32 "0kqb3hi4jrc4knhc9pxv44m7c1jjkkwqx0dyghq4mw6wphlsv3q8"))))
+    (build-system pyproject-build-system)
+    (native-inputs (list python-flit-core))
+    (propagated-inputs (list python-mypy python-pytest))
+    (home-page "https://github.com/davidfritzsche/pytest-mypy-testing")
+    (synopsis "Pytest plugin to check mypy output")
+    (description "This package provides a pytest plugin to test that mypy
+produces a given output.  As mypy can be told to display the type of an
+expression this allows you to check mypys type interference.")
+    (license (list license:expat license:asl2.0))))
 
 (define-public python-pytest-pep8
   (package
@@ -3066,12 +3084,15 @@ mypy plugins.")
            python-pytest-cov
            python-pytest-enabler
            python-pytest-flake8
-           python-pytest-mypy))
+           python-pytest-mypy
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-jaraco-context
            python-jaraco-functools
            python-more-itertools
            python-packaging
+           python-pip
            python-pip-run
            python-tempora))
     (home-page "https://github.com/jaraco/pytest-perf")
@@ -3348,7 +3369,7 @@ backported from Python 2.7 for Python 2.4+.")
     (name "behave")
     ;; The 1.2.6 release from 2018 has several problems with newer Python
     ;; versions, so we package a recent snapshot.
-    (version "1.2.7.dev2")
+    (version "1.2.7.dev5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3357,17 +3378,18 @@ backported from Python 2.7 for Python 2.4+.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0sv94wagi214h0l91zn8m04f78x5wn83vqxib81hnl1qahvx9hq7"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda* (#:key tests? #:allow-other-keys)
-                      (when tests?
-                        (invoke "pytest" "-c" "/dev/null" "-vv")))))))
+                "14162pclfvy4wy2az4v9gkgb3v0b338zxrb2ikqcqifckrmk8nhv"))))
+    (build-system pyproject-build-system)
     (native-inputs
-     (list python-mock python-nose python-pathpy python-pyhamcrest
-           python-pytest))
+     (list python-mock
+           python-nose
+           python-assertpy
+           python-pathpy
+           python-pyhamcrest
+           python-pytest
+           python-pytest-html
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list python-colorama
            python-cucumber-tag-expressions
@@ -3386,15 +3408,15 @@ tests written in a natural language style, backed up by Python code.")
 (define-public python-behave-web-api
   (package
     (name "python-behave-web-api")
-    (version "1.0.6")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "behave-web-api" version))
        (sha256
         (base32
-         "03kpq2xsy1gab3jy0dccbxlsg7vwfy4lagss0qldwmx3xz6b3i19"))))
-    (build-system python-build-system)
+         "04p5sp6wck3mafj634w1fpvfhxm170l5q3hfb9d06pi71ql606n6"))))
+    (build-system pyproject-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -3404,6 +3426,10 @@ tests written in a natural language style, backed up by Python code.")
                (("'wheel'") "")                ; We don't use it.
                (("'ordereddict==1.1'") ""))    ; Python >= 2.7 has it built-in.
              #t)))))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-wheel))
     (propagated-inputs
      (list behave python-requests))
     (home-page "https://github.com/jefersondaniel/behave-web-api")
