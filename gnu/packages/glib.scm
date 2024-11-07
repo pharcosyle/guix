@@ -242,10 +242,10 @@ eases debugging of D-Bus services by printing various debug information when
 the @code{DBUS_VERBOSE} environment variable is set to @samp{1}.  For more
 information, refer to the @samp{dbus-daemon(1)} man page.")))
 
-(define glib
+(define glib-minimal
   (package
     (name "glib")
-    (version "2.78.0")
+    (version "2.82.1")
     (source
      (origin
        (method url-fetch)
@@ -254,7 +254,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                        name "/" (string-take version 4) "/"
                        name "-" version ".tar.xz"))
        (sha256
-        (base32 "0c3vagxl77wma85qinbj974jvw96n5bvch2m7hqcwxq8fa5spsj4"))
+        (base32 "19l98kdv6d4363minliw0imvxh4qfdw5im988knf8bpm1d2391j7"))
        (patches
         (search-patches "glib-appinfo-watch.patch"
                         "glib-skip-failing-test.patch"))
@@ -488,7 +488,8 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
            python-wrapper
            tzdata-for-tests))           ;for tests/gdatetime.c
     (inputs
-     (list ;; "python", "python-wrapper" and "bash-minimal"
+     (list
+      ;; "python", "python-wrapper" and "bash-minimal"
       ;; are for the 'patch-shebangs' phase, to make
       ;; sure the installed scripts end up with a correct shebang
       ;; when cross-compiling.
@@ -522,6 +523,21 @@ functions for strings and common data structures.")
     (home-page "https://wiki.gnome.org/Projects/GLib")
     (license license:lgpl2.1+)
     (properties '((hidden? . #t)))))
+
+(define glib
+  (let ((base glib-minimal))
+    (package/inherit base
+      (native-inputs
+       (modify-inputs (package-native-inputs base)
+         (prepend gobject-introspection-minimal)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          #~(modify-phases #$phases
+              ;; GI tests require installed libraries
+              (delete 'check)
+              (add-after 'install 'check
+                (assoc-ref #$phases 'check)))))))))
 
 (define-public glib-with-documentation
   ;; glib's doc must be built in a separate package since it requires gtk-doc,
@@ -601,17 +617,17 @@ be used when cross-compiling."
         (string-append name target-suffix))
       (rename-file native-name target-name)))
 
-(define gobject-introspection
+(define gobject-introspection-minimal
   (package
     (name "gobject-introspection")
-    (version "1.78.1")
+    (version "1.82.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1d0vhi83q0xc7kg3zn32wy7n16f3dd5blicyh5v8w9gpkbcsnyxx"))
+              (base32 "029gr80q8749dhcpmf5x1w48adinihb634qyqimz4js210clqnhg"))
              (patches (search-patches
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"
@@ -658,15 +674,14 @@ be used when cross-compiling."
      `(,@(if (%current-target-system)
            `(("python" ,python))
            '())
-       ("glib" ,glib "bin")
+       ("glib" ,glib-minimal "bin")
        ("pkg-config" ,pkg-config)
        ("bison" ,bison)
        ("flex" ,flex)))
     (inputs
-     `(("python" ,python)
-       ("zlib" ,zlib)))
+     (list python zlib))
     (propagated-inputs
-     (list glib
+     (list glib-minimal
            ;; In practice, GIR users will need libffi when using
            ;; gobject-introspection.
            libffi))
@@ -689,6 +704,16 @@ provide bindings to call into the C library.")
       license:lgpl2.0+
       ;; For tools.
       license:gpl2+))))
+
+(define gobject-introspection
+  (let ((base gobject-introspection-minimal))
+    (package/inherit base
+      (native-inputs
+       (modify-inputs (package-native-inputs base)
+         (replace "glib" glib)))
+      (propagated-inputs
+       (modify-inputs (package-propagated-inputs base)
+         (replace "glib" glib))))))
 
 (define intltool
   (package
@@ -1031,7 +1056,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.47.0")
+    (version "3.50.0")
     (source
      (origin
        (method url-fetch)
@@ -1040,7 +1065,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "082dpm34a350bnhgmkdv8myxzjgnrflckkpn46vnvs36f7bbfdij"))
+         "04i28xrb9fxkmn9j2mmsl0lbmk9blgjcl8hnxrbx90d8nmsnx0wd"))
        (modules '((guix build utils)))
        (snippet
         ;; We disable these tests in a snippet so that they are inherited
@@ -1079,20 +1104,6 @@ useful for C++.")
     (properties
      '((upstream-name . "pygobject")))
     (license license:lgpl2.1+)))
-
-(define-public python-pygobject-3.48
-  (package
-    (inherit python-pygobject)
-    (version "3.48.2")
-    (source
-     (origin
-       (inherit (package-source python-pygobject))
-       (uri (string-append "mirror://gnome/sources/pygobject/"
-                           (version-major+minor version)
-                           "/pygobject-" version ".tar.xz"))
-       (sha256
-        (base32
-         "19yii8lydnjw225k4gclhn8hya7caiginqi0mj9a0cdym6sax507"))))))
 
 (define-public perl-glib
   (package
@@ -1154,6 +1165,7 @@ libraries.  Examples include gtk+, webkit, libsoup and many more.")
         (string-append
          "https://telepathy.freedesktop.org/releases/telepathy-glib/"
          "telepathy-glib-" version ".tar.gz"))
+       (patches (search-patches "telepathy-glib-fix-test.patch"))
        (sha256
         (base32
          "1w3kja8j3gz2apal79bi3hq44xk5g78aphrqbw983l6df7bp98xh"))))

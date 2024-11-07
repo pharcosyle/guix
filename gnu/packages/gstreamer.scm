@@ -458,7 +458,7 @@ the GStreamer multimedia framework.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.22.3")
+    (version "1.24.6")
     (source
      (origin
        (method url-fetch)
@@ -467,7 +467,7 @@ the GStreamer multimedia framework.")
              version ".tar.xz"))
        (sha256
         (base32
-         "0x2rdl6vfpbr7wnh1nk0rllw28cgx0js4g9vxfank7rz0naspzlz"))))
+         "178vrkriw525pqckd1dhjgnl2fxcynj3igp36mmf7yf6sxh20d34"))))
     (build-system meson-build-system)
     (arguments
      (list #:disallowed-references (list python)
@@ -539,7 +539,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.22.3")
+    (version "1.24.6")
     (source
      (origin
       (method url-fetch)
@@ -547,7 +547,7 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1ww9xx6c4mwvgn9k56d1xfnd3i1jm4v8rfiy4f07686ll24n4n8w"))))
+        "1d99qbn27371950v5arnw711fqzh6j7q34b8fmscjznfl0svalng"))))
     (build-system meson-build-system)
     (propagated-inputs
      (list glib                     ;required by gstreamer-sdp-1.0.pc
@@ -641,7 +641,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.22.3")
+    (version "1.24.6")
     (source
      (origin
        (method url-fetch)
@@ -650,7 +650,7 @@ for the GStreamer multimedia library.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "0wq2f5q395vs7hnwjqpc2gysdvkgd4jmyfdszv9g9wrf795ib0dg"))))
+        (base32 "0bds42wpbsnrmqh1jk8ix157v8g5hrh8nw84wcxx8vi43n6rqswr"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -760,14 +760,14 @@ model to base your own plug-in on, here it is.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.22.3")
+    (version "1.24.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n116sphawmlqyjp1b8sv07vz4rjk1zn07286w37y4l65pp8yyg1"))
+                "0k5nqlcrl0p5gy2n9zkl34vjp0gj9sg787kwahgpr0p72darckcg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -819,7 +819,10 @@ model to base your own plug-in on, here it is.")
                          '())
 
                   ;; https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/issues/1412
-                  ((".*elements/dtls\\.c.*") ""))
+                  ((".*elements/dtls\\.c.*") "")
+
+                  ;; https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3921
+                  ((".*elements/mxfdemux\\.c.*") ""))
                 (substitute* "tests/check/elements/zxing.c"
                   ;; zxing 1.2.0 seemingly changed the type representation of
                   ;; the EAN_13 structure; disable it.
@@ -958,7 +961,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.22.3")
+    (version "1.24.6")
     (source
      (origin
        (method url-fetch)
@@ -966,7 +969,7 @@ par compared to the rest.")
         (string-append "https://gstreamer.freedesktop.org/src/"
                        name "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0q53snvh7kr8g7qqxy4v5ska0d78kgc5bkp6qjrnhcr9qbaqxj9x"))))
+        (base32 "1i3m9b48ab7h385qlbxn7p43zfdpymf8gkamf9ijwa5bg0lvpzax"))))
     (build-system meson-build-system)
     (arguments
      (list #:glib-or-gtk? #t         ; To wrap binaries and/or compile schemas
@@ -1015,7 +1018,7 @@ think twice about shipping them.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.22.3")
+    (version "1.24.6")
     (source
      (origin
        (method url-fetch)
@@ -1024,7 +1027,7 @@ think twice about shipping them.")
          "https://gstreamer.freedesktop.org/src/" name "/"
          name "-" version ".tar.xz"))
        (sha256
-        (base32 "08x929yhjd2wpy05146fnqv6p2hw58ha079bwfkp2hwbh02wii9f"))))
+        (base32 "1gzj4a3cqczp9hj18frzlp00xj45p1dg58ra6iz903rr3940igab"))))
     (build-system meson-build-system)
     (native-inputs (list perl pkg-config python-wrapper ruby))
     (inputs (list ffmpeg))
@@ -1038,15 +1041,16 @@ decoders, muxers, and demuxers provided by FFmpeg.")
 (define-public gst-editing-services
   (package
     (name "gst-editing-services")
-    (version "1.22.3")
+    (version "1.24.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://gstreamer.freedesktop.org/src/" name "/"
                     "gst-editing-services-" version ".tar.xz"))
+              (patches (search-patches "gst-editing-services-fix-api.patch"))
               (sha256
                (base32
-                "18nfq3av5ksz17048l2b4r4zbh11yd0yq2asx0jy3c894pkbr98m"))))
+                "0rm2w7g1rgbzh3i659lw61hgzfhqk8cmx9y0zkjzwnwxmdfa53qk"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1106,7 +1110,7 @@ binary, but none of the actual plugins.")))
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.22.3")
+    (version "1.24.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1114,7 +1118,7 @@ binary, but none of the actual plugins.")))
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "073kii36ncgsyq0b5njbsvprrg1k3kmydr3dxwiccjv3pvxd7gkh"))))
+                "006pbf148lj00wclm1vzn8bhm6khbjax0drdz7jk0yq91s18hbk9"))))
     (build-system meson-build-system)
     (arguments
      (list
@@ -1130,7 +1134,7 @@ binary, but none of the actual plugins.")))
     (native-inputs
      (list pkg-config python))
     (propagated-inputs
-     (list gst-plugins-base python-pygobject-3.48))
+     (list gst-plugins-base python-pygobject))
     (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "GStreamer GObject Introspection overrides for Python")
     (description
