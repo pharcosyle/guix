@@ -1269,7 +1269,7 @@ misnomer.")))
 
 ;; This must match the 'gcc' variable, but it must also be 'eq?' to one of the
 ;; libgccjit-* packages above.
-(define-public libgccjit libgccjit-11)
+(define-public libgccjit libgccjit-13)
 
 (define (make-gccgo gcc)
   "Return a gccgo package based on GCC."

@@ -127,7 +127,7 @@ the entire document.")
 (define-public expat
   (package
     (name "expat")
-    (version "2.6.2")
+    (version "2.6.3")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
                 (method url-fetch)
@@ -139,10 +139,7 @@ the entire document.")
                             "/expat-" version ".tar.xz")))
                 (sha256
                  (base32
-                  "0r3ks8hk2g1c8zpas23ah3cx90xix83pd4xd6zn1p2whv32v857f"))
-                (patches (search-patches "expat-CVE-2024-45490.patch"
-                                         "expat-CVE-2024-45491.patch"
-                                         "expat-CVE-2024-45492.patch")))))
+                  "1z0f5hpg4ypdv6djlgw4cpj40scm0jkn6is0mmddx6wplrab4k97")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

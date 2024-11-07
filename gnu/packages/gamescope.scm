@@ -36,7 +36,7 @@
    "1zvhf3pgd8bhn8bynrsh725xn1dszsf05j8c9g6zabgv7vnz04a5"))
 
 (define wlroots-for-gamescope
-  (let ((base-wlroots wlroots-0.18)
+  (let ((base-wlroots wlroots)
         (fork-url "https://github.com/Joshua-Ashton/wlroots")
         (commit "4bc5333a2cbba0b0b88559f281dbde04b849e6ef")
         (revision "0"))
