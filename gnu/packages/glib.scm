@@ -268,6 +268,7 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
     (outputs '("out"                    ;libraries, locales, etc
                "static"                 ;static libraries
                "bin"                    ;executables; depends on Python
+               "doc"
                "debug"))
     (arguments
      (list
@@ -281,7 +282,8 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                        ,(this-package-native-input "python-wrapper")))
                 '()))
       #:configure-flags #~(list "--default-library=both"
-                                "-Dman-pages=disabled"
+                                "-Ddocumentation=true"
+                                "-Dman-pages=enabled"
                                 "-Dselinux=disabled"
                                 (string-append "--bindir="
                                                #$output:bin "/bin"))
@@ -484,14 +486,28 @@ information, refer to the @samp{dbus-daemon(1)} man page.")))
                 (("^bindir=.*")
                  "")
                 (("=\\$\\{bindir\\}/")
-                 "=")))))))
+                 "="))))
+          (add-after 'install 'move-doc
+            (lambda _
+              (let ((old (string-append #$output "/share/doc"))
+                    (new (string-append #$output:doc "/share/doc")))
+                (mkdir-p (dirname new))
+                (rename-file old new))))
+          (add-after 'install 'move-man
+            (lambda _
+              (let ((old (string-append #$output "/share/man"))
+                    (new (string-append #$output:bin "/share/man")))
+                (mkdir-p (dirname new))
+                (rename-file old new)))))))
     (native-inputs
      (list dbus
            gettext-minimal
+           gi-docgen
            m4                           ;for installing m4 macros
            perl                         ;needed by GIO tests
            pkg-config
            python                       ;for 'patch-python-references
+           python-docutils              ;for man pages (via rst2man)
            python-wrapper
            tzdata-for-tests))           ;for tests/gdatetime.c
     (inputs
@@ -545,31 +561,6 @@ functions for strings and common data structures.")
               (delete 'check)
               (add-after 'install 'check
                 (assoc-ref #$phases 'check)))))))))
-
-(define-public glib-with-documentation
-  ;; glib's doc must be built in a separate package since it requires gtk-doc,
-  ;; which in turn depends on glib.
-  (let ((base glib))
-    (package/inherit base
-      (properties (alist-delete 'hidden? (package-properties base)))
-      (outputs (cons "doc" (package-outputs base)))
-      (native-inputs
-       (modify-inputs (package-native-inputs base)
-         (append gi-docgen python-docutils)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:configure-flags flags ''())
-          #~(cons "-Ddocumentation=true"
-                  (delete "-Dman-pages=disabled" #$flags)))
-         ((#:phases phases)
-          #~(modify-phases #$phases
-              (add-after 'install 'move-doc
-                (lambda _
-                  (let ((doc "/share/doc"))
-                    (mkdir-p (string-append #$output:doc "/share"))
-                    (rename-file
-                     (string-append #$output doc)
-                     (string-append #$output:doc doc))))))))))))
 
 (define (python-extension-suffix python triplet)
   "Determine the suffix for C extensions for PYTHON when compiled
