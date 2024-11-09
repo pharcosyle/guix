@@ -837,7 +837,6 @@ other applications that need to directly deal with input devices.")
     (build-system meson-build-system)
     (arguments
      (list
-      #:tests? #f
       #:configure-flags #~'("-Ddocumentation=api" ;protocol requires hugo
                             "-Dsd-bus-provider=basu")))
     (inputs
