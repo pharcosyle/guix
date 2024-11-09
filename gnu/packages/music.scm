@@ -4291,9 +4291,6 @@ Then it provides a variety of tools for manipulating and accessing
 your music.")
     (license license:expat)))
 
-(define-public beets-next
-  (deprecated-package "beets-next" beets))
-
 (define-public beets-bandcamp
   (package
     (name "beets-bandcamp")
