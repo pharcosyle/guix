@@ -1528,7 +1528,7 @@ fullscreen) or other display servers.")
 (define-public wayland-protocols
   (package
     (name "wayland-protocols")
-    (version "1.37")
+    (version "1.38")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.freedesktop.org/wayland/"
@@ -1536,7 +1536,7 @@ fullscreen) or other display servers.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09pk3qhpc29x1a6srpqqw9dcvalg33vfmp14d276is7j4klrn3m7"))))
+                "1ghxb0w7rbq3kdv9lhm1iwcjh6p3sx1gxb3crqh2p78m0ln2j5zz"))))
     (build-system meson-build-system)
     (inputs
      (list wayland))
@@ -1556,19 +1556,7 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
         . "https://wayland.freedesktop.org/releases.html")))
     (license license:expat)))
 
-(define-public wayland-protocols-next
-  (package
-    (inherit wayland-protocols)
-    (name "wayland-protocols-next")
-    (version "1.38")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gitlab.freedesktop.org/wayland/"
-                                  "wayland-protocols/-/releases/" version "/downloads/"
-                                  "wayland-protocols-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1ghxb0w7rbq3kdv9lhm1iwcjh6p3sx1gxb3crqh2p78m0ln2j5zz"))))))
+(define-public wayland-protocols-next wayland-protocols)
 
 (define-public wayland-utils
   (package
