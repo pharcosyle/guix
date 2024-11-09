@@ -5101,7 +5101,7 @@ by the Xorg server.")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "21.1.13")
+    (version "21.1.14")
     (source
      (origin
        (method url-fetch)
@@ -5109,7 +5109,7 @@ by the Xorg server.")
                            "/xserver/xorg-server-" version ".tar.xz"))
        (sha256
         (base32
-         "033lvjihidc68v08izrr63va8jhkfmzcjg0d6rm26wizjkah4nml"))
+         "0dgfajrnkr8d61z1fjn249s3q1pm23v9w2f1aqb7sx64pp7048cg"))
        (patches
         (list
          ;; See:
@@ -5227,7 +5227,7 @@ draggable titlebars and borders.")
   (hidden-package
    (package
      (inherit xorg-server)
-     (version "21.1.13")
+     (version "21.1.14")
      (source
       (origin
         (method url-fetch)
@@ -5235,7 +5235,7 @@ draggable titlebars and borders.")
                             "/xserver/xorg-server-" version ".tar.xz"))
         (sha256
          (base32
-          "033lvjihidc68v08izrr63va8jhkfmzcjg0d6rm26wizjkah4nml"))
+          "0dgfajrnkr8d61z1fjn249s3q1pm23v9w2f1aqb7sx64pp7048cg"))
         (patches
          (list
           ;; See:
@@ -5357,7 +5357,7 @@ EGLStream families of extensions.")
 (define-public xorg-server-xwayland
   (package
     (name "xorg-server-xwayland")
-    (version "24.1.2")
+    (version "24.1.4")
     (source
      (origin
        (method url-fetch)
@@ -5365,7 +5365,7 @@ EGLStream families of extensions.")
                            "/xserver/xwayland-" version ".tar.xz"))
        (sha256
         (base32
-         "1lpp7r3dv5qddr808b04am3hhc89wh5wg0l7q1hkcaj2grpbf7hl"))))
+         "1x1lmw1br3dxxfppfny1vkmk2l2vk5248i3k05smb7w1mgdphsnr"))))
     (inputs (list font-dejavu
                   dbus
                   eudev
