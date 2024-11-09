@@ -823,28 +823,38 @@ other applications that need to directly deal with input devices.")
                       ""))
                    (delete-file-recursively "subprojects")))))
     (build-system meson-build-system)
+    (outputs '("out" "doc"))
     (arguments
      (list
       #:configure-flags #~'("-Ddocumentation=api" ;protocol requires hugo
-                            "-Dsd-bus-provider=libelogind")))
+                            "-Dsd-bus-provider=libelogind")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-doc
+            (lambda _
+              (copy-recursively
+               "doc/html"
+               (string-append #$output:doc "/share/doc/"
+                              #$name "-" #$version "/api")))))))
     (inputs
-     (list elogind libevdev libxkbcommon))
+     (list libevdev libxkbcommon))
     (propagated-inputs
      ;; liboeffis-1.0.pc requires.private libelogind
      (list elogind))
     (native-inputs
-     (list doxygen
+     (list dbus ; Needed for 'dbus-monitor' in a test.
+           doxygen
            libxml2
            munit
            pkg-config
            python
            python-attrs
-           python-black
            python-dbusmock
            python-jinja2
            python-pytest
            python-structlog
-           valgrind/interactive))
+           python-pyyaml
+           python-pytest-xdist))
     (home-page "https://libinput.pages.freedesktop.org/libei/")
     (synopsis "Emulated Input protocol implementation")
     (description
