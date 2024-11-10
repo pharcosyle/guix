@@ -1370,6 +1370,27 @@ to provide easy-to-use yet powerful API in modern C++.  It adds another layer
 of abstraction on top of @code{sd-bus}, the C D-Bus implementation by systemd.")
     (license license:lgpl2.1+)))
 
+(define-public sdbus-c++-2
+  (package
+    (inherit sdbus-c++)
+    (version "2.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Kistler-Group/sdbus-cpp")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name (package-name sdbus-c++) version))
+              (sha256
+               (base32
+                "1s6vhzln0rvac2r3v8nq08hsjhyz3y46fsy18i23ppjm30apkiav"))))
+    (arguments
+     (list
+      ;; Avoid the integration test, which requires a system bus.
+      #:test-target "sdbus-c++-unit-tests"
+      #:configure-flags #~(list "-DSDBUSCPP_BUILD_CODE_GEN=ON"
+                                "-DSDBUSCPP_BUILD_TESTS=ON"
+                                "-DCMAKE_VERBOSE_MAKEFILE=ON")))))
+
 (define-public appstream-glib
   (package
     (name "appstream-glib")
