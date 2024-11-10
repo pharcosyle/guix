@@ -43,65 +43,31 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
-;; TODO Temporary, hopefully gcc 14 will be the default in my guix fork soon.
-(define gcc-for-hypr-ecosystem gcc-14)
-
-(define %hyprland-commit "0f594732b063a90d44df8c5d402d658f27471dfe")
 (define-public hyprland
   (package
     (name "hyprland")
-    ;; (version "0.43.0")
-    (version (git-version "0.43.0" "0" %hyprland-commit))
+    (version "0.45.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/hyprwm/Hyprland")
-                    ;; (commit (string-append "v" version))
-                    (commit %hyprland-commit)))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                ;; "1m4994103sg8c919aj7q4k2rj4rjd635vg9f0qrzb19pmsfybzy5"
-                "1m4994103sg8c919aj7q4k2rj4rjd635vg9f0qrzb19pmsfybzy5"))
-              ;; Not sure this is necessary but it (probably) can't hurt.
-              (patches
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://raw.githubusercontent.com/hyprwm/Hyprland/"
-                        ;; (string-append "v" version)
-                        %hyprland-commit
-                        "/nix/stdcxx.patch"))
-                  (file-name (string-append name "-c++-26-fix.patch"))
-                  (sha256
-                   (base32
-                    "1fmqws4k5qg1rk13frii05h78v7ni5a1c3x1kba2y39f4858ww0f")))))))
-    (build-system cmake-build-system)
+                "1wawqdc6wjk724b5drsh3nxhmss9ksk2ks94490lgf22wmf3ck3g"))))
+    (build-system meson-build-system)
     (arguments
      (list
       #:tests? #f ; No tests.
-      #:configure-flags #~(list "-DNO_SYSTEMD=ON")
+      #:configure-flags #~(list "-Dxwayland=enabled"
+                                "-Dsystemd=disabled"
+                                ;; "-Dtracy_enable=true"
+                                "-Db_pch=false")
       #:phases
-      #~(let ;; Additional inputs.
-             ;; We can't add put them in the inputs fields because:
-             ;; - origins are difficult / not possible to reference without also
-             ;;   using input labels
-             ;; - adding binutils to inputs would override ld-wrapper
-            ((hyprland-protocols-src #$(package-source hyprland-protocols))
-             (tracy-src #$(package-source tracy))
-             (udis86-src  #$(package-source udis86))
-             (binutils #$binutils))
+      #~(let ((binutils #$binutils)) ; Adding binutils to inputs would override
+                                     ; ld-wrapper.
           (modify-phases %standard-phases
-            (add-after 'unpack 'add-subprojects
-              (lambda _
-                (with-directory-excursion "subprojects"
-                  (for-each
-                   (lambda (src+dir)
-                     (apply copy-recursively src+dir))
-                   `((,hyprland-protocols-src "hyprland-protocols")
-                     (,tracy-src "tracy")
-                     (,udis86-src "udis86"))))))
             (add-after 'unpack 'patch-paths
               (lambda* (#:key inputs #:allow-other-keys)
                 (substitute* (find-files "src" "\\.cpp")
@@ -143,57 +109,43 @@
                   (("\\<pkgconf\\>")
                    (search-input-file inputs "bin/pkgconf")))))))))
     (native-inputs
-     (list gcc-for-hypr-ecosystem
+     (list gcc-14
            hyprwayland-scanner
-           jq
-           ninja
-           pkg-config
-           python-minimal-wrapper ; For udis86.
-           wayland)) ; For wayland-scanner.
-    ;; TODO Update to reflect this change: https://github.com/hyprwm/Hyprland/commit/8f9887b0c9443d6c2559feeec411daecb9780a97
+           pkg-config))
     (inputs
      (list aquamarine
            bash-minimal ; For patching various '/bin/sh' references.
            cairo
-           expat
-           fribidi
-           ;; gcc ; TODO see above. Also will need to be "gcc-for-hypr-ecosystem" for the moment if keeping.
+           ;; gcc ; TODO see above. Also will need to be "gcc-14" if keeping.
            dbus ; For patching 'dbus-update-activation-environment'.
            git-minimal
-           hwdata
            hyprcursor
+           hyprland-protocols
            hyprlang
            hyprutils
-           libdatrie
-           libdisplay-info
            libdrm
-           ;; ;; TODO Having libglvnd this causes a crash on launch. Hyprland seems fine without it but it's inconsistent with the rest of the hypr ecosystem (perhaps most relevantly aquamarine). Also having all these libglvnds is inconsistent with Guix in general. I'm not sure what to do. Maybe report the issue upstream if I decide to keep the libglvnds.
+           ;; ;; TODO Having libglvnd this causes a crash on launch (at least on version 0.43.0). Hyprland seems fine without it but it's inconsistent with the rest of the hypr ecosystem (perhaps most relevantly aquamarine). Also having all these libglvnds is inconsistent with Guix in general. I'm not sure what to do. Maybe report the issue upstream if I decide to keep the libglvnds.
            ;; ;; The error, for reference:
            ;; ;; [LOG] Creating the CHyprOpenGLImpl!
            ;; ;; [LOG] Supported EGL extensions: (0)
            ;; ;; [CRITICAL] [Tracy GPU Profiling] eglGetProcAddress(eglCreateImageKHR) failed
            ;; libglvnd
            libinput-minimal
-           libliftoff
-           libseat
-           libselinux
-           libsepol
-           libthai
            libxcursor
            libxkbcommon
            mesa
            pango
            pciutils
-           pcre2
            pkgconf ; For patching 'pkgconf'.
            tomlplusplus
+           ;; tracy
+           udis86
            `(,util-linux "lib") ; For libuuid.
            wayland
            wayland-protocols
            ;; For Xwayland.
            libxcb
            libxdmcp
-           xcb-util
            xcb-util-errors
            xcb-util-renderutil
            xcb-util-wm
@@ -208,23 +160,19 @@ features, is highly customizable, has all the eyecandy, the most powerful
 plugins, easy IPC, much more QoL stuff than other compositors and more.")
     (license license:bsd-3)))
 
-(define %aquamarine-commit "e4a13203112a036fc7f437d391c7810f3dd5ab52")
 (define-public aquamarine
   (package
     (name "aquamarine")
-    ;; (version "0.4.1")
-    (version (git-version "0.4.1" "0" %aquamarine-commit))
+    (version "0.4.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/hyprwm/aquamarine")
-                    ;; (commit (string-append "v" version))
-                    (commit %aquamarine-commit)))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                ;; "19yrwaiyh4za8d3xixjkqdif1l4r71q7rzqa05by5zc3za3vzlzw"
-                "19yrwaiyh4za8d3xixjkqdif1l4r71q7rzqa05by5zc3za3vzlzw"))))
+                "0dq3m4q34ck0y2kyhzh6w42gs8j107bsxcn7c7qkf2zn6kp0qd78"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -243,10 +191,8 @@ plugins, easy IPC, much more QoL stuff than other compositors and more.")
           ;;       (("OpenGL::OpenGL") "OpenGL::GL"))))
           )))
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           hyprwayland-scanner
-           pkg-config
-           wayland)) ; For wayland-scanner.
+     (list hyprwayland-scanner
+           pkg-config))
     (inputs
      (list hwdata
            hyprutils
@@ -272,7 +218,7 @@ window) or a native DRM session.")
 (define-public xdg-desktop-portal-hyprland
   (package
     (name "xdg-desktop-portal-hyprland")
-    (version "1.3.3")
+    (version "1.3.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -281,7 +227,7 @@ window) or a native DRM session.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14n4a8b91ili0kp2kjqlw3h57bsxkrjwg5bhlw2h3q93zaxv2b3k"))))
+                "0aixrjyky2mzclnwypybpg01ihfbmwzfv09zbjis49q1clrszq2p"))))
     (build-system qt-build-system)
     (arguments
      (list
@@ -302,19 +248,19 @@ window) or a native DRM session.")
                 (("\\<(hyprland-share-picker)\\>" _ cmd)
                  (string-append #$output "/bin/" cmd))))))))
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config
-           wayland)) ; For wayland-scanner.
+     (list pkg-config
+           hyprwayland-scanner))
     (inputs
      (list hyprland-protocols
            hyprlang
+           hyprutils
            libdrm
            mesa
            pipewire
            qtbase
            qttools
            qtwayland
-           sdbus-c++
+           sdbus-c++-2
            wayland
            wayland-protocols
            ;; For referenced programs.
@@ -363,7 +309,7 @@ extra portals specific to Hyprland, mostly for window sharing.")
 (define-public hyprlock
   (package
     (name "hyprlock")
-    (version "0.4.1")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -372,13 +318,13 @@ extra portals specific to Hyprland, mostly for window sharing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zzv7w7hn8k71w75a9mz548cbl4f8zcsd8i92abgnrx5x9i35q63"))))
+                "07404h6w5934yimpwb0p9dxg1w3nv702bckm4m99jbjrda6jqhmi"))))
     (build-system cmake-build-system)
     (arguments
      (list #:tests? #f)) ; No tests.
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config))
+     (list pkg-config
+           wayland)) ; For wayland-scanner.
     (inputs
      (list cairo
            file
@@ -392,6 +338,7 @@ extra portals specific to Hyprland, mostly for window sharing.")
            hyprutils
            linux-pam
            pango
+           sdbus-c++-2
            wayland
            wayland-protocols))
     (home-page "https://github.com/hyprwm/hyprlock")
@@ -405,7 +352,7 @@ acquisition for no hitches.")
 (define-public hypridle
   (package
     (name "hypridle")
-    (version "0.1.2")
+    (version "0.1.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -414,17 +361,17 @@ acquisition for no hitches.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10l0yxy1avryjj54gimw2blhl7348dypyhh43b73a8ncjicpjnzc"))))
+                "1622iz8bl8mi7gj2sc2jq6z7622l7l2izj1l9ajwj2mxpwpkdhbs"))))
     (build-system cmake-build-system)
     (arguments
      (list #:tests? #f)) ; No tests.
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config))
+     (list pkg-config
+           wayland)) ; For wayland-scanner.
     (inputs
      (list hyprlang
            hyprutils
-           sdbus-c++
+           sdbus-c++-2
            wayland
            wayland-protocols))
     (home-page "https://github.com/hyprwm/hypridle")
@@ -459,8 +406,7 @@ by e.g. firefox / steam).")
               (substitute* "src/main.cpp"
                 (("GIT_COMMIT_HASH") (string-append "\"" #$version "\""))))))))
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config
+     (list pkg-config
            hyprwayland-scanner))
     (inputs
      ;; Some of these probably shouldn't be explicitly listed here as they're
@@ -498,7 +444,7 @@ wlroots-based compositors, though.")
 (define-public hyprpicker
   (package
     (name "hyprpicker")
-    (version "0.3.0")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -507,7 +453,7 @@ wlroots-based compositors, though.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14vw74ml99kllxfy9vjlix6lwj2ajd32fi8gd8w9wv1s6gbhb105"))))
+                "11r06c62dqj81r27qhf36f3smnjyk3vz8naa655m8khv4qqvmvc2"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -515,7 +461,7 @@ wlroots-based compositors, though.")
       #:configure-flags
       #~(list (string-append "-DCMAKE_INSTALL_MANDIR=" #$output "/share/man"))))
     (native-inputs
-     (list gcc-for-hypr-ecosystem
+     (list hyprwayland-scanner
            pkg-config))
     ;; Some of these probably shouldn't be explicitly listed here as they're
     ;; required only as dependendencies of other items on this list that already
@@ -544,10 +490,40 @@ wlroots-based compositors, though.")
     (description "Launch it. Click. That's it.")
     (license license:bsd-3)))
 
+(define-public hyprsunset
+  (package
+    (name "hyprsunset")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/hyprsunset")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "110cw7nd6a0krsg6764hx2i45lc8n4b1iln3b8jz1x6pziw1qna9"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f)) ; No tests.
+    (native-inputs
+     (list hyprwayland-scanner
+           pkg-config))
+    (inputs
+     (list hyprland-protocols
+           hyprutils
+           wayland
+           wayland-protocols))
+    (home-page "https://github.com/hyprwm/hyprsunset")
+    (synopsis "An application to enable a blue-light filter on Hyprland")
+    (description
+     "An application to enable a blue-light filter on Hyprland.")
+    (license license:bsd-3)))
+
 (define-public hyprwayland-scanner
   (package
     (name "hyprwayland-scanner")
-    (version "0.4.0")
+    (version "0.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -556,13 +532,12 @@ wlroots-based compositors, though.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xc2xcxpq61lg964ihk0wbfzqqvibw20iz09g0p33ym51gwlpxr4"))))
+                "0r7ay4zjkfyr0xd73wz99qhnqjq7nma98gm51wm9lmai4igw90qw"))))
     (build-system cmake-build-system)
     (arguments
      (list #:tests? #f)) ; No tests.
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config))
+     (list pkg-config))
     (inputs
      (list pugixml))
     (home-page "https://github.com/hyprwm/hyprwayland-scanner")
@@ -575,7 +550,7 @@ and for C++.")
 (define-public hyprland-protocols
   (package
     (name "hyprland-protocols")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -584,10 +559,8 @@ and for C++.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01j5hc8qnjzqiiwryfawx1wzrhkn0m794knphyc0vsxwkcmjaj8x"))))
+                "0x86w7z3415qvixfhk9a8v5fnbnxdydzx366qz0mpmfg5h86qyha"))))
     (build-system meson-build-system)
-    (native-inputs
-     (list gcc-for-hypr-ecosystem))
     (home-page "https://github.com/hyprwm/hyprland-protocols")
     (synopsis "Wayland protocol extensions for Hyprland")
     (description
@@ -601,7 +574,7 @@ protocols used by Hyprland to bridge the aforementioned gap.")
 (define-public hyprcursor
   (package
     (name "hyprcursor")
-    (version "0.1.9")
+    (version "0.1.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -610,14 +583,12 @@ protocols used by Hyprland to bridge the aforementioned gap.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z3ar580n630145nq80qw0p8v0kai6knvhi6nr9z0y1jrb07b0ql"))
-              (patches
-               (search-patches "hyprcursor-dirs.patch"))))
+                "1rdn03ln7pqcwp8h4nmi7nc489q8y25dd3v4paq8ykvwzhvs3a1n"))))
     (build-system cmake-build-system)
     (arguments
      (list
-      ;; There are a couple of tests but they seem more like examples and
-      ;; require a cursor theme to be available.
+      ;; No build tests, only installed ones. They also require a cursor theme
+      ;; to be available.
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
@@ -626,8 +597,7 @@ protocols used by Hyprland to bridge the aforementioned gap.")
               (substitute* "hyprcursor-util/src/main.cpp"
                 (("xcur2png") (search-input-file inputs "bin/xcur2png"))))))))
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config))
+     (list pkg-config))
     (inputs
      (list cairo
            hyprlang
@@ -644,7 +614,7 @@ protocols used by Hyprland to bridge the aforementioned gap.")
 (define-public hyprlang
   (package
     (name "hyprlang")
-    (version "0.5.2")
+    (version "0.5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -653,11 +623,10 @@ protocols used by Hyprland to bridge the aforementioned gap.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17i0372yv0fcwnyki36crz7afw8c5f3j985m083p7rjbh4fn3br6"))))
+                "0yvfrz3hdyxzhngzhr0bgc5279ra5fv01hbfi6pdj84pz0lpaw02"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config))
+     (list pkg-config))
     (inputs
      (list hyprutils))
     (home-page "https://github.com/hyprwm/hyprlang")
@@ -670,7 +639,7 @@ language used in @code{hyprland}.")
 (define-public hyprutils
   (package
     (name "hyprutils")
-    (version "0.2.1")
+    (version "0.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -679,11 +648,10 @@ language used in @code{hyprland}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nxx5yb5k9726x95n8gi27xyxyzwb0ma0nj3czpb51sda1k0hz0g"))))
+                "12zkcbidj8h7w3qhfcyzkg240v7kpp3h7wf8fcsa8yj18a5mxya1"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list gcc-for-hypr-ecosystem
-           pkg-config))
+     (list pkg-config))
     (inputs
      (list pixman))
     (home-page "https://github.com/hyprwm/hyprutils")
