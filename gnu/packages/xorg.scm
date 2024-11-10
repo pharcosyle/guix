@@ -6628,7 +6628,18 @@ Thai).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0858wn2p14bxpv9lvaz2bz1rk6zk0g8zgxf8iy595m8fqv4q2fya"))))
+        (base32 "0858wn2p14bxpv9lvaz2bz1rk6zk0g8zgxf8iy595m8fqv4q2fya"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/eworm-de/xcur2png/commit"
+                 "/aa035462d950fab35d322cb87fd2f0d702251e82.patch"))
+           (file-name (string-append name "-fix-wrong-math.patch"))
+           (sha256
+            (base32
+             "1rvqmqcb8bdv065xc6a54znjr0n565yhzaissqq7r8mrfd5c30bv")))))))
     (build-system gnu-build-system)
     (native-inputs
      (list pkg-config))
