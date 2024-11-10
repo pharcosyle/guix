@@ -79742,7 +79742,19 @@ codecs and formats.")
                (base32 "1bx8wwx4ylyjz51dwd83b22j46wm3r3h80ic7wyhkn5dyadrnjyw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs
+     ;; Tests fail to compile
+     ;; error[E0432]: unresolved imports `syn::Item`, `syn::Pat`
+     `(#:tests? #false
+       #:phases
+       (modify-phases %standard-phases
+         ;; The syn-test-suite crate is empty.
+         (add-after 'unpack 'patch-test-suite
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("^\\[dev-dependencies.syn-test-suite\\]") "")
+               (("^version = \"0\"") "")
+               (("^test = \\[\"syn-test-suite/all-features\"\\]") "")))))
+       #:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
         ("rust-unicode-ident" ,rust-unicode-ident-1))

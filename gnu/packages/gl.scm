@@ -349,9 +349,9 @@ also known as DXTn or DXTC) for Mesa.")
           ;; NVK dependencies
           (list rust
                 (module-ref (resolve-interface '(gnu packages rust-apps))
-                            'rust-bindgen-cli)
+                            'rust-bindgen)
                 (module-ref (resolve-interface '(gnu packages rust-apps))
-                            'rust-cbindgen-0.26))
+                            'rust-cbindgen))
           '())))
     (outputs '("out" "bin"))
     (arguments
