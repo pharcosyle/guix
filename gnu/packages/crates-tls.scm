@@ -45,8 +45,30 @@
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages tls))
 
+(define-public rust-asn1-0.16
+  (package
+    (name "rust-asn1")
+    (version "0.16.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "asn1" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ggb140ilik21y4vha7f1p9m795k1aq4mp9adc4n46r8b2hfsb2k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-asn1-derive" ,rust-asn1-derive-0.16))
+       #:cargo-development-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/alex/rust-asn1")
+    (synopsis "ASN.1 (DER) parser and writer for Rust")
+    (description
+     "This package provides ASN.1 (DER) parser and writer for Rust.")
+    (license license:bsd-3)))
+
 (define-public rust-asn1-0.15
   (package
+    (inherit rust-asn1-0.16)
     (name "rust-asn1")
     (version "0.15.5")
     (source
@@ -56,17 +78,11 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1nzg1gjiyfvpvrf3i7i8j21165snf5livqg6x2sjf9m2i77cngmf"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-asn1-derive" ,rust-asn1-derive-0.15))
        #:cargo-development-inputs
-       (("rust-libc" ,rust-libc-0.2))))
-    (home-page "https://github.com/alex/rust-asn1")
-    (synopsis "ASN.1 (DER) parser and writer")
-    (description
-     "This is a Rust library for parsing and generating ASN.1 data (DER only).")
-    (license license:bsd-3)))
+       (("rust-libc" ,rust-libc-0.2))))))
 
 (define-public rust-asn1-0.13
   (package
@@ -87,8 +103,30 @@
        #:cargo-development-inputs
        (("rust-libc" ,rust-libc-0.2))))))
 
+(define-public rust-asn1-derive-0.16
+  (package
+    (name "rust-asn1-derive")
+    (version "0.16.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "asn1_derive" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11y93778dzdfjcl03w07ddg9gq9f18bk2pznn0icq5yc71nhgrjn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2-1)
+                       ("rust-quote" ,rust-quote-1)
+                       ("rust-syn" ,rust-syn-2))))
+    (home-page "https://github.com/alex/rust-asn1")
+    (synopsis "#[derive] support for asn1")
+    (description "This package provides #[derive] support for asn1.")
+    (license license:bsd-3)))
+
 (define-public rust-asn1-derive-0.15
   (package
+    (inherit rust-asn1-derive-0.16)
     (name "rust-asn1-derive")
     (version "0.15.5")
     (source
@@ -98,17 +136,11 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1771kfjycjs4g2acqvxpjy3igfcgg8hychczl1lsqq64za4gj6l6"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-proc-macro2" ,rust-proc-macro2-1)
         ("rust-quote" ,rust-quote-1)
-        ("rust-syn" ,rust-syn-2))))
-    (home-page "https://github.com/alex/rust-asn1")
-    (synopsis "#[derive] support for asn1")
-    (description
-     "This package provides #[derive] support for @code{asn1}.")
-    (license license:bsd-3)))
+        ("rust-syn" ,rust-syn-2))))))
 
 (define-public rust-asn1-derive-0.13
   (package
