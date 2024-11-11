@@ -131,6 +131,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
@@ -170,6 +171,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
@@ -1754,43 +1756,53 @@ functionality to display information about the most commonly used services.")
         (base32 "13avi2805wrfkghgc7ar273p61svmm85k3g3hg9bf2gaxsz6f91f"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'hardcode-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "xwayland/server.c"
-               (("Xwayland") (string-append (assoc-ref inputs
-                                                       "xorg-server-xwayland")
-                                            "/bin/Xwayland")))
-             #t))
-         (add-before 'configure 'fix-meson-file
-           (lambda* (#:key native-inputs inputs #:allow-other-keys)
-             (substitute* "backend/drm/meson.build"
-               (("/usr/share/hwdata/pnp.ids")
-                (string-append (assoc-ref (or native-inputs inputs) "hwdata")
-                               "/share/hwdata/pnp.ids"))))))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'hardcode-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; Unnecessary since xwayland server has become a propagated
+              ;; since this code was introduced? Or maybe keep this and
+              ;; don't propagate xwayland?
+              (substitute* "xwayland/server.c"
+                (("\"Xwayland\"")
+                 (string-append
+                  "\"" (search-input-file inputs "bin/Xwayland") "\""))))))))
     (propagated-inputs
-     (list ;; As required by wlroots.pc.
-           eudev
-           libdisplay-info
-           libinput-minimal
+     ;; As required by wlroots.pc.
+     (list lcms
            libxkbcommon
            mesa
            pixman
-           libseat
            wayland
            wayland-protocols
+           ;; XWayland support (optional, but required for X11 backend)
+           xorg-server-xwayland
+           ;; Session (optional)
+           eudev
+           libseat
+           ;; Vulkan renderer
+           vulkan-loader
+           ;; Libinput backend
+           libinput-minimal
+           ;; X11 backend
+           xcb-util-renderutil
            xcb-util-errors
            xcb-util-wm
-           xorg-server-xwayland))
+           ;; DRM backend (optional)
+           libdisplay-info
+           libliftoff))
     (native-inputs
-     (cons*
-       hwdata
-       pkg-config
-       wayland
-       (if (%current-target-system)
-         (list pkg-config-for-build)
-         '())))
+     (append
+      (list pkg-config)
+      (if (%current-target-system)
+          (list pkg-config-for-build)
+          '())
+      (list wayland
+            ;; Vulkan rederer
+            glslang
+            ;; DRM backend
+            hwdata)))
     (home-page "https://gitlab.freedesktop.org/wlroots/wlroots/")
     (synopsis "Pluggable, composable, unopinionated modules for building a
 Wayland compositor")
@@ -1827,7 +1839,8 @@ modules for building a Wayland compositor.")
        (sha256
         (base32 "1m12nv6avgnz626h3giqp6gcx44w1wq6z0jy780mx8z255ic7q15"))))
     (propagated-inputs (modify-inputs (package-propagated-inputs wlroots-0.17)
-                         (delete libdisplay-info)))))
+                         (delete "libdisplay-info"
+                                 "libliftoff")))))
 
 (define-public wlroots-0.15
   (package
