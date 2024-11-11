@@ -1915,13 +1915,13 @@ Analysis and Reporting Technology) functionality.")
            libatasmart
            libblockdev
            libgudev
+           mdadm
            polkit
            util-linux))
     (outputs '("out"
                "doc"))                  ;5 MiB of gtk-doc HTML
     (arguments
      (list
-      #:tests? #f                       ; requiring system message dbus
       #:disallowed-references '("doc")  ;enforce separation of "doc"
       #:configure-flags
       #~(list "--enable-man"
@@ -1931,16 +1931,23 @@ Analysis and Reporting Technology) functionality.")
               (string-append "--with-html-dir=" #$output:doc
                              "/share/doc/udisks/html")
               (string-append "--with-udevdir=" #$output "/lib/udev"))
+      #:make-flags
+      #~(list (string-append "INTROSPECTION_GIRDIR="
+                             #$output "/share/gir-1.0")
+              (string-append "INTROSPECTION_TYPELIBDIR="
+                             #$output "/lib/girepository-1.0"))
       #:phases
       #~(modify-phases %standard-phases
-          (add-before 'configure 'fix-girdir
-            (lambda _
-              ;; Install introspection data to its own output.
-              (substitute* "udisks/Makefile.in"
-                (("girdir = .*")
-                 "girdir = $(datadir)/gir-1.0\n")
-                (("typelibsdir = .*")
-                 "typelibsdir = $(libdir)/girepository-1.0\n")))))))
+          (add-after 'unpack 'hardcode-bin-paths
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/tests/test.c"
+                (("/bin/true") (search-input-file inputs "/bin/true"))
+                (("/bin/false") (search-input-file inputs "/bin/false"))
+                (("/bin/sleep") (search-input-file inputs "/bin/sleep")))
+              (substitute* "data/80-udisks2.rules"
+                (("/bin/sh") (search-input-file inputs "/bin/sh"))
+                (("/bin/sed") (search-input-file inputs "/bin/sed"))
+                (("/sbin/mdadm") (search-input-file inputs "/sbin/mdadm"))))))))
     (home-page "https://www.freedesktop.org/wiki/Software/udisks/")
     (synopsis "Disk manager service")
     (description
