@@ -440,3 +440,223 @@ integrated into the main branch.")
     (synopsis "Implementation of the Windows API (staging branch, WoW64
 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
+
+
+
+
+
+
+
+
+
+;; (use-modules (gnu packages cross-base))
+
+;; (define-public wine-wow64
+;;   (package
+;;     (name "wine-wow64")
+;;     (version %wine-devel-version)
+;;     (source
+;;      (wine-source version
+;;                   "0l0c6cy6zl56pp62hzxbaxipvh3r87y7g26ilzw368qbr3l2l149"))
+;;     (build-system gnu-build-system)
+;;     (native-inputs
+;;      (list (cross-gcc "i686-w64-mingw32"
+;;                       ;; #:libc (cross-libc "i686-w64-mingw32")
+;;                       )
+;;            ;; (cross-libc "i686-w64-mingw32")
+;;            (cross-binutils "i686-w64-mingw32")
+
+;;            (cross-gcc "x86_64-w64-mingw32"
+;;                       ;; #:libc (cross-libc "x86_64-w64-mingw32")
+;;                       )
+;;            ;; (cross-libc "x86_64-w64-mingw32")
+;;            (cross-binutils "x86_64-w64-mingw32")
+
+
+;;            ;; from wine32
+;;            bison
+;;            flex
+;;            gettext-minimal
+;;            perl
+;;            pkg-config
+
+
+
+;;            ;; (make-ld-wrapper "ld-wrapper" #:binutils binutils)
+;;            ;; (make-ld-wrapper "ld-wrapper" #:binutils (cross-binutils "x86_64-w64-mingw32"))
+;;            ;; (cross-binutils "x86_64-w64-mingw32")
+;;            ;; (cross-libc "x86_64-w64-mingw32")
+;;            ;; (cross-gcc "x86_64-w64-mingw32"
+;;            ;;            ;; #:libc (cross-libc "x86_64-w64-mingw32")
+;;            ;;            )
+
+
+;;            ;; (cross-gcc "i686-w64-mingw32"
+;;            ;;            #:libc (cross-libc "i686-w64-mingw32"))
+;;            ;; ;; (cross-libc "i686-w64-mingw32")
+;;            ;; (cross-binutils "i686-w64-mingw32")
+
+;;            ;; (cross-gcc "x86_64-w64-mingw32"
+;;            ;;            #:libc (cross-libc "x86_64-w64-mingw32"))
+;;            ;; ;; (cross-libc "x86_64-w64-mingw32")
+;;            ;; (cross-binutils "x86_64-w64-mingw32")
+
+
+;;            ;; ;; Xen example
+;;            ;; (cross-gcc "i686-linux-gnu"
+;;            ;;            #:xbinutils (cross-binutils "i686-linux-gnu")
+;;            ;;            #:libc (cross-libc "i686-linux-gnu"))
+;;            ;; (cross-libc "i686-linux-gnu") ; header files
+
+
+
+;;            ;; Additional stuff from Arch package
+;;            ;; libxxf86vm
+;;            ;; mesa
+;;            ;; vulkan-loader
+;;            ;; vulkan-headers
+;;            ;; autoconf
+;;            ;; opencl-headers
+;;            ))
+;;     (inputs
+;;      (list alsa-lib
+;;            bash-minimal
+;;            cups
+;;            dbus
+;;            eudev
+;;            fontconfig
+;;            freetype
+;;            gnutls
+;;            gst-plugins-base
+;;            libgphoto2
+;;            openldap
+;;            samba
+;;            sane-backends
+;;            libpcap
+;;            libusb
+;;            libice
+;;            libx11
+;;            libxi
+;;            libxext
+;;            libxcursor
+;;            libxkbcommon
+;;            libxrender
+;;            libxrandr
+;;            libxinerama
+;;            libxxf86vm
+;;            libxcomposite
+;;            mit-krb5
+;;            openal
+;;            pulseaudio-minimal
+;;            sdl2
+;;            unixodbc
+;;            v4l-utils
+;;            vulkan-loader
+;;            wayland
+;;            wayland-protocols
+
+
+;;            ;; Additional stuff from Arch package
+;;            ;; gettext-minimal
+;;            ))
+;;     (arguments
+;;      (list
+;;       ;; XXX: There's a test suite, but it's unclear whether it's supposed to
+;;       ;; pass.
+;;       #:tests? #f
+;;       #:configure-flags
+;;       #~(list "--enable-archs=i386,x86_64")
+;;       ;; #~(list "--enable-archs=x86_64,i386")
+;;       #:make-flags
+;;       #~(list "SHELL=bash"
+;;               ;; (string-append "libdir=" #$output "/lib/wine64")
+;;               )
+;;       #:phases
+;;       #~(modify-phases %standard-phases
+;;           (add-after 'unpack 'patch-SHELL
+;;             (lambda _
+;;               (substitute* "configure"
+;;                 ;; configure first respects CONFIG_SHELL, clobbers SHELL later.
+;;                 (("/bin/sh")
+;;                  (which "bash")))))
+;;           (add-after 'unpack 'CANT-GET-c99-THING
+;;             (lambda _
+;;               (substitute* "configure"
+;;                 ;; configure first respects CONFIG_SHELL, clobbers SHELL later.
+;;                 (("res=.*as_wine_cv_crosscc_c99")
+;;                  "res=-std=gnu99"))))
+;;           ;; -std=gnu99
+;;           ;; -std=c99
+
+;;           (add-after 'configure 'patch-dlopen-paths
+;;             ;; Hardcode dlopened sonames to absolute paths.
+;;             (lambda _
+;;               (let* ((library-path (search-path-as-string->list
+;;                                     (getenv "LIBRARY_PATH")))
+;;                      (find-so (lambda (soname)
+;;                                 (search-path library-path soname))))
+;;                 (substitute* "include/config.h"
+;;                   (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
+;;                    (format #f "~a\"~a\"" defso (find-so soname)))))))
+;;           (add-after 'patch-generated-file-shebangs 'patch-makedep
+;;             (lambda* (#:key outputs #:allow-other-keys)
+;;               (substitute* "tools/makedep.c"
+;;                 (("output_filenames\\( unix_libs \\);" all)
+;;                  (string-append all
+;;                                 "output ( \" -Wl,-rpath=%s \", arch_install_dirs[arch] );")))))
+;;           ;; (add-after 'install 'copy-wine32-binaries
+;;           ;;   (lambda* (#:key inputs outputs #:allow-other-keys)
+;;           ;;     (let ((out (assoc-ref %outputs "out")))
+;;           ;;       ;; Copy the 32-bit binaries needed for WoW64.
+;;           ;;       (copy-file (search-input-file inputs "/bin/wine")
+;;           ;;                  (string-append out "/bin/wine"))
+;;           ;;       ;; Copy the real 32-bit wine-preloader instead of the wrapped
+;;           ;;       ;; version.
+;;           ;;       (copy-file (search-input-file inputs "/bin/.wine-preloader-real")
+;;           ;;                  (string-append out "/bin/wine-preloader")))))
+;;           ;; (add-after 'install 'copy-wine32-libraries
+;;           ;;   (lambda* (#:key inputs outputs #:allow-other-keys)
+;;           ;;     (let* ((out (assoc-ref %outputs "out")))
+;;           ;;       (copy-recursively (search-input-directory inputs "/lib/wine32")
+;;           ;;                         (string-append out "/lib/wine32")))))
+;;           (add-before 'build 'set-widl-time-override
+;;             ;; Set WIDL_TIME_OVERRIDE to avoid embedding the current date in
+;;             ;; files generated by WIDL.
+;;             (lambda _
+;;               (setenv "WIDL_TIME_OVERRIDE" "315532800")))
+;;           (add-after 'install 'wrap-executable
+;;             (lambda* (#:key inputs #:allow-other-keys)
+;;               (let* ((icd "share/vulkan/icd.d")
+;;                      (icd-files (find-files
+;;                                  (search-input-directory inputs icd))))
+;;                 (wrap-program
+;;                     (string-append #$output "/bin/wine-preloader")
+;;                   `("VK_ICD_FILENAMES" ":" = ,icd-files)))))
+;;           (add-after 'install 'install-mono
+;;             #$(install-wine-mono
+;;                "9.2.0"
+;;                "0myp1hz6dd1zqikx4phc436v64vf95jphv2bi20wacjzabz5vcsr"))
+;;           (add-after 'install 'install-gecko64
+;;             #$(install-wine-gecko
+;;                '64
+;;                "2.47.4"
+;;                "0518m084f9bdl836gs3d8qm8jx65j2y1w35zi9x8s1bxadzgr27x"))
+;;           ;; (add-after 'compress-documentation 'copy-wine32-manpage
+;;           ;;   (lambda* (#:key inputs outputs #:allow-other-keys)
+;;           ;;     (let* ((out (assoc-ref %outputs "out")))
+;;           ;;       ;; Copy the missing man file for the wine binary from wine.
+;;           ;;       (copy-file (search-input-file inputs "/share/man/man1/wine.1.zst")
+;;           ;;                  (string-append out "/share/man/man1/wine.1.zst")))))
+;;           )))
+;;     (home-page "https://www.winehq.org/")
+;;     (synopsis "Implementation of the Windows API (WoW64 version)")
+;;     (description
+;;      "Wine (originally an acronym for \"Wine Is Not an Emulator\") is a
+;; compatibility layer capable of running Windows applications.  Instead of
+;; simulating internal Windows logic like a virtual machine or emulator, Wine
+;; translates Windows API calls into POSIX calls on-the-fly, eliminating the
+;; performance and memory penalties of other methods and allowing you to cleanly
+;; integrate Windows applications into your desktop.")
+;;     (license license:lgpl2.1+)
+;;     ;; TODO is this right? Or just x864_64 and no aarch64?
+;;     (supported-systems '("x86_64-linux" "aarch64-linux"))))
