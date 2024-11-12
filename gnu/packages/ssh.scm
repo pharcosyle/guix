@@ -49,12 +49,14 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -73,6 +75,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages security-token)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
@@ -587,128 +590,142 @@ basis for almost any application.")
     (license license:lgpl2.1+)))
 
 (define-public lsh
-  (package
-    (name "lsh")
-    (version "2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/lsh/lsh-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "src/testsuite/functions.sh"
-                    (("localhost")
-                     ;; Avoid host name lookups since they don't work in
-                     ;; chroot builds.
-                     "127.0.0.1")
-                    (("set -e")
-                     ;; Make tests more verbose.
-                     "set -e\nset -x"))
-
-                  (substitute* (find-files "src/testsuite" "-test$")
-                    (("localhost") "127.0.0.1"))
-
-                  (substitute* "src/testsuite/login-auth-test"
-                    (("/bin/cat") "cat"))))
-              (patches (search-patches "lsh-fix-x11-forwarding.patch"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     (list autoconf
-           automake
-           m4
-           guile-2.0
-           gperf
-           psmisc))                       ; for `killall'
-    (inputs
-     (list nettle-2
-           linux-pam
-           ;; 'rl.c' uses the 'CPPFunction' type, which is no longer in
-           ;; Readline 6.3.
-           readline-6.2
-           liboop
-           zlib
-           gmp
-           ;; The server (lshd) invokes xauth when X11 forwarding is requested.
-           ;; This adds 24 MiB (or 27%) to the closure of lsh.
-           xauth
-           libxau                       ;also required for x11-forwarding
-           libxcrypt))
-    (arguments
-     '(;; Skip the `configure' test that checks whether /dev/ptmx &
-       ;; co. work as expected, because it relies on impurities (for
-       ;; instance, /dev/pts may be unavailable in chroots.)
-       #:configure-flags '("lsh_cv_sys_unix98_ptys=yes"
-
-                           ;; Use glibc's argp rather than the bundled one.
-                           "--with-system-argp"
-
-                           ;; 'lsh_argp.h' checks HAVE_ARGP_PARSE but nothing
-                           ;; defines it.
-                           "CPPFLAGS=-DHAVE_ARGP_PARSE"
-
-                           ;; Fix the build of lsh@2.1 with GCC 10.
-                           "CFLAGS=-O2 -g -fcommon")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             ;; FIXME: Most tests won't run in a chroot, presumably because
-             ;; /etc/profile is missing, and thus clients get an empty $PATH
-             ;; and nothing works.  Run only the subset that passes.
-             (delete-file "configure")  ;force rebootstrap
-             (substitute* "src/testsuite/Makefile.am"
-               (("seed-test \\\\")        ;prevent trailing slash
-                "seed-test")
-               (("^\t(lsh|daemon|tcpip|socks|lshg|lcp|rapid7|lshd).*test.*")
-                ""))))
-         (add-before 'configure 'pre-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((nettle    (assoc-ref inputs "nettle"))
-                    (sexp-conv (string-append nettle "/bin/sexp-conv")))
-               ;; Remove argp from the list of sub-directories; we don't want
-               ;; to build it, really.
-               (substitute* "src/Makefile.in"
-                 (("^SUBDIRS = argp")
-                  "SUBDIRS ="))
-
-               ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
-               ;; by default.
-               (substitute* "src/environ.h.in"
-                 (("^#define PATH_SEXP_CONV.*")
-                  (string-append "#define PATH_SEXP_CONV \""
-                                 sexp-conv "\"\n")))
-
-               ;; Same for the 'lsh-authorize' script.
-               (substitute* "src/lsh-authorize"
-                 (("=sexp-conv")
-                  (string-append "=" sexp-conv)))
-
-               ;; Tell lshd where 'xauth' lives.  Another option would be to
-               ;; hardcode "/run/current-system/profile/bin/xauth", thereby
-               ;; reducing the closure size, but that wouldn't work on foreign
-               ;; distros.
-               (with-fluids ((%default-port-encoding "ISO-8859-1"))
-                 (substitute* "src/server_x11.c"
-                   (("define XAUTH_PROGRAM.*")
-                    (string-append "define XAUTH_PROGRAM \""
-                                   (assoc-ref inputs "xauth")
-                                   "/bin/xauth\"\n")))))
-
-             ;; Tests rely on $USER being set.
-             (setenv "USER" "guix"))))))
-    (home-page "https://www.lysator.liu.se/~nisse/lsh/")
-    (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
-    (description
-     "GNU lsh is a free implementation of the SSH version 2 protocol.  It is
+  (let ((commit "b19bebc9c5cab3bd2fd509c4b96fefa79bdbab57")
+        (revision "1"))
+    (package
+      (name "lsh")
+      (version (git-version "2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.lysator.liu.se/lsh/lsh")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1jvmqbikpv1dqah45ka6fnpx1f5k0wj7qxi3ghrmnq9biiwnlqjh"))))
+      (build-system gnu-build-system)
+      (arguments
+       (list
+        #:configure-flags
+        #~(list
+           "--sysconfdir=/etc"
+           "--localstatedir=/var"
+           ;; Skip the `configure' test that checks whether /dev/ptmx & co. work
+           ;; as expected, because it relies on impurities (for instance,
+           ;; /dev/pts may be unavailable in chroots.)
+           "lsh_cv_sys_unix98_ptys=yes"
+           ;; Use glibc's argp rather than the bundled one.
+           "--with-system-argp"
+           ;; Fix the build of lsh@2.1 with GCC 10. Maybe this isn't necessary
+           ;; any more?
+           "CFLAGS=-O2 -g -fcommon")
+        ;; Most tests won't run in a chroot, presumably because /etc/profile
+        ;; is missing, and thus clients get an empty $PATH and nothing works.
+        ;; Currently 31/58 fail.
+        #:tests? #f
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-random-seed-generator
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "src/lsh-make-seed.c"
+                  (("\"(/usr|/usr/local)?/(bin|sbin)/([a-z]+)\""
+                    all _ dir exe)
+                   (let ((file (string-append dir "/" exe)))
+                     ;; Patch anything we have, anything we don't just put
+                     ;; back the way it was.
+                     (if (member file (list "bin/arp"
+                                            "bin/lpstat"
+                                            "bin/nfsstat"
+                                            "bin/pfstat"
+                                            "bin/pstat"
+                                            "bin/showrev"
+                                            "sbin/advfsstat"
+                                            "sbin/netstat"
+                                            "sbin/ntptrace"
+                                            "sbin/portstat"
+                                            "sbin/prtconf"
+                                            "sbin/psrinfo"
+                                            "sbin/ripquery"
+                                            "sbin/swap"))
+                         all (string-append
+                              "\"" (search-input-file inputs file) "\"")))))))
+            (add-after 'unpack 'fix-tests
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; Avoid host name lookups since they don't work in chroot
+                ;; builds.
+                (substitute* (cons* "src/testsuite/functions.sh"
+                                    (find-files "src/testsuite" "-test$"))
+                  (("localhost") "127.0.0.1"))
+                (substitute* "src/testsuite/login-auth-test"
+                  (("/bin/cat")
+                   (search-input-file inputs "/bin/cat")))
+                ;; There might be tests that behave better when there's a
+                ;; user set.
+                (setenv "USER" "guix")))
+            (add-after 'unpack 'hardcode-inputs
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((sexp-conv (search-input-file inputs "/bin/sexp-conv")))
+                  (substitute* "src/environ.h.in"
+                    (("^#define PATH_SEXP_CONV.*")
+                     (string-append
+                      "#define PATH_SEXP_CONV \"" sexp-conv "\"\n")))
+                  (substitute* "src/lsh-authorize"
+                    (("=sexp-conv")
+                     (string-append "=" sexp-conv))))))
+            (replace 'bootstrap
+              (lambda _
+                (for-each patch-shebang (find-files "." "^\\.bootstrap$"))
+                (invoke "./.bootstrap")))
+            (add-before 'build 'set-homedir
+              (lambda _
+                ;; Makes Guile happy.
+                (setenv "HOME" "/tmp")))
+            (add-before 'build 'build-subprojects
+              (lambda _
+                (invoke "make" "bootstrap"))))))
+      (native-inputs
+       (list autoconf
+             automake
+             m4
+             guile-3.0
+             gperf
+             ;; For documentation.
+             texinfo
+             ;; TODO I don't know how to use texlive this isn't right.
+             (texlive-updmap.cfg
+              (list texlive-epsf ; For texi2dvi.
+                    texlive-texinfo))
+             ghostscript ; For ps2pdf.
+             groff
+             perl))
+      (inputs
+       (list gmp
+             libxcrypt
+             linux-pam
+             liboop
+             nettle
+             readline
+             zlib
+             ;; For x11 forwarding.
+             libxau
+             ;; For random seed geeration.
+             net-tools
+             lsof
+             procps
+             sysstat
+             tcpdump
+             util-linux))
+      (home-page "https://www.lysator.liu.se/~nisse/lsh/")
+      (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
+      (description
+       "GNU lsh is a free implementation of the SSH version 2 protocol.  It is
 used to create a secure line of communication between two computers,
 providing shell access to the server system from the client.  It provides
 both the server daemon and the client application, as well as tools for
 manipulating key files.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public sshpass
   (package
