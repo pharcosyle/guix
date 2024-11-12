@@ -31,6 +31,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
@@ -91,6 +92,75 @@
       (file-name (string-append "wine-" wine-version ".tar.xz"))
       (sha256
        (base32 hash)))))
+
+(define (make-wine-mono version hash)
+  (package
+    (name "wine-mono")
+    (version version)
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.winehq.org/wine/wine-mono/"
+                           version "/wine-mono-" version "-x86.tar.xz"))
+       (sha256
+        (base32 hash))))
+    (build-system copy-build-system)
+    (home-page "https://wiki.winehq.org/Mono")
+    (synopsis "Wine's built-in replacement for Microsoft's .NET Framework")
+    (description "Mono is an open-source and cross-platform implementation of
+the .NET Framework.  Wine Mono is a fork of Mono that Wine uses to run .NET
+Framework applications.")
+    (license (list license:gpl2+ license:lgpl2.1 license:expat))
+    (supported-systems '("i686-linux" "x86_64-linux"))))
+
+(define (make-wine-gecko bits version hash)
+  (package
+    (name (match bits
+            ('32 "wine-gecko32")
+            ('64 "wine-gecko64")))
+    (version version)
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.winehq.org/wine/wine-gecko/"
+                           version "/wine-gecko-" version "-"
+                           (match bits
+                             ('32 "x86")
+                             ('64 "x86_64"))
+                           ".tar.xz"))
+       (sha256
+        (base32 hash))))
+    (build-system copy-build-system)
+    (home-page "https://wiki.winehq.org/Gecko")
+    (synopsis "Wine's built-in replacement for Microsoft's Internet Explorer")
+    (description "Wine implements its own version of Internet Explorer. The
+implementation is based on a custom version of Mozilla's Gecko Layout Engine.")
+    (license license:mpl2.0)
+    (supported-systems (list (match bits
+                               ('32 "i686-linux")
+                               ('64 "x86_64-linux"))))))
+
+(define (install-wine-mono version hash)
+  (let ((wine-mono (make-wine-mono version hash)))
+    #~(lambda _
+        (let ((dir (string-append #$output
+                                  "/share/wine/mono/wine-mono-"
+                                  #$(package-version wine-mono))))
+          (mkdir-p dir)
+          (copy-recursively (string-append #$wine-mono) dir)))))
+
+(define (install-wine-gecko bits version hash)
+  (let ((wine-gecko (make-wine-gecko bits version hash)))
+    #~(lambda _
+        (let ((dir (string-append #$output
+                                  "/share/wine/gecko/wine-gecko-"
+                                  #$(package-version wine-gecko)
+                                  "-"
+                                  #$(match bits
+                                      ('32 "x86")
+                                      ('64 "x86_64")))))
+          (mkdir-p dir)
+          (copy-recursively (string-append #$wine-gecko) dir)))))
 
 ;; This minimal build of Wine is needed to prevent a circular dependency with
 ;; vkd3d.
@@ -248,7 +318,16 @@ integrate Windows applications into your desktop.")
                                                          "/" (basename file))))
                                       icd-files)))))))
                 (_
-                 #~()))))
+                 #~()))
+           (add-after 'install 'install-mono
+             #$(install-wine-mono
+                "8.1.0"
+                "1m7d1rznh226s9n1x69fsajgkn5fy7jfn735kqz9wk4yf908lgjf"))
+           (add-after 'install 'install-gecko32
+             #$(install-wine-gecko
+                '32
+                "2.47.4"
+                "1dmg221nxmgyhz7clwlnvwrx1wi630z62y4azwgf40l6jif8vz1c"))))
        ((#:configure-flags _ '()) #~'())))))
 
 (define-public wine64
@@ -301,6 +380,11 @@ integrate Windows applications into your desktop.")
                                            "wine64-preloader")))))))
                  (_
                   #~()))
+            (add-after 'install-gecko32 'install-gecko64
+              #$(install-wine-gecko
+                 '64
+                 "2.47.4"
+                 "0518m084f9bdl836gs3d8qm8jx65j2y1w35zi9x8s1bxadzgr27x"))
             (add-after 'compress-documentation 'copy-wine32-manpage
               (lambda* (#:key inputs #:allow-other-keys)
                 ;; Copy the missing man file for the wine binary from wine.
@@ -320,7 +404,15 @@ integrate Windows applications into your desktop.")
     (version %wine-devel-version)
     (source
      (wine-source version
-                  "10wn6ndz9l02m6z0kr22hpsgk95ac7c6x5ryxxlgfm5a8abx4l71"))))
+                  "10wn6ndz9l02m6z0kr22hpsgk95ac7c6x5ryxxlgfm5a8abx4l71"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments wine)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (replace 'install-mono
+              #$(install-wine-mono
+                 "9.3.0"
+                 "19jlb19jx803p10mjwgjs4vqm564jk5p93dp8br7998p6agfngf2"))))))))
 
 (define-public wine64-devel
   (package
@@ -331,7 +423,15 @@ integrate Windows applications into your desktop.")
      (wine-source version
                   "10wn6ndz9l02m6z0kr22hpsgk95ac7c6x5ryxxlgfm5a8abx4l71"))
     (inputs (modify-inputs (package-inputs wine64)
-              (replace "wine" wine-devel)))))
+              (replace "wine" wine-devel)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments wine64)
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (replace 'install-mono
+              #$(install-wine-mono
+                 "9.3.0"
+                 "19jlb19jx803p10mjwgjs4vqm564jk5p93dp8br7998p6agfngf2"))))))))
 
 (define-public wine-staging-patchset-data
   (package
