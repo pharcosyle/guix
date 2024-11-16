@@ -24925,7 +24925,7 @@ package attempts to address the shortcomings of @code{isodate}.")
 (define-public python-isort
   (package
     (name "python-isort")
-    (version "5.12.0")
+    (version "5.13.2")
     (source
      (origin
        (method git-fetch)
@@ -24938,12 +24938,19 @@ package attempts to address the shortcomings of @code{isodate}.")
        (snippet '(for-each delete-file (find-files "." "\\.whl$")))
        (sha256
         (base32
-         "1vbwc4gpffclf6hw08lvvgqlvsgfjlw7gjsm28jfcrln2pixla7j"))))
+         "1d9cg5ms1qilhvpk2925zh87xgzd2ly29wywwxp0yisdddi8ln7z"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      #:test-flags '(list "tests/unit/" "-k" "not test_gitignore"
-                          "--ignore=tests/unit/test_deprecated_finders.py")
+      #:test-flags
+      #~(list "tests/unit/"
+              "-k" (string-join
+                    (list
+                     "not test_gitignore"
+                     ;; See <https://github.com/PyCQA/isort/issues/2234>.
+                     "test_isort_should_warn_on_empty_custom_config_issue_1433")
+                    " and not ")
+              "--ignore=tests/unit/test_deprecated_finders.py")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'install 'install-example-plugins
@@ -24961,8 +24968,8 @@ package attempts to address the shortcomings of @code{isodate}.")
                 (apply invoke "pip" "--no-cache-dir" "--no-input"
                        "install"  "--user" "--no-deps" example-whls)))))))
     (native-inputs
-     (list python-black
-           python-colorama
+     (list python-colorama
+           python-black
            python-hypothesmith
            python-libcst-minimal
            python-natsort
@@ -24970,8 +24977,8 @@ package attempts to address the shortcomings of @code{isodate}.")
            python-poetry-core
            python-pylama
            python-pypa-build
-           python-pytest-mock
-           python-pytest))
+           python-pytest
+           python-pytest-mock))
     (home-page "https://github.com/PyCQA/isort")
     (synopsis "Python utility/library to sort python imports")
     (description "@code{python-isort} is a python utility/library to sort
