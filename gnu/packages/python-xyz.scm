@@ -12842,6 +12842,7 @@ container data structures in Python).")
                       "/etc/jupyter/migrated")))))))
     (propagated-inputs (list python-platformdirs python-traitlets))
     (native-inputs (list python-hatchling
+                         python-pip
                          python-pre-commit
                          python-pytest
                          python-pytest-cov
