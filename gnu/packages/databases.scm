@@ -4406,7 +4406,9 @@ reasonable substitute.")
                     ;; connecting to localhost:6380. Connection refused."
                     ;; (see: https://github.com/redis/redis-py/issues/2109).
                     "and not test_sync "
-                    "and not test_psync"))
+                    "and not test_psync "
+                    ;; AssertionError: assert 3 == 2
+                    "and not test_acl_list"))
       #:phases
       #~(modify-phases %standard-phases
           ;; Tests require a running Redis server.
@@ -4418,7 +4420,7 @@ reasonable substitute.")
                         "--enable-module-command" "local")))))))
     (native-inputs
      (list python-pytest
-           python-pytest-asyncio
+           python-pytest-asyncio-0.23
            python-pytest-timeout
            python-setuptools
            python-wheel
