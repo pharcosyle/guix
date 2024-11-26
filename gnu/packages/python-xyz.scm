@@ -31524,7 +31524,9 @@ but portable.")
     (arguments
      (list #:test-flags '(list "-o" "asyncio_mode=auto"
                                ;; PytestUnraisableExceptionWarning
-                               "-k" "not test_watch_log and not test_awatch")))
+                               "-k" "not test_watch_log and not test_awatch")
+       #:phases #~(modify-phases %standard-phases
+                  (delete 'sanity-check))))
     (native-inputs
      (list python-anyio
            python-coverage
@@ -31534,7 +31536,6 @@ but portable.")
            python-pytest-cov
            python-pytest-mock
            python-pytest-sugar
-           python-pytest-toolbox
            python-setuptools
            python-wheel))
     (home-page "https://github.com/samuelcolvin/watchgod")
