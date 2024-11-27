@@ -3634,7 +3634,7 @@ ini-style description files.")
 (define-public kdesu
   (package
     (name "kdesu")
-    (version "6.5.0")
+    (version "6.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3643,7 +3643,7 @@ ini-style description files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14xkkbd7nq0hhlfk83fj363rxbcjj087pjg3xcig27ppph5qvh03"))))
+                "13rrjnyffqf725jbl03nc2vfdkxfkc0jlf14gvxa9b1z85y012hf"))))
     (build-system cmake-build-system)
     (propagated-inputs
      (list kpty))
