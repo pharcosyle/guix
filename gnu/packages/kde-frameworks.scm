@@ -1400,7 +1400,7 @@ to flat and hierarchical lists.")
 (define-public kplotting
   (package
     (name "kplotting")
-    (version "6.5.0")
+    (version "6.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1409,7 +1409,7 @@ to flat and hierarchical lists.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hyrh3sw6znl79xxhqw7jqgyhh1b59aq7lmhkpagl0i0sk29f5h2"))))
+                "12xsiwngd93xy3cwnj35f1g6mfxraqkbgdfjbrc6580wfvvrav3k"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules qttools))
