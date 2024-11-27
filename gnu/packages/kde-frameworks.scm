@@ -5184,7 +5184,7 @@ script engines.")
 (define-public purpose
   (package
     (name "purpose")
-    (version "6.5.0")
+    (version "6.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5193,7 +5193,7 @@ script engines.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0x625b392wi5g52d1b9hpdb090jclpfapfl0k6fvgx9plw20my20"))))
+                "0sph6ma9jmpygvp4yvaaig6rsxi5yv9qhqnzly084715a4k1is3y"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules gettext-minimal))
