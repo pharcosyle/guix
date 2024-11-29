@@ -1294,7 +1294,7 @@ multi-floor indoor maps.")
 (define-public kpublictransport
   (package
     (name "kpublictransport")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -1302,7 +1302,7 @@ multi-floor indoor maps.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1g78kmnqg9y4mvd7nmlb4nd02ch3p5gxhnbphcnisc3ym3w3q1jj"))))
+                "1zb4pkba9rrh7n7w3kvpbxniq54gvf9x71g5x67006fwqvbvhn33"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
