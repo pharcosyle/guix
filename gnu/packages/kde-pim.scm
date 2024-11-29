@@ -594,14 +594,14 @@ management system and its Plasma integration components.")
 (define-public kaccounts-providers
   (package
     (name "kaccounts-providers")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1mfidlhy8jh3ar9rpn39a52q6sfhc5f4yn30p2ihv9l7xi5r9vk0"))))
+                "1r0h48g9c24vsdziblnwjq37bcy8xiq5vf8bm63dg0308yn22qdg"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules intltool))
     (inputs (list kaccounts-integration
@@ -612,6 +612,7 @@ management system and its Plasma integration components.")
                   kio
                   libaccounts-qt6
                   qtwebengine
+                  qcoro-qt6
                   signond-qt6))
     (arguments (list #:qtbase qtbase))
     (home-page "https://invent.kde.org/network/kaccounts-providers")
