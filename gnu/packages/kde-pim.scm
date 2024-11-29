@@ -1722,14 +1722,14 @@ application \"Parts\" to be embedded as a Kontact component (or plugin).")
 (define-public korganizer
   (package
     (name "korganizer")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/korganizer-" version ".tar.xz"))
        (sha256
-        (base32 "10walf46h1cnyfcpkppybgzlfcn93rygwppb4jfi2rg24rka3i84"))))
+        (base32 "0q4zssc092g61v0lzccb01v8crqvqg1f5f57wgsd7278zql51smb"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules dbus qttools kdoctools tzdata-for-tests))
