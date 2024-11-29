@@ -1859,14 +1859,14 @@ pass files.")
 (define-public kpimcommon
   (package
     (name "kpimcommon")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/pimcommon-" version ".tar.xz"))
        (sha256
-        (base32 "0k7zakx1dd39997a9a3d6qmlzdc5alw5gny0xh7bncv0fpilvgyh"))))
+        (base32 "0b9v5xbh0i6sky2lwcvlslcmg31fd0dh5qmb9d7m6jsxgw3lghnc"))))
     (properties `((upstream-name . "pimcommon")))
     (build-system qt-build-system)
     (native-inputs
