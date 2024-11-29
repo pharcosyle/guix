@@ -392,7 +392,7 @@ games, and tools.")
 (define-public kactivitymanagerd
   (package
     (name "kactivitymanagerd")
-    (version "6.1.4")
+    (version "6.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -400,7 +400,7 @@ games, and tools.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1h3hk1552yacalbwkyn17gyayv7lhw3b6qdip4z1r0dsf71m55lq"))))
+                "1nlh98zcwph5k52w4hhrznnibqfa5vsrqr237kmiwwqca1jjqrqp"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules))
