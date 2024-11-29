@@ -950,14 +950,14 @@ KDE Plasma Workspaces.")
 (define-public ksshaskpass
   (package
     (name "ksshaskpass")
-    (version "6.1.4")
+    (version "6.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/ksshaskpass-" version ".tar.xz"))
               (sha256
                (base32
-                "0335v6xky0s605q8178grp87dgar5yv3rgcjx1419a4sjdzk6wjv"))))
+                "1gxzrbr0gaxb718kby94r5pspll934wn7lhvk09f5x9y30p1vn9x"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs
