@@ -244,14 +244,14 @@ to list and filter contacts.")
 (define-public akonadi-mime
   (package
     (name "akonadi-mime")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/akonadi-mime-" version ".tar.xz"))
        (sha256
-        (base32 "1y6h53jfy77g7198cp5rfv0zabvfjg6fsw95wp4khcjvmm0qhzqm"))))
+        (base32 "1ykq7inry8ww1iv236r7i5ihcq57psfy8ddqhpkg73yrxbfl8y2b"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules libxslt ;; xslt for generating interface descriptions
