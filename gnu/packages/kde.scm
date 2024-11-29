@@ -800,14 +800,14 @@ expression library, that is used in Krita.")
 (define-public kolourpaint
   (package
     (name "kolourpaint")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/release-service/" version
                             "/src/kolourpaint-" version ".tar.xz"))
         (sha256
-         (base32 "1fi1y74s2lnrxdnr9ym4b1ilj9qi019gaavfv0sq1xg8ppbpgcbr"))))
+         (base32 "0nzip8vbk8dj7jlyr4kg2jxc2rri0rfiagv55kwyqsqh7vwzikqf"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
