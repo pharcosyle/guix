@@ -1592,7 +1592,7 @@ and minimalistic.")
 (define-public milou
   (package
     (name "milou")
-    (version "6.1.4")
+    (version "6.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1600,7 +1600,7 @@ and minimalistic.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "10h0f997lq2b9dp7c8symilgxg51hlnfpqcgb7j6x1574363r03j"))))
+                "1ybm6xsc1m19kzm9hx6h07d9bk0020ka15idn0pshym70icn6yml"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list kcoreaddons
