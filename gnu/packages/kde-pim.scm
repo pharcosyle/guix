@@ -138,14 +138,14 @@ programs.")
 (define-public akonadi-calendar
   (package
     (name "akonadi-calendar")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/akonadi-calendar-" version ".tar.xz"))
        (sha256
-        (base32 "0nwl3jn7qqhs19ydxidjzh7vdll5s17pw4xaazmd3g7fg6mngnzh"))))
+        (base32 "069yhxzkqx2zi4p3lj810g3w8r1vllaqpynahr572a1ksjka24sh"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
