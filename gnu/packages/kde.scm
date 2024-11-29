@@ -775,7 +775,7 @@ expression library, that is used in Krita.")
 (define-public kcolorchooser
   (package
     (name "kcolorchooser")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
@@ -783,7 +783,7 @@ expression library, that is used in Krita.")
                            "/src/kcolorchooser-" version ".tar.xz"))
        (sha256
         (base32
-         "1qfp2kf98kf5qps11q7mi6y8z6bfd4bxwvx6ijv4p1jw0cmylj11"))))
+         "0cj12vzlk6y3chjhpfkykd8j3s0h48710iq7g5p4l0cj3byvyqwp"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
