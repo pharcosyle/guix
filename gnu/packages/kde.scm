@@ -416,14 +416,14 @@ projects.")
 (define-public kapptemplate
   (package
     (name "kapptemplate")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kapptemplate-" version ".tar.xz"))
        (sha256
-        (base32 "0mgpk6879dprhpxmbdgbb6sz3ik9ycav4sihh20qmsgj09h8qp3g"))))
+        (base32 "124gnzdydpwnm8vrnlyjrqqv9v6mmrrx6cw4x9sj8cp5ky7mypj0"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
