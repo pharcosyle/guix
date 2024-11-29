@@ -625,7 +625,7 @@ KDSoap.")
 (define-public kio-extras
   (package
     (name "kio-extras")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -633,7 +633,7 @@ KDSoap.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0h720wcgsdx9h5vlr4flxrd3djmhwvlwkrf0yzwsf4amcb9wds8r"))))
+                "1ak839b3yalw6qyn0rsz7hl3l30ix09p2wigp8qcg9gjw8bmf5zl"))))
     (build-system cmake-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
