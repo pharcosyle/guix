@@ -1177,14 +1177,14 @@ This package is part of the KDE games module.")
 (define-public lskat
   (package
     (name "lskat")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/lskat-" version ".tar.xz"))
        (sha256
-        (base32 "1p5gq8zkjr3cl7scq9irhiaf96az02k1fk3c0myqh0l9nyxakpsw"))))
+        (base32 "0m65gqkl2zb271cidqsmwvzzjisncnaf3wxlidg3kf4sbv2hd31f"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
