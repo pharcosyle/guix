@@ -868,14 +868,14 @@ This package is part of the KDE games module.")
 (define-public bomber
   (package
     (name "bomber")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/bomber-" version ".tar.xz"))
        (sha256
-        (base32 "1sw3a2nvwciq7m8d30k0ipzx5gsa48jwflxkih8ha354wl5mk1cs"))))
+        (base32 "1gs5hcjhdjb76mr92p3zpapxy14ilwbhrkxmi6x2mx7ql552khfs"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
