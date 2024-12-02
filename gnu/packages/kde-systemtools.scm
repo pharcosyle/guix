@@ -440,14 +440,14 @@ This package is part of the KDE administration module.")
 (define-public yakuake
   (package
     (name "yakuake")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/yakuake-" version ".tar.xz"))
               (sha256
                (base32
-                "0bgpnvq1dpijrz3vj7yjw5dkss98l22iirqrvih3wgm0n6ccaix2"))))
+                "055rz7f5v85iphhqnla59fmz7qvhxjlighyilrn941dqvh5az1x4"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
