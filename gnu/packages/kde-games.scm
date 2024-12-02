@@ -909,14 +909,14 @@ This package is part of the KDE games module.")
 (define-public granatier
   (package
     (name "granatier")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/granatier-" version ".tar.xz"))
        (sha256
-        (base32 "0g38sfx4x61isvi3h6b8xmdbbqrvq8z8rrxb0xdbz3fkwxyigy75"))))
+        (base32 "1hr46ayg45wxz7m0r2al7yysapw6jkifqic09159n803n5rrqnjl"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
