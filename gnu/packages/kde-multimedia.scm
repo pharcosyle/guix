@@ -595,14 +595,14 @@ camera.  Use it to take pictures and make videos to share.")
 (define-public kmix
   (package
     (name "kmix")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kmix-" version ".tar.xz"))
        (sha256
-        (base32 "1ha0sil2vbpvgys7jkhav7j5g7drg57ypr8c9i3c8ndqwpsyxk3g"))))
+        (base32 "0wgg657vlnn9b9d0b8c0lfzn5v997r7mlnrpvajbc06kwpd7cwd6"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools-5 pkg-config))
