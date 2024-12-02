@@ -1367,14 +1367,14 @@ This package is part of the KDE games module.")
 (define-public ksnakeduel
   (package
     (name "ksnakeduel")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ksnakeduel-" version ".tar.xz"))
        (sha256
-        (base32 "11v8zrbwb8dhdmaa76rhv5qa084raxldl8sjp9299hd8wk34297b"))))
+        (base32 "1nyysxcnc2h0n842zzna8vjsvcfx46x15qy2whizali9n4ikaypl"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs
