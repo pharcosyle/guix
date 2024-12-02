@@ -137,14 +137,14 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
 (define-public khelpcenter
   (package
     (name "khelpcenter")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/khelpcenter-" version ".tar.xz"))
        (sha256
-        (base32 "0y6smxc64mxpv535rih1m50wy4lf4gzsp944snvxrb4gj8q9sgy1"))))
+        (base32 "1hl6pvnw4dp6fl4ri3a8hhyww0j1bk5wk0nn61acs1qmaa4pbfv0"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools perl))
@@ -169,16 +169,6 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
-               (add-after 'unpack 'add-miss-package
-                 (lambda _
-                   ;; https://invent.kde.org/system/khelpcenter/-/merge_requests/50
-                   (substitute* "CMakeLists.txt"
-                     (("    WebEngineWidgets")
-                      "    WebEngineWidgets
-    PrintSupport")
-                     (("Qt6::WebEngineWidgets")
-                      "Qt6::PrintSupport
-    Qt6::WebEngineWidgets"))))
                (add-after 'install 'wrap-executable
                  (lambda* (#:key inputs #:allow-other-keys)
                    (wrap-program (string-append #$output
