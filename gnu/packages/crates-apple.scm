@@ -11,6 +11,7 @@
 ;;; Copyright © 2023 Steve George <steve@futurile.net>
 ;;; Copyright © 2023 Jaeme Sifat <jaeme@runbox.com>
 ;;; Copyright © 2024 Wilko Meyer <w@wmeyer.eu>
+;;; Copyright © 2024 Jordan Moore <lockbox@struct.foo>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -884,6 +885,31 @@ macOS API for file changes notifications")
     (description "This package provides bindings to Apple's frameworks.")
     (license license:expat)))
 
+(define-public rust-mac-notification-sys-0.6
+  (package
+    (name "rust-mac-notification-sys")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "mac-notification-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "14cgvhb2790fzsilwdw720m2pc2zzk0zcgbjgqbkgahp6x7z7s6w"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;Requires OSX to build framework "Foundation"
+       #:cargo-inputs (("rust-cc" ,rust-cc-1)
+                       ("rust-dirs-next" ,rust-dirs-next-2)
+                       ("rust-objc-foundation" ,rust-objc-foundation-0.1)
+                       ("rust-objc-id" ,rust-objc-id-0.1)
+                       ("rust-time" ,rust-time-0.3))))
+    (home-page "https://github.com/h4llow3En/mac-notification-sys")
+    (synopsis "Thin wrapper around macOS Notifications")
+    (description
+     "This package provides Thin wrapper around @code{macOS} Notifications.")
+    (license license:expat)))
+
 (define-public rust-mach-0.3
   (package
     (name "rust-mach")
@@ -1754,33 +1780,33 @@ macOS and iOS.")
        (("rust-hex" ,rust-hex-0.4)
         ("rust-tempdir" ,rust-tempdir-0.3))))))
 
-(define-public rust-security-framework-0.2
+(define-public rust-security-framework-0.2.4-yanked
   (package
     (inherit rust-security-framework-0.3)
     (name "rust-security-framework")
-    (version "0.2.4")
+    (version "0.2.4") ;This version was yanked!
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "security-framework" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version "-yanked.tar.gz"))
        (sha256
-        (base32
-         "0gw3xxg8yzbjb4ny5cy07gky177c1nbgpxqjsw3hfzpfgrxji9bz"))))
+        (base32 "0gw3xxg8yzbjb4ny5cy07gky177c1nbgpxqjsw3hfzpfgrxji9bz"))))
     (arguments
-     `(#:skip-build? #t ; MacOS specific
+     `(#:skip-build? #t ;MacOS specific
        #:cargo-inputs
-       (("rust-core-foundation"
-         ,rust-core-foundation-0.6)
-        ("rust-core-foundation-sys"
-         ,rust-core-foundation-sys-0.6)
+       (("rust-core-foundation" ,rust-core-foundation-0.6)
+        ("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
         ("rust-libc" ,rust-libc-0.2)
-        ("rust-security-framework-sys"
-         ,rust-security-framework-sys-0.2))
-       #:cargo-development-inputs
-       (("rust-hex" ,rust-hex-0.3)
-        ("rust-tempdir" ,rust-tempdir-0.3))))))
+        ("rust-security-framework-sys" ,rust-security-framework-sys-0.2))
+       #:cargo-development-inputs (("rust-hex" ,rust-hex-0.3)
+                                   ("rust-tempdir" ,rust-tempdir-0.3))))
+    (properties '((crate-version-yanked? . #t)))))
+
+(define-public rust-security-framework-0.2
+  ;; There are no non-yanked versions of this semver.
+  (deprecated-package "rust-security-framework"
+                      rust-security-framework-0.2.4-yanked))
 
 (define-public rust-security-framework-sys-2
   (package
@@ -1840,24 +1866,28 @@ macOS and iOS.")
      `(#:cargo-inputs
        (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6))))))
 
-(define-public rust-security-framework-sys-0.2
+(define-public rust-security-framework-sys-0.2.4-yanked
   (package
     (inherit rust-security-framework-sys-0.3)
     (name "rust-security-framework-sys")
-    (version "0.2.4")
+    (version "0.2.4") ;This version was yanked!
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "security-framework-sys" version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version "-yanked.tar.gz"))
        (sha256
-        (base32
-         "07zv0szz2kfy1hn251h0qsq0q9i1zia768d8vzril1g6xarj7mcj"))))
+        (base32 "07zv0szz2kfy1hn251h0qsq0q9i1zia768d8vzril1g6xarj7mcj"))))
     (arguments
-     `(#:skip-build? #t ; MacOS specific
-       #:cargo-inputs
-       (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
-        ("rust-libc" ,rust-libc-0.2))))))
+     `(#:skip-build? #t ;MacOS specific
+       #:cargo-inputs (("rust-core-foundation-sys" ,rust-core-foundation-sys-0.6)
+                       ("rust-libc" ,rust-libc-0.2))))
+    (properties '((crate-version-yanked? . #t)))))
+
+(define-public rust-security-framework-sys-0.2
+  ;; There are no non-yanked versions of this semver.
+  (deprecated-package "rust-security-framework-sys"
+                      rust-security-framework-sys-0.2.4-yanked))
 
 (define-public rust-system-configuration-0.5
   (package
