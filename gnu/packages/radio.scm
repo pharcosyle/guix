@@ -2411,10 +2411,13 @@ receiver.")
            libusb
            mpg123
            rtl-sdr
-           qtdeclarative
-           qtcharts
-           qt5compat
-           qtmultimedia
+           qtbase-5
+           qtcharts-5
+           qtdeclarative-5
+           qtgraphicaleffects
+           qtmultimedia-5
+           qtquickcontrols-5
+           qtquickcontrols2-5
            soapysdr))
     (arguments
      (list #:qtbase qtbase
