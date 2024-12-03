@@ -68,7 +68,7 @@
                 "1hzy2g426az6y5gh2pzkz8bd0z744ibnvs72iqwy902y7lhdil0f"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf-2.71)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext-minimal" ,gettext-minimal)
        ;; required by gnulib to fix parse-datetime.c compilation error

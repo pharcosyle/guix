@@ -179,7 +179,6 @@ such as mate-panel and xfce4-panel.")
     (outputs '("out" "doc"))
     (arguments
      (list
-      #:meson meson-1.5               ; 1.3 or higher required
       #:configure-flags
       #~(list
          "-Dgtk_doc=true"

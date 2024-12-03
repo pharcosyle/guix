@@ -60,6 +60,10 @@
     (build-system gnu-build-system)
     (arguments
      (list
+      #:configure-flags
+      (if (%current-target-system)
+          #~'("texinfo_cv_sys_iconv_converts_euc_cn=yes")
+          #~'())
       ;; XXX: Work around <https://issues.guix.gnu.org/59616>.
       #:tests? (and (not (target-hurd?))
                     (not (%current-target-system)))
@@ -172,6 +176,11 @@ is on expressing the content semantically, avoiding physical markup commands.")
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
     (arguments
      (substitute-keyword-arguments (package-arguments texinfo-no-texi2any-epub)
+       ((#:configure-flags configure-flags  #~'())
+        #~(append #$configure-flags
+                  #$(if (or (target-hurd64?) (%current-target-system))
+                        '("CFLAGS=-Wno-incompatible-pointer-types")
+                        '())))
        ((#:phases phases)
         #~(modify-phases #$phases
             (add-after 'unpack 'fix-configure
@@ -204,9 +213,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
 (define-public info-reader
   ;; The idea of this package is to have the standalone Info reader without
   ;; the dependency on Perl that 'makeinfo' drags.
-  ;; Texinfo version must be at least 7.0, which fixed crashes in a pt_BR
-  ;; locale; see <https://git.savannah.gnu.org/cgit/texinfo.git/plain/NEWS>.
-  (package/inherit texinfo-7
+  (package/inherit texinfo
     (name "info-reader")
     (arguments
      (append

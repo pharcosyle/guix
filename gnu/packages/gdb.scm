@@ -51,14 +51,15 @@
   ;; enough to avoid massive rebuilds.
   (package
     (name "gdb")
-    (version "15.1")
+    (version "15.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
+              (patches (search-patches "gdb-hurd64.patch"))
               (sha256
                (base32
-                "1wjl6f86pyrkyy0xhsf362ywnr559i6sm9f5m6y388apsjn4w99q"))))
+                "0k9i8mizg4hby020k53kqmc835pajh9c8d5klv5s1ddm6p6hqdc3"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
@@ -150,31 +151,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
     (properties `((hidden? . #t)))
     (license gpl3+)))
 
-(define-public gdb-15
-  (package
-    (inherit gdb/pinned)
-    (version "15.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gdb/gdb-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1wjl6f86pyrkyy0xhsf362ywnr559i6sm9f5m6y388apsjn4w99q"))))
-    (properties '())))
-
-(define-public gdb-15
-  (package
-    (inherit gdb-14)
-    (version "15.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gdb/gdb-"
-                                  version ".tar.xz"))
-              (patches (search-patches "gdb-hurd64.patch"))
-              (sha256
-               (base32
-                "0k9i8mizg4hby020k53kqmc835pajh9c8d5klv5s1ddm6p6hqdc3"))))))
+(define-public gdb-15 gdb/pinned)
 
 (define-public gdb
   ;; The "default" version.
