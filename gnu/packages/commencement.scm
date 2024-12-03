@@ -2346,7 +2346,7 @@ exec " gcc "/bin/" program
                                            %bootstrap-coreutils&co
                                            coreutils-boot0))
                                      "/bin/rm") "-rf"
-                      "gcc/testsuite/go.test/test/fixedbugs/issue27836.dir"))))))
+                                     "gcc/testsuite/go.test/test/fixedbugs/issue27836.dir"))))))
     (arguments
      (cons*
       #:guile %bootstrap-guile
@@ -2429,6 +2429,15 @@ exec " gcc "/bin/" program
                                            char-set:letter)
                                         #$(package-name lib)))
                            (list gmp-6.0 mpfr mpc)))))
+             #$@(if (and (target-linux?) (target-x86-64?))
+                    #~((add-after 'unpack 'patch-system.h
+                         (lambda _
+                           ;; Avoid: missing binary operator before token "("
+                           (substitute* "gcc/system.h"
+                             (("#ifndef SIZE_MAX" all)
+                              (string-append "#define SIZE_MAX (ULONG_MAX)\n"
+                                             all))))))
+                    #~())
              #$@(if (target-hurd64?)
                     #~((add-after 'unpack 'patch-libcc1-static
                          (lambda _
@@ -2476,9 +2485,9 @@ exec " gcc "/bin/" program
 
               ;; The libstdc++ that libcc1 links against.
               ("libstdc++" ,(match (%current-system)
-                                   ("riscv64-linux" (make-libstdc++-boot0 gcc-7))
-                                   ("x86_64-gnu" (make-libstdc++-boot0 gcc-14))
-                                   (_ libstdc++-boot0)))
+                              ("riscv64-linux" (make-libstdc++-boot0 gcc-7))
+                              ("x86_64-gnu" (make-libstdc++-boot0 gcc-14))
+                              (_ libstdc++-boot0)))
 
               ;; Call it differently so that the builder can check whether
               ;; the "libc" input is #f.
