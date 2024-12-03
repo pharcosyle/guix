@@ -3399,7 +3399,15 @@ exec \"$@\" \
 
          #:disallowed-references ,(assoc-ref (%boot3-inputs) "coreutils&co")
 
-         ,@(package-arguments bash))))))
+         ;; gcc-14 implictly uses -Wimplicit-function-declaration
+         ;; which together with -Werror causes:
+         ;; ./enable.def:492:11: error: implicit declaration of function ‘dlclose’;
+         ;; Doing it here rather than in `bash-minimal' or `static-bash'
+         ;; avoids a boot0-world rebuild.
+         ,@(if (and (target-x86-64?) (target-linux?))
+               `(#:configure-flags
+                 '("CFLAGS=-g -O2 -Wno-implicit-function-declaration"))
+               (package-arguments bash)))))))
 
 (define (%boot4-inputs)
   ;; Now use the final Bash.
