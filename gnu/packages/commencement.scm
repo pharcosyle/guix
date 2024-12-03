@@ -2346,7 +2346,7 @@ exec " gcc "/bin/" program
                                            %bootstrap-coreutils&co
                                            coreutils-boot0))
                                      "/bin/rm") "-rf"
-                      "gcc/testsuite/go.test/test/fixedbugs/issue27836.dir"))))))
+                                     "gcc/testsuite/go.test/test/fixedbugs/issue27836.dir"))))))
     (arguments
      (cons*
       #:guile %bootstrap-guile
@@ -2429,6 +2429,15 @@ exec " gcc "/bin/" program
                                            char-set:letter)
                                         #$(package-name lib)))
                            (list gmp-6.0 mpfr mpc)))))
+             #$@(if (and (target-linux?) (target-x86-64?))
+                    #~((add-after 'unpack 'patch-system.h
+                         (lambda _
+                           ;; Avoid: missing binary operator before token "("
+                           (substitute* "gcc/system.h"
+                             (("#ifndef SIZE_MAX" all)
+                              (string-append "#define SIZE_MAX (ULONG_MAX)\n"
+                                             all))))))
+                    #~())
              #$@(if (target-hurd64?)
                     #~((add-after 'unpack 'patch-libcc1-static
                          (lambda _
@@ -2476,9 +2485,9 @@ exec " gcc "/bin/" program
 
               ;; The libstdc++ that libcc1 links against.
               ("libstdc++" ,(match (%current-system)
-                                   ("riscv64-linux" (make-libstdc++-boot0 gcc-7))
-                                   ("x86_64-gnu" (make-libstdc++-boot0 gcc-14))
-                                   (_ libstdc++-boot0)))
+                              ("riscv64-linux" (make-libstdc++-boot0 gcc-7))
+                              ("x86_64-gnu" (make-libstdc++-boot0 gcc-14))
+                              (_ libstdc++-boot0)))
 
               ;; Call it differently so that the builder can check whether
               ;; the "libc" input is #f.
@@ -3055,13 +3064,22 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
        ,@(substitute-keyword-arguments (package-arguments static-bash)
            ((#:configure-flags flags #~'())
-            ;; Add a '-L' flag so that the pseudo-cross-ld of
-            ;; BINUTILS-BOOT0 can find libc.a.
-            #~(append #$flags
-                      (list (string-append "LDFLAGS=-static -L"
-                                           (assoc-ref %build-inputs
-                                                      "libc:static")
-                                           "/lib")))))))))
+            #~(append
+               #$flags
+               ;; gcc-14 implictly uses -Wimplicit-function-declaration
+               ;; which together with -Werror causes:
+               ;; ./enable.def:492:11: error: implicit declaration of function ‘dlclose’;
+               ;; Doing it here rather than in `bash-minimal' or `static-bash'
+               ;; avoids a boot0-world rebuild.
+               #$(if (and (target-x86-64?) (target-linux?))
+                     #~'("CFLAGS=-g -O2 -Wno-implicit-function-declaration")
+                     #~'())
+               ;; Add a '-L' flag so that the pseudo-cross-ld of
+               ;; BINUTILS-BOOT0 can find libc.a.
+               (list (string-append "LDFLAGS=-static -L"
+                                    (assoc-ref %build-inputs
+                                               "libc:static")
+                                    "/lib")))))))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
@@ -3264,7 +3282,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                        "/lib -L" zlib "/lib -Wl,-rpath="
                                        zlib "/lib")
                         flag))
-                  #$(if (target-hurd64?)
+                  #$(if (or (target-hurd64?)
+                            (and (target-x86-64?) (target-linux?)))
                         `(cons
                           (string-append
                            ;;Convince gmp's configure that gcc works
@@ -3272,7 +3291,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                           ,flags)
                         flags))))
         ((#:configure-flags flags)
-         (if (target-hurd64?)
+         (if (or (target-hurd64?)
+                 (and (target-x86-64?) (target-linux?)))
              #~(append
                 #$flags
                 (list #$(string-append
@@ -3326,7 +3346,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                                #\:))
                                       ":")
                                      "\nAM_CXXFLAGS = "))))))
-             #$@(if (target-hurd64?)
+             #$@(if (or (target-hurd64?)
+                        (and (target-x86-64?) (target-linux?)))
                     #~((add-after 'configure 'create-stage-wrapper
                          (lambda _
                            (with-output-to-file "gcc.sh"
@@ -3378,7 +3399,15 @@ exec \"$@\" \
 
          #:disallowed-references ,(assoc-ref (%boot3-inputs) "coreutils&co")
 
-         ,@(package-arguments bash))))))
+         ;; gcc-14 implictly uses -Wimplicit-function-declaration
+         ;; which together with -Werror causes:
+         ;; ./enable.def:492:11: error: implicit declaration of function ‘dlclose’;
+         ;; Doing it here rather than in `bash-minimal' or `static-bash'
+         ;; avoids a boot0-world rebuild.
+         ,@(if (and (target-x86-64?) (target-linux?))
+               `(#:configure-flags
+                 '("CFLAGS=-g -O2 -Wno-implicit-function-declaration"))
+               (package-arguments bash)))))))
 
 (define (%boot4-inputs)
   ;; Now use the final Bash.
@@ -3690,7 +3719,7 @@ is the GNU Compiler Collection.")
   (make-gcc-toolchain gcc-10))
 
 (define-public gcc-toolchain-11
-    (make-gcc-toolchain gcc-11))
+  (make-gcc-toolchain gcc-11))
 
 (define-public gcc-toolchain-12
   (make-gcc-toolchain gcc-12))
@@ -3703,9 +3732,7 @@ is the GNU Compiler Collection.")
 
 ;; The default GCC
 (define-public gcc-toolchain
-  (if (host-hurd64?)
-      gcc-toolchain-14
-      gcc-toolchain-11))
+  gcc-toolchain-14)
 
 (define-public gcc-toolchain-aka-gcc
   ;; It's natural for users to try "guix install gcc".  This package
