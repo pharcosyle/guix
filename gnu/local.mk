@@ -1208,7 +1208,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/enblend-enfuse-reproducible.patch	\
   %D%/packages/patches/enjarify-setup-py.patch			\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
-  %D%/packages/patches/epiphany-fix-encoding-test.patch	\
   %D%/packages/patches/ergodox-firmware-fix-json-target.patch	\
   %D%/packages/patches/ergodox-firmware-fix-numpad.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
@@ -1376,7 +1375,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-brect-bounds.patch			\
   %D%/packages/patches/gdb-hurd64.patch				\
   %D%/packages/patches/gdm-default-session.patch		\
-  %D%/packages/patches/gdm-elogind-support.patch		\
   %D%/packages/patches/gdm-remove-hardcoded-xwayland-path.patch	\
   %D%/packages/patches/gdm-wayland-session-wrapper-from-env.patch	\
   %D%/packages/patches/gdm-pass-gdk-pixbuf-loader-env.patch	\
@@ -1409,6 +1407,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/git-filter-repo-generate-doc.patch	\
+  %D%/packages/patches/gjs-fix-closure-annotations.patch	\
   %D%/packages/patches/gklib-suitesparse.patch			\
   %D%/packages/patches/glib-appinfo-watch.patch			\
   %D%/packages/patches/glib-skip-failing-test.patch		\
@@ -1695,6 +1694,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgda-fix-build.patch			\
   %D%/packages/patches/libgda-fix-missing-initialization.patch	\
   %D%/packages/patches/libgda-skip-postgresql-tests.patch	\
+  %D%/packages/patches/libgdata-fix-tests.patch	\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgit2-uninitialized-proxy-settings.patch	\
   %D%/packages/patches/libgnome-encoding.patch			\
@@ -1722,6 +1722,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libphonenumber-reproducible-build.patch	\
   %D%/packages/patches/libqalculate-3.8.0-libcurl-ssl-fix.patch	\
   %D%/packages/patches/libquicktime-ffmpeg.patch 		\
+  %D%/packages/patches/libsecret-fix-test-paths.patch		\
   %D%/packages/patches/libsepol-versioned-docbook.patch		\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtar-CVE-2021-33643-CVE-2021-33644.patch	\
@@ -1816,6 +1817,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mpg321-CVE-2019-14247.patch		\
   %D%/packages/patches/mpg321-gcc-10.patch			\
+  %D%/packages/patches/modem-manager-fix-test-wrapper.patch	\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/monero-use-system-miniupnpc.patch			\
   %D%/packages/patches/mosaicatcher-unbundle-htslib.patch	\
@@ -1843,7 +1845,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/nfs4-acl-tools-0.3.7-fixpaths.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/network-manager-plugin-path.patch	\
-  %D%/packages/patches/network-manager-meson.patch		\
   %D%/packages/patches/newlib-getentropy.patch			\
   %D%/packages/patches/nginx-socket-cloexec.patch		\
   %D%/packages/patches/nickle-man-release-date.patch		\
@@ -2247,6 +2248,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/telegram-desktop-unbundle-cppgir.patch   \
   %D%/packages/patches/telegram-desktop-unbundle-gsl.patch      \
   %D%/packages/patches/telegram-purple-adjust-test.patch	\
+  %D%/packages/patches/telepathy-glib-fix-test.patch	\
   %D%/packages/patches/teuchos-remove-duplicate-using.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\

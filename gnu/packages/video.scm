@@ -540,12 +540,14 @@ as a joint effort between the BBC and Fluendo.")
        (patches
         (search-patches "libquicktime-ffmpeg.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Avoid legacy dependencies such as GTK+ 2 and FFmpeg 4.
+     (list #:configure-flags #~(list "--without-ffmpeg"
+                                     "--without-gtk")))
     (native-inputs
      (list gettext-minimal doxygen pkg-config))
     (inputs
      (list alsa-lib
-           ffmpeg-4
-           gtk+-2
            lame
            libdv
            libjpeg-turbo
@@ -621,8 +623,10 @@ receiving MJPG streams.")
        (sha256
         (base32 "16pl22ra3x2mkp8p3awslhlhj46b1nq9g89301gb0q4rgmnm705i"))))
     (build-system gnu-build-system)
+    ;; Avoid a dependency on the legacy GTK+ 2.
+    (arguments (list #:configure-flags #~(list "--without-gtk")))
     (inputs
-     (list gtk+-2 libdv libjpeg-turbo libpng libquicktime sdl))
+     (list libdv libjpeg-turbo libpng libquicktime sdl))
     (native-inputs
      (list pkg-config))
     (synopsis "Tools for handling MPEG")
