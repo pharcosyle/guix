@@ -171,6 +171,31 @@ API service accounts for Go.")
 2019.")
     (license license:expat)))
 
+(define-public go-github-com-aki237-nscjar
+  (package
+    (name "go-github-com-aki237-nscjar")
+    (version "0.0.0-20210417074043-bbb606196143")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aki237/nscjar")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vbagy9g795b17lnnkkm2f3pcrkxrzc4qbzc656g2cdkdprdyb4m"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/aki237/nscjar"))
+    (home-page "https://github.com/aki237/nscjar")
+    (synopsis "Handle Netscape / Mozilla cookies")
+    (description
+     "@code{nscjar} is a Go library used to parse and output
+Netscape/Mozilla's old-style cookie files.  It also implements a simple cookie
+jar struct to manage the cookies added to the cookie jar.")
+    (license license:expat)))
+
 (define-public go-github-com-alexliesenfeld-health
   (package
     (name "go-github-com-alexliesenfeld-health")
@@ -5988,6 +6013,34 @@ missing it.  It address the issues
 @url{https://github.com/golang/go/issues/40569, #40569} and
 @url{https://github.com/golang/go/issues/68082, #68082}.")
     (license license:bsd-3)))
+
+(define-public go-github-com-xdg-go-scram
+  (package
+    (name "go-github-com-xdg-go-scram")
+    (version "1.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xdg-go/scram")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bkznny84fdn4sy3wq5680v424glsq9nh2169qy51213bah6by84"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/xdg-go/scram"))
+    (propagated-inputs
+     (list go-github-com-xdg-go-stringprep
+           go-github-com-xdg-go-pbkdf2))
+    (home-page "https://github.com/xdg-go/scram")
+    (synopsis "Go implementation of RFC-5802")
+    (description
+     "Package scram provides client and server implementations of the
+@acronym{Salted Challenge Response Authentication Mechanism, SCRAM} described
+in RFC-5802 and RFC-7677.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-xeipuuv-gojsonpointer
   (let ((commit "4e3ac2762d5f479393488629ee9370b50873b3a6")
