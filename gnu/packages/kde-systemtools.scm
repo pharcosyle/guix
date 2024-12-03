@@ -49,14 +49,14 @@
 (define-public dolphin
   (package
     (name "dolphin")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-" version ".tar.xz"))
        (sha256
-        (base32 "0rrmbzrywv19z93b9291r863dm7panz65cf10lzgjqzlsx7hm1az"))))
+        (base32 "0vc0hm96li0jvy1yh7sizmq5yqhzxkc5yjnaqry0ryqrc23wxfwm"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools ruby ruby-test-unit))
@@ -106,14 +106,14 @@ The main features of Dolphin are:
 (define-public dolphin-plugins
   (package
     (name "dolphin-plugins")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-plugins-" version ".tar.xz"))
        (sha256
-        (base32 "08xyjjwkcr08ncc4xrj65c44iya4byvf1xhnwjg21i7zxls51zir"))))
+        (base32 "0c6nwndm3mk1g3j4vcbxa4i67h9y9gzcblysy532zvvn5cqmjwm6"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
@@ -137,14 +137,14 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
 (define-public khelpcenter
   (package
     (name "khelpcenter")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/khelpcenter-" version ".tar.xz"))
        (sha256
-        (base32 "0y6smxc64mxpv535rih1m50wy4lf4gzsp944snvxrb4gj8q9sgy1"))))
+        (base32 "1hl6pvnw4dp6fl4ri3a8hhyww0j1bk5wk0nn61acs1qmaa4pbfv0"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools perl))
@@ -169,16 +169,6 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
     (arguments
      (list #:phases
            #~(modify-phases %standard-phases
-               (add-after 'unpack 'add-miss-package
-                 (lambda _
-                   ;; https://invent.kde.org/system/khelpcenter/-/merge_requests/50
-                   (substitute* "CMakeLists.txt"
-                     (("    WebEngineWidgets")
-                      "    WebEngineWidgets
-    PrintSupport")
-                     (("Qt6::WebEngineWidgets")
-                      "Qt6::PrintSupport
-    Qt6::WebEngineWidgets"))))
                (add-after 'install 'wrap-executable
                  (lambda* (#:key inputs #:allow-other-keys)
                    (wrap-program (string-append #$output
@@ -203,14 +193,14 @@ document meta data file.")
 (define-public konsole
   (package
     (name "konsole")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/konsole-" version ".tar.xz"))
        (sha256
-        (base32 "1549a5cpg6g6djbln38nlngl1xcfn7p9bjsscbwl27jkz8dyy18x"))))
+        (base32 "1njqa33bgxhy9av0dr7yh4xz7iqw5whr9g55v6gm8l40xfkrhx38"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools zlib))
@@ -257,14 +247,14 @@ This package is part of the KDE base applications module.")
 (define-public krfb
   (package
     (name "krfb")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/krfb-" version ".tar.xz"))
        (sha256
-        (base32 "11mp4vkadcrf20wdlwncsmyqdk9cj2ys85jjz0iaik9dfivgqcci"))))
+        (base32 "0zlckbi0dchg285anf8rg061g6l5shmhxqq5chq6rnvb6n3i6qjb"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      #:configure-flags
@@ -317,14 +307,14 @@ This package is part of the KDE networking module.")
 (define-public ksystemlog
   (package
     (name "ksystemlog")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ksystemlog-" version ".tar.xz"))
        (sha256
-        (base32 "1zlzyq5sv8mn4g0ycyrppr4fkr67vym79va7rfa7kbvvjgpwh6gi"))))
+        (base32 "1wjrpg4xk2bxxshc4al8l4hzx0zin1ymik7a85clqm0fcn04wn1y"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs
@@ -356,14 +346,14 @@ This package is part of the KDE administration module.")
 (define-public kwalletmanager
   (package
     (name "kwalletmanager")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kwalletmanager-" version ".tar.xz"))
        (sha256
-        (base32 "1z62bglwd8fk5ah11g6lyw3qr5qlvgyrwz1bgrnzrz18pjr9sm63"))))
+        (base32 "1gx4n5xqn05i3yr86g2z13qfz5dqyissbw9pl5s1fri7jc6hrgdf"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
@@ -450,14 +440,14 @@ This package is part of the KDE administration module.")
 (define-public yakuake
   (package
     (name "yakuake")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/yakuake-" version ".tar.xz"))
               (sha256
                (base32
-                "0bgpnvq1dpijrz3vj7yjw5dkss98l22iirqrvih3wgm0n6ccaix2"))))
+                "055rz7f5v85iphhqnla59fmz7qvhxjlighyilrn941dqvh5az1x4"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))

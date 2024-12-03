@@ -115,14 +115,14 @@
 (define-public baloo-widgets
   (package
     (name "baloo-widgets")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/baloo-widgets-" version ".tar.xz"))
        (sha256
-        (base32 "06238jvb44118bapgkk1yg6mn1kgmn8xx3ayfxy36bx0pl7nii5p"))))
+        (base32 "1ph9r5mvqx287x2ch32hlzv3sjqvnmqgnignm6lmrx28ian6x9bq"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
@@ -163,14 +163,14 @@ This package contains GUI widgets for baloo.")
 (define-public grantleetheme
   (package
     (name "grantleetheme")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/grantleetheme-" version ".tar.xz"))
        (sha256
-        (base32 "0fsp9698wh2h53qglfg6576m309yb91s5ix4sdzckyilh31y1j2y"))))
+        (base32 "1sl6bc22xgakpw4p6zfxifjsy5qgw8plbd8m0s456ch8f66np4lp"))))
     (build-system qt-build-system)
     (arguments (list
                 #:qtbase qtbase
@@ -416,14 +416,14 @@ projects.")
 (define-public kapptemplate
   (package
     (name "kapptemplate")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kapptemplate-" version ".tar.xz"))
        (sha256
-        (base32 "0mgpk6879dprhpxmbdgbb6sz3ik9ycav4sihh20qmsgj09h8qp3g"))))
+        (base32 "124gnzdydpwnm8vrnlyjrqqv9v6mmrrx6cw4x9sj8cp5ky7mypj0"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -625,7 +625,7 @@ KDSoap.")
 (define-public kio-extras
   (package
     (name "kio-extras")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -633,7 +633,7 @@ KDSoap.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0h720wcgsdx9h5vlr4flxrd3djmhwvlwkrf0yzwsf4amcb9wds8r"))))
+                "1ak839b3yalw6qyn0rsz7hl3l30ix09p2wigp8qcg9gjw8bmf5zl"))))
     (build-system cmake-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
@@ -722,7 +722,7 @@ the functionality of the KDE resource and network access abstractions.")
 (define-public kirigami-addons
   (package
     (name "kirigami-addons")
-    (version "1.3.0")
+    (version "1.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -731,14 +731,20 @@ the functionality of the KDE resource and network access abstractions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nsp4vihjhv985nlr6h86jvk43v3x9njla7l03jpcz6g95jdrnmp"))))
+                "1h22jl9p7309d93qfy388p7ikb4kbya3njh0k4m4ab29dq9crs86"))))
     (build-system qt-build-system)
     (arguments
      (list
       #:qtbase qtbase
       #:tests? #f)) ; failing test
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kirigami ki18n kconfig qtdeclarative))
+    (inputs (list kcoreaddons
+                  kconfig
+                  kguiaddons
+                  kglobalaccel
+                  kirigami
+                  ki18n
+                  qtdeclarative))
     (home-page "https://invent.kde.org/libraries/kirigami-addons")
     (synopsis "Add-ons for the Kirigami framework")
     (description
@@ -775,7 +781,7 @@ expression library, that is used in Krita.")
 (define-public kcolorchooser
   (package
     (name "kcolorchooser")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
@@ -783,7 +789,7 @@ expression library, that is used in Krita.")
                            "/src/kcolorchooser-" version ".tar.xz"))
        (sha256
         (base32
-         "1qfp2kf98kf5qps11q7mi6y8z6bfd4bxwvx6ijv4p1jw0cmylj11"))))
+         "0cj12vzlk6y3chjhpfkykd8j3s0h48710iq7g5p4l0cj3byvyqwp"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
@@ -800,14 +806,14 @@ expression library, that is used in Krita.")
 (define-public kolourpaint
   (package
     (name "kolourpaint")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/release-service/" version
                             "/src/kolourpaint-" version ".tar.xz"))
         (sha256
-         (base32 "1fi1y74s2lnrxdnr9ym4b1ilj9qi019gaavfv0sq1xg8ppbpgcbr"))))
+         (base32 "0nzip8vbk8dj7jlyr4kg2jxc2rri0rfiagv55kwyqsqh7vwzikqf"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
@@ -1035,24 +1041,24 @@ accessibility clients such as screen readers.")
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://kde/stable/release-service/" version
-                            "/src/libkomparediff2-" version ".tar.xz"))
-        (sha256
-         (base32 "1g4zjsdd49n2kh5m8ijm9cm95wfn2rglgnmvvr0ap1iidy4843hy"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/release-service/" version
+                           "/src/libkomparediff2-" version ".tar.xz"))
+       (sha256
+        (base32 "0rvsx5ljc5g7vwkmparyfbqz6jh3dn7w4548wbl1wvnmfzn9i47d"))))
     (native-inputs
      (list extra-cmake-modules pkg-config))
     (inputs
-     (list kcodecs-5
-           kconfig-5
-           kcoreaddons-5
-           ki18n-5
-           kio-5
-           kxmlgui-5
-           qtbase-5))
+     (list kcodecs
+           kconfig
+           kcoreaddons
+           ki18n
+           kio
+           kxmlgui
+           qtbase))
     (build-system cmake-build-system)
     (home-page "https://kde.org")
     (synopsis "Library to compare files and strings, used in Kompare and KDevelop")
@@ -1194,14 +1200,14 @@ include:
 (define-public kopeninghours
   (package
     (name "kopeninghours")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "132ihgsv1l8nz24ycddfp146czhnfcgrjfnffjb91w5l4a5wv3k4"))))
+                "1d5fkknqj01blza51pl58qxrw9b09a9wma9ca2my11wqmva80y44"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -1230,14 +1236,14 @@ opening hours expressions.")
 (define-public kosmindoormap
   (package
     (name "kosmindoormap")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1inch8vnh96lbklrj9w6d7vyqnbaig8f0kgfr5k7i5983vqpsvlm"))))
+                "1ybj9a8r25wbbrwlh2y2799jhf9l5bh9v33xiy1gbw15qp65ks1p"))))
     (build-system cmake-build-system)
     (native-inputs (list bison extra-cmake-modules flex python-minimal))
     (inputs (list ki18n
@@ -1245,6 +1251,7 @@ opening hours expressions.")
                   kpublictransport
                   qtbase
                   qtdeclarative
+                  libxkbcommon
                   zlib))
     (home-page "https://invent.kde.org/libraries/kosmindoormap")
     (synopsis "Indoor map renderer")
@@ -1256,7 +1263,7 @@ multi-floor indoor maps.")
 (define-public kpmcore
   (package
     (name "kpmcore")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1264,7 +1271,7 @@ multi-floor indoor maps.")
                     "/src/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1nrmfxs8hbba8b3ml4g9qaf0klzcm8ar052npv5lm0whx6zld1lf"))))
+                "09f27v7s4gz86l8lrm4lf41bkw1rnixjjqd5z1p5jswp8yni0ais"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules pkg-config))
@@ -1294,7 +1301,7 @@ multi-floor indoor maps.")
 (define-public kpublictransport
   (package
     (name "kpublictransport")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -1302,7 +1309,7 @@ multi-floor indoor maps.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1g78kmnqg9y4mvd7nmlb4nd02ch3p5gxhnbphcnisc3ym3w3q1jj"))))
+                "1zb4pkba9rrh7n7w3kvpbxniq54gvf9x71g5x67006fwqvbvhn33"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -1522,14 +1529,14 @@ to perform data analysis.")
 (define-public kdf
   (package
     (name "kdf")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kdf-" version ".tar.xz"))
               (sha256
                (base32
-                "1gp0r0dj58zq5rflw7yb42znjwvbq3aa0xqz5dfbxf7m3widri6g"))))
+                "1jlfhq2rgrzrrhp2az3g0hlq8bc2l5ca5fhw1rly548aw26xksxm"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
@@ -1557,14 +1564,14 @@ unmount drives and view them in a file manager.")
 (define-public ktimer
   (package
     (name "ktimer")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/ktimer-" version ".tar.xz"))
               (sha256
                (base32
-                "1s3fwxxdpc4qsxby01sdp5c2sdzb1a9y37d172gvk41148swl5np"))))
+                "1x90m6iabdmxdhcr3aibr9s31vymh7q9dhkqjzwz2mg6lqwi1ppj"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules
@@ -1588,14 +1595,14 @@ timers for each task can be started, stopped, changed, or looped.")
 (define-public kcachegrind
   (package
     (name "kcachegrind")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/kcachegrind-" version ".tar.xz"))
               (sha256
                (base32
-                "1j0i8sigf21b3w4r0cahrdm046pcinsldqhcms2bhv14v9lirc19"))))
+                "06rfpzxh6kk2b4ks8bkmlm5hf70qc2sy6wkr9my1fnw58h7aclbg"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules perl python qttools kdoctools))
@@ -1622,14 +1629,14 @@ Python, PHP, and Perl.")
 (define-public libkdegames
   (package
     (name "libkdegames")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/libkdegames-" version ".tar.xz"))
        (sha256
-        (base32 "1sqhlhanb5vfbxp6g01rkgaj5v9gi1cxfgsmw39s0cikjfvidwpa"))))
+        (base32 "1vllpx6y06gv8fbvaav3cm0mpc2g2rsbkl798slviy9pcw62xjvb"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs
@@ -1667,7 +1674,7 @@ Python, PHP, and Perl.")
 (define-public marble-qt
   (package
     (name "marble-qt")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method git-fetch)
@@ -1677,7 +1684,7 @@ Python, PHP, and Perl.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "126zm2r637zd8xg0mrqh3g0phlph440ayyzrx8hfvb03drx6y70z"))))
+         "139x112w4vs8z4qcvq5xxgksp95jb3rifvf712wlcl10in20nf27"))))
     (build-system qt-build-system)
     (arguments
      ;; FIXME: libmarblewidget-qt5.so.28 not found.  Also enable the
@@ -1725,14 +1732,14 @@ creating routes by drag and drop and more.")
 (define-public okular
   (package
     (name "okular")
-    (version "24.08.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1yy86fnra7dhc79m3ka0lqarp47336iln3fs8nyys2p6bdywg2a0"))))
+        (base32 "16ywzr3vjyil6gh54sn8afd6w91sv0qnz0nxdp2l1mgd08rsp65k"))))
     (build-system qt-build-system)
     (arguments
      (list
@@ -1812,7 +1819,7 @@ a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
 (define-public poxml
   (package
     (name "poxml")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -1820,12 +1827,12 @@ a variety of formats, including PDF, PostScript, DejaVu, and EPub.")
                               "/src/poxml-" version ".tar.xz"))
               (sha256
                (base32
-                "0998ss7jib255x9kyhsz79lgnf97m7hbm6dsyh6xj9rcwv8i9srk"))))
+                "1xh6asbh69yr39v9mmhmacy841dxg37ij1q4krkl7akqgwprq2yq"))))
     (build-system cmake-build-system)
     (native-inputs
-     (list extra-cmake-modules kdoctools-5))
+     (list extra-cmake-modules kdoctools))
     (inputs
-     (list gettext-minimal qtbase-5))
+     (list gettext-minimal qtbase))
     (home-page "https://apps.kde.org/development/")
     (synopsis "Tools for translating DocBook XML files with Gettext")
     (description "This is a collection of tools that facilitate translating
@@ -1837,14 +1844,14 @@ PO template files.")
 (define-public kdegraphics-mobipocket
   (package
     (name "kdegraphics-mobipocket")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1hcglnbw2ck864glgd4aag54826aycmncmizfqlpncfzwdayq204"))))
+        (base32 "0jm3gw2ssvqa3x9hdzl7wchid90x4n9dm62vf4z3nxfrlsd9akpf"))))
     (build-system cmake-build-system)
     (arguments (list #:configure-flags #~(list "-DQT_MAJOR_VERSION=6")))
     (native-inputs
@@ -1860,14 +1867,14 @@ Mobipocket e-books in Dolphin and other KDE apps.")
 (define-public libkexiv2
   (package
     (name "libkexiv2")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "04z36kvj9nwr9i8xs6hi0lqmxz7lqyhs9c1cngcb7p7lw9hmynch"))))
+        (base32 "01l9zdnc7k6msi5n2k1zprigcxs22bjhfaczvb94lngv390naf4z"))))
     (build-system cmake-build-system)
     (arguments (list #:configure-flags #~(list "-DQT_MAJOR_VERSION=6")))
     (native-inputs
@@ -1883,14 +1890,14 @@ picture metadata as EXIF/IPTC and XMP.")
 (define-public kio-zeroconf
   (package
     (name "kio-zeroconf")
-    (version "24.05.2")
+    (version "24.08.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kio-zeroconf-" version ".tar.xz"))
        (sha256
-        (base32 "058w37n7s8lbc8mjqjpqarhg8b2796x2yssrxnppib12dld9x4wb"))))
+        (base32 "1150ly125zky7g4yx9wrwq1gzhk20zxaq4knr1csvhcgdh7q4qnd"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))

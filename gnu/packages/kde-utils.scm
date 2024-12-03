@@ -54,14 +54,14 @@
 (define-public ark
   (package
     (name "ark")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/ark-" version ".tar.xz"))
               (sha256
                (base32
-                "1q0fyx65gp0d1vj4jxiaswdfzi15hbfi537f3i8y277b621qp3rs"))
+                "06rj5xh2q2iqnbdi8k4d67wi1kjiiijp8qkjj7wbh4l5pc7i0siw"))
               ;; The libarchive package in Guix does not support
               ;; xar; disable related tests.
               (patches (search-patches "ark-skip-xar-test.patch"))))
@@ -249,17 +249,18 @@ well as CD-ROM images.")
 (define-public filelight
   (package
     (name "filelight")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/filelight-" version ".tar.xz"))
               (sha256
                (base32
-                "0mibgqhab7cbis0vw89f5y73185jq1dgmcsqdd8g4clkglgvdlrk"))))
+                "0dygpx5j7p30d69kfpkhhn0kbb1ac68c7q936nv78r5iy6qac3li"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
-    (inputs (list kirigami
+    (inputs (list kcrash
+                  kirigami
                   kirigami-addons
                   kquickcharts
                   kxmlgui
@@ -278,7 +279,7 @@ your computer.")
 (define-public francis
   (package
     (name "francis")
-    (version "24.05.2")
+    (version "24.11.90")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -287,7 +288,7 @@ your computer.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lm0gh035qc9ip9hs00gxl3y9d9a8846ggypzgzngkqazic9i82k"))))
+                "0kifr6lp34magqprg48bn4a4x5k18kfir5paz5i7v0956hvbzsll"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list kirigami
@@ -308,7 +309,7 @@ your computer.")
 (define-public isoimagewriter
   (package
     (name "isoimagewriter")
-    (version "24.05.2")
+    (version "24.11.90")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -317,7 +318,7 @@ your computer.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v8ggdgij503m3bm1w24840al5by7y62p8yrmhlk4g0hjacmkys7"))))
+                "1hpk8abvywip0w6jg0kq6bhry4aw95yiabs78d2myyzd53nlhl2f"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list kauth
@@ -411,7 +412,7 @@ Kate's features include:
 (define-public kdebugsettings
   (package
     (name "kdebugsettings")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -419,13 +420,14 @@ Kate's features include:
                                   ".tar.xz"))
               (sha256
                (base32
-                "1il9jcwya1hgqrs5yrlahk9h0hrrs5h1ay304sbixgiiafx1dcv7"))))
+                "1j4150fb21qjyigp3cc9qhy5nzlzapi15d89ifdxndhf6l3crxsf"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list kcoreaddons
                   kconfig
                   kdbusaddons
                   ki18n
+                  kiconthemes
                   kwidgetsaddons
                   kitemviews
                   kcompletion
@@ -440,14 +442,14 @@ Kate's features include:
 (define-public kbackup
   (package
     (name "kbackup")
-    (version "24.05.2")
+    (version "24.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kbackup-" version ".tar.xz"))
               (sha256
                (base32
-                "0s75il0hxs95sdmj3jll8rdl1n8y86qgwww15idda18yww8d0bwm"))))
+                "139gwd932s8xx6b686v2m5fnrpjbnaxbfy795mdd1wpzp3zgkw4z"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list kguiaddons
