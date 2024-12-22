@@ -873,7 +873,7 @@ It also includes runtime support libraries for these languages.")
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions.
-(define-public gcc gcc-13)
+(define-public gcc gcc-14)
 
 
 ;;;
@@ -1278,7 +1278,7 @@ misnomer.")))
 
 ;; This must match the 'gcc' variable, but it must also be 'eq?' to one of the
 ;; libgccjit-* packages above.
-(define-public libgccjit libgccjit-13)
+(define-public libgccjit libgccjit-14)
 
 (define (make-gccgo gcc)
   "Return a gccgo package based on GCC."
