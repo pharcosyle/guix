@@ -2751,14 +2751,14 @@ sensors, process information and other system resources.")
 (define-public plasma-workspace
   (package
     (name "plasma-workspace")
-    (version "6.1.4")
+    (version "6.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0mlddkjxq7p01wgy8pzp65fhg1sihibzd32wn3s3zcn077frj86b"))))
+                "0bs1dks8b7y2536706j051wzqcldin68574n1gvbiqb2dzj129dq"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules kdoctools pkg-config qtsvg
                          qttools
@@ -2845,6 +2845,7 @@ sensors, process information and other system resources.")
                   qtshadertools
                   qtdeclarative
                   qttools
+                  qtpositioning
                   qtwayland
                   wayland
                   wayland-protocols
@@ -2952,7 +2953,11 @@ sensors, process information and other system resources.")
                                "testimageproxymodel"
                                "testpackageimagelistmodel"
                                "testslidemodel"
-                               "tst_triangleFilter")
+                               "tst_triangleFilter"
+
+                               "dbusmethodcalltest"
+                               "klipper-testHistoryCycler"
+                               "klipper-testHistoryModel")
                               "|")))))
                ;; share/dbus-1/system-services have same name file
                ;; when dbus-root-service-type merge it, wail report
