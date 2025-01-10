@@ -1373,7 +1373,7 @@ different notification systems.")
 (define-public kdeconnect
   (package
     (name "kdeconnect")
-    (version "24.05.2")
+    (version "24.12.1")
     (source
      (origin
        (method url-fetch)
@@ -1382,7 +1382,7 @@ different notification systems.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0jh5rx6amg7mxgy0n0hv23wj3qqmb37212996ssm41bvxnmjgn03"))))
+         "0b6n5bh071ww4nmpwyhgrm1wlkjpvr61s52xfd7b6bzz8v8ilanz"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -1414,6 +1414,7 @@ different notification systems.")
      (list dbus
            kcmutils
            kconfigwidgets
+           kcrash
            kdbusaddons
            kguiaddons
            ki18n
@@ -1433,6 +1434,7 @@ different notification systems.")
            qca-qt6
            qqc2-desktop-style
            qtbase
+           qtconnectivity
            qtdeclarative
            qtmultimedia
            qtwayland
