@@ -3699,7 +3699,7 @@ emoticons coming from different providers.")
 (define-public kglobalaccel
   (package
     (name "kglobalaccel")
-    (version "6.5.0")
+    (version "6.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3708,7 +3708,7 @@ emoticons coming from different providers.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "191rlcwdyapv6m00vj99pq7w6sjlvmmkn54zmcicxf64izs1qfl8"))))
+                "0a0rkgnsbscg2bw8m5hnc9gmrjkxs3471kfnrylyfg6l8imfrc05"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules pkg-config qttools))
@@ -3718,6 +3718,7 @@ emoticons coming from different providers.")
            kcoreaddons
            kdbusaddons
            kwindowsystem
+           libxkbcommon
            qtdeclarative))
     (arguments (list #:qtbase qtbase))
     (home-page "https://community.kde.org/Frameworks")
