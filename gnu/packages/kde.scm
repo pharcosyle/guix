@@ -1686,7 +1686,7 @@ Python, PHP, and Perl.")
 (define-public marble-qt
   (package
     (name "marble-qt")
-    (version "24.05.2")
+    (version "24.12.1")
     (source
      (origin
        (method git-fetch)
@@ -1696,40 +1696,41 @@ Python, PHP, and Perl.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "126zm2r637zd8xg0mrqh3g0phlph440ayyzrx8hfvb03drx6y70z"))))
+         "06nsfmwc6536v8hgnk1lk7lb8jiy15ay3qqfs2fmxiir0msny3vm"))))
     (build-system qt-build-system)
     (arguments
      ;; FIXME: libmarblewidget-qt5.so.28 not found.  Also enable the
      ;; corresponding configure flag to build tests.
      (list #:tests? #f
+           #:qtbase qtbase
            #:configure-flags
            #~(list "-DBUILD_MARBLE_TOOLS=YES" ; file conversion tools
                    "-DBUILD_TOUCH=YES"
-                   "-DBUILD_MARBLE_TESTS=FALSE")))
+                   "-DBUILD_TESTING=OFF")))
     (native-inputs
-     (list extra-cmake-modules kdoctools-5 qttools-5
+     (list extra-cmake-modules kdoctools qttools
            osmctools))
     ;; One optional dependency missing: libwlocate.
     (inputs
-     (list gpsd
-           kcoreaddons-5
-           kcrash-5
-           ki18n-5
-           kio-5
-           knewstuff-5
-           kparts-5
-           krunner-5
-           kwallet-5
+     (list abseil-cpp
+           gpsd
+           kcoreaddons
+           kcrash
+           ki18n
+           kio
+           knewstuff
+           kparts
+           krunner
+           kwallet
            perl
            phonon
            protobuf
-           qtbase-5
-           qtdeclarative-5
-           qtlocation-5
-           qtserialport
-           qtsvg-5
-           qtwebchannel-5
-           qtwebengine-5
+           qtdeclarative
+           qtlocation
+           qtsvg
+           qt5compat
+           qtwebchannel
+           qtwebengine
            shapelib
            shared-mime-info
            zlib))
