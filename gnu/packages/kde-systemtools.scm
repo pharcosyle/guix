@@ -430,6 +430,7 @@ This package is part of the KDE administration module.")
            layer-shell-qt
            prison
            qtdeclarative
+           qtimageformats
            qtmultimedia
            qtwayland
            wayland
