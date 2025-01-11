@@ -129,45 +129,6 @@ with support for multiple formats, including tar, gzip, bzip2, rar and zip, as
 well as CD-ROM images.")
     (license license:gpl2+)))
 
-(define-public atelier
-  (let ((commit "93d7d440c42f1e49a4933cbbce9f68d5e4ca725a") ; no releases
-        (revision "1"))
-    (package
-      (name "atelier")
-      (version (git-version "0.1-pre" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://invent.kde.org/utilities/atelier")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "00jccpwvksyp2vr3fjxajs8d9d30rspg4zj6rnj8dai96alp303k"))))
-      (build-system qt-build-system)
-      (native-inputs (list extra-cmake-modules pkg-config))
-      (inputs (list ki18n-5
-                    kxmlgui-5
-                    kconfigwidgets-5
-                    ktexteditor-5
-                    libatcore
-                    qt3d-5
-                    qtbase-5
-                    qtcharts-5
-                    qtdeclarative-5
-                    qtmultimedia-5
-                    qtserialport-5))
-      (home-page "https://atelier.kde.org")
-      (synopsis "Desktop interface to control 3D printers powered by AtCore")
-      (description "Atelier provides interface to control and manage your printer.
-@itemize
-@item Load and see your GCode File
-@item Real time graphic to monitor your bed and hotend temperatures
-@item You can log everything that comes and go from your printer
-@item Edit gcode file
-@end itemize")
-      (license license:gpl3+))))
-
 (define-public basket
   (let ((commit "bb230be9f6fb838b02ca85c45f9a0ca244efe967")
         (revision "2"))
