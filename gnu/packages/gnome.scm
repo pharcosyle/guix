@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2024, 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -806,7 +806,13 @@ patterns.")
             (lambda _
               (copy-recursively
                #$(this-package-native-input "libgd-checkout")
-               "subprojects/libgd"))))))
+               "subprojects/libgd")))
+          (add-before 'configure 'relax-gcc-14-strictness
+            (lambda _
+              (setenv "CFLAGS"
+                      (string-append
+                       "-g -O2"
+                       " -Wno-error=incompatible-pointer-types")))))))
     (inputs (list glib
                   gnome-autoar
                   gnome-online-accounts
@@ -2437,6 +2443,11 @@ The gnome-about program helps find which version of GNOME is installed.")
             (lambda _
               (substitute* "meson-postinstall.sh"
                 (("update-desktop-database") (which "true")))))
+          (add-before 'configure 'relax-gcc-14-strictness
+            (lambda _
+              (setenv "CFLAGS"
+                      (string-append "-g -O2"
+                                     " -Wno-error=incompatible-pointer-types"))))
           (add-after 'install 'patch-thumbnailer
             (lambda* (#:key outputs #:allow-other-keys)
               (substitute*
@@ -2576,6 +2587,9 @@ GNOME Desktop.")
                (base32
                 "11hp93gqk7m64h84q5hndzlwj4w6hl0cbmzrk2pkdn04ikm2zj4v"))))
     (build-system gnu-build-system)
+    (arguments
+     (list #:configure-flags
+           #~(list "CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types")))
     (native-inputs
      (list autoconf
            automake
@@ -2601,18 +2615,18 @@ GNOME Desktop.")
   (package/inherit gdl
     (name "gdl-minimal")
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-doc-generation
-           ;; XXX: There is no easy way to disable generating the
-           ;; documentation.
-           (lambda _
-             (substitute* "configure.in"
-               (("GTK_DOC_CHECK.*") "")
-               (("docs/.*") ""))
-             (substitute* "Makefile.am"
-               (("gdl docs po") "gdl po"))
-             #t)))))
+     (substitute-keyword-arguments (package-arguments gdl)
+       ((#:phases phases #~%standard-phases)
+        #~(modify-phases #$phases
+            (add-after 'unpack 'disable-doc-generation
+              ;; XXX: There is no easy way to disable generating the
+              ;; documentation.
+              (lambda _
+                (substitute* "configure.in"
+                  (("GTK_DOC_CHECK.*") "")
+                  (("docs/.*") ""))
+                (substitute* "Makefile.am"
+                  (("gdl docs po") "gdl po"))))))))
     (native-inputs (alist-delete "gtk-doc" (package-native-inputs gdl)))))
 
 (define-public libgnome-keyring
@@ -3928,7 +3942,10 @@ functionality was designed to be as reusable and portable as possible.")
       ;; The "timeout-server" test hangs when run in parallel.
       #:parallel-tests? #f
       #:configure-flags
-      #~'(;; We don't need static libraries, plus they don't build reproducibly
+      #~'(#$(string-append "CFLAGS=-g -O2"
+                           " -Wno-error=implicit-int"
+                           " -Wno-error=incompatible-pointer-types")
+          ;; We don't need static libraries, plus they don't build reproducibly
           ;; (non-deterministic ordering of .o files in the archive.)
           "--disable-static"
 
@@ -4666,7 +4683,15 @@ targeting the GNOME stack simple.")
                                   "vala-" version ".tar.xz"))
               (sha256
                (base32
-                "12y6p8wdjp01vmfhxg2cgh32xnyqq6ivblvrar9clnj6vc867qhx"))))))
+                "12y6p8wdjp01vmfhxg2cgh32xnyqq6ivblvrar9clnj6vc867qhx"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments vala)
+       ((#:configure-flags flags #~'())
+        #~(cons*
+           (string-append "CFLAGS=-g -O2"
+                          " -Wno-error=address"
+                          " -Wno-error=incompatible-pointer-types")
+           #$flags))))))
 
 (define-public vte
   (package
@@ -5724,6 +5749,10 @@ file.")
                         (not (target-little-endian?))))
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'configure 'relax-gcc-14-strictness
+            (lambda _
+              (setenv "CFLAGS"
+                      "-g -O2 -Wno-error=incompatible-pointer-types")))
           (add-after 'unpack 'disable-problematic-tests
             (lambda _
               ;; Skip the colord-test-private, which requires a *system* D-Bus
@@ -5950,7 +5979,9 @@ faster results and to avoid unnecessary server load.")
               ;; This test calls an unimplemented bluez dbus method.
               (substitute* "src/linux/integration-test.py"
                 (("test_bluetooth_hidpp_mouse")
-                 "disabled_test_bluetooth_hidpp_mouse"))
+                 "disabled_test_bluetooth_hidpp_mouse")
+                (("test_daemon_restart")
+                 "disabled_test_daemon_restart"))
               #$@(if (target-x86-32?)
                      ;; Address test failure caused by excess precision
                      ;; on i686:
@@ -6373,7 +6404,10 @@ throughout GNOME for API documentation).")
            wayland))
     (arguments
      `(#:disallowed-references (,xorg-server-for-tests)
-       #:configure-flags (list "--enable-cogl-gst"
+       #:configure-flags (list ,(string-append
+                                 "CFLAGS=-g -O2"
+                                 " -Wno-error=implicit-function-declaration")
+                               "--enable-cogl-gst"
                                "--enable-wayland-egl-platform"
                                "--enable-wayland-egl-server"
 
@@ -7691,6 +7725,8 @@ wraps things up in a developer-friendly way.")
     (build-system gnu-build-system)
     (arguments
      (list
+      #:configure-flags
+      #~(list "CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'fix-introspection-install-dir
@@ -8514,31 +8550,30 @@ Evolution (hence the name), but is now used by other packages as well.")
                 "0mfychh1q3dx0b96pjz9a9y112bm9yqyim40yykzxx1hppsdjhww"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before
-          'build 'pre-build
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              ;; Use absolute shared library path in Caribou-1.0.typelib.
-              (substitute* "libcaribou/Makefile"
-                (("--shared-library=libcaribou.so")
-                 (string-append "--shared-library="
-                                out "/lib/libcaribou.so")))
-              #t)))
+     (list
+      #:configure-flags
+      #~(list "CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types")
+      #:phases
+       #~(modify-phases %standard-phases
+           (add-before
+               'build 'pre-build
+             (lambda _
+               ;; Use absolute shared library path in Caribou-1.0.typelib.
+               (substitute* "libcaribou/Makefile"
+                 (("--shared-library=libcaribou.so")
+                  (string-append "--shared-library="
+                                 #$output "/lib/libcaribou.so")))))
          (add-after 'install 'wrap-programs
           (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (python-path (getenv "GUIX_PYTHONPATH"))
-                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+            (let ((python-path (getenv "GUIX_PYTHONPATH"))
+                  (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
               (for-each
                (lambda (prog)
                  (wrap-program prog
                    `("GUIX_PYTHONPATH"      ":" prefix (,python-path))
                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-               (list (string-append out "/bin/caribou-preferences")
-                     (string-append out "/libexec/antler-keyboard"))))
-            #t)))))
+               (list (string-append #$output "/bin/caribou-preferences")
+                     (string-append #$output "/libexec/antler-keyboard")))))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -9852,6 +9887,13 @@ easy, safe, and automatic.")
           (add-before 'configure 'set-shell
             (lambda _
               (setenv "SHELL" (which "bash"))))
+          (add-before 'configure 'relax-gcc-14-strictness
+            (lambda _
+              (setenv "CFLAGS"
+                      (string-append
+                       "-g -O2"
+                       " -Wno-error=implicit-function-declaration"
+                       " -Wno-error=incompatible-pointer-types"))))
           (add-before 'configure 'fix-paths
             (lambda* (#:key inputs #:allow-other-keys)
               (let* ((manpage "/etc/asciidoc/docbook-xsl/manpage.xsl")
@@ -11204,7 +11246,13 @@ functionality and behavior.")
            (lambda _
              (substitute* "meson.build"
                (("gtk_update_icon_cache: true")
-                "gtk_update_icon_cache: false")))))))
+                "gtk_update_icon_cache: false"))))
+          (add-before 'configure 'relax-gcc-14-strictness
+            (lambda _
+              (setenv "CFLAGS"
+                      (string-append "-g -O2"
+                                     " -Wno-error=implicit-function-declaration"
+                                     " -Wno-error=incompatible-pointer-types")))))))
     (inputs
      (list bdb
            dbus-glib
@@ -11454,7 +11502,9 @@ basically a text box in which notes can be written.")
                     (guix build glib-or-gtk-build-system)
                     (guix build utils))
          #:configure-flags
-         (list "--with-unicode-data=../unicode-data")
+         (list
+          "CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types"
+          "--with-unicode-data=../unicode-data")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'prepare-unicode-data
@@ -11928,6 +11978,10 @@ photo-booth-like software, such as Cheese.")
                    (substitute* "meson.build"
                      (("gtk_update_icon_cache: true")
                       "gtk_update_icon_cache: false"))))
+               (add-before 'configure 'relax-gcc-14-strictness
+                 (lambda _
+                   (setenv "CFLAGS"
+                           "-g -O2 -Wno-error=incompatible-pointer-types")))
                (add-after 'install 'wrap-cheese
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    (wrap-program (search-input-file outputs "bin/cheese")
@@ -12665,7 +12719,11 @@ repository and commit your work.")
                 "02n1zr9y8q9lyczhcz0nxar1vmf8p2mmbw8kq0v43wg21jr4i6d5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags `(,(string-append
+                             "CFLAGS=-g -O2"
+                             " -Wno-error=implicit-function-declaration"
+                             " -Wno-error=return-mismatch"))
+       #:phases
        (modify-phases %standard-phases
          ;; The 'config.sub' is too old to recognise aarch64.
          ,@(if (or (target-aarch64?) (target-riscv64?))
@@ -12933,7 +12991,11 @@ integrate seamlessly with the GNOME desktop.")
                             (substitute* "src/installed-media.vala"
                               (("qemu-img")
                                (search-input-file inputs
-                                                  "/bin/qemu-img"))))))))
+                                                  "/bin/qemu-img")))))
+                        (add-before 'configure 'relax-gcc-14-strictness
+                          (lambda _
+                            (setenv "CFLAGS"
+                                    "-g -O2 -Wno-error=int-conversion"))))))
     (native-inputs
      (list desktop-file-utils           ;for update-desktop-database
            gettext-minimal

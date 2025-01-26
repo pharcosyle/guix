@@ -40,7 +40,7 @@
 ;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2020, 2021, 2023, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2021, 2023, 2024, 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020, 2021 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020, 2022 Michael Rohleder <mike@rohleder.de>
@@ -1275,7 +1275,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.15")
+    (version "0.18")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1283,7 +1283,7 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1im484iz08j3gmzpw07v16brwq46pxxj65i996kkp2vivcfhmn5q"))))
+               "090pn7gyicvpqq01451zhkjw1fw3h4l6v2f6mxlvhrli8x3b0sl7"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
@@ -1316,7 +1316,13 @@ It aims to conform to RFC 7159.")
                  (set-file-time "config.h.in"
                                 (stat "aclocal.m4"))
                  #t))))
-    (build-system gnu-build-system)))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list #$(string-append "CFLAGS=-g -O2"
+                               " -Wno-error=calloc-transposed-args"
+                               " -Wno-error=implicit-function-declaration"))))))
 
 (define-public json-c-0.12
   (package
@@ -2334,15 +2340,14 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 (define-public serf
   (package
     (name "serf")
-    (version "1.3.9")
+    (version "1.3.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://apache/serf/serf-"
                            version ".tar.bz2"))
-       (patches (search-patches "serf-python3.patch"))
        (sha256
-        (base32 "1k47gbgpp52049andr28y28nbwh9m36bbb0g8p0aka3pqlhjv72l"))))
+        (base32 "1rk4q0fv9xs57fivjy5mxqkk5g7pvvvssxvalz6nwld2p84fz0dy"))))
     (build-system scons-build-system)
     (propagated-inputs
      (list apr apr-util openssl-1.1))
@@ -2351,7 +2356,8 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
            ;;("gss" ,gss)
            zlib))
     (arguments
-     `(#:scons-flags (list (string-append "APR=" (assoc-ref %build-inputs "apr"))
+     `(#:scons-flags (list "CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types"
+                           (string-append "APR=" (assoc-ref %build-inputs "apr"))
                            (string-append "APU=" (assoc-ref %build-inputs "apr-util"))
                            (string-append "OPENSSL=" (assoc-ref %build-inputs "openssl"))
                            ;; (string-append "GSSAPI=" (assoc-ref %build-inputs "gss"))
@@ -5404,14 +5410,13 @@ a pure C99 library.")
 (define-public uwsgi
   (package
     (name "uwsgi")
-    (version "2.0.18")
+    (version "2.0.28")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://projects.unbit.it/downloads/uwsgi-"
-                                  version ".tar.gz"))
+              (uri (pypi-uri name version))
               (sha256
                (base32
-                "10zmk4npknigmbqcq1wmhd461dk93159px172112vyq0i19sqwj9"))))
+                "1l4r3smmgrdvqj82zwq33pax4jxr1s6fww84mc44bw9dxy8iijkr"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (arguments
@@ -5807,7 +5812,8 @@ libraries.")
 
 (define netsurf-buildsystem-arguments
   `(#:make-flags `("COMPONENT_TYPE=lib-shared"
-                   "CC=gcc" "BUILD_CC=gcc"
+                   "CC=gcc -Wno-error=calloc-transposed-args"
+                   "BUILD_CC=gcc -Wno-error=calloc-transposed-args"
                    ,(string-append "PREFIX=" %output)
                    ,(string-append "NSSHARED="
                                    (assoc-ref %build-inputs

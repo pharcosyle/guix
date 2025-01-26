@@ -24,7 +24,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2019, 2023 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019, 2023, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020, 2021 Lars-Dominik Braun <lars@6xq.net>
@@ -1922,13 +1922,14 @@ the actual decompression, the other input and output.")
      `(#:tests? #f ; no test target
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "-f" "unix/Makefile"
+                            "CC=gcc -Wno-error=implicit-function-declaration"
                             (string-append "prefix=" out)
                             (string-append "MANDIR=" out "/share/man/man1")))
        #:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (apply invoke "make" "generic_gcc" make-flags)))
+             (apply invoke "make" "generic" make-flags)))
          (delete 'configure))))
     (home-page "http://www.info-zip.org/Zip.html")
     (synopsis "Compression and file packing utility")
@@ -2018,15 +2019,17 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
                           `("-j" ,(number->string
                                    (parallel-job-count))
                             ,@make-flags
-                            "generic_gcc")))))
+                            "generic")))))
            #:make-flags
            ;; Fix cross-compilation without affecting native builds, as doing so
            ;; would trigger too many rebuilds: https://issues.guix.gnu.org/57127
            (if (%current-target-system)
                #~(list "-f" "unix/Makefile"
+                       "CC=gcc -Wno-error=implicit-function-declaration"
                        (string-append "prefix=" #$output)
                        (string-append "MANDIR=" #$output "/share/man/man1"))
                #~(list "-f" "unix/Makefile"
+                       "CC=gcc -Wno-error=implicit-function-declaration"
                        (string-append "prefix=" %output)
                        (string-append "MANDIR=" %output "/share/man/man1")))))
     (home-page "http://www.info-zip.org/UnZip.html")
@@ -2095,7 +2098,7 @@ timestamps in the file header with a fixed time (1 January 2008).
 (define-public zziplib
   (package
     (name "zziplib")
-    (version "0.13.72")
+    (version "0.13.78")
     (home-page "https://github.com/gdraheim/zziplib")
     (source (origin
               (method git-fetch)
@@ -2104,7 +2107,7 @@ timestamps in the file header with a fixed time (1 January 2008).
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i6bpa2b13z19alm6ig80364dnin1w28cvif18k6wkkb0w3dzp8y"))))
+                "18578xbzj8j89srv4bwayjm11bg56fl34sya0znq4fwq3apm037i"))))
     (build-system cmake-build-system)
     (inputs
      (list zlib))

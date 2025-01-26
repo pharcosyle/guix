@@ -40,6 +40,7 @@
 ;;; Copyright © 2024 Dariqq <dariqq@posteo.net>
 ;;; Copyright © 2024 Wilko Meyer <w@wmeyer.eu>
 ;;; Copyright © 2024 dan <i@dan.games>
+;;; Copyright © 2024, 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1157,9 +1158,10 @@ This library provides just sd-bus (and the busctl utility).")
                          "idn"
                          "nss-myhostname"
                          "nss-systemd")))
-       `(#:configure-flags ',(map (lambda (component)
-                                    (string-append "-D" component "=false"))
-                                  (delete "localed" components))
+       `(#:configure-flags '("-Dc_args=-g -O2 -Wno-format-overflow"
+                             ,@(map (lambda (component)
+                                      (string-append "-D" component "=false"))
+                                    (delete "localed" components)))
 
          ;; It doesn't make sense to test all of systemd.
          #:tests? #f
@@ -1914,7 +1916,7 @@ Analysis and Reporting Technology) functionality.")
     (inputs
      (list acl
            bash-minimal
-           cryptsetup
+           cryptsetup-minimal
            kmod
            libatasmart
            libblockdev
@@ -2005,6 +2007,10 @@ message bus.")
                 (search-input-file inputs "bin/passwd"))
                (("/usr/bin/chage")
                 (search-input-file inputs "bin/chage")))))
+          (add-before 'configure 'relax-gcc-14-strictness
+            (lambda _
+              (setenv "CFLAGS"
+                      "-g -O2 -Wno-error=implicit-function-declaration")))
          (add-after 'install 'wrap-with-xdg-data-dirs
            ;; This is to allow accountsservice finding extensions, which
            ;; should be installed to the system profile.
@@ -2306,15 +2312,17 @@ between protocols to provide a unified interface for applications.")
                 "1bjx85k7jyfi5pvl765fzc7q2iz9va51anrc2djv7caksqsdbjlg"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-          (lambda _
-            (setenv "HOME" (getenv "TMPDIR"))
-            #t)))))
+     (list
+      #:parallel-tests? #f
+      #:configure-flags
+      #~(list "CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'pre-check
+            (lambda _
+              (setenv "HOME" (getenv "TMPDIR")))))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+     `(("glib:bin" ,glib "bin")         ;for glib-genmarshal, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)

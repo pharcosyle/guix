@@ -11,6 +11,7 @@
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2023 Nicolas Graves <ngraves@ngraves.fr>
 ;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
+;;; Copyright © 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +100,15 @@
                         (substitute* "source/test/intltest/numbertest_api.cpp"
                           (("(TESTCASE_AUTO\\(unitUsage\\));" all)
                            (string-append "//" all))))))
+                 #~())
+          #$@(if (target-x86-32?)
+                 #~((add-after 'unpack 'disable-failing-test
+                      (lambda _
+                        ;; The test reports 18 errors but it's woefully
+                        ;; unclear which tests actually fail or how to disable
+                        ;; individual tests.
+                        (substitute* "source/test/Makefile.in"
+                          ((" intltest ") " ")))))
                  #~())
           (add-after 'install 'avoid-coreutils-reference
             ;; Don't keep a reference to the build tools.

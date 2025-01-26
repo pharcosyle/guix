@@ -66,6 +66,7 @@
 ;;; Copyright © 2024 Ashish SHUKLA <ashish.is@lostca.se>
 ;;; Copyright © 2024 Spencer Peters <spencerpeters@protonmail.com>
 ;;; Copyright © 2024 Jakob Kirsch <jakob.kirsch@web.de>
+;;; Copyright © 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -958,7 +959,8 @@ tracking.")
           #:configure-flags #~(list
                                ;; when cross-compilation, skip realloc checking
                                "lf_cv_sane_realloc=yes"
-                               (string-append "PKG_CONFIG=" #$(pkg-config-for-target)))
+                               (string-append "PKG_CONFIG="
+                                              #$(pkg-config-for-target)))
           #:phases
           #~(modify-phases %standard-phases
               (add-after 'unpack 'update-config-scripts
@@ -970,7 +972,9 @@ tracking.")
                                 (or native-inputs inputs)
                                 (string-append "/bin/" file)) "."))
                             '("config.guess" "config.sub"))))))
-         '()))
+         (list
+          #:configure-flags
+          #~(list "CFLAGS=-g -O2 -Wno-error=int-conversion"))))
     (native-inputs (append (if (and (or (target-riscv64?)
                                         (target-aarch64?))
                                     (%current-target-system))

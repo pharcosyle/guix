@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2019, 2022 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
-;;; Copyright © 2018, 2019, 2020, 2021, 2022, 2024 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019, 2020, 2021, 2022, 2024, 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
@@ -2258,7 +2258,8 @@ similar to MATLAB, GNU Octave or SciPy.")
            zlib))
     (arguments
      (list #:configure-flags
-           #~'("--enable-doxygen" "--enable-dot"
+           #~'("CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types"
+               "--enable-doxygen" "--enable-dot"
                "--enable-hdf4" "--disable-dap-remote-tests")
 
            #:phases
@@ -5490,7 +5491,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.20")
+    (version "0.3.28")
     (source
      (origin
        (method git-fetch)
@@ -5500,7 +5501,7 @@ parts of it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0r4sz3rn68fyc2paq0a04pgfi7iszpm95f6ggbzxpvjzx9qxbcql"))))
+         "13qyhb71ddq5qjjvpijg2lb3f3hlpd8b3if3iml17865iqdk6zg3"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -7018,6 +7019,11 @@ specifications.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
+         (add-after 'unpack 'apply-gcc-14-patch
+           (lambda _
+             (substitute* '("lpsolve55/ccc"
+                            "lp_solve/ccc")
+               (("^c=gcc") "c=\"gcc -Wno-error=implicit-int\""))))
          (replace 'build
            (lambda _
              (with-directory-excursion "lpsolve55"

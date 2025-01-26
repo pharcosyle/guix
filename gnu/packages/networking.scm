@@ -65,6 +65,7 @@
 ;;; Copyright © 2022 Dominic Martinez <dom@dominicm.dev>
 ;;; Copyright © 2024 Alexey Abramov <levenson@mmer.org>
 ;;; Copyright © 2024 James Smith <jsubuntuxp@disroot.org>
+;;; Copyright © 2024, 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2025 Sughosha <sughosha@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1383,14 +1384,14 @@ transparently check connection attempts against an access control list.")
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.3.4")
+    (version "4.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/zeromq/libzmq/releases"
                            "/download/v" version "/zeromq-" version ".tar.gz"))
        (sha256
-        (base32 "1rf3jmi36ms8jh2g5cvi253h43l6xdfq0r7mvp95va7mi4d014y5"))))
+        (base32 "0hxbpw9sk9g5ilxfnq3iki6nxjh3igk348z73y358ygi21cyylv6"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-static"
                                      "--enable-drafts")))
@@ -4470,11 +4471,11 @@ some traces for unprivileged users.")
                    license:lgpl2.1+)))) ;for the libsupp subdirectory
 
 (define-public vde2
-  (let ((commit "8c65ebc464b2f986d5f1f4e6ae829ef4480c9d5a")
+  (let ((commit "v2.3.3")
         (revision "0"))
   (package
     (name "vde2")
-    (version (git-version "2.3.2" revision commit))
+    (version (string-drop commit 1))
     (source
      (origin
        (method git-fetch)
@@ -4483,7 +4484,7 @@ some traces for unprivileged users.")
               (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0l5xf71sv9zm5zw0wg8xgip58c0wh8zck2bazyc2a8gb67gc3s8y"))))
+        (base32 "0rgsizq6mhmrfc2nm2pdakp3g39b565qaskvv5fqk5grp03r1zk1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f))           ; Build fails if #t.
