@@ -495,7 +495,7 @@ information.")
                          "toml\n")))))))
     (propagated-inputs
      `(("python-packaging" ,python-packaging-bootstrap)
-       ("python-pep517", python-pep517-bootstrap)
+       ;; ("python-pep517", python-pep517-bootstrap)
        ("python-toml" ,python-toml)))
     (home-page "https://pypa-build.readthedocs.io/en/latest/")
     (synopsis "Simple Python PEP 517 package builder")
