@@ -68,14 +68,14 @@
   (package
     (name "usbredir")
     (home-page "https://spice-space.org")
-    (version "0.13.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/download/" name "/" name "-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vn4gnd8nmnrvvj2rm7akf4sbcslmdk3v22k9kmxxrha5jhgm9jb"))))
+                "0cm3pal2fmi5168i3vdy18qw2wmvhfy02fn9li2sx3rjg1fgnkcj"))))
     (build-system meson-build-system)
     (propagated-inputs (list libusb))
     (inputs (list glib))
@@ -422,7 +422,7 @@ share smart cards from client system to local or remote virtual machines.")
            libvirt-glib
            libxml2
            spice-gtk
-           vte))
+           vte/gtk+-3))
     (synopsis "Graphical console client for virtual machines")
     (description "Graphical console client for virtual machines using SPICE or
 VNC.")

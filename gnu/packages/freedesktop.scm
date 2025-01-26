@@ -786,6 +786,58 @@ other applications that need to directly deal with input devices.")
                "-Ddebug-gui=false"    ;requires gtk+@3
                ,flags))))))
 
+(define-public libei
+  (package
+    (name "libei")
+    (version "1.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.freedesktop.org/libinput/libei.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "0idbl20ax060s7m435rszfv7c0bvpinjvq45qbqwvcvp0hg8r9y8"))
+              (snippet
+               #~(begin
+                   (use-modules (guix build utils))
+                   ;; Unbundle munit, we provide it as input.
+                   (substitute* "test/meson.build"
+                     (("subproject\\('munit'")
+                      "# subproject('munit'")
+                     ((", fallback: \\['munit', 'munit_dep'\\]")
+                      ""))
+                   (delete-file-recursively "subprojects")))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags #~'("-Ddocumentation=api" ;protocol requires hugo
+                            "-Dsd-bus-provider=libelogind")))
+    (inputs
+     (list elogind libevdev libxkbcommon))
+    (propagated-inputs
+     ;; liboeffis-1.0.pc requires.private libelogind
+     (list elogind))
+    (native-inputs
+     (list doxygen
+           libxml2
+           munit
+           pkg-config
+           python
+           python-attrs
+           python-black
+           python-dbusmock
+           python-jinja2
+           python-pytest
+           python-structlog
+           valgrind/interactive))
+    (home-page "https://libinput.pages.freedesktop.org/libei/")
+    (synopsis "Emulated Input protocol implementation")
+    (description
+     "Libei provides a client and server implementation of the @acronym{EI,
+Emulated Input} protocol for Wayland compositors.")
+    (license license:x11)))
+
 (define-public libxdg-basedir
   (package
     (name "libxdg-basedir")
@@ -1488,20 +1540,6 @@ protocol either in Wayland core, or some other protocol in wayland-protocols.")
     (home-page "https://wayland.freedesktop.org")
     (license license:expat)))
 
-(define-public wayland-protocols-next
-  (package
-    (inherit wayland-protocols)
-    (name "wayland-protocols-next")
-    (version "1.38")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gitlab.freedesktop.org/wayland/"
-                                  "wayland-protocols/-/releases/" version "/downloads/"
-                                  "wayland-protocols-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1ghxb0w7rbq3kdv9lhm1iwcjh6p3sx1gxb3crqh2p78m0ln2j5zz"))))))
-
 (define-public wayland-utils
   (package
     (name "wayland-utils")
@@ -2096,6 +2134,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
         (git-reference
          (url "https://gitlab.freedesktop.org/mobile-broadband/ModemManager")
          (commit version)))
+       (patches (search-patches "modem-manager-fix-test-wrapper.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -2392,14 +2431,14 @@ iChat interoperability, and multi-user chats and Tubes using the
 (define-public colord-gtk
   (package
     (name "colord-gtk")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/colord"
                                   "/releases/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1l61ydb0zv2ffilwpapgz5mm3bznr28zl16xqbxnz6kdsrb6cimr"))))
+                "0b8j7an572ww8n3n0j9kwrl27qd3156g4zix9rzs2c2nny4vhxn1"))))
     (outputs '("out" "doc"))
     (build-system meson-build-system)
     (arguments
@@ -2865,7 +2904,7 @@ Its features include:
 (define-public plymouth
   (package
     (name "plymouth")
-    (version "22.02.122")
+    (version "24.004.60")
     (source
      (origin
        (method url-fetch)
@@ -2873,29 +2912,42 @@ Its features include:
                            "plymouth/releases/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1sysx8s7w870iawk5qlaq44x4cfqfinasiy4d3l3q0r14925218h"))))
-    (build-system gnu-build-system)
+         "0d0wbfsy70xhgxv4mldv72gzv0k8bvfxpvm90rxmx3y9b09q9xzk"))))
+    (build-system meson-build-system)
     (arguments
      (list
       #:configure-flags
-      '(list "--with-logo=/var/run/plymouth/logo.png"
-             "--localstatedir=/var"
-             "--with-boot-tty=/dev/console"
-             "--without-system-root-install"
-             "--without-rhgb-compat-link"
-             "--enable-drm"
-             "--disable-systemd-integration"
+      '(list "-Dlogo=/var/run/plymouth/logo.png"
+             "-Dlocalstatedir=/var"
+             "-Dboot-tty=/dev/console"
+             "-Ddrm=true"
+             "-Dsystemd-integration=false"
              ;; Disable GTK to dramatically reduce the closure
              ;; size from ~800 MiB to a little more than 200 MiB
-             "--disable-gtk")
+             "-Dgtk=disabled")
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-install
+            (lambda _
+              (substitute* "src/meson.build"
+                (("install_emptydir" all) (string-append "# " all)))
+              (substitute* "themes/meson.build"
+                ;; XXX: meson barfs when installing (temporarily broken)
+                ;; symlink to logo.
+                (("subdir\\('spinfinity'\\)") ""))))
           (add-after 'unpack 'make-reproducible
             (lambda _
               (substitute* "src/main.c"
                 (("__DATE__") "\"guix\"")))))))
     (inputs
-     (list glib pango libdrm libpng eudev))
+     (list eudev
+           glib
+           libdrm
+           libevdev
+           libpng
+           libxkbcommon
+           pango
+           xkeyboard-config))
     (native-inputs
      (list gettext-minimal
            pkg-config
@@ -3137,7 +3189,7 @@ compatible with the well-known scripts of the same name.")
 (define-public xdg-desktop-portal
   (package
     (name "xdg-desktop-portal")
-    (version "1.16.0")
+    (version "1.18.4")
     (source
      (origin
        (method url-fetch)
@@ -3146,30 +3198,13 @@ compatible with the well-known scripts of the same name.")
              version "/xdg-desktop-portal-" version ".tar.xz"))
        (sha256
         (base32
-         "06cczlh39kc41rvav06v37sad827y61rffy3v29i918ibj8sahav"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("glib:bin" ,glib "bin")
-       ("which" ,which)
-       ("gettext" ,gettext-minimal)))
-    (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("flatpak" ,flatpak)
-       ("fontconfig" ,fontconfig)
-       ("json-glib" ,json-glib)
-       ("libportal" ,libportal)
-       ("dbus" ,dbus)
-       ("geoclue" ,geoclue)
-       ("pipewire" ,pipewire)
-       ("fuse" ,fuse)))
+         "0r8y8qmzcfj7b7brqcxr9lg8pavfds815ffvj0kqc378fhgaln5q"))
+       ;; Disable portal tests since they try to use fuse.
+       (patches (search-patches "xdg-desktop-portal-disable-portal-tests.patch"))))
+    (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-systemd=no")
+       (list "-Dsystemd=disabled")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'po-chmod
@@ -3180,6 +3215,26 @@ compatible with the well-known scripts of the same name.")
                        (find-files "po" "\\.po$"))))
          (add-after 'unpack 'set-home-directory
            (lambda _ (setenv "HOME" "/tmp"))))))
+    (native-inputs
+     (list gettext-minimal
+           `(,glib "bin")
+           pkg-config
+           python
+           python-dbusmock
+           python-pytest
+           python-pytest-xdist))
+    (inputs
+     (list bubblewrap
+           dbus
+           flatpak
+           fontconfig
+           fuse
+           gdk-pixbuf
+           geoclue
+           glib
+           json-glib
+           libportal
+           pipewire))
     (native-search-paths
      (list (search-path-specification
             (variable "XDG_DESKTOP_PORTAL_DIR")
@@ -3197,37 +3252,6 @@ path (@code{/org/freedesktop/portal/desktop}).
 The portal interfaces include APIs for file access, opening URIs, printing
 and others.")
     (license license:lgpl2.1+)))
-
-(define-public xdg-desktop-portal-next
-  (package
-    (inherit xdg-desktop-portal)
-    (version "1.18.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/flatpak/xdg-desktop-portal/releases/download/"
-             version "/xdg-desktop-portal-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0r8y8qmzcfj7b7brqcxr9lg8pavfds815ffvj0kqc378fhgaln5q"))
-       ;; Disable portal tests since they try to use fuse.
-       (patches (search-patches "xdg-desktop-portal-disable-portal-tests.patch"))))
-    (build-system meson-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments xdg-desktop-portal)
-       ((#:configure-flags _ ''())
-        #~(list "-Dsystemd=disabled"))))
-    (native-inputs
-     (list pkg-config
-           `(,glib "bin")
-           gettext-minimal
-           python
-           python-dbusmock
-           python-pytest
-           python-pytest-xdist))
-    (inputs (modify-inputs (package-inputs xdg-desktop-portal)
-              (prepend bubblewrap)))))
 
 (define-public xdg-desktop-portal-gtk
   (package

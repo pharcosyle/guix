@@ -1255,8 +1255,8 @@ features playback of local media files, DVD/CD and live streams.")
     (native-inputs
      (list docbook-xsl libxslt xfce4-dev-tools))
     (inputs
-     (list libxfce4ui vte))
-    (home-page "https://docs.xfce.org/apps/xfce4-terminal/")
+     (list libxfce4ui vte/gtk+-3))
+    (home-page "https://www.xfce.org/")
     (synopsis "Xfce terminal emulator")
     (description
      "A lightweight and easy to use terminal emulator for Xfce.  Features

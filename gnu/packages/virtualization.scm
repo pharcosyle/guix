@@ -1550,14 +1550,14 @@ pretty simple, REST API.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "8.6.0")
+    (version "10.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libvirt.org/sources/libvirt-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1qisvbshbcd5305mrb4vni559k52id7c8iw4dwdydbf97b24f658"))
+        (base32 "15jpfrn3d2zyhbm5ip7bmpjb6ch2bfxm1h6yfgh0l3bw3g9ppgg1"))
        (patches (search-patches "libvirt-add-install-prefix.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -1602,7 +1602,11 @@ pretty simple, REST API.")
                                  "virnetsockettest"))) ; tries to network
                 (substitute* "tests/meson.build"
                   (((format #f ".*'name': '(~a)'.*" (string-join tests "|")))
-                   ""))))))))
+                   "")))))
+          (add-before 'configure 'fix-test-data
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* (find-files "tests/qemuvhostuserdata/usr/libexec")
+                (("^cat") (search-input-file inputs "bin/cat"))))))))
     (inputs
      (list acl
            attr
@@ -1612,6 +1616,7 @@ pretty simple, REST API.")
            libpciaccess
            gnutls
            dbus
+           json-c
            libpcap
            libnl
            libssh2                      ;optional
@@ -1651,14 +1656,14 @@ to integrate other virtualization mechanisms if needed.")
 (define-public libvirt-glib
   (package
     (name "libvirt-glib")
-    (version "4.0.0")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://libvirt.org/libvirt/glib/"
                                   "libvirt-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "1gdcvqz88qkp402zra9csc6391f2xki1270x683n6ixakl3gf8w4"))))
+                "12rv5wxa92iigqlb3ncza6m6995j8739nac7bmbs65i4713c7zlv"))))
     (build-system meson-build-system)
     (inputs
      (list openssl cyrus-sasl lvm2 ; for libdevmapper
@@ -1796,7 +1801,7 @@ virtualization library.")
            python-requests
            qemu
            spice-gtk
-           vte))
+           vte/gtk+-3))
     (native-inputs
      (list `(,glib "bin")               ; glib-compile-schemas
            gobject-introspection
@@ -2889,7 +2894,7 @@ about events that change the virtualized hardware, such as hotplugging.")
 (define-public osinfo-db-tools
   (package
     (name "osinfo-db-tools")
-    (version "1.10.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-tools-"
@@ -2897,7 +2902,7 @@ about events that change the virtualized hardware, such as hotplugging.")
 
               (sha256
                (base32
-                "0s6ah44wbay7kb3l1ydr0r4ip335zgf6s12ghjjnww0nni9xsb40"))))
+                "1wz7fqvrqpw1bvp3f37n03xhxj4g1fr09vd8vqjhyxqqbmkmycgk"))))
     (build-system meson-build-system)
     (inputs
      (list libsoup-minimal-2 libxml2 libxslt json-glib libarchive))
@@ -2919,14 +2924,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20230719")
+    (version "20240701")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0nl4wh8i9skcg1wx84p31x7rl1xv1267g5ycbn9kfwfnqxzwkl8k"))))
+        (base32 "0pchyq749nh6ivvd3d9bgd7zqdqa07x94jpsprrz8i8c5ykq2wqx"))))
     (build-system trivial-build-system)
     (arguments
      (list

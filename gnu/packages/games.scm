@@ -2223,7 +2223,7 @@ in one tile.")
 (define-public gnome-chess
   (package
     (name "gnome-chess")
-    (version "3.37.3")
+    (version "46.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-chess/"
@@ -2231,7 +2231,7 @@ in one tile.")
                                   "gnome-chess-" version ".tar.xz"))
               (sha256
                (base32
-                "09axf0q1mp13sv8cs0syfg8ahcd9r2qb26278r09j6s4njxmkfv4"))))
+                "1rzx8qxrfsicdmkyka434nv7adrh4x4qn6dri5bjqcallzh91g52"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -2240,17 +2240,19 @@ in one tile.")
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
            (lambda _
-             (substitute* "meson_post_install.py"
-               (("gtk-update-icon-cache") "true"))
-             #t)))))
+             (substitute* "meson.build"
+               (("gtk_update_icon_cache: true")
+                "gtk_update_icon_cache: false")
+               (("update_desktop_database: true")
+                "update_desktop_database: false")))))))
     (inputs
-     (list gtk+ librsvg))
+     (list gtk libadwaita librsvg))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
-       ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)
-       ("vala" ,vala)))
+     (list gettext-minimal
+           `(,glib "bin")       ; for desktop-file-validate and appstream-util
+           itstool
+           pkg-config
+           vala))
     (home-page "https://wiki.gnome.org/Apps/Chess")
     (synopsis "Chess board for GNOME")
     (description "GNOME Chess provides a 2D board for playing chess games
@@ -9206,7 +9208,7 @@ their own levels.")
 (define-public libmanette
   (package
     (name "libmanette")
-    (version "0.2.6")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libmanette/"
@@ -9214,13 +9216,13 @@ their own levels.")
                                   "libmanette-" version ".tar.xz"))
               (sha256
                (base32
-                "1b3bcdkk5xd5asq797cch9id8692grsjxrc1ss87vv11m1ck4rb3"))))
+                "13v85gckp937lppjqk42wvkd9pafszigyr7wcm6afq1g8pjnndi9"))))
     (build-system meson-build-system)
     (native-inputs
      (list `(,glib "bin") ; for glib-compile-resources
            gobject-introspection pkg-config vala))
-    (inputs
-     (list libevdev libgudev))
+    (propagated-inputs
+     (list glib libevdev libgudev))     ; as per manette-0.2.pc
     (home-page "https://wiki.gnome.org/Apps/Games")
     (synopsis "Game controller library")
     (description "Libmanette is a small GObject library giving you simple
