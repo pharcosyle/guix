@@ -219,7 +219,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "4.1")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
@@ -227,7 +227,7 @@ of categories with some of the activities available in that category.
              "mirror://kde/stable/gcompris/qt/src/gcompris-qt-"
              version ".tar.xz"))
        (sha256
-        (base32 "1186ba3vn59fqdpgbvnvxqm8a3b7ginmw1sb3m5fr2az40xiqg9z"))))
+        (base32 "1ixm0gdpxpbkz2zspvvrkwdjadrc03wxm4d1kk1ckv3f8f3i7sn7"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases
@@ -680,14 +680,14 @@ language and very flexible regarding to new or unknown keyboard layouts.")
 (define-public kqtquickcharts
   (package
     (name "kqtquickcharts")
-    (version "24.05.2")
+    (version "24.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kqtquickcharts-" version ".tar.xz"))
               (sha256
                (base32
-                "0b0nqg77lzfw6accfsr4yg9fgq78skryd1qwkqf1zijhq4h65708"))))
+                "0ivw6xqxdswk2dvnd2bdgbjylh8ipfa151qncfm0iv2q6rcq4ia2"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list qtdeclarative-5))
@@ -701,14 +701,14 @@ charts.")
 (define-public ktouch
   (package
     (name "ktouch")
-    (version "24.05.2")
+    (version "24.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/"
                            version "/src/ktouch-" version ".tar.xz"))
        (sha256
-        (base32 "1636s1brigmd7wbmjlfgz2qlrrp592rrk9nylh9bi0j1nf3xa8c5"))))
+        (base32 "0ma65m6lprxrp3xdcxpbx6k8hqzzczv3wb2g52aqn19z5jhphr4p"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools-5 pkg-config))
