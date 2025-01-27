@@ -316,7 +316,7 @@ terminal using ncurses.")
                   readline
                   taglib))
     (native-inputs
-     (list autoconf-2.71
+     (list autoconf
            automake
            libtool
            pkg-config))
