@@ -1097,16 +1097,20 @@ using compilers other than GCC."
 
 (define libstdc++
   ;; Libstdc++ matching the default GCC.
-  (let ((base (make-libstdc++ gcc)))
-    (package
-      (inherit base)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:configure-flags flags #~'())
-          ;; libstdc++-v3/src/c++20/tzdb.cc, new in GCC 13, weirdly won't
-          ;; compile here ("error: ‘mutex’ does not name a type"). Just
-          ;; disable it, at least for now.
-          #~(cons "--with-libstdcxx-zoneinfo=no" #$flags)))))))
+  (make-libstdc++ gcc))
+
+;; (define libstdc++
+;;   ;; Libstdc++ matching the default GCC.
+;;   (let ((base (make-libstdc++ gcc)))
+;;     (package
+;;       (inherit base)
+;;       (arguments
+;;        (substitute-keyword-arguments (package-arguments base)
+;;          ((#:configure-flags flags #~'())
+;;           ;; libstdc++-v3/src/c++20/tzdb.cc, new in GCC 13, weirdly won't
+;;           ;; compile here ("error: ‘mutex’ does not name a type"). Just
+;;           ;; disable it, at least for now.
+;;           #~(cons "--with-libstdcxx-zoneinfo=no" #$flags)))))))
 
 (define libstdc++-headers
   ;; XXX: This package is for internal use to work around
