@@ -46,7 +46,7 @@
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages readline))
 
-(define-public texinfo
+(define-public texinfo-6
   (package
     (name "texinfo")
     (version "6.8")
@@ -110,7 +110,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
 
 (define-public texinfo-7
   (package
-    (inherit texinfo)
+    (inherit texinfo-6)
     (version "7.1.1")
     (source (origin
               (method url-fetch)
@@ -119,12 +119,12 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "10kcdb3pf7yakniccvv0krchs2fh3vh1rvhvnqr98ll3cbj3gbii"))))
-    (inputs (modify-inputs (package-inputs texinfo)
+    (inputs (modify-inputs (package-inputs texinfo-6)
               (append perl-archive-zip           ;needed for 'tex2any --epub3'
                       perl-unicode-eastasianwidth perl-text-unidecode
                       perl-libintl-perl)))
     (arguments
-     (substitute-keyword-arguments (package-arguments texinfo)
+     (substitute-keyword-arguments (package-arguments texinfo-6)
        ((#:configure-flags flags
          ''())
         #~(cons* "--with-external-Unicode-EastAsianWidth"
@@ -153,6 +153,8 @@ is on expressing the content semantically, avoiding physical markup commands.")
                   (wrap-program program
                     `("PERL5LIB" prefix
                       ,(cons* (dirname zip) mods))))))))))))
+
+(define-public texinfo texinfo-7)
 
 (define-public texinfo-5
   (package (inherit texinfo)
