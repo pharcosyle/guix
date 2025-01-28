@@ -246,7 +246,7 @@ Browser.")
            libxcomposite
            libxt
            libffi
-           ffmpeg-7
+           ffmpeg
            libvpx
            icu4c
            pixman

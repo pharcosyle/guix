@@ -2922,7 +2922,7 @@ is subjective.")
             gst-plugins-good   ; for gstreamer 'scaletempo'
             gst-plugins-bad
             libsoup
-            json-glib-minimal))
+            json-glib))
     (arguments
       (list
         #:glib-or-gtk? #t

@@ -72,6 +72,7 @@ you tailor the wrapping process to suit your application.")
 (define-public swig-next
   (package
     (inherit swig)
+    (name "swig")
     (version "4.3.0")
     (source (origin
               (method url-fetch)

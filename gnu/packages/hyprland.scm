@@ -260,7 +260,7 @@ window) or a native DRM session.")
            qtbase
            qttools
            qtwayland
-           sdbus-c++-2
+           ;; sdbus-c++-2
            wayland
            wayland-protocols
            ;; For referenced programs.
@@ -338,7 +338,7 @@ extra portals specific to Hyprland, mostly for window sharing.")
            hyprutils
            linux-pam
            pango
-           sdbus-c++-2
+           ;; sdbus-c++-2
            wayland
            wayland-protocols))
     (home-page "https://github.com/hyprwm/hyprlock")
@@ -371,7 +371,7 @@ acquisition for no hitches.")
     (inputs
      (list hyprlang
            hyprutils
-           sdbus-c++-2
+           ;; sdbus-c++-2
            wayland
            wayland-protocols))
     (home-page "https://github.com/hyprwm/hypridle")

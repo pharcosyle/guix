@@ -153,7 +153,7 @@ well as CD-ROM images.")
                            kdoctools
                            pkg-config))
       (inputs (list breeze-icons
-                    gpgme-1.23
+                    ;; gpgme-1.23
                     karchive
                     kcompletion
                     kconfig
