@@ -60,8 +60,7 @@
                (base32 "1vya31v549pq89kgr02jajwi7gc7qw0mv6n4265pxs6jwkrqv5nb"))
               (patches
                (search-patches
-                "icu4c-icu-22132-fix-vtimezone.patch"
-                "icu4c-fix-TestHebrewCalendarInTemporalLeapYear.patch"))))
+                "icu4c-icu-22132-fix-vtimezone.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      (append (list python-minimal)

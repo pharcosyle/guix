@@ -1055,7 +1055,7 @@ safety and thread safety guarantees.")
 ;;; Here we take the latest included Rust, make it public, and re-enable tests
 ;;; and extra components such as rustfmt.
 (define-public rust
-  (let ((base-rust rust-1.82))
+  (let ((base-rust rust-1.55))
     (package
       (inherit base-rust)
       (properties (append

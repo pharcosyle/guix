@@ -1596,7 +1596,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/icedtea-7-hotspot-aarch64-use-c++98.patch	\
   %D%/packages/patches/icedtea-7-hotspot-pointer-comparison.patch	\
   %D%/packages/patches/icu4c-icu-22132-fix-vtimezone.patch	\
-  %D%/packages/patches/icu4c-fix-TestHebrewCalendarInTemporalLeapYear.patch	\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/id3lib-UTF16-writing-bug.patch			\
   %D%/packages/patches/idris-test-ffi008.patch			\
