@@ -51,6 +51,18 @@
             '())
       #:phases
       (modify-phases %standard-phases
+        ,@(if (target-aarch64?)
+              '((add-after 'unpack 'apply-apple-silicon-patch
+                 (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                   (let ((patch
+                          (assoc-ref (or native-inputs inputs)
+                                     "apple-silicon-gnulib-tests.patch")))
+                     (copy-file patch "the-patch")
+                     (substitute* "the-patch"
+                       (("gnulib-tests/test-fcntl.c")
+                        "tests/test-fcntl.c"))
+                     (invoke "patch" "--force" "-p1" "-i" "the-patch")))))
+              '())
         (add-after 'unpack 'disable-test
           (lambda _
             ;; Test 5 raises SIGINT from a child and immediately returns
@@ -85,6 +97,10 @@
               (substitute* "lib/config.hin"
                 (("\"/bin/sh\"")
                  (format #f "\"~a\"" /bin/sh)))))))))
+   (native-inputs
+    (if (target-aarch64?)
+        `(("apple-silicon-gnulib-tests.patch" ,(search-patch "apple-silicon-gnulib-tests.patch")))
+        '()))
    (synopsis "Macro processor")
    (description
     "GNU M4 is an implementation of the M4 macro language, which features

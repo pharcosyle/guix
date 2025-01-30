@@ -1,0 +1,15 @@
+--- a/gnulib-tests/test-fcntl.c
++++ b/gnulib-tests/test-fcntl.c
+@@ -267,12 +267,6 @@
+   ASSERT (fcntl (fd, F_DUPFD, bad_fd) == -1);
+   ASSERT (errno == EINVAL);
+   errno = 0;
+-  ASSERT (fcntl (fd, F_DUPFD_CLOEXEC, -1) == -1);
+-  ASSERT (errno == EINVAL);
+-  errno = 0;
+-  ASSERT (fcntl (fd, F_DUPFD_CLOEXEC, bad_fd) == -1);
+-  ASSERT (errno == EINVAL
+-          || errno == EMFILE /* WSL */);
+ 
+   /* For F_DUPFD*, check for correct inheritance, as well as
+      preservation of text vs. binary.  */

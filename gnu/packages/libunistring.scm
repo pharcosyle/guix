@@ -28,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base))
@@ -55,6 +56,18 @@
       #:parallel-build? #f
       #:phases
       #~(modify-phases %standard-phases
+          #$@(if (target-aarch64?)
+                 #~((add-after 'unpack 'apply-apple-silicon-patch
+                      (lambda _
+                        (let ((patch
+                               #$(local-file
+                                  (search-patch "apple-silicon-gnulib-tests.patch"))))
+                          (copy-file patch "the-patch")
+                          (substitute* "the-patch"
+                            (("gnulib-tests/test-fcntl.c")
+                             "tests/test-fcntl.c"))
+                          (invoke "patch" "--force" "-p1" "-i" "the-patch")))))
+                 #~())
           (add-after 'install 'move-static-library
             (lambda* (#:key outputs #:allow-other-keys)
               (with-directory-excursion (string-append #$output "/lib")

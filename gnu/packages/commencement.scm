@@ -2041,7 +2041,12 @@ exec " gcc "/bin/" program
      `(#:tests? #f
        #:implicit-inputs? #f
        #:guile ,%bootstrap-guile
-       ,@(package-arguments coreutils)
+       ,@(substitute-keyword-arguments (package-arguments coreutils)
+           ((#:phases phases)
+            `(modify-phases ,phases
+              ,@(if (target-aarch64?)
+                    '((delete 'apply-apple-silicon-patch))
+                    '()))))
        ;; The %bootstrap-glibc for aarch64 and armhf doesn't have
        ;; $output/include/linux/prctl.h which causes some binaries
        ;; to fail to build with coreutils-9.0+.

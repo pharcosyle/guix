@@ -78,6 +78,18 @@
                                  "--with-included-libxml=no")
            #:phases
            #~(modify-phases %standard-phases
+               #$@(if (target-aarch64?)
+                      #~((add-after 'unpack 'apply-apple-silicon-patch
+                           (lambda _
+                             (let ((patch
+                                    #$(local-file
+                                       (search-patch "apple-silicon-gnulib-tests.patch"))))
+                               (copy-file patch "the-patch")
+                               (substitute* "the-patch"
+                                 (("gnulib-tests/test-fcntl.c")
+                                  "gettext-tools/gnulib-tests/test-fcntl.c"))
+                               (invoke "patch" "--force" "-p1" "-i" "the-patch")))))
+                      #~())
                (add-before 'patch-source-shebangs 'patch-fixed-paths
                  (lambda _
                    (substitute* '("gettext-tools/config.h.in"

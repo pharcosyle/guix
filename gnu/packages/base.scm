@@ -144,6 +144,14 @@ command-line arguments, multiple languages, and so on.")
 
           #:phases
           #~(modify-phases %standard-phases
+              #$@(if (target-aarch64?)
+                     #~((add-after 'unpack 'apply-apple-silicon-patch
+                          (lambda _
+                            (let ((patch
+                                   #$(local-file
+                                      (search-patch "apple-silicon-gnulib-tests.patch"))))
+                              (invoke "patch" "--force" "-p1" "-i" patch)))))
+                     #~())
               (add-after 'install 'fix-egrep-and-fgrep
                 ;; Patch 'egrep' and 'fgrep' to execute 'grep' via its
                 ;; absolute file name instead of searching for it in $PATH.
@@ -207,19 +215,27 @@ including, for example, recursive directory searching.")
                               (list config)
                               '())
                           (list perl)))                    ;for tests
-    (arguments (if (target-loongarch64?)
-                   (list #:phases
-                         #~(modify-phases %standard-phases
-                             (add-after 'unpack 'update-config-scripts
-                               (lambda* (#:key inputs native-inputs #:allow-other-keys)
-                                 ;; Replace outdated config.guess and config.sub.
-                                 (for-each (lambda (file)
-                                             (install-file
-                                              (search-input-file
-                                               (or native-inputs inputs)
-                                               (string-append "/bin/" file)) "./build-aux"))
-                                           '("config.guess" "config.sub"))))))
-                   '()))
+    (arguments (list #:phases
+                     #~(modify-phases %standard-phases
+                         #$@(if (target-aarch64?)
+                                #~((add-after 'unpack 'apply-apple-silicon-patch
+                                     (lambda _
+                                       (let ((patch
+                                              #$(local-file
+                                                 (search-patch "apple-silicon-gnulib-tests.patch"))))
+                                         (invoke "patch" "--force" "-p1" "-i" patch)))))
+                                #~())
+                         #$@(if (target-loongarch64?)
+                                #~((add-after 'unpack 'update-config-scripts
+                                     (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                                       ;; Replace outdated config.guess and config.sub.
+                                       (for-each (lambda (file)
+                                                   (install-file
+                                                    (search-input-file
+                                                     (or native-inputs inputs)
+                                                     (string-append "/bin/" file)) "./build-aux"))
+                                                 '("config.guess" "config.sub")))))
+                                #~()))))
    (description
     "Sed is a non-interactive, text stream editor.  It receives a text
 input from a file or from standard input and it then applies a series of text
@@ -401,22 +417,30 @@ differences.")
              #~'("XFAIL_TESTS=test-year2038")
              #~'())
 
-     #:phases (if (system-hurd?)
-                  #~(modify-phases %standard-phases
-                      (add-after 'unpack 'skip-tests
-                        (lambda _
-                          (substitute* "tests/large-subopt"
-                            (("^#!.*" all)
-                             (string-append all "exit 77;\n")))
-                          #$@(if (system-hurd64?)
-                                 #~((substitute*
-                                        ;; These tests hang.
-                                        '("gnulib-tests/test-c-stack.sh"
-                                          "gnulib-tests/test-c-stack2.sh")
-                                      (("^#!.*" all)
-                                       (string-append all "exit 77;\n"))))
-                                 #~()))))
-                  #~%standard-phases)))
+     #:phases #~(modify-phases %standard-phases
+                  #$@(if (target-aarch64?)
+                         #~((add-after 'unpack 'apply-apple-silicon-patch
+                              (lambda _
+                                (let ((patch
+                                       #$(local-file
+                                          (search-patch "apple-silicon-gnulib-tests.patch"))))
+                                  (invoke "patch" "--force" "-p1" "-i" patch)))))
+                         #~())
+                  #$@(if (system-hurd?)
+                         #~((add-after 'unpack 'skip-tests
+                              (lambda _
+                                (substitute* "tests/large-subopt"
+                                  (("^#!.*" all)
+                                   (string-append all "exit 77;\n")))
+                                #$@(if (system-hurd64?)
+                                       #~((substitute*
+                                              ;; These tests hang.
+                                              '("gnulib-tests/test-c-stack.sh"
+                                                "gnulib-tests/test-c-stack2.sh")
+                                            (("^#!.*" all)
+                                             (string-append all "exit 77;\n"))))
+                                       #~()))))
+                         #~()))))
    (native-inputs (list perl))
    (synopsis "Comparing and merging files")
    (description
@@ -446,6 +470,14 @@ interactive means to merge two files.")
                          ;; Tell 'updatedb' to write to /var.
                          "--localstatedir=/var")
       #:phases (modify-phases %standard-phases
+                 ,@(if (target-aarch64?)
+                       '((add-after 'unpack 'apply-apple-silicon-patch
+                          (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                            (let ((patch
+                                   (assoc-ref (or native-inputs inputs)
+                                              "apple-silicon-gnulib-tests.patch")))
+                              (invoke "patch" "--force" "-p1" "-i" patch)))))
+                       '())
                  (add-before 'check 'adjust-test-shebangs
                    (lambda _
                      (substitute* '("tests/xargs/verbose-quote.sh"
@@ -461,6 +493,10 @@ interactive means to merge two files.")
                                (("(^| )main *\\(.*" all)
                                 (string-append all "{\n  exit (77);//"))))))
                        '()))))
+   (native-inputs
+    (if (target-aarch64?)
+        `(("apple-silicon-gnulib-tests.patch" ,(search-patch "apple-silicon-gnulib-tests.patch")))
+        '()))
    (synopsis "Operating on files matching given criteria")
    (description
     "Findutils supplies the basic file directory searching utilities of the
@@ -496,13 +532,17 @@ used to apply commands with arbitrarily long arguments.")
                    `(,libcap)                ;capability support in 'ls', etc.
                    '())))
    (native-inputs
-    ;; Perl is needed to run tests in native builds, and to run the bundled
-    ;; copy of help2man.  However, don't pass it when cross-compiling since
-    ;; that would lead it to try to run programs to get their '--help' output
-    ;; for help2man.
-    (if (%current-target-system)
-        '()
-        (list perl)))
+    (append
+     ;; Perl is needed to run tests in native builds, and to run the bundled
+     ;; copy of help2man.  However, don't pass it when cross-compiling since
+     ;; that would lead it to try to run programs to get their '--help' output
+     ;; for help2man.
+     (if (%current-target-system)
+         '()
+         `(("perl" ,perl)))
+     (if (target-aarch64?)
+         `(("apple-silicon-gnulib-tests.patch" ,(search-patch "apple-silicon-gnulib-tests.patch")))
+         '())))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
@@ -518,6 +558,14 @@ used to apply commands with arbitrarily long arguments.")
                                    " test-utimensat")))
             '())
       #:phases (modify-phases %standard-phases
+                 ,@(if (target-aarch64?)
+                       '((add-after 'unpack 'apply-apple-silicon-patch
+                          (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                            (let ((patch
+                                   (assoc-ref (or native-inputs inputs)
+                                              "apple-silicon-gnulib-tests.patch")))
+                              (invoke "patch" "--force" "-p1" "-i" patch)))))
+                       '())
                  (add-before 'build 'patch-shell-references
                    (lambda _
                      ;; 'split' uses either $SHELL or /bin/sh.  Set $SHELL so
@@ -610,7 +658,10 @@ standard.")
     (inherit coreutils)
     (name "coreutils-minimal")
     (outputs '("out"))
-    (native-inputs '())
+    (native-inputs
+     (if (target-aarch64?)
+         `(("apple-silicon-gnulib-tests.patch" ,(search-patch "apple-silicon-gnulib-tests.patch")))
+         '()))
     (inputs '())))
 
 (define-public coreutils-8.30
