@@ -45,7 +45,7 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "16xc767gf5ip40jh698wbdrxrghli5v2c966bkdmrmpwv378mw1a"))))
+               "1n5pb77hwadjpbqgqn28i5v4cp94ar19wmv9vk6v4j6hw9a5617s"))))
     (build-system gnu-build-system)
     (native-inputs (list boost
                          ;; The following are for tests and examples:
