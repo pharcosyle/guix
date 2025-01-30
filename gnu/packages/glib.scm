@@ -593,7 +593,7 @@ functions for strings and common data structures.")
     (license license:lgpl2.1+)
     (properties '((hidden? . #t)))))
 
-(define glib
+(define-public glib
   (let ((base glib-minimal))
     (package/inherit base
       (native-inputs
@@ -606,7 +606,8 @@ functions for strings and common data structures.")
               ;; GI tests require installed libraries
               (delete 'check)
               (add-after 'install 'check
-                (assoc-ref #$phases 'check)))))))))
+                (assoc-ref #$phases 'check))))))
+      (properties (alist-delete 'hidden? (package-properties base))))))
 
 (define (python-extension-suffix python triplet)
   "Determine the suffix for C extensions for PYTHON when compiled
