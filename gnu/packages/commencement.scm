@@ -1848,17 +1848,17 @@ exec " gcc "/bin/" program
                                  #:guile ,%bootstrap-guile
                                  #:tests? #f)))))
 
-(define-public coreutils-8.32
+(define-public coreutils-9.2
   (package
     (inherit coreutils)
-    (version "8.32")
+    (version "9.2")
     (source (origin
               (inherit (package-source coreutils))
               (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1yjcrh5hw70c0yn8zw55pd6j51dj90anpq8mmg649ps9g3gdhn24"))))))
+                "1cxh0k62kphhvznalj5ik2pxl1pladwc2s6k8zg13cndp53zz1b8"))))))
 
 (define-public sed-4.8
   (package
@@ -1922,7 +1922,7 @@ exec " gcc "/bin/" program
 ;; In the future, Gash et al. could handle it directly, but it's not
 ;; ready yet.
 (define bash-mesboot (mesboot-package "bash-mesboot" static-bash))
-(define coreutils-mesboot (mesboot-package "coreutils-mesboot" coreutils-8.32))
+(define coreutils-mesboot (mesboot-package "coreutils-mesboot" coreutils-9.2))
 (define sed-mesboot (mesboot-package "sed-mesboot" sed-4.8))
 
 (define grep-mesboot
@@ -2029,9 +2029,9 @@ exec " gcc "/bin/" program
 
 (define coreutils-boot0
   (package
-    (inherit coreutils)
+    (inherit coreutils-9.2)
     (outputs (delete "debug" (package-outputs coreutils)))
-    (source (bootstrap-origin (package-source coreutils-8.32)))
+    (source (bootstrap-origin (package-source coreutils-9.2)))
     (name "coreutils-boot0")
     (native-inputs `())
     (inputs
@@ -2084,7 +2084,7 @@ exec " gcc "/bin/" program
 
 (define findutils-boot0
   (package
-    (inherit findutils)
+    (inherit findutils-4.9)
     (name "findutils-boot0")
     (source (bootstrap-origin (package-source findutils-4.9)))
     (inputs
@@ -2212,7 +2212,7 @@ exec " gcc "/bin/" program
 
 (define tar-boot0
   (package
-    (inherit tar)
+    (inherit tar-1.34)
     (name "tar-boot0")
     (source (bootstrap-origin (package-source tar-1.34)))
     (native-inputs '())
